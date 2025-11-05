@@ -1,8 +1,7 @@
-import { Link, useLocation } from "wouter";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/useAuth";
 import type { User } from "@shared/schema";
 import logoUrl from "@assets/Heading (300 x 50 px) (1000 x 250 px) (2)_1762359727994.png";
 
@@ -12,21 +11,12 @@ interface HeaderProps {
 
 export default function Header({ showActions = true }: HeaderProps) {
   const [, setLocation] = useLocation();
+  const { user } = useAuth();
+  const typedUser = user as User | null | undefined;
 
-  const { data: user } = useQuery<User | null>({
-    queryKey: ["/api/user"],
-  });
-
-  const logoutMutation = useMutation({
-    mutationFn: async () => {
-      await apiRequest("POST", "/api/logout");
-    },
-    onSuccess: () => {
-      // Clear user data from cache
-      queryClient.setQueryData(["/api/user"], null);
-      setLocation("/login");
-    },
-  });
+  const handleLogout = () => {
+    window.location.href = "/api/logout";
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -40,9 +30,9 @@ export default function Header({ showActions = true }: HeaderProps) {
         </button>
         
         <div className="flex items-center gap-3">
-          {user && (
+          {typedUser && (
             <span className="text-sm text-muted-foreground" data-testid="text-username">
-              {user.username}
+              {typedUser.email || `${typedUser.firstName || ''} ${typedUser.lastName || ''}`.trim() || 'User'}
             </span>
           )}
           {showActions && (
@@ -50,16 +40,15 @@ export default function Header({ showActions = true }: HeaderProps) {
               Create Survey
             </Button>
           )}
-          {user && (
+          {typedUser && (
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => logoutMutation.mutate()}
-              disabled={logoutMutation.isPending}
+              onClick={handleLogout}
               data-testid="button-logout"
             >
               <LogOut className="w-4 h-4 mr-2" />
-              {logoutMutation.isPending ? "Logging out..." : "Logout"}
+              Logout
             </Button>
           )}
         </div>

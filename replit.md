@@ -53,20 +53,26 @@ The frontend implements a "conversational minimalism" approach with:
 
 **Implemented Features:**
 - Express server with JSON body parsing and session management
-- Session-based authentication using express-session
-- Authentication routes: `/api/login`, `/api/register`, `/api/logout`, `/api/user`
-- Survey CRUD routes: GET/POST/PATCH/DELETE `/api/surveys`
-- Document parsing route: POST `/api/parse-document` (PDF, DOCX, TXT)
-- AI integration routes: POST `/api/generate-survey`, POST `/api/chat`
+- **Replit Auth (OAuth)**: Google, GitHub, Apple, X login via OpenID Connect
+  - Authentication routes: `/api/login` (OAuth initiation), `/api/callback`, `/api/logout`
+  - User endpoint: GET `/api/auth/user` (requires authentication)
+  - Session-based with PostgreSQL-backed storage for reliability
+  - Automatic token refresh via passport middleware
+- Protected API routes using `isAuthenticated` middleware:
+  - Survey CRUD: GET/POST/PUT/DELETE `/api/surveys` (all protected)
+  - Document parsing: POST `/api/parse-document` (protected)
+  - AI integration: POST `/api/generate-survey`, POST `/api/chat` (protected)
 - File upload handling with multer (10MB limit)
 - In-memory storage implementation with user and survey management
 - OpenRouter AI service integration with free Mistral Small 3.1 model
 - Request logging middleware for API diagnostics
 
 **Security Notes:**
+- OAuth 2.0 authentication via Replit Auth (no password storage)
 - Session cookies with 7-day expiration
-- Secure cookie configuration for production (httpOnly, secure in prod)
-- **TODO**: Password hashing (currently plaintext for demo - MUST implement bcrypt for production)
+- Secure cookie configuration (httpOnly, secure in production only)
+- PostgreSQL-backed session storage for production reliability
+- All sensitive routes protected with `isAuthenticated` middleware
 
 **Storage Layer:**
 - Interface-based storage design (`IStorage`) for flexibility
@@ -83,10 +89,17 @@ The frontend implements a "conversational minimalism" approach with:
 - Type-safe schema definitions with Zod validation
 
 **Implemented Schema:**
-- **Users Table**: User authentication with username/password
-  - Auto-generated UUID primary keys
-  - Unique username constraint
-  - Password storage (plaintext - needs bcrypt for production)
+- **Sessions Table**: PostgreSQL-backed session storage (required for Replit Auth)
+  - sid (primary key)
+  - sess (JSONB session data)
+  - expire (timestamp with index)
+  
+- **Users Table**: OAuth user profiles from Replit Auth
+  - Auto-generated UUID primary keys (varchar with `gen_random_uuid()`)
+  - Email (unique, nullable)
+  - firstName, lastName (nullable)
+  - profileImageUrl (nullable)
+  - createdAt and updatedAt timestamps
   
 - **Surveys Table**: Survey storage with questions
   - UUID primary key

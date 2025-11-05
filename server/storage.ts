@@ -1,10 +1,10 @@
-import { type User, type InsertUser, type Survey, type InsertSurvey } from "@shared/schema";
+import { type User, type UpsertUser, type Survey, type InsertSurvey } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
+  // User operations (required for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  upsertUser(user: UpsertUser): Promise<User>;
   
   // Survey operations
   getSurvey(id: string): Promise<Survey | undefined>;
@@ -27,16 +27,21 @@ export class MemStorage implements IStorage {
     return this.users.get(id);
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const existingUser = userData.id ? this.users.get(userData.id) : undefined;
+    const now = new Date();
+    
+    const user: User = {
+      id: userData.id || randomUUID(),
+      email: userData.email || null,
+      firstName: userData.firstName || null,
+      lastName: userData.lastName || null,
+      profileImageUrl: userData.profileImageUrl || null,
+      createdAt: existingUser?.createdAt || now,
+      updatedAt: now,
+    };
+    
+    this.users.set(user.id, user);
     return user;
   }
 
