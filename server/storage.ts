@@ -1,11 +1,13 @@
 import { type User, type UpsertUser, type Survey, type InsertSurvey } from "@shared/schema";
 import { randomUUID } from "crypto";
+import bcrypt from "bcrypt";
 
 export interface IStorage {
   // User operations
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: UpsertUser): Promise<User>;
+  verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean>;
   upsertUser(user: UpsertUser): Promise<User>;
   
   // Survey operations
@@ -35,10 +37,11 @@ export class MemStorage implements IStorage {
 
   async createUser(userData: UpsertUser): Promise<User> {
     const now = new Date();
+    const hashedPassword = await bcrypt.hash(userData.password!, 10);
     const user: User = {
       id: randomUUID(),
       username: userData.username!,
-      password: userData.password!,
+      password: hashedPassword,
       email: userData.email || null,
       firstName: userData.firstName || null,
       lastName: userData.lastName || null,
@@ -49,6 +52,10 @@ export class MemStorage implements IStorage {
     
     this.users.set(user.id, user);
     return user;
+  }
+
+  async verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
+    return bcrypt.compare(plainPassword, hashedPassword);
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
