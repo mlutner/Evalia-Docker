@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import trainerImage from "@assets/stock_images/business_woman_profe_bf063c48.jpg";
+import trainerImage from "@assets/stock_images/trainer_presenting_t_2524adaa.jpg";
 import evaliaLogo from "@assets/Heading (300 x 50 px) (1000 x 250 px) (2)_1762359727994.png";
 
 const loginSchema = z.object({
@@ -77,12 +77,12 @@ export default function Login() {
       </div>
 
       {/* Right side - Login form */}
-      <div className="flex flex-col justify-center w-full lg:w-1/2 px-8 sm:px-12 lg:px-24 bg-background">
-        <div className="w-full max-w-md mx-auto">
+      <div className="flex flex-col w-full lg:w-1/2 px-8 sm:px-12 lg:px-24 bg-background">
+        <div className="w-full max-w-md mx-auto py-12">
           {/* Logo and title */}
           <div className="mb-12">
             <div className="mb-8">
-              <img src={evaliaLogo} alt="Evalia" className="h-12" />
+              <img src={evaliaLogo} alt="Evalia" className="h-16" />
             </div>
 
             <h1 className="text-4xl font-bold mb-3">
