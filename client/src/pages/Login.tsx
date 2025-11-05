@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import trainerImage from "@assets/stock_images/professional_female__e7a53fcc.jpg";
+import trainerImage from "@assets/stock_images/business_woman_profe_bf063c48.jpg";
+import evaliaLogo from "@assets/Heading (300 x 50 px) (1000 x 250 px) (2)_1762359727994.png";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Email address is required"),
@@ -80,24 +81,8 @@ export default function Login() {
         <div className="w-full max-w-md mx-auto">
           {/* Logo and title */}
           <div className="mb-12">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  className="w-8 h-8"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M3 12L8 17L21 4"
-                    stroke="white"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-              <span className="text-3xl font-semibold">Evalia</span>
+            <div className="mb-8">
+              <img src={evaliaLogo} alt="Evalia" className="h-12" />
             </div>
 
             <h1 className="text-4xl font-bold mb-3">
