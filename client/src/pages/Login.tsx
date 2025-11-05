@@ -7,6 +7,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { FcGoogle } from "react-icons/fc";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import trainerImage from "@assets/stock_images/confident_profession_89c4af22.jpg";
@@ -77,8 +78,8 @@ export default function Login() {
       </div>
 
       {/* Right side - Login form */}
-      <div className="flex flex-col w-full lg:w-1/2 px-8 sm:px-12 lg:px-24 bg-background">
-        <div className="w-full max-w-md mx-auto py-12">
+      <div className="flex flex-col justify-center w-full lg:w-1/2 px-8 sm:px-12 lg:px-24 bg-background">
+        <div className="w-full max-w-md mx-auto">
           {/* Logo and title */}
           <div className="mb-12">
             <div className="mb-8">
@@ -98,6 +99,29 @@ export default function Login() {
             <h2 className="text-2xl font-semibold mb-6">
               {isRegister ? "Create account" : "Log in"}
             </h2>
+
+            {/* Google login button */}
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-12 mb-6 text-base font-medium"
+              onClick={() => window.location.href = '/api/login'}
+              data-testid="button-google-login"
+            >
+              <FcGoogle className="w-5 h-5 mr-2" />
+              Continue with Google
+            </Button>
+
+            <div className="relative mb-6">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or continue with email
+                </span>
+              </div>
+            </div>
 
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
