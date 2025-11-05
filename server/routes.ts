@@ -1,12 +1,16 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { createRequire } from "module";
 import { storage } from "./storage";
 import { parseDocument, generateSurveyFromText, refineSurvey } from "./openrouter";
 import { insertSurveySchema, questionSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
-import * as pdfParse from "pdf-parse";
 import mammoth from "mammoth";
+
+// pdf-parse needs CommonJS require for proper default export
+const require = createRequire(import.meta.url);
+const pdfParse = require("pdf-parse");
 
 const upload = multer({ 
   storage: multer.memoryStorage(),

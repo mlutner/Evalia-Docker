@@ -1,6 +1,7 @@
 import type { Question } from "@shared/schema";
 
-const OPENROUTER_API_KEY = process.env.OPENAI_API_KEY;
+// User added OpenRouter key as OPENAI_API_KEY in secrets
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY;
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 
 // Free models from OpenRouter (November 2025)
