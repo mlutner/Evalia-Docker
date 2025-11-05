@@ -72,7 +72,8 @@ export default function Login() {
         <img
           src={trainerImage}
           alt="Professional trainer"
-          className="w-full h-full object-cover object-center"
+          className="w-full h-full object-cover"
+          style={{ objectPosition: '30% center' }}
         />
       </div>
 
