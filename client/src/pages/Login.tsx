@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import trainerImage from "@assets/stock_images/business_woman_prese_f9e36ba8.jpg";
+import trainerImage from "@assets/stock_images/confident_profession_89c4af22.jpg";
 import evaliaLogo from "@assets/Heading (300 x 50 px) (1000 x 250 px) (2)_1762359727994.png";
 
 const loginSchema = z.object({
@@ -72,8 +72,7 @@ export default function Login() {
         <img
           src={trainerImage}
           alt="Professional trainer"
-          className="w-full h-full object-cover"
-          style={{ objectPosition: '30% center' }}
+          className="w-full h-full object-cover object-center"
         />
       </div>
 
