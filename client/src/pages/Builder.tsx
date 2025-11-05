@@ -34,6 +34,39 @@ export default function Builder() {
     // TODO: remove mock functionality - simulate processing
     setTimeout(() => {
       setParsedText("Sample parsed text from the uploaded document...");
+      
+      // TODO: remove mock functionality - generate sample questions from document
+      const generatedQuestions: Question[] = [
+        {
+          id: "q1",
+          type: "text",
+          question: "What is your role in the organization?",
+          required: true,
+        },
+        {
+          id: "q2",
+          type: "multiple_choice",
+          question: "How would you rate your overall experience?",
+          options: ["Poor", "Fair", "Good", "Very Good", "Excellent"],
+          required: true,
+        },
+        {
+          id: "q3",
+          type: "textarea",
+          question: "What suggestions do you have for improvement?",
+          required: false,
+        },
+      ];
+      
+      setCurrentSurveyTitle(`Survey from ${file.name}`);
+      setCurrentQuestions(generatedQuestions);
+      setMessages([
+        {
+          id: "1",
+          role: "assistant",
+          content: `I've analyzed your document and created ${generatedQuestions.length} questions. You can preview the survey or ask me to make changes!`,
+        },
+      ]);
       setIsProcessing(false);
     }, 2000);
   };
@@ -64,11 +97,42 @@ export default function Builder() {
     
     // TODO: remove mock functionality - simulate generation
     setTimeout(() => {
+      // TODO: remove mock functionality - generate sample questions from prompt
+      const generatedQuestions: Question[] = [
+        {
+          id: "q1",
+          type: "text",
+          question: "What is your name?",
+          required: true,
+        },
+        {
+          id: "q2",
+          type: "email",
+          question: "What is your email address?",
+          required: true,
+        },
+        {
+          id: "q3",
+          type: "multiple_choice",
+          question: "How satisfied are you overall?",
+          options: ["Very Dissatisfied", "Dissatisfied", "Neutral", "Satisfied", "Very Satisfied"],
+          required: true,
+        },
+        {
+          id: "q4",
+          type: "textarea",
+          question: "Please share any additional feedback or suggestions.",
+          required: false,
+        },
+      ];
+      
+      setCurrentSurveyTitle("Custom Survey");
+      setCurrentQuestions(generatedQuestions);
       setMessages([
         {
           id: "1",
           role: "assistant",
-          content: "I've created a survey based on your prompt. What would you like to adjust?",
+          content: `I've created a ${generatedQuestions.length}-question survey based on your description. Preview it or ask me to make changes!`,
         },
       ]);
       setIsProcessing(false);

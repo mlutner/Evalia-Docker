@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import QuestionCard from "@/components/QuestionCard";
 import ProgressBar from "@/components/ProgressBar";
-import { ArrowLeft, ArrowRight, X } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { Question } from "@/components/QuestionCard";
 
 interface SurveyPreviewDialogProps {
@@ -67,22 +67,10 @@ export default function SurveyPreviewDialog({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] p-0 gap-0" data-testid="dialog-survey-preview">
         <DialogHeader className="px-6 pt-6 pb-4 border-b">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <DialogTitle className="text-xl">Preview: {title}</DialogTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                This is how respondents will experience your survey
-              </p>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleClose}
-              data-testid="button-close-preview"
-            >
-              <X className="w-4 h-4" />
-            </Button>
-          </div>
+          <DialogTitle className="text-xl">Preview: {title}</DialogTitle>
+          <p className="text-sm text-muted-foreground mt-1">
+            This is how respondents will experience your survey
+          </p>
         </DialogHeader>
 
         <div className="px-6 py-4">
