@@ -72,7 +72,7 @@ export default function Login() {
         <img
           src={trainerImage}
           alt="Professional trainer"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover object-center"
         />
       </div>
 
