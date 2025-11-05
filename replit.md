@@ -53,11 +53,12 @@ The frontend implements a "conversational minimalism" approach with:
 
 **Implemented Features:**
 - Express server with JSON body parsing and session management
-- **Replit Auth (OAuth)**: Google, GitHub, Apple, X login via OpenID Connect
-  - Authentication routes: `/api/login` (OAuth initiation), `/api/callback`, `/api/logout`
-  - User endpoint: GET `/api/auth/user` (requires authentication)
-  - Session-based with PostgreSQL-backed storage for reliability
-  - Automatic token refresh via passport middleware
+- **Username/Password Authentication**: Secure session-based authentication
+  - Authentication routes: POST `/api/register`, POST `/api/login`, POST `/api/logout`
+  - User endpoint: GET `/api/user` (requires authentication)
+  - Bcrypt password hashing (10 salt rounds)
+  - Session regeneration on login/register to prevent session fixation
+  - PostgreSQL-backed session storage via connect-pg-simple
 - Protected API routes using `isAuthenticated` middleware:
   - Survey CRUD: GET/POST/PUT/DELETE `/api/surveys` (all protected)
   - Document parsing: POST `/api/parse-document` (protected)
@@ -68,10 +69,11 @@ The frontend implements a "conversational minimalism" approach with:
 - Request logging middleware for API diagnostics
 
 **Security Notes:**
-- OAuth 2.0 authentication via Replit Auth (no password storage)
-- Session cookies with 7-day expiration
-- Secure cookie configuration (httpOnly, secure in production only)
-- PostgreSQL-backed session storage for production reliability
+- Secure password storage with bcrypt hashing (never plaintext)
+- Session regeneration on authentication to prevent session fixation attacks
+- Session cookies: httpOnly (XSS protection), secure in production (HTTPS)
+- 7-day session TTL with PostgreSQL-backed persistence
+- Password policy: minimum 8 characters (frontend + backend validation)
 - All sensitive routes protected with `isAuthenticated` middleware
 
 **Storage Layer:**
@@ -89,13 +91,15 @@ The frontend implements a "conversational minimalism" approach with:
 - Type-safe schema definitions with Zod validation
 
 **Implemented Schema:**
-- **Sessions Table**: PostgreSQL-backed session storage (required for Replit Auth)
+- **Sessions Table**: PostgreSQL-backed session storage (required for authentication)
   - sid (primary key)
   - sess (JSONB session data)
   - expire (timestamp with index)
   
-- **Users Table**: OAuth user profiles from Replit Auth
+- **Users Table**: User accounts with username/password authentication
   - Auto-generated UUID primary keys (varchar with `gen_random_uuid()`)
+  - Username (unique, required)
+  - Password (bcrypt hashed, required)
   - Email (unique, nullable)
   - firstName, lastName (nullable)
   - profileImageUrl (nullable)
@@ -163,13 +167,41 @@ The frontend implements a "conversational minimalism" approach with:
 
 ## Recent Changes (November 2025)
 
-### Authentication System (Completed)
-- Implemented session-based authentication with express-session
-- Created split-screen login page matching design reference with trainer imagery
-- Added user registration and login flows with proper cache management
-- Protected Dashboard and Builder routes with authentication guards
-- Added logout functionality with session cleanup
-- All tests passing for auth flow, protected routes, and cache coherence
+### Authentication System (Completed - November 5, 2025)
+**Implementation:**
+- Replaced OAuth/Replit Auth with username/password authentication system
+- Created split-screen login page with tabbed interface (Login and Register tabs)
+- Implemented secure password hashing using bcrypt (10 salt rounds)
+- Session-based authentication with PostgreSQL-backed storage via connect-pg-simple
+- Protected all survey and AI routes with `isAuthenticated` middleware
+- Frontend auth state management via useAuth hook and React Query
+
+**Security Features:**
+- Passwords hashed with bcrypt before storage (never stored in plaintext)
+- Session regeneration on login/register to prevent session fixation attacks
+- Session destruction and cache clearing on logout
+- httpOnly session cookies (XSS protection)
+- Secure cookies in production (HTTPS-only)
+- 7-day session TTL
+- Password policy: minimum 8 characters (enforced on frontend and backend)
+
+**Routes:**
+- POST `/api/register` - Create new user account (username, password, optional email)
+- POST `/api/login` - Authenticate user and create session
+- POST `/api/logout` - Destroy session and clear authentication
+- GET `/api/user` - Get authenticated user data (protected)
+
+**Frontend:**
+- Login page at `/` with Login and Register tabs
+- Dashboard at `/dashboard` (protected route)
+- ProtectedRoute component handles authentication guards and redirects
+- Query cache invalidation on login/logout for proper state management
+
+**Technical Notes:**
+- Removed legacy OAuth code (replitAuth.ts) and insecure `upsertUser` function
+- Storage layer uses `createUser` and `verifyPassword` methods for auth
+- All authentication flows tested end-to-end with Playwright
+- Production-ready with proper security configuration
 
 ### AI Integration (Completed)
 - Integrated OpenRouter API with free Mistral Small 3.1 model
