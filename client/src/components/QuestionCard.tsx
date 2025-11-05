@@ -5,17 +5,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import type { Question, QuestionType } from "@shared/schema";
 
-export type QuestionType = "text" | "textarea" | "multiple_choice" | "checkbox" | "email" | "number";
-
-export interface Question {
-  id: string;
-  type: QuestionType;
-  question: string;
-  description?: string;
-  options?: string[];
-  required?: boolean;
-}
+export type { Question, QuestionType };
 
 interface QuestionCardProps {
   question: Question;

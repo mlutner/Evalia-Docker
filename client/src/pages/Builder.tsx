@@ -14,7 +14,7 @@ import { Sparkles, FileText, MessageSquare, Layers, Upload, Plus, Edit3 } from "
 import { surveyTemplates } from "@shared/templates";
 import type { Message } from "@/components/ChatPanel";
 import type { SurveyTemplate } from "@shared/templates";
-import type { Question } from "@/components/QuestionCard";
+import type { Question } from "@shared/schema";
 
 export default function Builder() {
   const [activeTab, setActiveTab] = useState<"templates" | "create">("templates");
@@ -30,116 +30,145 @@ export default function Builder() {
   // TODO: remove mock functionality
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const handleFileSelect = (file: File) => {
+  const handleFileSelect = async (file: File) => {
     console.log("File selected:", file.name);
     setIsProcessing(true);
     
-    // TODO: remove mock functionality - simulate processing
-    setTimeout(() => {
-      setParsedText("Sample parsed text from the uploaded document...");
-      
-      // TODO: remove mock functionality - generate sample questions from document
-      const generatedQuestions: Question[] = [
-        {
-          id: "q1",
-          type: "text",
-          question: "What is your role in the organization?",
-          required: true,
-        },
-        {
-          id: "q2",
-          type: "multiple_choice",
-          question: "How would you rate your overall experience?",
-          options: ["Poor", "Fair", "Good", "Very Good", "Excellent"],
-          required: true,
-        },
-        {
-          id: "q3",
-          type: "textarea",
-          question: "What suggestions do you have for improvement?",
-          required: false,
-        },
-      ];
-      
-      setCurrentSurveyTitle(`Survey from ${file.name}`);
-      setCurrentQuestions(generatedQuestions);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/parse-document", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to parse document");
+      }
+
+      const data = await response.json();
+      setParsedText(data.parsedText);
+      setCurrentSurveyTitle(data.title);
+      setCurrentQuestions(data.questions);
       setMessages([
         {
           id: "1",
           role: "assistant",
-          content: `I've analyzed your document and created ${generatedQuestions.length} questions. You can preview the survey or ask me to make changes!`,
+          content: `I've analyzed your document and created ${data.questions.length} questions based on the content. You can edit the questions directly, preview the survey, or ask me to make changes!`,
         },
       ]);
+    } catch (error: any) {
+      console.error("Document parsing error:", error);
+      setMessages([
+        {
+          id: "1",
+          role: "assistant",
+          content: `Sorry, I encountered an error parsing your document: ${error.message}. Please try again or use a different file.`,
+        },
+      ]);
+    } finally {
       setIsProcessing(false);
-    }, 2000);
+    }
   };
 
-  const handleSendMessage = (message: string) => {
+  const handleSendMessage = async (message: string) => {
     const newMessage: Message = {
       id: Date.now().toString(),
       role: "user",
       content: message,
     };
-    setMessages([...messages, newMessage]);
+    const updatedMessages = [...messages, newMessage];
+    setMessages(updatedMessages);
+    setIsProcessing(true);
     
-    // TODO: remove mock functionality - simulate AI response
-    setTimeout(() => {
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message,
+          questions: currentQuestions,
+          history: updatedMessages.map(m => ({ role: m.role, content: m.content })),
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to process message");
+      }
+
+      const data = await response.json();
+      
+      // Update questions if AI modified them
+      if (data.questions) {
+        setCurrentQuestions(data.questions);
+      }
+      
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: "I've updated the survey based on your request. Would you like any other changes?",
+        content: data.message,
       };
       setMessages((prev) => [...prev, aiResponse]);
-    }, 1000);
+    } catch (error: any) {
+      console.error("Chat error:", error);
+      const errorResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: `Sorry, I encountered an error: ${error.message}. Please try again.`,
+      };
+      setMessages((prev) => [...prev, errorResponse]);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  const handleGenerateFromPrompt = () => {
+  const handleGenerateFromPrompt = async () => {
     if (!prompt.trim()) return;
     console.log("Generating survey from prompt:", prompt);
     setIsProcessing(true);
     
-    // TODO: remove mock functionality - simulate generation
-    setTimeout(() => {
-      // TODO: remove mock functionality - generate sample questions from prompt
-      const generatedQuestions: Question[] = [
-        {
-          id: "q1",
-          type: "text",
-          question: "What is your name?",
-          required: true,
+    try {
+      const response = await fetch("/api/generate-survey", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        {
-          id: "q2",
-          type: "email",
-          question: "What is your email address?",
-          required: true,
-        },
-        {
-          id: "q3",
-          type: "multiple_choice",
-          question: "How satisfied are you overall?",
-          options: ["Very Dissatisfied", "Dissatisfied", "Neutral", "Satisfied", "Very Satisfied"],
-          required: true,
-        },
-        {
-          id: "q4",
-          type: "textarea",
-          question: "Please share any additional feedback or suggestions.",
-          required: false,
-        },
-      ];
-      
-      setCurrentSurveyTitle("Custom Survey");
-      setCurrentQuestions(generatedQuestions);
+        body: JSON.stringify({ prompt }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to generate survey");
+      }
+
+      const data = await response.json();
+      setCurrentSurveyTitle(data.title);
+      setCurrentQuestions(data.questions);
       setMessages([
         {
           id: "1",
           role: "assistant",
-          content: `I've created a ${generatedQuestions.length}-question survey based on your description. Preview it or ask me to make changes!`,
+          content: `I've created a ${data.questions.length}-question survey based on your description. You can edit the questions directly, preview the survey, or ask me to make changes!`,
         },
       ]);
+      setPrompt(""); // Clear prompt after generation
+    } catch (error: any) {
+      console.error("Survey generation error:", error);
+      setMessages([
+        {
+          id: "1",
+          role: "assistant",
+          content: `Sorry, I encountered an error generating your survey: ${error.message}. Please try again with a different description.`,
+        },
+      ]);
+    } finally {
       setIsProcessing(false);
-    }, 2000);
+    }
   };
 
   const handleUseTemplate = (template: SurveyTemplate) => {
@@ -149,7 +178,6 @@ export default function Builder() {
     setCurrentQuestions(template.questions);
     setActiveTab("create");
     setViewMode("chat");
-    // TODO: remove mock functionality - simulate loading template
     setMessages([
       {
         id: "1",

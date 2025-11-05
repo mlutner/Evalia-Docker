@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { GripVertical, Trash2, Plus } from "lucide-react";
-import type { Question, QuestionType } from "@/components/QuestionCard";
+import type { Question, QuestionType } from "@shared/schema";
 
 interface QuestionEditorProps {
   question: Question;

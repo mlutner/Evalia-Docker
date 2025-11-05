@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import QuestionCard from "@/components/QuestionCard";
 import ProgressBar from "@/components/ProgressBar";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import type { Question } from "@/components/QuestionCard";
+import type { Question } from "@shared/schema";
 
 interface SurveyPreviewDialogProps {
   questions: Question[];
