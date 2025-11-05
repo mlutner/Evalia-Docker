@@ -64,7 +64,7 @@ The frontend implements a "conversational minimalism" approach with:
   - Document parsing: POST `/api/parse-document` (protected)
   - AI integration: POST `/api/generate-survey`, POST `/api/chat` (protected)
 - File upload handling with multer (10MB limit)
-- In-memory storage implementation with user and survey management
+- **PostgreSQL storage implementation** with user and survey management
 - OpenRouter AI service integration with free Mistral Small 3.1 model
 - Request logging middleware for API diagnostics
 
@@ -78,9 +78,10 @@ The frontend implements a "conversational minimalism" approach with:
 
 **Storage Layer:**
 - Interface-based storage design (`IStorage`) for flexibility
-- Current implementation uses in-memory storage (`MemStorage`)
-- Designed to be replaced with PostgreSQL-backed storage using Drizzle ORM
+- **PostgreSQL-backed storage** using Drizzle ORM (`DbStorage`)
+- Database connection via Neon serverless driver (`server/db.ts`)
 - Schema defined in `/shared/schema.ts` with Drizzle tables
+- All user data and surveys persist across server restarts
 
 ### Database Design
 
@@ -166,6 +167,26 @@ The frontend implements a "conversational minimalism" approach with:
   - Optional: `DATABASE_URL` for PostgreSQL (currently using in-memory storage)
 
 ## Recent Changes (November 2025)
+
+### PostgreSQL Storage Migration (Completed - November 5, 2025)
+**Implementation:**
+- Migrated from in-memory storage (MemStorage) to PostgreSQL-backed storage (DbStorage)
+- Created database connection layer using Drizzle ORM with Neon serverless driver
+- Implemented DbStorage class with full CRUD operations for users and surveys
+- All data now persists across server restarts
+
+**Database Implementation:**
+- Uses parameterized queries for security (prevents SQL injection)
+- Password hashing handled at storage layer with bcrypt (10 salt rounds)
+- Database-generated UUIDs for primary keys
+- Automatic timestamps (createdAt, updatedAt) via PostgreSQL defaults
+- Efficient queries with proper indexing and ordering
+
+**Technical Details:**
+- Database connection: `server/db.ts` using @neondatabase/serverless
+- Storage interface: `IStorage` in `server/storage.ts`
+- Implementation: `DbStorage` class using Drizzle ORM
+- Tables: users, surveys, survey_responses, sessions (all in PostgreSQL)
 
 ### Authentication System (Completed - November 5, 2025)
 **Implementation:**
