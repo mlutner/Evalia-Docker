@@ -8,7 +8,6 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: UpsertUser): Promise<User>;
   verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean>;
-  upsertUser(user: UpsertUser): Promise<User>;
   
   // Survey operations
   getSurvey(id: string): Promise<Survey | undefined>;
@@ -56,26 +55,6 @@ export class MemStorage implements IStorage {
 
   async verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
     return bcrypt.compare(plainPassword, hashedPassword);
-  }
-
-  async upsertUser(userData: UpsertUser): Promise<User> {
-    const existingUser = userData.id ? this.users.get(userData.id) : undefined;
-    const now = new Date();
-    
-    const user: User = {
-      id: userData.id || randomUUID(),
-      username: userData.username!,
-      password: userData.password!,
-      email: userData.email || null,
-      firstName: userData.firstName || null,
-      lastName: userData.lastName || null,
-      profileImageUrl: userData.profileImageUrl || null,
-      createdAt: existingUser?.createdAt || now,
-      updatedAt: now,
-    };
-    
-    this.users.set(user.id, user);
-    return user;
   }
 
   async getSurvey(id: string): Promise<Survey | undefined> {

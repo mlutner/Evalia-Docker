@@ -1,13 +1,33 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { getSession } from "./replitAuth";
+import session from "express-session";
+import connectPg from "connect-pg-simple";
 
 const app = express();
 
 // Setup session middleware
+const sessionTtl = 7 * 24 * 60 * 60 * 1000;
+const pgStore = connectPg(session);
+const sessionStore = new pgStore({
+  conString: process.env.DATABASE_URL,
+  createTableIfMissing: false,
+  ttl: sessionTtl,
+  tableName: "sessions",
+});
+
 app.set("trust proxy", 1);
-app.use(getSession());
+app.use(session({
+  secret: process.env.SESSION_SECRET!,
+  store: sessionStore,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: sessionTtl,
+  },
+}));
 
 declare module 'http' {
   interface IncomingMessage {

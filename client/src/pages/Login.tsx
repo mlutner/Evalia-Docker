@@ -170,9 +170,13 @@ export default function Login() {
                         name="password"
                         type="password"
                         required
+                        minLength={8}
                         disabled={isLoading}
                         data-testid="input-register-password"
                       />
+                      <p className="text-xs text-muted-foreground">
+                        Must be at least 8 characters
+                      </p>
                     </div>
                     <Button
                       type="submit"
