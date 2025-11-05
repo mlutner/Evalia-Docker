@@ -19,6 +19,87 @@ const upload = multer({
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
+  // Authentication routes
+  app.post("/api/register", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+
+      if (!username || !password) {
+        return res.status(400).json({ error: "Username and password are required" });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByUsername(username);
+      if (existingUser) {
+        return res.status(400).json({ error: "Username already exists" });
+      }
+
+      // TODO: Hash password before storing (use bcrypt in production)
+      // For demo purposes, storing plaintext - MUST be fixed for production
+      const user = await storage.createUser({ username, password });
+
+      // Set session
+      if (req.session) {
+        req.session.userId = user.id;
+      }
+
+      res.json({ id: user.id, username: user.username });
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      res.status(500).json({ error: "Failed to register user" });
+    }
+  });
+
+  app.post("/api/login", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+
+      if (!username || !password) {
+        return res.status(400).json({ error: "Username and password are required" });
+      }
+
+      const user = await storage.getUserByUsername(username);
+      
+      // TODO: Use bcrypt.compare() for password verification in production
+      // For demo purposes, using plaintext comparison - MUST be fixed for production
+      if (!user || user.password !== password) {
+        return res.status(401).json({ error: "Invalid username or password" });
+      }
+
+      // Set session
+      if (req.session) {
+        req.session.userId = user.id;
+      }
+
+      res.json({ id: user.id, username: user.username });
+    } catch (error: any) {
+      console.error("Login error:", error);
+      res.status(500).json({ error: "Failed to login" });
+    }
+  });
+
+  app.post("/api/logout", async (req, res) => {
+    req.session?.destroy((err: any) => {
+      if (err) {
+        return res.status(500).json({ error: "Failed to logout" });
+      }
+      res.status(204).send();
+    });
+  });
+
+  app.get("/api/user", async (req, res) => {
+    if (!req.session?.userId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const user = await storage.getUser(req.session.userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({ id: user.id, username: user.username });
+  });
+  
   // Parse uploaded document
   app.post("/api/parse-document", upload.single("file"), async (req, res) => {
     try {
