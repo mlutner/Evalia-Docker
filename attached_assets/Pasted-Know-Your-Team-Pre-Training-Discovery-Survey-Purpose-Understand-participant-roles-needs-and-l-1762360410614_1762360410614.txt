@@ -1,0 +1,169 @@
+Know Your Team” — Pre-Training Discovery Survey
+
+Purpose: Understand participant roles, needs, and learning preferences before a workshop.
+Use case: Before leadership, communication, or technical training.
+
+JSON Outline
+{
+  "title": "Know Your Team: Pre-Training Discovery",
+  "description": "Helps the trainer tailor content by understanding participants’ roles, goals, and learning needs.",
+  "sections": [
+    {
+      "heading": "About You",
+      "items": [
+        { "id": "q1", "type": "open", "prompt": "What is your current role and how long have you been in it?" },
+        { "id": "q2", "type": "likert", "prompt": "How confident are you in your current skills related to this training topic?", "scale": { "points": 5, "min_label": "Not confident", "max_label": "Very confident" } }
+      ]
+    },
+    {
+      "heading": "Learning Preferences",
+      "items": [
+        { "id": "q3", "type": "mcq", "prompt": "How do you prefer to learn new concepts?", "options": ["Visual examples", "Group discussions", "Hands-on practice", "Reading material", "Self-paced study"] },
+        { "id": "q4", "type": "open", "prompt": "What do you hope to gain from this training?" }
+      ]
+    },
+    {
+      "heading": "Organizational Context",
+      "items": [
+        { "id": "q5", "type": "open", "prompt": "What challenges does your team face that this training could help with?" }
+      ]
+    }
+  ]
+}
+
+🧩 2. “Pulse Check” — Mid-Training Feedback
+
+Purpose: Assess engagement and pacing halfway through a session or multi-day program.
+Use case: Live or blended training, typically end of day one or mid-course.
+
+{
+  "title": "Pulse Check: Mid-Training Feedback",
+  "description": "Captures how participants are feeling about the pace, relevance, and clarity of the program so far.",
+  "sections": [
+    {
+      "heading": "Session Experience",
+      "items": [
+        { "id": "q1", "type": "likert", "prompt": "The session pace has been appropriate for me.", "scale": { "points": 5, "min_label": "Too slow", "max_label": "Too fast" } },
+        { "id": "q2", "type": "likert", "prompt": "I find the content relevant to my work.", "scale": { "points": 5, "min_label": "Strongly disagree", "max_label": "Strongly agree" } }
+      ]
+    },
+    {
+      "heading": "Trainer Effectiveness",
+      "items": [
+        { "id": "q3", "type": "likert", "prompt": "The facilitator explains concepts clearly.", "scale": { "points": 5, "min_label": "Strongly disagree", "max_label": "Strongly agree" } },
+        { "id": "q4", "type": "open", "prompt": "What part of today’s session was most helpful or engaging?" }
+      ]
+    },
+    {
+      "heading": "Improvement Suggestions",
+      "items": [
+        { "id": "q5", "type": "open", "prompt": "Is there anything you'd like to spend more time on or change for the next session?" }
+      ]
+    }
+  ]
+}
+
+🧩 3. “After Action Review” — Immediate Post-Training Feedback
+
+Purpose: Gather fresh reflections on the quality, relevance, and delivery immediately after training.
+Use case: Every formal training program — standard Level-1 (Reaction) evaluation.
+
+{
+  "title": "After Action Review: Post-Training Feedback",
+  "description": "Collects participant perceptions on session effectiveness, facilitator quality, and key takeaways.",
+  "sections": [
+    {
+      "heading": "Content & Delivery",
+      "items": [
+        { "id": "q1", "type": "likert", "prompt": "The training objectives were clearly explained and met.", "scale": { "points": 5, "min_label": "Strongly disagree", "max_label": "Strongly agree" } },
+        { "id": "q2", "type": "likert", "prompt": "The facilitator was knowledgeable and engaging.", "scale": { "points": 5, "min_label": "Strongly disagree", "max_label": "Strongly agree" } }
+      ]
+    },
+    {
+      "heading": "Impact & Value",
+      "items": [
+        { "id": "q3", "type": "likert", "prompt": "I can apply what I learned to my job.", "scale": { "points": 5, "min_label": "Strongly disagree", "max_label": "Strongly agree" } },
+        { "id": "q4", "type": "open", "prompt": "What is one specific insight or skill you plan to apply?" }
+      ]
+    },
+    {
+      "heading": "Logistics & Overall",
+      "items": [
+        { "id": "q5", "type": "nps", "prompt": "How likely are you to recommend this training to a colleague?", "scale": { "min": 0, "max": 10, "min_label": "Not likely", "max_label": "Extremely likely" } },
+        { "id": "q6", "type": "open", "prompt": "Any final comments or suggestions?" }
+      ]
+    }
+  ]
+}
+
+🧩 4. “Transfer to Practice” — 30-Day Follow-Up
+
+Purpose: Evaluate sustained behavior change and application on the job.
+Use case: Sent automatically 30 days post-training.
+
+{
+  "title": "Transfer to Practice: 30-Day Follow-Up",
+  "description": "Checks how participants have applied learning and what additional support they need.",
+  "sections": [
+    {
+      "heading": "Application of Learning",
+      "items": [
+        { "id": "q1", "type": "likert", "prompt": "I have applied what I learned in my daily work.", "scale": { "points": 5, "min_label": "Strongly disagree", "max_label": "Strongly agree" } },
+        { "id": "q2", "type": "open", "prompt": "Can you give an example of how you’ve applied a new skill or concept?" }
+      ]
+    },
+    {
+      "heading": "Barriers & Support",
+      "items": [
+        { "id": "q3", "type": "open", "prompt": "What barriers have you faced when trying to implement your learning?" },
+        { "id": "q4", "type": "open", "prompt": "What additional resources or support would help you apply this training better?" }
+      ]
+    },
+    {
+      "heading": "Organizational Impact",
+      "items": [
+        { "id": "q5", "type": "likert", "prompt": "My team has noticed positive changes in my performance.", "scale": { "points": 5, "min_label": "Strongly disagree", "max_label": "Strongly agree" } }
+      ]
+    }
+  ]
+}
+
+🧩 5. “Trainer Effectiveness 360” — Peer & Manager Feedback
+
+Purpose: Help organizations evaluate trainers themselves, not just participant experiences.
+Use case: For L&D managers or HR to assess facilitation quality and consistency.
+
+{
+  "title": "Trainer Effectiveness 360",
+  "description": "Collects structured feedback from participants, peers, and supervisors on trainer performance and program design.",
+  "sections": [
+    {
+      "heading": "Facilitation Skills",
+      "items": [
+        { "id": "q1", "type": "likert", "prompt": "The trainer encouraged participation and engagement.", "scale": { "points": 5, "min_label": "Strongly disagree", "max_label": "Strongly agree" } },
+        { "id": "q2", "type": "likert", "prompt": "The trainer handled questions and challenges effectively.", "scale": { "points": 5, "min_label": "Strongly disagree", "max_label": "Strongly agree" } }
+      ]
+    },
+    {
+      "heading": "Knowledge & Relevance",
+      "items": [
+        { "id": "q3", "type": "likert", "prompt": "The trainer demonstrated deep subject expertise.", "scale": { "points": 5, "min_label": "Strongly disagree", "max_label": "Strongly agree" } },
+        { "id": "q4", "type": "open", "prompt": "What was the most valuable aspect of the trainer’s delivery?" }
+      ]
+    },
+    {
+      "heading": "Improvement & Future Focus",
+      "items": [
+        { "id": "q5", "type": "open", "prompt": "What could the trainer improve to enhance future sessions?" }
+      ]
+    }
+  ]
+}
+
+🧭 Summary of the 5 Templates
+Template Name	Purpose	Timing	Ideal Audience
+Know Your Team	Discover learner context & goals	Pre-training	Participants
+Pulse Check	Gauge engagement & pacing	Mid-training	Participants
+After Action Review	Assess immediate satisfaction	Post-training	Participants
+Transfer to Practice	Measure behavior/application	30 days later	Participants
+Trainer Effectiveness 360	Evaluate facilitation quality	Post or quarterly	Managers/Peers

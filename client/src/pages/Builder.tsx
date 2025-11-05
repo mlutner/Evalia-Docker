@@ -2,26 +2,25 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import FileUploadZone from "@/components/FileUploadZone";
 import ChatPanel from "@/components/ChatPanel";
+import TemplateCard from "@/components/TemplateCard";
+import TemplatePreviewModal from "@/components/TemplatePreviewModal";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, FileText, MessageSquare } from "lucide-react";
+import { Sparkles, FileText, MessageSquare, Layers } from "lucide-react";
+import { surveyTemplates } from "@shared/templates";
 import type { Message } from "@/components/ChatPanel";
+import type { SurveyTemplate } from "@shared/templates";
 
 export default function Builder() {
-  const [activeTab, setActiveTab] = useState<"upload" | "prompt">("upload");
+  const [activeTab, setActiveTab] = useState<"upload" | "prompt" | "templates">("templates");
   const [isProcessing, setIsProcessing] = useState(false);
   const [parsedText, setParsedText] = useState("");
   const [prompt, setPrompt] = useState("");
+  const [previewTemplate, setPreviewTemplate] = useState<SurveyTemplate | null>(null);
   
   // TODO: remove mock functionality
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      role: "assistant",
-      content: "I've analyzed your document and created a survey with 10 questions. What would you like to refine?",
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   const handleFileSelect = (file: File) => {
     console.log("File selected:", file.name);
@@ -71,6 +70,19 @@ export default function Builder() {
     }, 2000);
   };
 
+  const handleUseTemplate = (template: SurveyTemplate) => {
+    console.log("Using template:", template.title);
+    setPreviewTemplate(null);
+    // TODO: remove mock functionality - simulate loading template
+    setMessages([
+      {
+        id: "1",
+        role: "assistant",
+        content: `I've loaded the "${template.title}" template with ${template.questionCount} questions. Feel free to customize it or ask me to make changes!`,
+      },
+    ]);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -84,17 +96,40 @@ export default function Builder() {
 
         <div className="grid lg:grid-cols-[1fr,400px] gap-6">
           <div>
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "upload" | "prompt")}>
-              <TabsList className="grid w-full grid-cols-2 mb-6">
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "upload" | "prompt" | "templates")}>
+              <TabsList className="grid w-full grid-cols-3 mb-6">
+                <TabsTrigger value="templates" data-testid="tab-templates">
+                  <Layers className="w-4 h-4 mr-2" />
+                  Templates
+                </TabsTrigger>
                 <TabsTrigger value="upload" data-testid="tab-upload">
                   <FileText className="w-4 h-4 mr-2" />
-                  Upload Document
+                  Upload
                 </TabsTrigger>
                 <TabsTrigger value="prompt" data-testid="tab-prompt">
                   <MessageSquare className="w-4 h-4 mr-2" />
-                  Describe Survey
+                  Describe
                 </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="templates" className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Professional Training Templates</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Start with proven survey frameworks designed for trainers at different stages of the learning journey.
+                  </p>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {surveyTemplates.map((template) => (
+                    <TemplateCard
+                      key={template.id}
+                      template={template}
+                      onPreview={() => setPreviewTemplate(template)}
+                      onUse={() => handleUseTemplate(template)}
+                    />
+                  ))}
+                </div>
+              </TabsContent>
 
               <TabsContent value="upload" className="space-y-6">
                 <FileUploadZone
@@ -153,7 +188,7 @@ export default function Builder() {
           </div>
         </div>
 
-        {messages.length > 1 && (
+        {messages.length > 0 && (
           <div className="mt-8 flex justify-end gap-3">
             <Button variant="outline" size="lg" data-testid="button-preview">
               Preview Survey
@@ -164,6 +199,13 @@ export default function Builder() {
           </div>
         )}
       </main>
+
+      <TemplatePreviewModal
+        template={previewTemplate}
+        open={previewTemplate !== null}
+        onOpenChange={(open) => !open && setPreviewTemplate(null)}
+        onUse={() => previewTemplate && handleUseTemplate(previewTemplate)}
+      />
     </div>
   );
 }
