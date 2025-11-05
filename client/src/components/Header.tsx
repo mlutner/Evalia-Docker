@@ -2,6 +2,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { queryClient } from "@/lib/queryClient";
 import type { User } from "@shared/schema";
 import logoUrl from "@assets/Heading (300 x 50 px) (1000 x 250 px) (2)_1762359727994.png";
 
@@ -17,9 +18,11 @@ export default function Header({ showActions = true }: HeaderProps) {
   const handleLogout = async () => {
     try {
       await fetch("/api/logout", { method: "POST", credentials: "include" });
-      window.location.href = "/";
+      queryClient.clear();
+      window.location.href = "/login";
     } catch (error) {
-      window.location.href = "/";
+      queryClient.clear();
+      window.location.href = "/login";
     }
   };
 
