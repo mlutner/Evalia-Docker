@@ -4,6 +4,7 @@ import FileUploadZone from "@/components/FileUploadZone";
 import ChatPanel from "@/components/ChatPanel";
 import TemplateCard from "@/components/TemplateCard";
 import TemplatePreviewModal from "@/components/TemplatePreviewModal";
+import SurveyPreviewDialog from "@/components/SurveyPreviewDialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,6 +12,7 @@ import { Sparkles, FileText, MessageSquare, Layers } from "lucide-react";
 import { surveyTemplates } from "@shared/templates";
 import type { Message } from "@/components/ChatPanel";
 import type { SurveyTemplate } from "@shared/templates";
+import type { Question } from "@/components/QuestionCard";
 
 export default function Builder() {
   const [activeTab, setActiveTab] = useState<"upload" | "prompt" | "templates">("templates");
@@ -18,6 +20,9 @@ export default function Builder() {
   const [parsedText, setParsedText] = useState("");
   const [prompt, setPrompt] = useState("");
   const [previewTemplate, setPreviewTemplate] = useState<SurveyTemplate | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
+  const [currentSurveyTitle, setCurrentSurveyTitle] = useState("");
+  const [currentQuestions, setCurrentQuestions] = useState<Question[]>([]);
   
   // TODO: remove mock functionality
   const [messages, setMessages] = useState<Message[]>([]);
@@ -73,6 +78,8 @@ export default function Builder() {
   const handleUseTemplate = (template: SurveyTemplate) => {
     console.log("Using template:", template.title);
     setPreviewTemplate(null);
+    setCurrentSurveyTitle(template.title);
+    setCurrentQuestions(template.questions);
     // TODO: remove mock functionality - simulate loading template
     setMessages([
       {
@@ -81,6 +88,10 @@ export default function Builder() {
         content: `I've loaded the "${template.title}" template with ${template.questionCount} questions. Feel free to customize it or ask me to make changes!`,
       },
     ]);
+  };
+
+  const handlePreviewSurvey = () => {
+    setShowPreview(true);
   };
 
   return (
@@ -190,7 +201,12 @@ export default function Builder() {
 
         {messages.length > 0 && (
           <div className="mt-8 flex justify-end gap-3">
-            <Button variant="outline" size="lg" data-testid="button-preview">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              onClick={handlePreviewSurvey}
+              data-testid="button-preview"
+            >
               Preview Survey
             </Button>
             <Button size="lg" data-testid="button-save">
@@ -205,6 +221,13 @@ export default function Builder() {
         open={previewTemplate !== null}
         onOpenChange={(open) => !open && setPreviewTemplate(null)}
         onUse={() => previewTemplate && handleUseTemplate(previewTemplate)}
+      />
+
+      <SurveyPreviewDialog
+        questions={currentQuestions}
+        title={currentSurveyTitle}
+        open={showPreview}
+        onOpenChange={setShowPreview}
       />
     </div>
   );
