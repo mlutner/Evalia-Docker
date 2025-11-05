@@ -1,0 +1,129 @@
+🧠 Replit Prompt: Typeform-Style AI Survey Builder
+You are an expert full-stack developer.  
+Create a **modern, minimal Typeform-style survey app** using **React + Vite + TailwindCSS + Supabase + Express**.  
+I want it clean, mobile-responsive, and conversational — one question per view, minimal boxes, elegant transitions, and modern typography.
+
+**App Purpose:**
+To let trainers create and share AI-assisted surveys by uploading PDFs/DOCX/TXT or typing prompts.
+
+---
+
+### ⚙️ Features
+1. **Auth**
+   - Use **Supabase Auth** for login/signup (email + password)
+   - Logged-in users can create and view their surveys
+
+2. **Database**
+   - Supabase tables:
+     - `users`
+     - `surveys` (id, title, owner_id, json_spec)
+     - `uploads` (id, file_url, parsed_text, created_at)
+     - `responses` (survey_id, response_data)
+   - Secure by user_id
+
+3. **AI & OCR Integration**
+   - Use **OpenRouter API** (store `OPENROUTER_API_KEY` in env)
+   - Use **Tesseract.js** for OCR on PDFs or images
+   - If DOCX/TXT, parse directly using client-side libraries (`mammoth` for DOCX)
+   - After parsing, send text to AI endpoint to generate survey spec:
+     ```js
+     POST https://openrouter.ai/api/v1/chat/completions
+     {
+       model: "anthropic/claude-3.5-sonnet",
+       messages: [
+         { role: "system", content: "You are a survey designer..." },
+         { role: "user", content: "Generate survey JSON from text: ..." }
+       ]
+     }
+     ```
+
+4. **Frontend UI (React + Tailwind + shadcn/ui)**
+   - **Login screen** → simple hero background, email/password form
+   - **Dashboard** → list of user surveys (title, date, quick actions)
+   - **Upload/Chat Screen**:
+     - Dropzone for file upload (PDF/DOCX/TXT)
+     - Progress bar + OCR parsing feedback
+     - AI chat pane to refine survey (“Add 3 open-ended questions”)
+   - **Survey Builder Preview:**
+     - Sequential question flow (like Typeform)
+     - Smooth fade/slide transitions
+     - Simple progress bar
+   - **Export**
+     - Download JSON, CSV, or link for respondents
+
+5. **Design Tokens**
+   - Font: `Inter`
+   - Colors:
+     ```
+     --bg: #FAFAFA;
+     --surface: #FFFFFF;
+     --text: #111827;
+     --primary: #2563EB;
+     --border: #E5E7EB;
+     ```
+   - Button radius: 8px  
+   - Card shadow: `0 1px 4px rgba(0,0,0,0.08)`
+
+6. **Project Structure**
+
+
+/src
+/components
+AuthForm.tsx
+Dropzone.tsx
+QuestionCard.tsx
+ChatPanel.tsx
+SurveyPreview.tsx
+ProgressBar.tsx
+/pages
+Login.tsx
+Dashboard.tsx
+Builder.tsx
+SurveyView.tsx
+/lib
+openrouter.ts
+supabaseClient.ts
+ocrParser.ts
+App.tsx
+main.tsx
+/server
+index.js
+routes/ai.js
+routes/upload.js
+
+
+7. **Server (Express)**
+- `POST /api/upload` → accept PDF/DOCX/TXT → parse text (OCR if needed)
+- `POST /api/generate` → send parsed text to OpenRouter → return survey JSON
+- `POST /api/saveSurvey` → save to Supabase
+- All secured by Supabase JWT
+
+8. **Styling**
+- Use Tailwind `@layer components` for buttons, cards, and inputs
+- Smooth transitions (`transition-all ease-in-out duration-300`)
+- One-question-per-screen layout (no clutter)
+
+9. **Bonus (Optional Enhancements)**
+- Realtime progress saving (`onNext` autosave)
+- Shareable survey link (public embed mode)
+- Versioning (keep last 3 AI-generated revisions)
+
+---
+
+### 🧱 Deliverables
+- Fully functional frontend (React)
+- Express backend (for OCR + AI calls)
+- Supabase integration for Auth + DB
+- Tailwind + shadcn-styled interface
+- Example `.env` file:
+
+
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_KEY=...
+OPENROUTER_API_KEY=...
+
+
+---
+
+**Goal:**  
+Keep it **as clean and usable as Typeform**, but simpler — less chrome, no excess boxes, just a smooth experience for uploading, generating, previewing, and exporting surveys with AI.
