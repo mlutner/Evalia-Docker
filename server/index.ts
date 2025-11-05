@@ -1,10 +1,13 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { getSession } from "./replitAuth";
 
 const app = express();
 
-// Session management is handled by Replit Auth in replitAuth.ts
+// Setup session middleware
+app.set("trust proxy", 1);
+app.use(getSession());
 
 declare module 'http' {
   interface IncomingMessage {
