@@ -1,6 +1,8 @@
-import { type User, type UpsertUser, type Survey, type InsertSurvey } from "@shared/schema";
+import { type User, type UpsertUser, type Survey, type InsertSurvey, users, surveys } from "@shared/schema";
 import { randomUUID } from "crypto";
 import bcrypt from "bcrypt";
+import { db } from "./db";
+import { eq, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -99,4 +101,60 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DbStorage implements IStorage {
+  async getUser(id: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    return result[0];
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.username, username)).limit(1);
+    return result[0];
+  }
+
+  async createUser(userData: UpsertUser): Promise<User> {
+    const hashedPassword = await bcrypt.hash(userData.password!, 10);
+    const result = await db.insert(users).values({
+      username: userData.username!,
+      password: hashedPassword,
+      email: userData.email || null,
+      firstName: userData.firstName || null,
+      lastName: userData.lastName || null,
+      profileImageUrl: userData.profileImageUrl || null,
+    }).returning();
+    return result[0];
+  }
+
+  async verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
+    return bcrypt.compare(plainPassword, hashedPassword);
+  }
+
+  async getSurvey(id: string): Promise<Survey | undefined> {
+    const result = await db.select().from(surveys).where(eq(surveys.id, id)).limit(1);
+    return result[0];
+  }
+
+  async getAllSurveys(): Promise<Survey[]> {
+    return db.select().from(surveys).orderBy(sql`${surveys.createdAt} DESC`);
+  }
+
+  async createSurvey(insertSurvey: InsertSurvey): Promise<Survey> {
+    const result = await db.insert(surveys).values(insertSurvey).returning();
+    return result[0];
+  }
+
+  async updateSurvey(id: string, updates: Partial<InsertSurvey>): Promise<Survey | undefined> {
+    const result = await db.update(surveys)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(surveys.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteSurvey(id: string): Promise<boolean> {
+    const result = await db.delete(surveys).where(eq(surveys.id, id)).returning();
+    return result.length > 0;
+  }
+}
+
+export const storage = new DbStorage();
