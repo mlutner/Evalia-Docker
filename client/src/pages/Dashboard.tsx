@@ -34,10 +34,21 @@ export default function Dashboard() {
     },
   ]);
 
-  const handleView = (id: string) => console.log("View survey:", id);
-  const handleAnalyze = (id: string) => console.log("Analyze survey:", id);
-  const handleExport = (id: string) => console.log("Export survey:", id);
-  const handleDelete = (id: string) => console.log("Delete survey:", id);
+  const handleView = (id: string) => {
+    setLocation(`/survey/${id}`);
+  };
+
+  const handleAnalyze = (id: string) => {
+    setLocation(`/survey/${id}`);
+  };
+
+  const handleExport = (id: string) => {
+    console.log("Export survey:", id);
+  };
+
+  const handleDelete = (id: string) => {
+    console.log("Delete survey:", id);
+  };
 
   return (
     <div className="min-h-screen bg-background">
