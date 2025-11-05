@@ -2,8 +2,10 @@ import { type User, type UpsertUser, type Survey, type InsertSurvey } from "@sha
 import { randomUUID } from "crypto";
 
 export interface IStorage {
-  // User operations (required for Replit Auth)
+  // User operations
   getUser(id: string): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  createUser(user: UpsertUser): Promise<User>;
   upsertUser(user: UpsertUser): Promise<User>;
   
   // Survey operations
@@ -27,12 +29,36 @@ export class MemStorage implements IStorage {
     return this.users.get(id);
   }
 
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(u => u.username === username);
+  }
+
+  async createUser(userData: UpsertUser): Promise<User> {
+    const now = new Date();
+    const user: User = {
+      id: randomUUID(),
+      username: userData.username!,
+      password: userData.password!,
+      email: userData.email || null,
+      firstName: userData.firstName || null,
+      lastName: userData.lastName || null,
+      profileImageUrl: userData.profileImageUrl || null,
+      createdAt: now,
+      updatedAt: now,
+    };
+    
+    this.users.set(user.id, user);
+    return user;
+  }
+
   async upsertUser(userData: UpsertUser): Promise<User> {
     const existingUser = userData.id ? this.users.get(userData.id) : undefined;
     const now = new Date();
     
     const user: User = {
       id: userData.id || randomUUID(),
+      username: userData.username!,
+      password: userData.password!,
       email: userData.email || null,
       firstName: userData.firstName || null,
       lastName: userData.lastName || null,
