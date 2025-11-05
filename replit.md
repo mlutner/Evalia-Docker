@@ -29,11 +29,13 @@ The frontend implements a "conversational minimalism" approach with:
 - Mobile-first responsive design with breakpoint-specific layouts
 
 **Key Frontend Features:**
+- **Login Page**: Split-screen design with professional trainer imagery and Evalia branding
 - **Dashboard**: Grid-based survey management with cards showing survey metadata
 - **Builder**: Multi-tab interface supporting file upload, text prompts, and template selection
 - **Survey View**: Sequential question flow with progress tracking
 - **Chat Panel**: AI assistant interface for refining surveys through natural language
 - **Template System**: Pre-built survey templates for common training scenarios
+- **Protected Routes**: Authentication-gated access to Dashboard and Builder pages
 
 **Component Structure:**
 - Reusable UI components in `/client/src/components/ui`
@@ -49,21 +51,22 @@ The frontend implements a "conversational minimalism" approach with:
 - **Session Management**: Express session with connect-pg-simple for PostgreSQL-backed sessions
 - **Build System**: ESBuild for production bundling, TSX for development
 
-**Current State:**
-The backend is minimally implemented with:
-- Basic Express server setup with JSON body parsing
-- Route registration system (empty implementation)
-- In-memory storage interface with user CRUD operations
-- Vite middleware integration for development mode
-- Request logging middleware
+**Implemented Features:**
+- Express server with JSON body parsing and session management
+- Session-based authentication using express-session
+- Authentication routes: `/api/login`, `/api/register`, `/api/logout`, `/api/user`
+- Survey CRUD routes: GET/POST/PATCH/DELETE `/api/surveys`
+- Document parsing route: POST `/api/parse-document` (PDF, DOCX, TXT)
+- AI integration routes: POST `/api/generate-survey`, POST `/api/chat`
+- File upload handling with multer (10MB limit)
+- In-memory storage implementation with user and survey management
+- OpenRouter AI service integration with free Mistral Small 3.1 model
+- Request logging middleware for API diagnostics
 
-**Planned Backend Features:**
-- RESTful API routes prefixed with `/api`
-- User authentication and authorization
-- Survey CRUD operations
-- File upload handling for documents
-- AI integration endpoints for OpenRouter API
-- Response collection and storage
+**Security Notes:**
+- Session cookies with 7-day expiration
+- Secure cookie configuration for production (httpOnly, secure in prod)
+- **TODO**: Password hashing (currently plaintext for demo - MUST implement bcrypt for production)
 
 **Storage Layer:**
 - Interface-based storage design (`IStorage`) for flexibility
@@ -79,30 +82,39 @@ The backend is minimally implemented with:
 - Migrations output: `/migrations`
 - Type-safe schema definitions with Zod validation
 
-**Current Schema:**
-- **Users Table**: Basic user authentication with username/password
+**Implemented Schema:**
+- **Users Table**: User authentication with username/password
   - Auto-generated UUID primary keys
   - Unique username constraint
-  - Password storage (intended for hashing)
+  - Password storage (plaintext - needs bcrypt for production)
+  
+- **Surveys Table**: Survey storage with questions
+  - UUID primary key
+  - Title and optional description
+  - JSONB column for question array (type-safe with Zod)
+  - createdAt and updatedAt timestamps
 
-**Anticipated Schema Expansion:**
-- Surveys table (id, title, owner_id, questions_json, created_at)
-- Uploads table (id, user_id, file_url, parsed_text, created_at)
-- Responses table (id, survey_id, response_data, submitted_at)
-- Templates table (pre-built survey templates)
+- **Survey Responses Table**: Response collection
+  - UUID primary key
+  - Foreign key to surveys table
+  - JSONB column for answer data
+  - completedAt timestamp
 
 ### External Dependencies
 
 **AI Services:**
-- **OpenRouter API**: Primary AI integration for generating survey questions from text
-  - Model: Anthropic Claude 3.5 Sonnet
-  - Usage: Converting uploaded documents or prompts into structured survey JSON
-  - Configuration: Requires `OPENROUTER_API_KEY` environment variable
+- **OpenRouter API**: Fully integrated AI service for survey generation and refinement
+  - Model: Mistral Small 3.1 (24B parameters) - Free tier
+  - OCR Model: Mistral Small 3.1 for text extraction from images in PDFs
+  - Usage: Converting documents/prompts into structured survey JSON, chat-based refinements
+  - Configuration: Uses `OPENROUTER_API_KEY` or `OPENAI_API_KEY` environment variable
+  - Service layer: `/server/openrouter.ts` with typed functions
 
 **Document Processing:**
-- **Tesseract.js**: OCR for extracting text from PDFs and images
-- **Mammoth**: DOCX document parsing
-- Client-side processing before sending to AI
+- **pdf-parse**: Server-side PDF text extraction
+- **Mammoth**: DOCX document parsing (extracts raw text)
+- **Multer**: File upload handling with memory storage
+- Server-side processing with AI integration for question generation
 
 **Database:**
 - **PostgreSQL**: Primary data store via Neon serverless driver
@@ -128,6 +140,28 @@ The backend is minimally implemented with:
 - Google Fonts API for Inter font family
 
 **Build and Deployment:**
-- Development: Vite dev server with HMR
+- Development: Vite dev server with HMR on port 5000
 - Production: Vite build for frontend + ESBuild bundle for backend
-- Environment variables required: `DATABASE_URL`, `OPENROUTER_API_KEY`, `NODE_ENV`
+- Environment variables required:
+  - `SESSION_SECRET`: Session encryption key (auto-generated in dev)
+  - `OPENROUTER_API_KEY` or `OPENAI_API_KEY`: OpenRouter API access
+  - `NODE_ENV`: Environment flag (development/production)
+  - Optional: `DATABASE_URL` for PostgreSQL (currently using in-memory storage)
+
+## Recent Changes (November 2025)
+
+### Authentication System (Completed)
+- Implemented session-based authentication with express-session
+- Created split-screen login page matching design reference with trainer imagery
+- Added user registration and login flows with proper cache management
+- Protected Dashboard and Builder routes with authentication guards
+- Added logout functionality with session cleanup
+- All tests passing for auth flow, protected routes, and cache coherence
+
+### AI Integration (Completed)
+- Integrated OpenRouter API with free Mistral Small 3.1 model
+- Implemented document parsing (PDF, DOCX, TXT) with AI question generation
+- Added text prompt-based survey generation
+- Created chat-based survey refinement system
+- Fixed pdf-parse CommonJS import using createRequire
+- All AI features tested and working with real API calls
