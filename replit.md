@@ -27,10 +27,24 @@ The frontend employs a "conversational minimalism" approach, characterized by:
 **Key Frontend Features:**
 - **Login Page**: Split-screen design with professional imagery and branding.
 - **Dashboard**: Organized survey management with Drafts and Published sections, share, preview, and analytics options.
-- **Builder**: 3-step wizard flow for intuitive survey creation:
-  - Step 1 (START): Choose creation method via large action cards (Template, AI, or Document Upload)
-  - Step 2 (QUESTIONS): Build and refine questions with AI chat assistant and manual editor
-  - Step 3 (PUBLISH): Set survey metadata (title, description, welcome, thank you) with AI suggestions
+- **Builder**: 3-step wizard flow with enhanced UI/UX for intuitive survey creation:
+  - **Step 1 (START)**: Choose creation method via visually distinct action cards
+    - Template card: Blue theme for familiar starting points
+    - AI card: Primary theme with emphasis (featured option)
+    - Upload card: Green theme for document processing
+    - Cards auto-hide after selection or when questions exist to reduce clutter
+    - Larger icons (w-10 h-10) and containers (w-20 h-20) for better visibility
+  - **Step 2 (QUESTIONS)**: Build and refine questions with dual-mode interface
+    - Prominent tab-style toggle at top for switching between AI Chat and Edit Questions
+    - AI Chat mode: Interactive chat panel with loading states and progress feedback
+    - Edit Questions mode: Manual editor with empty state handling and add question CTA
+    - Questions persist regardless of creation method (template/AI/upload)
+  - **Step 3 (PUBLISH)**: Set survey metadata (title, description, welcome, thank you) with AI suggestions
+  - **Enhanced Visual Design**:
+    - Larger wizard step indicators (w-12 h-12) with animated states
+    - Increased tab content spacing (pt-8) for better breathing room
+    - Smooth transitions and loading states throughout the flow
+    - Clear empty states with actionable CTAs
 - **Survey View**: Sequential question flow with progress tracking for public access.
 - **Analytics Dashboard**: Comprehensive data visualization for survey responses (creator-only).
 - **Chat Panel**: AI assistant for refining surveys via natural language.
