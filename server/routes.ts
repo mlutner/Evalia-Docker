@@ -168,7 +168,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all surveys (protected)
   app.get("/api/surveys", isAuthenticated, async (req: any, res) => {
     try {
-      const surveys = await storage.getAllSurveys(req.session.userId);
+      const userId = req.user.claims.sub;
+      const surveys = await storage.getAllSurveys(userId);
       res.json(surveys);
     } catch (error: any) {
       console.error("Get surveys error:", error);
@@ -187,7 +188,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const survey = await storage.createSurvey(validationResult.data, req.session.userId);
+      const userId = req.user.claims.sub;
+      const survey = await storage.createSurvey(validationResult.data, userId);
       res.status(201).json(survey);
     } catch (error: any) {
       console.error("Create survey error:", error);
@@ -277,7 +279,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/surveys/:id/responses", isAuthenticated, async (req: any, res) => {
     try {
       const { id } = req.params;
-      const userId = req.session.userId;
+      const userId = req.user.claims.sub;
 
       // Verify survey exists
       const survey = await storage.getSurvey(id);

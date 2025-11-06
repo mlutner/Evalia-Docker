@@ -1,68 +1,32 @@
-import { useState } from "react";
+import { useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest, queryClient } from "@/lib/queryClient";
 import trainerImage from "@assets/ChatGPT Image Nov 6, 2025, 03_45_09 PM_1762472718165.png";
 import evaliaLogo from "@assets/Heading (300 x 50 px) (1000 x 250 px) (2)_1762359727994.png";
 
 export default function Login() {
   const [, setLocation] = useLocation();
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const { isAuthenticated, isLoading } = useAuth();
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    const formData = new FormData(e.currentTarget);
-    const username = formData.get("username") as string;
-    const password = formData.get("password") as string;
-
-    try {
-      await apiRequest("POST", "/api/login", { username, password });
-      
-      await queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+  useEffect(() => {
+    if (isAuthenticated) {
       setLocation("/dashboard");
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Login failed",
-        description: error.message || "Invalid username or password",
-      });
-    } finally {
-      setIsLoading(false);
     }
+  }, [isAuthenticated, setLocation]);
+
+  const handleLogin = () => {
+    window.location.href = "/api/login";
   };
 
-  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    const formData = new FormData(e.currentTarget);
-    const username = formData.get("username") as string;
-    const password = formData.get("password") as string;
-    const email = formData.get("email") as string;
-
-    try {
-      await apiRequest("POST", "/api/register", { username, password, email });
-      
-      await queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      setLocation("/dashboard");
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Registration failed",
-        description: error.message || "Username already exists",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen">
@@ -75,7 +39,7 @@ export default function Login() {
         />
       </div>
 
-      {/* Right side - Login/Register form */}
+      {/* Right side - Login */}
       <div className="flex flex-col justify-center w-full lg:w-1/2 px-8 sm:px-12 lg:px-24 bg-background">
         <div className="w-full max-w-md mx-auto">
           {/* Logo and title */}
@@ -96,99 +60,22 @@ export default function Login() {
           <Card>
             <CardHeader>
               <CardTitle>Get started</CardTitle>
-              <CardDescription>Login to your account or create a new one</CardDescription>
+              <CardDescription>
+                Sign in with Google or email to continue
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="login" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="login" data-testid="tab-login">Login</TabsTrigger>
-                  <TabsTrigger value="register" data-testid="tab-register">Register</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="login">
-                  <form onSubmit={handleLogin} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="login-username">Username</Label>
-                      <Input
-                        id="login-username"
-                        name="username"
-                        type="text"
-                        required
-                        disabled={isLoading}
-                        data-testid="input-login-username"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="login-password">Password</Label>
-                      <Input
-                        id="login-password"
-                        name="password"
-                        type="password"
-                        required
-                        disabled={isLoading}
-                        data-testid="input-login-password"
-                      />
-                    </div>
-                    <Button
-                      type="submit"
-                      className="w-full"
-                      disabled={isLoading}
-                      data-testid="button-login-submit"
-                    >
-                      {isLoading ? "Logging in..." : "Login"}
-                    </Button>
-                  </form>
-                </TabsContent>
-                
-                <TabsContent value="register">
-                  <form onSubmit={handleRegister} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="register-username">Username</Label>
-                      <Input
-                        id="register-username"
-                        name="username"
-                        type="text"
-                        required
-                        disabled={isLoading}
-                        data-testid="input-register-username"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="register-email">Email (optional)</Label>
-                      <Input
-                        id="register-email"
-                        name="email"
-                        type="email"
-                        disabled={isLoading}
-                        data-testid="input-register-email"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="register-password">Password</Label>
-                      <Input
-                        id="register-password"
-                        name="password"
-                        type="password"
-                        required
-                        minLength={8}
-                        disabled={isLoading}
-                        data-testid="input-register-password"
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Must be at least 8 characters
-                      </p>
-                    </div>
-                    <Button
-                      type="submit"
-                      className="w-full"
-                      disabled={isLoading}
-                      data-testid="button-register-submit"
-                    >
-                      {isLoading ? "Creating account..." : "Create account"}
-                    </Button>
-                  </form>
-                </TabsContent>
-              </Tabs>
+              <Button
+                onClick={handleLogin}
+                className="w-full"
+                size="lg"
+                data-testid="button-sign-in"
+              >
+                Sign in
+              </Button>
+              <p className="text-xs text-muted-foreground text-center mt-4">
+                You'll be able to choose Google, Email, or other sign-in options
+              </p>
             </CardContent>
           </Card>
         </div>
