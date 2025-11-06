@@ -2,7 +2,8 @@ import { useState } from "react";
 import ChatPanel from "@/components/ChatPanel";
 import QuestionEditor from "@/components/QuestionEditor";
 import { Button } from "@/components/ui/button";
-import { Edit3, Plus, MessageSquare } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Edit3, Plus, MessageSquare, FileQuestion } from "lucide-react";
 import type { Message } from "@/components/ChatPanel";
 import type { Question } from "@shared/schema";
 
@@ -72,25 +73,50 @@ export default function QuestionsStep({
             </div>
           ) : (
             <div className="space-y-4">
-              {questions.map((question, index) => (
-                <QuestionEditor
-                  key={question.id}
-                  question={question}
-                  index={index}
-                  onUpdate={(updated) => onUpdateQuestion(index, updated)}
-                  onDelete={() => onDeleteQuestion(index)}
-                />
-              ))}
-              
-              <Button
-                variant="outline"
-                onClick={onAddQuestion}
-                className="w-full"
-                data-testid="button-add-question"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Question
-              </Button>
+              {questions.length === 0 ? (
+                <Card className="border-dashed" data-testid="card-no-questions">
+                  <CardHeader className="text-center">
+                    <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                      <FileQuestion className="w-8 h-8 text-muted-foreground" />
+                    </div>
+                    <CardTitle>No questions yet</CardTitle>
+                    <CardDescription>
+                      Start by adding your first question or switch to AI Chat mode to generate questions automatically
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex justify-center">
+                    <Button
+                      onClick={onAddQuestion}
+                      data-testid="button-add-first-question"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add First Question
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                <>
+                  {questions.map((question, index) => (
+                    <QuestionEditor
+                      key={question.id}
+                      question={question}
+                      index={index}
+                      onUpdate={(updated) => onUpdateQuestion(index, updated)}
+                      onDelete={() => onDeleteQuestion(index)}
+                    />
+                  ))}
+                  
+                  <Button
+                    variant="outline"
+                    onClick={onAddQuestion}
+                    className="w-full"
+                    data-testid="button-add-question"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Question
+                  </Button>
+                </>
+              )}
             </div>
           )}
         </div>
