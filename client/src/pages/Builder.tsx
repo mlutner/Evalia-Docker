@@ -35,6 +35,9 @@ export default function Builder() {
   const [previewTemplate, setPreviewTemplate] = useState<SurveyTemplate | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [currentSurveyTitle, setCurrentSurveyTitle] = useState("");
+  const [currentSurveyDescription, setCurrentSurveyDescription] = useState("");
+  const [welcomeMessage, setWelcomeMessage] = useState("");
+  const [thankYouMessage, setThankYouMessage] = useState("");
   const [currentQuestions, setCurrentQuestions] = useState<Question[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -51,6 +54,9 @@ export default function Builder() {
   useEffect(() => {
     if (existingSurvey && isEditMode) {
       setCurrentSurveyTitle(existingSurvey.title);
+      setCurrentSurveyDescription(existingSurvey.description || "");
+      setWelcomeMessage(existingSurvey.welcomeMessage || "");
+      setThankYouMessage(existingSurvey.thankYouMessage || "");
       setCurrentQuestions(existingSurvey.questions);
       setActiveTab("create");
       setMessages([
@@ -245,7 +251,7 @@ export default function Builder() {
   };
 
   const createSurveyMutation = useMutation({
-    mutationFn: async (data: { title: string; questions: Question[] }) => {
+    mutationFn: async (data: { title: string; description?: string; welcomeMessage?: string; thankYouMessage?: string; questions: Question[] }) => {
       return apiRequest("POST", "/api/surveys", data);
     },
     onSuccess: () => {
@@ -266,7 +272,7 @@ export default function Builder() {
   });
 
   const updateSurveyMutation = useMutation({
-    mutationFn: async (data: { title: string; questions: Question[] }) => {
+    mutationFn: async (data: { title: string; description?: string; welcomeMessage?: string; thankYouMessage?: string; questions: Question[] }) => {
       return apiRequest("PUT", `/api/surveys/${surveyId}`, data);
     },
     onSuccess: () => {
@@ -308,6 +314,9 @@ export default function Builder() {
 
     const surveyData = {
       title: currentSurveyTitle,
+      description: currentSurveyDescription || undefined,
+      welcomeMessage: welcomeMessage || undefined,
+      thankYouMessage: thankYouMessage || undefined,
       questions: currentQuestions,
     };
 
@@ -346,14 +355,38 @@ export default function Builder() {
               </p>
             </div>
             {currentQuestions.length > 0 && (
-              <div className="flex items-center gap-2">
+              <div className="space-y-3 max-w-md">
                 <Input
                   value={currentSurveyTitle}
                   onChange={(e) => setCurrentSurveyTitle(e.target.value)}
-                  className="w-64"
+                  className="text-base"
                   placeholder="Survey title..."
                   data-testid="input-survey-title"
                 />
+                <Textarea
+                  value={currentSurveyDescription}
+                  onChange={(e) => setCurrentSurveyDescription(e.target.value)}
+                  className="text-sm resize-none"
+                  placeholder="Brief description (optional)"
+                  rows={2}
+                  data-testid="input-survey-description"
+                />
+                <div className="grid grid-cols-2 gap-2">
+                  <Input
+                    value={welcomeMessage}
+                    onChange={(e) => setWelcomeMessage(e.target.value)}
+                    className="text-sm"
+                    placeholder="Welcome message (optional)"
+                    data-testid="input-welcome-message"
+                  />
+                  <Input
+                    value={thankYouMessage}
+                    onChange={(e) => setThankYouMessage(e.target.value)}
+                    className="text-sm"
+                    placeholder="Thank you message (optional)"
+                    data-testid="input-thank-you-message"
+                  />
+                </div>
               </div>
             )}
           </div>

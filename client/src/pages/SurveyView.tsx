@@ -5,7 +5,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import QuestionCard from "@/components/QuestionCard";
 import ProgressBar from "@/components/ProgressBar";
-import { ArrowLeft, ArrowRight, Check, Loader2, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Loader2, Sparkles, AlertCircle, FileQuestion } from "lucide-react";
 import type { Question } from "@/components/QuestionCard";
 import type { Survey } from "@shared/schema";
 
@@ -107,10 +107,10 @@ export default function SurveyView() {
       <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-background via-background to-muted/20">
         <div className="text-center max-w-md">
           <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <span className="text-4xl">😕</span>
+            <AlertCircle className="w-8 h-8 text-destructive" />
           </div>
-          <h1 className="text-3xl font-semibold mb-3">Survey Not Found</h1>
-          <p className="text-muted-foreground text-lg">
+          <h1 className="text-3xl font-semibold mb-3" data-testid="text-error-title">Survey Not Found</h1>
+          <p className="text-muted-foreground text-lg" data-testid="text-error-message">
             The survey you're looking for doesn't exist or has been removed.
           </p>
         </div>
@@ -131,10 +131,10 @@ export default function SurveyView() {
           <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
             Thank you!
           </h1>
-          <p className="text-2xl text-muted-foreground mb-4">
+          <p className="text-2xl text-muted-foreground mb-4" data-testid="text-thank-you-message">
             {survey.thankYouMessage || "Your responses have been recorded successfully."}
           </p>
-          <p className="text-lg text-muted-foreground/80 mb-10">
+          <p className="text-lg text-muted-foreground/80 mb-10" data-testid="text-thank-you-subtitle">
             We appreciate you taking the time to share your thoughts.
           </p>
           <Button 
@@ -155,10 +155,10 @@ export default function SurveyView() {
       <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-background via-background to-muted/20">
         <div className="text-center max-w-md">
           <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-            <span className="text-4xl">📝</span>
+            <FileQuestion className="w-8 h-8 text-muted-foreground" />
           </div>
-          <h1 className="text-3xl font-semibold mb-3">No Questions</h1>
-          <p className="text-muted-foreground text-lg">
+          <h1 className="text-3xl font-semibold mb-3" data-testid="text-no-questions-title">No Questions</h1>
+          <p className="text-muted-foreground text-lg" data-testid="text-no-questions-message">
             This survey doesn't have any questions yet.
           </p>
         </div>
@@ -183,7 +183,7 @@ export default function SurveyView() {
             </p>
           )}
           {survey.welcomeMessage && (
-            <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto" data-testid="text-welcome-message">
               {survey.welcomeMessage}
             </p>
           )}
@@ -197,7 +197,7 @@ export default function SurveyView() {
               Start Survey
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground" data-testid="text-survey-info">
               {questions.length} {questions.length === 1 ? 'question' : 'questions'} · Takes about {Math.max(1, Math.ceil(questions.length / 2))} {Math.ceil(questions.length / 2) === 1 ? 'minute' : 'minutes'}
             </p>
           </div>
@@ -213,7 +213,7 @@ export default function SurveyView() {
       
       {/* Question Counter */}
       <div className="fixed top-6 left-6 z-40">
-        <div className="text-sm font-medium text-muted-foreground bg-background/80 backdrop-blur-sm px-4 py-2 rounded-full border shadow-sm">
+        <div className="text-sm font-medium text-muted-foreground bg-background/80 backdrop-blur-sm px-4 py-2 rounded-full border shadow-sm" data-testid="text-question-counter">
           {currentStep + 1} of {questions.length}
         </div>
       </div>
