@@ -1,38 +1,21 @@
-import { useState } from "react";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import SurveyCard from "@/components/SurveyCard";
 import { Button } from "@/components/ui/button";
 import { Plus, FileText } from "lucide-react";
-import type { Survey } from "@/components/SurveyCard";
+import type { Survey } from "@shared/schema";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
 
-  // TODO: remove mock functionality
-  const [surveys] = useState<Survey[]>([
-    {
-      id: "1",
-      title: "Training Effectiveness Survey Q4 2024",
-      createdAt: new Date("2024-11-01").toISOString(),
-      responseCount: 42,
-      questionCount: 12,
-    },
-    {
-      id: "2",
-      title: "Employee Onboarding Feedback",
-      createdAt: new Date("2024-10-15").toISOString(),
-      responseCount: 18,
-      questionCount: 8,
-    },
-    {
-      id: "3",
-      title: "Post-Workshop Evaluation Form",
-      createdAt: new Date("2024-10-28").toISOString(),
-      responseCount: 65,
-      questionCount: 15,
-    },
-  ]);
+  const { data: surveys = [], isLoading } = useQuery<Survey[]>({
+    queryKey: ["/api/surveys"],
+  });
+
+  const handleEdit = (id: string) => {
+    setLocation(`/builder/${id}`);
+  };
 
   const handleView = (id: string) => {
     setLocation(`/survey/${id}`);
@@ -67,7 +50,11 @@ export default function Dashboard() {
           </Button>
         </div>
 
-        {surveys.length === 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center py-20">
+            <div className="text-muted-foreground">Loading your surveys...</div>
+          </div>
+        ) : surveys.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
             <FileText className="w-20 h-20 text-muted-foreground/50 mb-4" />
             <h3 className="text-xl font-semibold mb-2">No surveys yet</h3>
@@ -81,14 +68,22 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {surveys.map((survey) => (
+            {surveys.map((survey, index) => (
               <SurveyCard
                 key={survey.id}
-                survey={survey}
+                survey={{
+                  id: survey.id,
+                  title: survey.title,
+                  createdAt: survey.createdAt.toString(),
+                  responseCount: 0,
+                  questionCount: survey.questions.length,
+                }}
+                onEdit={() => handleEdit(survey.id)}
                 onView={() => handleView(survey.id)}
                 onAnalyze={() => handleAnalyze(survey.id)}
                 onExport={() => handleExport(survey.id)}
                 onDelete={() => handleDelete(survey.id)}
+                index={index}
               />
             ))}
           </div>

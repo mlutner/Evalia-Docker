@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRoute, useLocation } from "wouter";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import FileUploadZone from "@/components/FileUploadZone";
 import ChatPanel from "@/components/ChatPanel";
@@ -12,11 +14,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sparkles, FileText, MessageSquare, Layers, Upload, Plus, Edit3 } from "lucide-react";
 import { surveyTemplates } from "@shared/templates";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import type { Message } from "@/components/ChatPanel";
 import type { SurveyTemplate } from "@shared/templates";
-import type { Question } from "@shared/schema";
+import type { Question, Survey } from "@shared/schema";
 
 export default function Builder() {
+  const [, params] = useRoute("/builder/:id");
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
+  const surveyId = params?.id;
+  const isEditMode = !!surveyId;
+
   const [activeTab, setActiveTab] = useState<"templates" | "create">("templates");
   const [viewMode, setViewMode] = useState<"chat" | "edit">("chat");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -26,9 +36,32 @@ export default function Builder() {
   const [showPreview, setShowPreview] = useState(false);
   const [currentSurveyTitle, setCurrentSurveyTitle] = useState("");
   const [currentQuestions, setCurrentQuestions] = useState<Question[]>([]);
-  
-  // TODO: remove mock functionality
   const [messages, setMessages] = useState<Message[]>([]);
+
+  // Load existing survey if in edit mode
+  const { data: existingSurvey, isLoading: isLoadingSurvey } = useQuery<Survey>({
+    queryKey: ["/api/surveys", surveyId],
+    queryFn: async () => {
+      const res = await apiRequest("GET", `/api/surveys/${surveyId}`, undefined);
+      return res.json();
+    },
+    enabled: isEditMode,
+  });
+
+  useEffect(() => {
+    if (existingSurvey && isEditMode) {
+      setCurrentSurveyTitle(existingSurvey.title);
+      setCurrentQuestions(existingSurvey.questions);
+      setActiveTab("create");
+      setMessages([
+        {
+          id: "1",
+          role: "assistant",
+          content: `You're editing "${existingSurvey.title}" with ${existingSurvey.questions.length} questions. Make any changes you'd like, then save!`,
+        },
+      ]);
+    }
+  }, [existingSurvey, isEditMode]);
 
   const handleFileSelect = async (file: File) => {
     console.log("File selected:", file.name);
@@ -211,6 +244,91 @@ export default function Builder() {
     setCurrentQuestions([...currentQuestions, newQuestion]);
   };
 
+  const createSurveyMutation = useMutation({
+    mutationFn: async (data: { title: string; questions: Question[] }) => {
+      return apiRequest("POST", "/api/surveys", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/surveys"] });
+      toast({
+        title: "Survey created!",
+        description: "Your survey has been saved successfully.",
+      });
+      setLocation("/dashboard");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create survey",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateSurveyMutation = useMutation({
+    mutationFn: async (data: { title: string; questions: Question[] }) => {
+      return apiRequest("PUT", `/api/surveys/${surveyId}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/surveys"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/surveys", surveyId] });
+      toast({
+        title: "Survey updated!",
+        description: "Your changes have been saved successfully.",
+      });
+      setLocation("/dashboard");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update survey",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSaveSurvey = () => {
+    if (!currentSurveyTitle.trim()) {
+      toast({
+        title: "Title required",
+        description: "Please enter a title for your survey",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (currentQuestions.length === 0) {
+      toast({
+        title: "Questions required",
+        description: "Please add at least one question to your survey",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const surveyData = {
+      title: currentSurveyTitle,
+      questions: currentQuestions,
+    };
+
+    if (isEditMode) {
+      updateSurveyMutation.mutate(surveyData);
+    } else {
+      createSurveyMutation.mutate(surveyData);
+    }
+  };
+
+  if (isEditMode && isLoadingSurvey) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+          <div className="text-muted-foreground">Loading survey...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -218,10 +336,12 @@ export default function Builder() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-semibold mb-2">Create Survey</h1>
+              <h1 className="text-4xl font-semibold mb-2">
+                {isEditMode ? "Edit Survey" : "Create Survey"}
+              </h1>
               <p className="text-muted-foreground">
                 {currentQuestions.length > 0
-                  ? `Editing: ${currentSurveyTitle}`
+                  ? `${isEditMode ? "Editing" : "Creating"}: ${currentSurveyTitle}`
                   : "Start with a template or create from scratch"}
               </p>
             </div>
@@ -397,8 +517,17 @@ export default function Builder() {
             >
               Preview Survey
             </Button>
-            <Button size="lg" data-testid="button-save">
-              Save Survey
+            <Button 
+              size="lg" 
+              onClick={handleSaveSurvey}
+              disabled={createSurveyMutation.isPending || updateSurveyMutation.isPending}
+              data-testid="button-save-survey"
+            >
+              {createSurveyMutation.isPending || updateSurveyMutation.isPending
+                ? "Saving..."
+                : isEditMode
+                ? "Update Survey"
+                : "Save Survey"}
             </Button>
           </div>
         )}

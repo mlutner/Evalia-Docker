@@ -46,6 +46,9 @@ function Router() {
       <Route path="/analytics/:id">
         {() => <ProtectedRoute component={AnalyticsPage} />}
       </Route>
+      <Route path="/builder/:id">
+        {() => <ProtectedRoute component={Builder} />}
+      </Route>
       <Route path="/builder">
         {() => <ProtectedRoute component={Builder} />}
       </Route>

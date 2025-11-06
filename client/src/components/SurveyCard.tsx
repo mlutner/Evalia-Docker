@@ -1,6 +1,6 @@
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Eye, BarChart3, Download, Share2, Check, Copy } from "lucide-react";
+import { MoreVertical, Eye, BarChart3, Download, Share2, Check, Copy, Edit3 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
@@ -15,14 +15,16 @@ export interface Survey {
 
 interface SurveyCardProps {
   survey: Survey;
+  onEdit: () => void;
   onView: () => void;
   onAnalyze: () => void;
   onExport: () => void;
   onDelete: () => void;
   onShare?: () => void;
+  index?: number;
 }
 
-export default function SurveyCard({ survey, onView, onAnalyze, onExport, onDelete }: SurveyCardProps) {
+export default function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport, onDelete, index = 0 }: SurveyCardProps) {
   const [copied, setCopied] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   
@@ -53,6 +55,10 @@ export default function SurveyCard({ survey, onView, onAnalyze, onExport, onDele
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={onEdit} data-testid="menu-edit">
+              <Edit3 className="w-4 h-4 mr-2" />
+              Edit Survey
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setShareDialogOpen(true)} data-testid="menu-share">
               <Share2 className="w-4 h-4 mr-2" />
               Share Survey
@@ -88,9 +94,13 @@ export default function SurveyCard({ survey, onView, onAnalyze, onExport, onDele
         </div>
       </CardContent>
       <CardFooter className="gap-2 flex-wrap">
+        <Button variant="outline" className="flex-1" onClick={onEdit} data-testid={`button-edit-${index}`}>
+          <Edit3 className="w-4 h-4 mr-2" />
+          Edit
+        </Button>
         <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="outline" className="flex-1" data-testid="button-share">
+            <Button variant="outline" className="flex-1" data-testid={`button-share-${index}`}>
               <Share2 className="w-4 h-4 mr-2" />
               Share
             </Button>
@@ -131,11 +141,11 @@ export default function SurveyCard({ survey, onView, onAnalyze, onExport, onDele
             </div>
           </DialogContent>
         </Dialog>
-        <Button variant="outline" className="flex-1" onClick={onView} data-testid="button-view">
+        <Button variant="outline" className="flex-1" onClick={onView} data-testid={`button-preview-${index}`}>
           <Eye className="w-4 h-4 mr-2" />
           Preview
         </Button>
-        <Button className="flex-1" onClick={onAnalyze} data-testid="button-analyze">
+        <Button className="flex-1" onClick={onAnalyze} data-testid={`button-analyze-${index}`}>
           <BarChart3 className="w-4 h-4 mr-2" />
           Analyze
         </Button>
