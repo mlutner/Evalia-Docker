@@ -2,7 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { createRequire } from "module";
 import { storage } from "./storage";
-import { parseDocument, generateSurveyFromText, refineSurvey } from "./openrouter";
+import { parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText } from "./openrouter";
 import { insertSurveySchema, questionSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
@@ -223,6 +223,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Chat error:", error);
       res.status(500).json({ error: error.message || "Failed to process chat message" });
+    }
+  });
+
+  // Generate survey text fields with AI (protected)
+  app.post("/api/generate-text", isAuthenticated, async (req, res) => {
+    try {
+      const { fieldType, surveyTitle, questions } = req.body;
+
+      if (!fieldType || !["description", "welcomeMessage", "thankYouMessage"].includes(fieldType)) {
+        return res.status(400).json({ error: "Valid fieldType is required (description, welcomeMessage, or thankYouMessage)" });
+      }
+
+      if (!surveyTitle || typeof surveyTitle !== "string") {
+        return res.status(400).json({ error: "Survey title is required" });
+      }
+
+      if (!Array.isArray(questions) || questions.length === 0) {
+        return res.status(400).json({ error: "Survey questions are required" });
+      }
+
+      const text = await generateSurveyText(fieldType, surveyTitle, questions);
+
+      res.json({ text });
+    } catch (error: any) {
+      console.error("Text generation error:", error);
+      res.status(500).json({ error: error.message || "Failed to generate text" });
     }
   });
 

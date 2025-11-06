@@ -168,3 +168,39 @@ ${JSON.stringify(currentQuestions, null, 2)}`;
     throw new Error("Failed to process your request");
   }
 }
+
+/**
+ * Generate survey text fields (description, welcome message, thank you message)
+ */
+export async function generateSurveyText(
+  fieldType: "description" | "welcomeMessage" | "thankYouMessage",
+  surveyTitle: string,
+  questions: Question[]
+): Promise<string> {
+  let systemPrompt = "";
+  let userPrompt = "";
+
+  switch (fieldType) {
+    case "description":
+      systemPrompt = `You are a professional survey copywriter. Create a compelling, concise survey description (1-2 sentences) that explains what the survey is about and encourages participation.`;
+      userPrompt = `Create a brief description for this survey:\n\nTitle: ${surveyTitle}\n\nQuestions:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nWrite only the description text, no extra commentary.`;
+      break;
+    
+    case "welcomeMessage":
+      systemPrompt = `You are a professional survey copywriter. Create a warm, friendly welcome message (2-3 sentences) that makes respondents feel valued and explains the survey's purpose.`;
+      userPrompt = `Create a welcoming message for this survey:\n\nTitle: ${surveyTitle}\n\nQuestions:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nWrite only the welcome message, no extra commentary.`;
+      break;
+    
+    case "thankYouMessage":
+      systemPrompt = `You are a professional survey copywriter. Create a genuine, appreciative thank you message (1-2 sentences) that shows gratitude for completing the survey.`;
+      userPrompt = `Create a thank you message for this survey:\n\nTitle: ${surveyTitle}\n\nQuestions:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nWrite only the thank you message, no extra commentary.`;
+      break;
+  }
+
+  const messages: ChatMessage[] = [
+    { role: "system", content: systemPrompt },
+    { role: "user", content: userPrompt },
+  ];
+
+  return callOpenRouter(messages, MODELS.GENERATION);
+}
