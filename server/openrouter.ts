@@ -7,9 +7,9 @@ const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 // Free models from OpenRouter (November 2025)
 const MODELS = {
   // For survey generation and chat
-  GENERATION: "mistral/mistral-small-3.1:free", // 24B, great for structured outputs
+  GENERATION: "mistralai/mistral-7b-instruct:free", // Free Mistral model, great for structured outputs
   // For OCR/document parsing (vision model)
-  OCR: "mistral/mistral-small-3.1:free", // Also supports vision
+  OCR: "mistralai/mistral-7b-instruct:free", // Free Mistral model
 };
 
 interface ChatMessage {
