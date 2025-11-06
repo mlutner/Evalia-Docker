@@ -24,8 +24,8 @@ export default function StartStep({ onChooseTemplate, onChooseAI, onChooseUpload
           data-testid="card-choose-template"
         >
           <CardHeader className="text-center pb-4">
-            <div className="w-20 h-20 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Layers className="w-10 h-10 text-primary" />
+            <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+              <Layers className="w-10 h-10 text-primary-foreground" />
             </div>
             <CardTitle className="text-xl">Use a Template</CardTitle>
             <CardDescription className="text-base">
@@ -45,11 +45,11 @@ export default function StartStep({ onChooseTemplate, onChooseAI, onChooseUpload
           data-testid="card-choose-ai"
         >
           <CardHeader className="text-center pb-4">
-            <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+            <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
               <Sparkles className="w-10 h-10 text-primary-foreground" />
             </div>
             <CardTitle className="text-xl">Generate with AI</CardTitle>
-            <CardDescription className="text-base font-medium">
+            <CardDescription className="text-base">
               Describe your survey needs
             </CardDescription>
           </CardHeader>
@@ -66,8 +66,8 @@ export default function StartStep({ onChooseTemplate, onChooseAI, onChooseUpload
           data-testid="card-choose-upload"
         >
           <CardHeader className="text-center pb-4">
-            <div className="w-20 h-20 bg-primary-foreground/20 dark:bg-primary-foreground/30 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FileUp className="w-10 h-10 text-primary-foreground dark:text-primary-foreground" />
+            <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+              <FileUp className="w-10 h-10 text-primary-foreground" />
             </div>
             <CardTitle className="text-xl">Upload Document</CardTitle>
             <CardDescription className="text-base">
