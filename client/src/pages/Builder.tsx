@@ -49,7 +49,7 @@ export default function Builder() {
   const [currentQuestions, setCurrentQuestions] = useState<Question[]>([]);
   
   // UI state
-  const [activeTab, setActiveTab] = useState<"templates" | "create">("templates");
+  const [activeTab, setActiveTab] = useState<"templates" | "ai" | "upload">("templates");
   const [viewMode, setViewMode] = useState<"chat" | "edit">("chat");
   const [isProcessing, setIsProcessing] = useState(false);
   const [parsedText, setParsedText] = useState("");
@@ -233,7 +233,7 @@ export default function Builder() {
     setPreviewTemplate(null);
     setCurrentSurveyTitle(template.title);
     setCurrentQuestions(template.questions);
-    setActiveTab("create");
+    setActiveTab("templates");
     setViewMode("chat");
     setMessages([
       {
@@ -376,11 +376,11 @@ export default function Builder() {
   };
 
   const handleStartStepChooseAI = () => {
-    setActiveTab("create");
+    setActiveTab("ai");
   };
 
   const handleStartStepChooseUpload = () => {
-    setActiveTab("create");
+    setActiveTab("upload");
   };
 
   const handleNextStep = () => {
@@ -473,12 +473,6 @@ export default function Builder() {
           <WizardSteps
             steps={WIZARD_STEPS}
             currentStep={currentWizardStep}
-            onStepClick={(step) => {
-              // Only allow clicking on completed steps
-              if (step < currentWizardStep) {
-                setCurrentWizardStep(step);
-              }
-            }}
           />
         </div>
 
@@ -494,15 +488,19 @@ export default function Builder() {
             ) : null}
             
             <div className="max-w-6xl mx-auto">
-              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "templates" | "create")}>
-                <TabsList className="grid w-full grid-cols-2 mb-6">
+              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "templates" | "ai" | "upload")}>
+                <TabsList className="grid w-full grid-cols-3 mb-6">
                   <TabsTrigger value="templates" data-testid="tab-templates">
                     <Layers className="w-4 h-4 mr-2" />
                     Templates
                   </TabsTrigger>
-                  <TabsTrigger value="create" data-testid="tab-create">
+                  <TabsTrigger value="ai" data-testid="tab-ai">
                     <Sparkles className="w-4 h-4 mr-2" />
-                    Create with AI
+                    Generate with AI
+                  </TabsTrigger>
+                  <TabsTrigger value="upload" data-testid="tab-upload">
+                    <FileUp className="w-4 h-4 mr-2" />
+                    Upload Document
                   </TabsTrigger>
                 </TabsList>
 
@@ -531,8 +529,14 @@ export default function Builder() {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="create" className="space-y-6">
+                <TabsContent value="ai" className="space-y-6">
                   <div className="space-y-4 max-w-2xl mx-auto">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Generate with AI</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Describe your survey needs and let AI create custom questions for you.
+                      </p>
+                    </div>
                     <div>
                       <label className="text-sm font-medium mb-2 block">
                         Describe your survey
@@ -561,27 +565,28 @@ export default function Builder() {
                       data-testid="button-generate"
                     >
                       <Sparkles className="w-5 h-5 mr-2" />
-                      Generate Survey with AI
+                      {isProcessing ? "Generating..." : "Generate Survey with AI"}
                     </Button>
                   </div>
+                </TabsContent>
 
-                  <div className="relative max-w-2xl mx-auto">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t" />
+                <TabsContent value="upload" className="space-y-6">
+                  <div className="max-w-2xl mx-auto space-y-4">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Upload Document</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Upload a PDF, DOCX, or TXT document and AI will extract survey questions from it.
+                      </p>
                     </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-background px-2 text-muted-foreground">Or</span>
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">
+                        Choose a document
+                      </label>
+                      <FileUploadZone
+                        onFileSelect={handleFileSelect}
+                        isProcessing={isProcessing}
+                      />
                     </div>
-                  </div>
-
-                  <div className="max-w-2xl mx-auto">
-                    <label className="text-sm font-medium mb-2 block">
-                      Upload a document
-                    </label>
-                    <FileUploadZone
-                      onFileSelect={handleFileSelect}
-                      isProcessing={isProcessing}
-                    />
                   </div>
                 </TabsContent>
               </Tabs>
