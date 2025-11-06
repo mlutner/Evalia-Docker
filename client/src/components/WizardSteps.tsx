@@ -11,7 +11,7 @@ interface WizardStepsProps {
 
 export default function WizardSteps({ currentStep, steps }: WizardStepsProps) {
   return (
-    <div className="w-full max-w-3xl mx-auto mb-8">
+    <div className="w-full max-w-4xl mx-auto mb-12">
       <div className="flex items-center justify-between">
         {steps.map((step, index) => (
           <div key={step.number} className="flex items-center flex-1">
@@ -19,17 +19,17 @@ export default function WizardSteps({ currentStep, steps }: WizardStepsProps) {
               <div className="flex items-center w-full">
                 <div className="flex items-center justify-center">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${
+                    className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold text-lg transition-all duration-300 ${
                       currentStep > step.number
-                        ? "bg-primary text-primary-foreground"
+                        ? "bg-primary text-primary-foreground shadow-sm"
                         : currentStep === step.number
-                        ? "bg-primary text-primary-foreground ring-4 ring-primary/20"
+                        ? "bg-primary text-primary-foreground ring-4 ring-primary/20 shadow-md scale-110"
                         : "bg-muted text-muted-foreground"
                     }`}
                     data-testid={`wizard-step-${step.number}`}
                   >
                     {currentStep > step.number ? (
-                      <Check className="w-5 h-5" />
+                      <Check className="w-6 h-6" />
                     ) : (
                       step.number
                     )}
@@ -47,9 +47,9 @@ export default function WizardSteps({ currentStep, steps }: WizardStepsProps) {
                   </div>
                 )}
               </div>
-              <div className="mt-2 text-center">
+              <div className="mt-3 text-center">
                 <div
-                  className={`text-sm font-medium ${
+                  className={`text-base font-semibold transition-all ${
                     currentStep === step.number
                       ? "text-foreground"
                       : "text-muted-foreground"
@@ -57,7 +57,11 @@ export default function WizardSteps({ currentStep, steps }: WizardStepsProps) {
                 >
                   {step.title}
                 </div>
-                <div className="text-xs text-muted-foreground hidden sm:block">
+                <div className={`text-xs mt-1 hidden sm:block ${
+                  currentStep === step.number
+                    ? "text-muted-foreground"
+                    : "text-muted-foreground/70"
+                }`}>
                   {step.description}
                 </div>
               </div>
