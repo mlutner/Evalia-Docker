@@ -9,6 +9,9 @@ import TemplatePreviewModal from "@/components/TemplatePreviewModal";
 import SurveyPreviewDialog from "@/components/SurveyPreviewDialog";
 import QuestionEditor from "@/components/QuestionEditor";
 import WizardSteps from "@/components/WizardSteps";
+import StartStep from "@/components/builder/StartStep";
+import QuestionsStep from "@/components/builder/QuestionsStep";
+import PublishStep from "@/components/builder/PublishStep";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -367,6 +370,49 @@ export default function Builder() {
     }
   };
 
+  // Wizard navigation handlers
+  const handleStartStepChooseTemplate = () => {
+    setActiveTab("templates");
+  };
+
+  const handleStartStepChooseAI = () => {
+    setActiveTab("create");
+  };
+
+  const handleStartStepChooseUpload = () => {
+    setActiveTab("create");
+  };
+
+  const handleNextStep = () => {
+    if (currentWizardStep === 1) {
+      if (currentQuestions.length === 0) {
+        toast({
+          title: "Choose a method",
+          description: "Please select a template, use AI, or upload a document to continue",
+          variant: "destructive",
+        });
+        return;
+      }
+      setCurrentWizardStep(2);
+    } else if (currentWizardStep === 2) {
+      if (currentQuestions.length === 0) {
+        toast({
+          title: "Add questions",
+          description: "Please add at least one question before continuing",
+          variant: "destructive",
+        });
+        return;
+      }
+      setCurrentWizardStep(3);
+    }
+  };
+
+  const handlePrevStep = () => {
+    if (currentWizardStep > 1) {
+      setCurrentWizardStep(currentWizardStep - 1);
+    }
+  };
+
   const handleSaveSurvey = () => {
     if (!currentSurveyTitle.trim()) {
       toast({
@@ -417,307 +463,215 @@ export default function Builder() {
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-semibold mb-2">
-                {isEditMode ? "Edit Survey" : "Create Survey"}
-              </h1>
-              <p className="text-muted-foreground">
-                {currentQuestions.length > 0
-                  ? `${isEditMode ? "Editing" : "Creating"}: ${currentSurveyTitle}`
-                  : "Start with a template or create from scratch"}
-              </p>
-            </div>
-            {currentQuestions.length > 0 && (
-              <div className="space-y-3 max-w-2xl">
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Survey Title</label>
-                  <Input
-                    value={currentSurveyTitle}
-                    onChange={(e) => setCurrentSurveyTitle(e.target.value)}
-                    className="text-base"
-                    placeholder="Survey title..."
-                    data-testid="input-survey-title"
-                  />
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-sm font-medium">Description</label>
+          <h1 className="text-4xl font-semibold mb-2">
+            {isEditMode ? "Edit Survey" : "Create Survey"}
+          </h1>
+          <p className="text-muted-foreground mb-6">
+            {WIZARD_STEPS[currentWizardStep - 1].description}
+          </p>
+          
+          <WizardSteps
+            steps={WIZARD_STEPS}
+            currentStep={currentWizardStep}
+            onStepClick={(step) => {
+              // Only allow clicking on completed steps
+              if (step < currentWizardStep) {
+                setCurrentWizardStep(step);
+              }
+            }}
+          />
+        </div>
+
+        {/* Step 1: Start - Choose creation method */}
+        {currentWizardStep === 1 && (
+          <div className="space-y-6">
+            {currentQuestions.length === 0 ? (
+              <StartStep
+                onChooseTemplate={handleStartStepChooseTemplate}
+                onChooseAI={handleStartStepChooseAI}
+                onChooseUpload={handleStartStepChooseUpload}
+              />
+            ) : null}
+            
+            <div className="max-w-6xl mx-auto">
+              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "templates" | "create")}>
+                <TabsList className="grid w-full grid-cols-2 mb-6">
+                  <TabsTrigger value="templates" data-testid="tab-templates">
+                    <Layers className="w-4 h-4 mr-2" />
+                    Templates
+                  </TabsTrigger>
+                  <TabsTrigger value="create" data-testid="tab-create">
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Create with AI
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="templates" className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">Professional Training Templates</h3>
+                    <p className="text-muted-foreground mb-6">
+                      Start with proven survey frameworks designed for trainers.
+                    </p>
+                  </div>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {surveyTemplates.map((template) => (
+                      <TemplateCard
+                        key={template.id}
+                        template={template}
+                        onPreview={() => setPreviewTemplate(template)}
+                        onUse={() => {
+                          handleUseTemplate(template);
+                          if (currentQuestions.length === 0) {
+                            // Will be set by handleUseTemplate
+                            setTimeout(() => setCurrentWizardStep(2), 100);
+                          }
+                        }}
+                      />
+                    ))}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="create" className="space-y-6">
+                  <div className="space-y-4 max-w-2xl mx-auto">
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">
+                        Describe your survey
+                      </label>
+                      <Textarea
+                        value={prompt}
+                        onChange={(e) => setPrompt(e.target.value)}
+                        placeholder="Example: I need a survey to gather feedback on our recent training workshop about leadership skills. Include questions about content quality, trainer effectiveness, and practical application."
+                        className="min-h-[150px] text-base"
+                        data-testid="input-survey-prompt"
+                      />
+                    </div>
                     <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleGenerateText("description")}
-                      disabled={generatingField !== null}
-                      data-testid="button-ai-description"
-                      className="text-xs h-7"
+                      size="lg"
+                      onClick={() => {
+                        handleGenerateFromPrompt();
+                        // Wait for questions to be generated then move to next step
+                        setTimeout(() => {
+                          if (currentQuestions.length > 0) {
+                            setCurrentWizardStep(2);
+                          }
+                        }, 1000);
+                      }}
+                      disabled={!prompt.trim() || isProcessing}
+                      className="w-full"
+                      data-testid="button-generate"
                     >
-                      {generatingField === "description" ? (
-                        <>
-                          <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                          Generating...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-3 h-3 mr-1" />
-                          AI Suggest
-                        </>
-                      )}
+                      <Sparkles className="w-5 h-5 mr-2" />
+                      Generate Survey with AI
                     </Button>
                   </div>
-                  <Textarea
-                    value={currentSurveyDescription}
-                    onChange={(e) => setCurrentSurveyDescription(e.target.value)}
-                    className="text-sm resize-none"
-                    placeholder="Brief description (optional)"
-                    rows={2}
-                    data-testid="input-survey-description"
-                  />
-                </div>
-                <div className="grid md:grid-cols-2 gap-3">
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <label className="text-sm font-medium">Welcome Message</label>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleGenerateText("welcomeMessage")}
-                        disabled={generatingField !== null}
-                        data-testid="button-ai-welcome"
-                        className="text-xs h-7"
-                      >
-                        {generatingField === "welcomeMessage" ? (
-                          <>
-                            <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                            Generating...
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="w-3 h-3 mr-1" />
-                            AI Suggest
-                          </>
-                        )}
-                      </Button>
+
+                  <div className="relative max-w-2xl mx-auto">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
                     </div>
-                    <Textarea
-                      value={welcomeMessage}
-                      onChange={(e) => setWelcomeMessage(e.target.value)}
-                      className="text-sm resize-none"
-                      placeholder="Welcome message (optional)"
-                      rows={2}
-                      data-testid="input-welcome-message"
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">Or</span>
+                    </div>
+                  </div>
+
+                  <div className="max-w-2xl mx-auto">
+                    <label className="text-sm font-medium mb-2 block">
+                      Upload a document
+                    </label>
+                    <FileUploadZone
+                      onFileSelect={handleFileSelect}
+                      isProcessing={isProcessing}
                     />
                   </div>
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <label className="text-sm font-medium">Thank You Message</label>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleGenerateText("thankYouMessage")}
-                        disabled={generatingField !== null}
-                        data-testid="button-ai-thankyou"
-                        className="text-xs h-7"
-                      >
-                        {generatingField === "thankYouMessage" ? (
-                          <>
-                            <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                            Generating...
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="w-3 h-3 mr-1" />
-                            AI Suggest
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                    <Textarea
-                      value={thankYouMessage}
-                      onChange={(e) => setThankYouMessage(e.target.value)}
-                      className="text-sm resize-none"
-                      placeholder="Thank you message (optional)"
-                      rows={2}
-                      data-testid="input-thank-you-message"
-                    />
-                  </div>
-                </div>
-              </div>
+                </TabsContent>
+              </Tabs>
+            </div>
+          </div>
+        )}
+
+        {/* Step 2: Questions - Build and refine */}
+        {currentWizardStep === 2 && (
+          <QuestionsStep
+            questions={currentQuestions}
+            messages={messages}
+            isProcessing={isProcessing}
+            onSendMessage={handleSendMessage}
+            onUpdateQuestion={handleUpdateQuestion}
+            onDeleteQuestion={handleDeleteQuestion}
+            onAddQuestion={handleAddQuestion}
+          />
+        )}
+
+        {/* Step 3: Publish - Add metadata */}
+        {currentWizardStep === 3 && (
+          <PublishStep
+            title={currentSurveyTitle}
+            description={currentSurveyDescription}
+            welcomeMessage={welcomeMessage}
+            thankYouMessage={thankYouMessage}
+            generatingField={generatingField}
+            onTitleChange={setCurrentSurveyTitle}
+            onDescriptionChange={setCurrentSurveyDescription}
+            onWelcomeChange={setWelcomeMessage}
+            onThankYouChange={setThankYouMessage}
+            onGenerateText={handleGenerateText}
+          />
+        )}
+
+        {/* Wizard Navigation */}
+        <div className="mt-8 flex justify-between items-center">
+          <div>
+            {currentWizardStep > 1 && (
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={handlePrevStep}
+                data-testid="button-prev-step"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+            )}
+          </div>
+
+          <div className="flex gap-3">
+            {currentQuestions.length > 0 && currentWizardStep > 1 && (
+              <Button 
+                variant="outline" 
+                size="lg" 
+                onClick={handlePreviewSurvey}
+                data-testid="button-preview"
+              >
+                Preview Survey
+              </Button>
+            )}
+
+            {currentWizardStep < 3 ? (
+              <Button 
+                size="lg" 
+                onClick={handleNextStep}
+                disabled={currentWizardStep === 1 && currentQuestions.length === 0}
+                data-testid="button-next-step"
+              >
+                Next
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            ) : (
+              <Button 
+                size="lg" 
+                onClick={handleSaveSurvey}
+                disabled={createSurveyMutation.isPending || updateSurveyMutation.isPending || !currentSurveyTitle.trim()}
+                data-testid="button-save-survey"
+              >
+                {createSurveyMutation.isPending || updateSurveyMutation.isPending
+                  ? "Saving..."
+                  : isEditMode
+                  ? "Update Survey"
+                  : "Save & Publish"}
+              </Button>
             )}
           </div>
         </div>
-
-        <div className="grid lg:grid-cols-[1fr,400px] gap-6">
-          <div>
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "templates" | "create")}>
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="templates" data-testid="tab-templates">
-                  <Layers className="w-4 h-4 mr-2" />
-                  Templates
-                </TabsTrigger>
-                <TabsTrigger value="create" data-testid="tab-create">
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Create with AI
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="templates" className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Professional Training Templates</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Start with proven survey frameworks designed for trainers at different stages of the learning journey.
-                  </p>
-                </div>
-                <div className="grid md:grid-cols-2 gap-4">
-                  {surveyTemplates.map((template) => (
-                    <TemplateCard
-                      key={template.id}
-                      template={template}
-                      onPreview={() => setPreviewTemplate(template)}
-                      onUse={() => handleUseTemplate(template)}
-                    />
-                  ))}
-                </div>
-              </TabsContent>
-
-              <TabsContent value="create" className="space-y-6">
-                {currentQuestions.length === 0 ? (
-                  <>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">
-                          Describe your survey
-                        </label>
-                        <Textarea
-                          value={prompt}
-                          onChange={(e) => setPrompt(e.target.value)}
-                          placeholder="Example: I need a survey to gather feedback on our recent training workshop about leadership skills. Include questions about content quality, trainer effectiveness, and practical application."
-                          className="min-h-[150px] text-base"
-                          data-testid="input-survey-prompt"
-                        />
-                      </div>
-                      <Button
-                        size="lg"
-                        onClick={handleGenerateFromPrompt}
-                        disabled={!prompt.trim() || isProcessing}
-                        className="w-full"
-                        data-testid="button-generate"
-                      >
-                        <Sparkles className="w-5 h-5 mr-2" />
-                        Generate Survey with AI
-                      </Button>
-                    </div>
-
-                    <div className="relative">
-                      <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t" />
-                      </div>
-                      <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-background px-2 text-muted-foreground">Or</span>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">
-                        Upload a document
-                      </label>
-                      <FileUploadZone
-                        onFileSelect={handleFileSelect}
-                        isProcessing={isProcessing}
-                      />
-                    </div>
-                  </>
-                ) : viewMode === "chat" ? (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
-                      <div>
-                        <p className="font-medium">{currentQuestions.length} questions created</p>
-                        <p className="text-sm text-muted-foreground">Use AI to refine or edit directly</p>
-                      </div>
-                      <Button
-                        variant="outline"
-                        onClick={() => setViewMode("edit")}
-                        data-testid="button-edit-questions"
-                      >
-                        <Edit3 className="w-4 h-4 mr-2" />
-                        Edit Questions
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold">Edit Questions</h3>
-                      <Button
-                        variant="outline"
-                        onClick={() => setViewMode("chat")}
-                        data-testid="button-back-to-chat"
-                      >
-                        Back to AI Chat
-                      </Button>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      {currentQuestions.map((question, index) => (
-                        <QuestionEditor
-                          key={question.id}
-                          question={question}
-                          index={index}
-                          onUpdate={(updated) => handleUpdateQuestion(index, updated)}
-                          onDelete={() => handleDeleteQuestion(index)}
-                        />
-                      ))}
-                      
-                      <Button
-                        variant="outline"
-                        onClick={handleAddQuestion}
-                        className="w-full"
-                        data-testid="button-add-question"
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add Question
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
-          </div>
-
-          {viewMode === "chat" && (
-            <div className="lg:h-[calc(100vh-12rem)]">
-              <ChatPanel
-                messages={messages}
-                onSendMessage={handleSendMessage}
-                isLoading={isProcessing}
-              />
-            </div>
-          )}
-        </div>
-
-        {currentQuestions.length > 0 && (
-          <div className="mt-8 flex justify-end gap-3">
-            <Button 
-              variant="outline" 
-              size="lg" 
-              onClick={handlePreviewSurvey}
-              data-testid="button-preview"
-            >
-              Preview Survey
-            </Button>
-            <Button 
-              size="lg" 
-              onClick={handleSaveSurvey}
-              disabled={createSurveyMutation.isPending || updateSurveyMutation.isPending}
-              data-testid="button-save-survey"
-            >
-              {createSurveyMutation.isPending || updateSurveyMutation.isPending
-                ? "Saving..."
-                : isEditMode
-                ? "Update Survey"
-                : "Save Survey"}
-            </Button>
-          </div>
-        )}
       </main>
 
       <TemplatePreviewModal
