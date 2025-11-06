@@ -12,6 +12,7 @@ import WizardSteps from "@/components/WizardSteps";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Sparkles, FileText, MessageSquare, Layers, Upload, Plus, Edit3, Loader2, ArrowRight, ArrowLeft, FileUp } from "lucide-react";
 import { surveyTemplates } from "@shared/templates";
@@ -45,6 +46,7 @@ export default function Builder() {
   const [currentQuestions, setCurrentQuestions] = useState<Question[]>([]);
   
   // UI state
+  const [activeTab, setActiveTab] = useState<"templates" | "create">("templates");
   const [viewMode, setViewMode] = useState<"chat" | "edit">("chat");
   const [isProcessing, setIsProcessing] = useState(false);
   const [parsedText, setParsedText] = useState("");
