@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, FileText, MessageSquare, Layers, Upload, Plus, Edit3 } from "lucide-react";
+import { Sparkles, FileText, MessageSquare, Layers, Upload, Plus, Edit3, Loader2 } from "lucide-react";
 import { surveyTemplates } from "@shared/templates";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -40,6 +40,7 @@ export default function Builder() {
   const [thankYouMessage, setThankYouMessage] = useState("");
   const [currentQuestions, setCurrentQuestions] = useState<Question[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [generatingField, setGeneratingField] = useState<string | null>(null);
 
   // Load existing survey if in edit mode
   const { data: existingSurvey, isLoading: isLoadingSurvey } = useQuery<Survey>({
@@ -293,6 +294,65 @@ export default function Builder() {
     },
   });
 
+  const handleGenerateText = async (fieldType: "description" | "welcomeMessage" | "thankYouMessage") => {
+    if (!currentSurveyTitle.trim()) {
+      toast({
+        title: "Title required",
+        description: "Please add a survey title first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (currentQuestions.length === 0) {
+      toast({
+        title: "Questions required",
+        description: "Please add questions to your survey first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setGeneratingField(fieldType);
+
+    try {
+      const response = await apiRequest("POST", "/api/generate-text", {
+        fieldType,
+        surveyTitle: currentSurveyTitle,
+        questions: currentQuestions,
+      });
+
+      const data = await response.json();
+      const generatedText = data.text.trim();
+
+      switch (fieldType) {
+        case "description":
+          setCurrentSurveyDescription(generatedText);
+          break;
+        case "welcomeMessage":
+          setWelcomeMessage(generatedText);
+          break;
+        case "thankYouMessage":
+          setThankYouMessage(generatedText);
+          break;
+      }
+
+      toast({
+        title: "Generated!",
+        description: "AI has created a suggestion for you",
+      });
+    } catch (error: any) {
+      console.error("Text generation error:", error);
+      toast({
+        title: "Generation failed",
+        description: error.message || "Failed to generate text",
+        variant: "destructive",
+      });
+    } finally {
+      setGeneratingField(null);
+    }
+  };
+
   const handleSaveSurvey = () => {
     if (!currentSurveyTitle.trim()) {
       toast({
@@ -355,37 +415,117 @@ export default function Builder() {
               </p>
             </div>
             {currentQuestions.length > 0 && (
-              <div className="space-y-3 max-w-md">
-                <Input
-                  value={currentSurveyTitle}
-                  onChange={(e) => setCurrentSurveyTitle(e.target.value)}
-                  className="text-base"
-                  placeholder="Survey title..."
-                  data-testid="input-survey-title"
-                />
-                <Textarea
-                  value={currentSurveyDescription}
-                  onChange={(e) => setCurrentSurveyDescription(e.target.value)}
-                  className="text-sm resize-none"
-                  placeholder="Brief description (optional)"
-                  rows={2}
-                  data-testid="input-survey-description"
-                />
-                <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-3 max-w-2xl">
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Survey Title</label>
                   <Input
-                    value={welcomeMessage}
-                    onChange={(e) => setWelcomeMessage(e.target.value)}
-                    className="text-sm"
-                    placeholder="Welcome message (optional)"
-                    data-testid="input-welcome-message"
+                    value={currentSurveyTitle}
+                    onChange={(e) => setCurrentSurveyTitle(e.target.value)}
+                    className="text-base"
+                    placeholder="Survey title..."
+                    data-testid="input-survey-title"
                   />
-                  <Input
-                    value={thankYouMessage}
-                    onChange={(e) => setThankYouMessage(e.target.value)}
-                    className="text-sm"
-                    placeholder="Thank you message (optional)"
-                    data-testid="input-thank-you-message"
+                </div>
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-sm font-medium">Description</label>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleGenerateText("description")}
+                      disabled={generatingField !== null}
+                      data-testid="button-ai-description"
+                      className="text-xs h-7"
+                    >
+                      {generatingField === "description" ? (
+                        <>
+                          <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-3 h-3 mr-1" />
+                          AI Suggest
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  <Textarea
+                    value={currentSurveyDescription}
+                    onChange={(e) => setCurrentSurveyDescription(e.target.value)}
+                    className="text-sm resize-none"
+                    placeholder="Brief description (optional)"
+                    rows={2}
+                    data-testid="input-survey-description"
                   />
+                </div>
+                <div className="grid md:grid-cols-2 gap-3">
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-sm font-medium">Welcome Message</label>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleGenerateText("welcomeMessage")}
+                        disabled={generatingField !== null}
+                        data-testid="button-ai-welcome"
+                        className="text-xs h-7"
+                      >
+                        {generatingField === "welcomeMessage" ? (
+                          <>
+                            <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-3 h-3 mr-1" />
+                            AI Suggest
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    <Textarea
+                      value={welcomeMessage}
+                      onChange={(e) => setWelcomeMessage(e.target.value)}
+                      className="text-sm resize-none"
+                      placeholder="Welcome message (optional)"
+                      rows={2}
+                      data-testid="input-welcome-message"
+                    />
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-sm font-medium">Thank You Message</label>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleGenerateText("thankYouMessage")}
+                        disabled={generatingField !== null}
+                        data-testid="button-ai-thankyou"
+                        className="text-xs h-7"
+                      >
+                        {generatingField === "thankYouMessage" ? (
+                          <>
+                            <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-3 h-3 mr-1" />
+                            AI Suggest
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    <Textarea
+                      value={thankYouMessage}
+                      onChange={(e) => setThankYouMessage(e.target.value)}
+                      className="text-sm resize-none"
+                      placeholder="Thank you message (optional)"
+                      rows={2}
+                      data-testid="input-thank-you-message"
+                    />
+                  </div>
                 </div>
               </div>
             )}
