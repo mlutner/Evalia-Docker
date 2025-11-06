@@ -1,4 +1,4 @@
-import { type User, type UpsertUser, type Survey, type InsertSurvey, users, surveys } from "@shared/schema";
+import { type User, type UpsertUser, type Survey, type InsertSurvey, users, surveys, surveyResponses, type SurveyResponse } from "@shared/schema";
 import { randomUUID } from "crypto";
 import bcrypt from "bcrypt";
 import { db } from "./db";
@@ -13,19 +13,27 @@ export interface IStorage {
   
   // Survey operations
   getSurvey(id: string): Promise<Survey | undefined>;
-  getAllSurveys(): Promise<Survey[]>;
-  createSurvey(survey: InsertSurvey): Promise<Survey>;
+  getAllSurveys(userId: string): Promise<Survey[]>;
+  createSurvey(survey: InsertSurvey, userId: string): Promise<Survey>;
   updateSurvey(id: string, survey: Partial<InsertSurvey>): Promise<Survey | undefined>;
   deleteSurvey(id: string): Promise<boolean>;
+  checkSurveyOwnership(surveyId: string, userId: string): Promise<boolean>;
+  
+  // Response operations
+  createResponse(surveyId: string, answers: Record<string, string | string[]>): Promise<SurveyResponse>;
+  getResponses(surveyId: string): Promise<SurveyResponse[]>;
+  getResponseCount(surveyId: string): Promise<number>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
   private surveys: Map<string, Survey>;
+  private responses: Map<string, SurveyResponse>;
 
   constructor() {
     this.users = new Map();
     this.surveys = new Map();
+    this.responses = new Map();
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -63,17 +71,18 @@ export class MemStorage implements IStorage {
     return this.surveys.get(id);
   }
 
-  async getAllSurveys(): Promise<Survey[]> {
-    return Array.from(this.surveys.values()).sort(
-      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-    );
+  async getAllSurveys(userId: string): Promise<Survey[]> {
+    return Array.from(this.surveys.values())
+      .filter(s => s.userId === userId)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
-  async createSurvey(insertSurvey: InsertSurvey): Promise<Survey> {
+  async createSurvey(insertSurvey: InsertSurvey, userId: string): Promise<Survey> {
     const id = randomUUID();
     const now = new Date();
     const survey: Survey = {
       id,
+      userId,
       ...insertSurvey,
       description: insertSurvey.description ?? null,
       createdAt: now,
@@ -81,6 +90,11 @@ export class MemStorage implements IStorage {
     };
     this.surveys.set(id, survey);
     return survey;
+  }
+
+  async checkSurveyOwnership(surveyId: string, userId: string): Promise<boolean> {
+    const survey = this.surveys.get(surveyId);
+    return survey?.userId === userId;
   }
 
   async updateSurvey(id: string, updates: Partial<InsertSurvey>): Promise<Survey | undefined> {
@@ -98,6 +112,27 @@ export class MemStorage implements IStorage {
 
   async deleteSurvey(id: string): Promise<boolean> {
     return this.surveys.delete(id);
+  }
+
+  async createResponse(surveyId: string, answers: Record<string, string | string[]>): Promise<SurveyResponse> {
+    const response: SurveyResponse = {
+      id: randomUUID(),
+      surveyId,
+      answers,
+      completedAt: new Date(),
+    };
+    this.responses.set(response.id, response);
+    return response;
+  }
+
+  async getResponses(surveyId: string): Promise<SurveyResponse[]> {
+    return Array.from(this.responses.values())
+      .filter(r => r.surveyId === surveyId)
+      .sort((a, b) => b.completedAt.getTime() - a.completedAt.getTime());
+  }
+
+  async getResponseCount(surveyId: string): Promise<number> {
+    return Array.from(this.responses.values()).filter(r => r.surveyId === surveyId).length;
   }
 }
 
@@ -134,13 +169,27 @@ export class DbStorage implements IStorage {
     return result[0];
   }
 
-  async getAllSurveys(): Promise<Survey[]> {
-    return db.select().from(surveys).orderBy(sql`${surveys.createdAt} DESC`);
+  async getAllSurveys(userId: string): Promise<Survey[]> {
+    return db.select()
+      .from(surveys)
+      .where(eq(surveys.userId, userId))
+      .orderBy(sql`${surveys.createdAt} DESC`);
   }
 
-  async createSurvey(insertSurvey: InsertSurvey): Promise<Survey> {
-    const result = await db.insert(surveys).values(insertSurvey).returning();
+  async createSurvey(insertSurvey: InsertSurvey, userId: string): Promise<Survey> {
+    const result = await db.insert(surveys).values({
+      ...insertSurvey,
+      userId,
+    }).returning();
     return result[0];
+  }
+
+  async checkSurveyOwnership(surveyId: string, userId: string): Promise<boolean> {
+    const result = await db.select({ userId: surveys.userId })
+      .from(surveys)
+      .where(eq(surveys.id, surveyId))
+      .limit(1);
+    return result[0]?.userId === userId;
   }
 
   async updateSurvey(id: string, updates: Partial<InsertSurvey>): Promise<Survey | undefined> {
@@ -154,6 +203,28 @@ export class DbStorage implements IStorage {
   async deleteSurvey(id: string): Promise<boolean> {
     const result = await db.delete(surveys).where(eq(surveys.id, id)).returning();
     return result.length > 0;
+  }
+
+  async createResponse(surveyId: string, answers: Record<string, string | string[]>): Promise<SurveyResponse> {
+    const result = await db.insert(surveyResponses).values({
+      surveyId,
+      answers,
+    }).returning();
+    return result[0];
+  }
+
+  async getResponses(surveyId: string): Promise<SurveyResponse[]> {
+    return db.select()
+      .from(surveyResponses)
+      .where(eq(surveyResponses.surveyId, surveyId))
+      .orderBy(sql`${surveyResponses.completedAt} DESC`);
+  }
+
+  async getResponseCount(surveyId: string): Promise<number> {
+    const result = await db.select({ count: sql<number>`count(*)` })
+      .from(surveyResponses)
+      .where(eq(surveyResponses.surveyId, surveyId));
+    return Number(result[0]?.count || 0);
   }
 }
 

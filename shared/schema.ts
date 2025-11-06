@@ -54,6 +54,7 @@ export type Question = z.infer<typeof questionSchema>;
 // Surveys table
 export const surveys = pgTable("surveys", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
   title: text("title").notNull(),
   description: text("description"),
   questions: jsonb("questions").notNull().$type<Question[]>(),
@@ -65,6 +66,7 @@ export const insertSurveySchema = createInsertSchema(surveys, {
   questions: z.array(questionSchema).min(1, "At least one question is required"),
 }).omit({
   id: true,
+  userId: true,
   createdAt: true,
   updatedAt: true,
 });
@@ -79,3 +81,5 @@ export const surveyResponses = pgTable("survey_responses", {
   answers: jsonb("answers").notNull().$type<Record<string, string | string[]>>(),
   completedAt: timestamp("completed_at").notNull().defaultNow(),
 });
+
+export type SurveyResponse = typeof surveyResponses.$inferSelect;

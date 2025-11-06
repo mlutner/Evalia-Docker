@@ -39,7 +39,7 @@ export default function Dashboard() {
   };
 
   const handleAnalyze = (id: string) => {
-    setLocation(`/survey/${id}`);
+    setLocation(`/analytics/${id}`);
   };
 
   const handleExport = (id: string) => {

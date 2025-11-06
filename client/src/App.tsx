@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Dashboard from "@/pages/Dashboard";
 import Builder from "@/pages/Builder";
 import SurveyView from "@/pages/SurveyView";
+import AnalyticsPage from "@/pages/AnalyticsPage";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/not-found";
 
@@ -42,6 +43,9 @@ function Router() {
     <Switch>
       <Route path="/login" component={Login} />
       <Route path="/survey/:id" component={SurveyView} />
+      <Route path="/analytics/:id">
+        {() => <ProtectedRoute component={AnalyticsPage} />}
+      </Route>
       <Route path="/builder">
         {() => <ProtectedRoute component={Builder} />}
       </Route>

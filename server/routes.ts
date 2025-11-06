@@ -227,9 +227,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all surveys (protected)
-  app.get("/api/surveys", isAuthenticated, async (req, res) => {
+  app.get("/api/surveys", isAuthenticated, async (req: any, res) => {
     try {
-      const surveys = await storage.getAllSurveys();
+      const surveys = await storage.getAllSurveys(req.session.userId);
       res.json(surveys);
     } catch (error: any) {
       console.error("Get surveys error:", error);
@@ -238,7 +238,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create new survey (protected)
-  app.post("/api/surveys", isAuthenticated, async (req, res) => {
+  app.post("/api/surveys", isAuthenticated, async (req: any, res) => {
     try {
       const validationResult = insertSurveySchema.safeParse(req.body);
       
@@ -248,7 +248,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const survey = await storage.createSurvey(validationResult.data);
+      const survey = await storage.createSurvey(validationResult.data, req.session.userId);
       res.status(201).json(survey);
     } catch (error: any) {
       console.error("Create survey error:", error);
@@ -289,6 +289,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Delete survey error:", error);
       res.status(500).json({ error: "Failed to delete survey" });
+    }
+  });
+
+  // Get single survey (public - no authentication required)
+  app.get("/api/surveys/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const survey = await storage.getSurvey(id);
+      
+      if (!survey) {
+        return res.status(404).json({ error: "Survey not found" });
+      }
+
+      res.json(survey);
+    } catch (error: any) {
+      console.error("Get survey error:", error);
+      res.status(500).json({ error: "Failed to fetch survey" });
+    }
+  });
+
+  // Submit survey response (public - no authentication required)
+  app.post("/api/surveys/:id/responses", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { answers } = req.body;
+
+      // Verify survey exists
+      const survey = await storage.getSurvey(id);
+      if (!survey) {
+        return res.status(404).json({ error: "Survey not found" });
+      }
+
+      // Validate answers exist
+      if (!answers || typeof answers !== "object") {
+        return res.status(400).json({ error: "Answers are required" });
+      }
+
+      const response = await storage.createResponse(id, answers);
+      res.status(201).json(response);
+    } catch (error: any) {
+      console.error("Create response error:", error);
+      res.status(500).json({ error: "Failed to submit response" });
+    }
+  });
+
+  // Get survey responses with count (protected - only for survey creator)
+  app.get("/api/surveys/:id/responses", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const userId = req.session.userId;
+
+      // Verify survey exists
+      const survey = await storage.getSurvey(id);
+      if (!survey) {
+        return res.status(404).json({ error: "Survey not found" });
+      }
+
+      // Verify ownership - only survey creator can view analytics
+      const isOwner = await storage.checkSurveyOwnership(id, userId);
+      if (!isOwner) {
+        return res.status(403).json({ error: "Access denied. You can only view analytics for your own surveys." });
+      }
+
+      const [responses, count] = await Promise.all([
+        storage.getResponses(id),
+        storage.getResponseCount(id),
+      ]);
+
+      res.json({
+        responses,
+        count,
+        survey,
+      });
+    } catch (error: any) {
+      console.error("Get responses error:", error);
+      res.status(500).json({ error: "Failed to fetch responses" });
     }
   });
 
