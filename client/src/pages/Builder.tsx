@@ -478,14 +478,14 @@ export default function Builder() {
 
         {/* Step 1: Start - Choose creation method */}
         {currentWizardStep === 1 && (
-          <div className="space-y-6">
-            {currentQuestions.length === 0 ? (
+          <div className="space-y-8">
+            {currentQuestions.length === 0 && activeTab === "templates" && (
               <StartStep
                 onChooseTemplate={handleStartStepChooseTemplate}
                 onChooseAI={handleStartStepChooseAI}
                 onChooseUpload={handleStartStepChooseUpload}
               />
-            ) : null}
+            )}
             
             <div className="max-w-6xl mx-auto">
               <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "templates" | "ai" | "upload")}>
