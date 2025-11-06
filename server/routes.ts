@@ -2,6 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { createRequire } from "module";
 import { storage } from "./storage";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 import { parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText } from "./openrouter";
 import { insertSurveySchema, questionSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
@@ -18,120 +19,32 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
 
-// Middleware to check if user is authenticated
-const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
-  if (req.session && req.session.userId) {
-    return next();
-  }
-  return res.status(401).json({ message: "Unauthorized" });
-};
-
 export async function registerRoutes(app: Express): Promise<Server> {
   
-  // Register new user
-  app.post("/api/register", async (req, res) => {
+  // Setup Replit Auth (supports Google + Email/Password)
+  await setupAuth(app);
+
+  // Get current authenticated user
+  app.get("/api/auth/user", isAuthenticated, async (req: any, res) => {
     try {
-      const { username, password, email } = req.body;
-
-      if (!username || !password) {
-        return res.status(400).json({ error: "Username and password are required" });
-      }
-
-      if (password.length < 8) {
-        return res.status(400).json({ error: "Password must be at least 8 characters long" });
-      }
-
-      const existingUser = await storage.getUserByUsername(username);
-      if (existingUser) {
-        return res.status(400).json({ error: "Username already exists" });
-      }
-
-      const user = await storage.createUser({
-        username,
-        password,
-        email: email || null,
-      });
-
-      req.session.regenerate((err) => {
-        if (err) {
-          console.error("Session regeneration error:", err);
-          return res.status(500).json({ error: "Failed to create session" });
-        }
-        req.session.userId = user.id;
-        req.session.save((err) => {
-          if (err) {
-            console.error("Session save error:", err);
-            return res.status(500).json({ error: "Failed to save session" });
-          }
-          const { password: _, ...userWithoutPassword } = user;
-          res.status(201).json(userWithoutPassword);
-        });
-      });
-    } catch (error: any) {
-      console.error("Register error:", error);
-      res.status(500).json({ error: "Failed to register user" });
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
     }
   });
 
-  // Login user
-  app.post("/api/login", async (req, res) => {
-    try {
-      const { username, password } = req.body;
-
-      if (!username || !password) {
-        return res.status(400).json({ error: "Username and password are required" });
-      }
-
-      const user = await storage.getUserByUsername(username);
-      if (!user) {
-        return res.status(401).json({ error: "Invalid username or password" });
-      }
-
-      const isValid = await storage.verifyPassword(password, user.password);
-      if (!isValid) {
-        return res.status(401).json({ error: "Invalid username or password" });
-      }
-
-      req.session.regenerate((err) => {
-        if (err) {
-          console.error("Session regeneration error:", err);
-          return res.status(500).json({ error: "Failed to create session" });
-        }
-        req.session.userId = user.id;
-        req.session.save((err) => {
-          if (err) {
-            console.error("Session save error:", err);
-            return res.status(500).json({ error: "Failed to save session" });
-          }
-          const { password: _, ...userWithoutPassword } = user;
-          res.json(userWithoutPassword);
-        });
-      });
-    } catch (error: any) {
-      console.error("Login error:", error);
-      res.status(500).json({ error: "Failed to login" });
-    }
-  });
-
-  // Logout user
-  app.post("/api/logout", (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        return res.status(500).json({ error: "Failed to logout" });
-      }
-      res.json({ message: "Logged out successfully" });
-    });
-  });
-
-  // Get authenticated user
+  // Legacy user endpoint (for compatibility)
   app.get("/api/user", isAuthenticated, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.session.userId);
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
-      const { password: _, ...userWithoutPassword } = user;
-      res.json(userWithoutPassword);
+      res.json(user);
     } catch (error: any) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });

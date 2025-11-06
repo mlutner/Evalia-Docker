@@ -1,15 +1,12 @@
 import { type User, type UpsertUser, type Survey, type InsertSurvey, users, surveys, surveyResponses, type SurveyResponse } from "@shared/schema";
 import { randomUUID } from "crypto";
-import bcrypt from "bcrypt";
 import { db } from "./db";
 import { eq, sql } from "drizzle-orm";
 
 export interface IStorage {
-  // User operations
+  // User operations (Replit Auth compatible)
   getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: UpsertUser): Promise<User>;
-  verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean>;
+  upsertUser(user: UpsertUser): Promise<User>;
   
   // Survey operations
   getSurvey(id: string): Promise<Survey | undefined>;
@@ -40,31 +37,22 @@ export class MemStorage implements IStorage {
     return this.users.get(id);
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(u => u.username === username);
-  }
-
-  async createUser(userData: UpsertUser): Promise<User> {
+  async upsertUser(userData: UpsertUser): Promise<User> {
     const now = new Date();
-    const hashedPassword = await bcrypt.hash(userData.password!, 10);
+    const existingUser = this.users.get(userData.id!);
+    
     const user: User = {
-      id: randomUUID(),
-      username: userData.username!,
-      password: hashedPassword,
+      id: userData.id || randomUUID(),
       email: userData.email || null,
       firstName: userData.firstName || null,
       lastName: userData.lastName || null,
       profileImageUrl: userData.profileImageUrl || null,
-      createdAt: now,
+      createdAt: existingUser?.createdAt || now,
       updatedAt: now,
     };
     
     this.users.set(user.id, user);
     return user;
-  }
-
-  async verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
-    return bcrypt.compare(plainPassword, hashedPassword);
   }
 
   async getSurvey(id: string): Promise<Survey | undefined> {
@@ -142,26 +130,19 @@ export class DbStorage implements IStorage {
     return result[0];
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    const result = await db.select().from(users).where(eq(users.username, username)).limit(1);
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const result = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
     return result[0];
-  }
-
-  async createUser(userData: UpsertUser): Promise<User> {
-    const hashedPassword = await bcrypt.hash(userData.password!, 10);
-    const result = await db.insert(users).values({
-      username: userData.username!,
-      password: hashedPassword,
-      email: userData.email || null,
-      firstName: userData.firstName || null,
-      lastName: userData.lastName || null,
-      profileImageUrl: userData.profileImageUrl || null,
-    }).returning();
-    return result[0];
-  }
-
-  async verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
-    return bcrypt.compare(plainPassword, hashedPassword);
   }
 
   async getSurvey(id: string): Promise<Survey | undefined> {
