@@ -9,7 +9,7 @@ interface StartStepProps {
 
 export default function StartStep({ onChooseTemplate, onChooseAI, onChooseUpload }: StartStepProps) {
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-5xl mx-auto">
       <div className="text-center mb-12">
         <h2 className="text-3xl font-semibold mb-3">How would you like to start?</h2>
         <p className="text-muted-foreground text-lg">
@@ -17,15 +17,15 @@ export default function StartStep({ onChooseTemplate, onChooseAI, onChooseUpload
         </p>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-3 gap-8">
         <Card 
-          className="cursor-pointer transition-all hover-elevate active-elevate-2 border-2" 
+          className="cursor-pointer transition-all hover-elevate active-elevate-2 border-2 border-blue-200 dark:border-blue-800 hover:border-blue-300 dark:hover:border-blue-700" 
           onClick={onChooseTemplate}
           data-testid="card-choose-template"
         >
           <CardHeader className="text-center pb-4">
-            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Layers className="w-8 h-8 text-primary" />
+            <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Layers className="w-10 h-10 text-blue-600 dark:text-blue-400" />
             </div>
             <CardTitle className="text-xl">Use a Template</CardTitle>
             <CardDescription className="text-base">
@@ -40,16 +40,16 @@ export default function StartStep({ onChooseTemplate, onChooseAI, onChooseUpload
         </Card>
 
         <Card 
-          className="cursor-pointer transition-all hover-elevate active-elevate-2 border-2 border-primary/50" 
+          className="cursor-pointer transition-all hover-elevate active-elevate-2 border-2 border-primary shadow-md" 
           onClick={onChooseAI}
           data-testid="card-choose-ai"
         >
           <CardHeader className="text-center pb-4">
-            <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-              <Sparkles className="w-8 h-8 text-primary-foreground" />
+            <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+              <Sparkles className="w-10 h-10 text-primary-foreground" />
             </div>
             <CardTitle className="text-xl">Generate with AI</CardTitle>
-            <CardDescription className="text-base">
+            <CardDescription className="text-base font-medium">
               Describe your survey needs
             </CardDescription>
           </CardHeader>
@@ -61,13 +61,13 @@ export default function StartStep({ onChooseTemplate, onChooseAI, onChooseUpload
         </Card>
 
         <Card 
-          className="cursor-pointer transition-all hover-elevate active-elevate-2 border-2" 
+          className="cursor-pointer transition-all hover-elevate active-elevate-2 border-2 border-green-200 dark:border-green-800 hover:border-green-300 dark:hover:border-green-700" 
           onClick={onChooseUpload}
           data-testid="card-choose-upload"
         >
           <CardHeader className="text-center pb-4">
-            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FileUp className="w-8 h-8 text-primary" />
+            <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FileUp className="w-10 h-10 text-green-600 dark:text-green-400" />
             </div>
             <CardTitle className="text-xl">Upload Document</CardTitle>
             <CardDescription className="text-base">
