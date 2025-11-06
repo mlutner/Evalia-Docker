@@ -26,8 +26,11 @@ The frontend employs a "conversational minimalism" approach, characterized by:
 
 **Key Frontend Features:**
 - **Login Page**: Split-screen design with professional imagery and branding.
-- **Dashboard**: Grid-based survey management with share, preview, and analytics options.
-- **Builder**: Multi-tab interface for file upload, text prompts, and template selection.
+- **Dashboard**: Organized survey management with Drafts and Published sections, share, preview, and analytics options.
+- **Builder**: 3-step wizard flow for intuitive survey creation:
+  - Step 1 (START): Choose creation method via large action cards (Template, AI, or Document Upload)
+  - Step 2 (QUESTIONS): Build and refine questions with AI chat assistant and manual editor
+  - Step 3 (PUBLISH): Set survey metadata (title, description, welcome, thank you) with AI suggestions
 - **Survey View**: Sequential question flow with progress tracking for public access.
 - **Analytics Dashboard**: Comprehensive data visualization for survey responses (creator-only).
 - **Chat Panel**: AI assistant for refining surveys via natural language.
