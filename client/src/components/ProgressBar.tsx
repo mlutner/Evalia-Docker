@@ -8,15 +8,12 @@ export default function ProgressBar({ current, total, className = "" }: Progress
   const percentage = Math.round((current / total) * 100);
 
   return (
-    <div className={`w-full ${className}`}>
-      <div className="h-1 bg-muted rounded-full overflow-hidden">
+    <div className={`fixed top-0 left-0 right-0 z-50 ${className}`}>
+      <div className="h-1.5 bg-muted/30 backdrop-blur-sm">
         <div
-          className="h-full bg-primary transition-all duration-500 ease-out"
+          className="h-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-700 ease-out shadow-sm"
           style={{ width: `${percentage}%` }}
         />
-      </div>
-      <div className="mt-2 text-xs text-muted-foreground text-center">
-        Question {current} of {total}
       </div>
     </div>
   );
