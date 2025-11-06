@@ -2,7 +2,7 @@ import { useState } from "react";
 import ChatPanel from "@/components/ChatPanel";
 import QuestionEditor from "@/components/QuestionEditor";
 import { Button } from "@/components/ui/button";
-import { Edit3, Plus } from "lucide-react";
+import { Edit3, Plus, MessageSquare } from "lucide-react";
 import type { Message } from "@/components/ChatPanel";
 import type { Question } from "@shared/schema";
 
@@ -28,38 +28,49 @@ export default function QuestionsStep({
   const [viewMode, setViewMode] = useState<"chat" | "edit">("chat");
 
   return (
-    <div className="grid lg:grid-cols-[1fr,400px] gap-6">
-      <div>
-        {viewMode === "chat" ? (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-6 border rounded-lg bg-card">
-              <div>
-                <p className="font-medium text-lg">{questions.length} questions created</p>
-                <p className="text-sm text-muted-foreground">Use AI to refine or edit directly</p>
+    <div className="space-y-6">
+      {/* Mode Toggle */}
+      <div className="flex justify-center">
+        <div className="inline-flex items-center rounded-lg bg-muted p-1">
+          <button
+            onClick={() => setViewMode("chat")}
+            className={`inline-flex items-center gap-2 rounded-md px-6 py-2.5 text-sm font-medium transition-all ${
+              viewMode === "chat"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+            data-testid="button-chat-mode"
+          >
+            <MessageSquare className="w-4 h-4" />
+            AI Chat
+          </button>
+          <button
+            onClick={() => setViewMode("edit")}
+            className={`inline-flex items-center gap-2 rounded-md px-6 py-2.5 text-sm font-medium transition-all ${
+              viewMode === "edit"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+            data-testid="button-edit-mode"
+          >
+            <Edit3 className="w-4 h-4" />
+            Edit Questions
+          </button>
+        </div>
+      </div>
+
+      <div className="grid lg:grid-cols-[1fr,400px] gap-6">
+        <div>
+          {viewMode === "chat" ? (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-6 border rounded-lg bg-card">
+                <div>
+                  <p className="font-medium text-lg">{questions.length} questions created</p>
+                  <p className="text-sm text-muted-foreground">Use AI to refine your survey</p>
+                </div>
               </div>
-              <Button
-                variant="outline"
-                onClick={() => setViewMode("edit")}
-                data-testid="button-edit-questions"
-              >
-                <Edit3 className="w-4 h-4 mr-2" />
-                Edit Questions
-              </Button>
             </div>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Edit Questions</h3>
-              <Button
-                variant="outline"
-                onClick={() => setViewMode("chat")}
-                data-testid="button-back-to-chat"
-              >
-                Back to AI Chat
-              </Button>
-            </div>
-            
+          ) : (
             <div className="space-y-4">
               {questions.map((question, index) => (
                 <QuestionEditor
@@ -81,19 +92,19 @@ export default function QuestionsStep({
                 Add Question
               </Button>
             </div>
+          )}
+        </div>
+
+        {viewMode === "chat" && (
+          <div className="lg:h-[calc(100vh-16rem)]">
+            <ChatPanel
+              messages={messages}
+              onSendMessage={onSendMessage}
+              isLoading={isProcessing}
+            />
           </div>
         )}
       </div>
-
-      {viewMode === "chat" && (
-        <div className="lg:h-[calc(100vh-16rem)]">
-          <ChatPanel
-            messages={messages}
-            onSendMessage={onSendMessage}
-            isLoading={isProcessing}
-          />
-        </div>
-      )}
     </div>
   );
 }
