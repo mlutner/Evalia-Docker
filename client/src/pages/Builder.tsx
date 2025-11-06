@@ -504,14 +504,14 @@ export default function Builder() {
                   </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="templates" className="space-y-6">
+                <TabsContent value="templates" className="space-y-8 pt-2">
                   <div>
                     <h3 className="text-lg font-semibold mb-2">Professional Training Templates</h3>
                     <p className="text-muted-foreground mb-6">
                       Start with proven survey frameworks designed for trainers.
                     </p>
                   </div>
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {surveyTemplates.map((template) => (
                       <TemplateCard
                         key={template.id}
@@ -529,49 +529,66 @@ export default function Builder() {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="ai" className="space-y-6">
-                  <div className="space-y-4 max-w-2xl mx-auto">
+                <TabsContent value="ai" className="space-y-8 pt-2">
+                  <div className="space-y-6 max-w-2xl mx-auto">
                     <div>
                       <h3 className="text-lg font-semibold mb-2">Generate with AI</h3>
                       <p className="text-muted-foreground mb-4">
                         Describe your survey needs and let AI create custom questions for you.
                       </p>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">
-                        Describe your survey
-                      </label>
-                      <Textarea
-                        value={prompt}
-                        onChange={(e) => setPrompt(e.target.value)}
-                        placeholder="Example: I need a survey to gather feedback on our recent training workshop about leadership skills. Include questions about content quality, trainer effectiveness, and practical application."
-                        className="min-h-[150px] text-base"
-                        data-testid="input-survey-prompt"
-                      />
-                    </div>
-                    <Button
-                      size="lg"
-                      onClick={() => {
-                        handleGenerateFromPrompt();
-                        // Wait for questions to be generated then move to next step
-                        setTimeout(() => {
-                          if (currentQuestions.length > 0) {
-                            setCurrentWizardStep(2);
-                          }
-                        }, 1000);
-                      }}
-                      disabled={!prompt.trim() || isProcessing}
-                      className="w-full"
-                      data-testid="button-generate"
-                    >
-                      <Sparkles className="w-5 h-5 mr-2" />
-                      {isProcessing ? "Generating..." : "Generate Survey with AI"}
-                    </Button>
+                    
+                    {isProcessing ? (
+                      <div className="bg-primary/5 border border-primary/20 rounded-lg p-8 text-center space-y-4">
+                        <div className="flex justify-center">
+                          <Loader2 className="w-12 h-12 text-primary animate-spin" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-lg mb-1">AI is creating your survey...</p>
+                          <p className="text-sm text-muted-foreground">
+                            This may take 10-20 seconds. We're analyzing your description and crafting thoughtful questions.
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div>
+                          <label className="text-sm font-medium mb-2 block">
+                            Describe your survey
+                          </label>
+                          <Textarea
+                            value={prompt}
+                            onChange={(e) => setPrompt(e.target.value)}
+                            placeholder="Example: I need a survey to gather feedback on our recent training workshop about leadership skills. Include questions about content quality, trainer effectiveness, and practical application."
+                            className="min-h-[150px] text-base"
+                            data-testid="input-survey-prompt"
+                          />
+                        </div>
+                        <Button
+                          size="lg"
+                          onClick={() => {
+                            handleGenerateFromPrompt();
+                            // Wait for questions to be generated then move to next step
+                            setTimeout(() => {
+                              if (currentQuestions.length > 0) {
+                                setCurrentWizardStep(2);
+                              }
+                            }, 1000);
+                          }}
+                          disabled={!prompt.trim() || isProcessing}
+                          className="w-full"
+                          data-testid="button-generate"
+                        >
+                          <Sparkles className="w-5 h-5 mr-2" />
+                          Generate Survey with AI
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </TabsContent>
 
-                <TabsContent value="upload" className="space-y-6">
-                  <div className="max-w-2xl mx-auto space-y-4">
+                <TabsContent value="upload" className="space-y-8 pt-2">
+                  <div className="max-w-2xl mx-auto space-y-6">
                     <div>
                       <h3 className="text-lg font-semibold mb-2">Upload Document</h3>
                       <p className="text-muted-foreground mb-4">
