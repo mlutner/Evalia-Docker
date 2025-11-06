@@ -24,8 +24,8 @@ export default function StartStep({ onChooseTemplate, onChooseAI, onChooseUpload
           data-testid="card-choose-template"
         >
           <CardHeader className="text-center pb-4">
-            <div className="w-20 h-20 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
-              <Layers className="w-10 h-10 text-accent-foreground" />
+            <div className="w-20 h-20 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Layers className="w-10 h-10 text-primary" />
             </div>
             <CardTitle className="text-xl">Use a Template</CardTitle>
             <CardDescription className="text-base">
@@ -66,8 +66,8 @@ export default function StartStep({ onChooseTemplate, onChooseAI, onChooseUpload
           data-testid="card-choose-upload"
         >
           <CardHeader className="text-center pb-4">
-            <div className="w-20 h-20 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4">
-              <FileUp className="w-10 h-10 text-secondary-foreground" />
+            <div className="w-20 h-20 bg-primary-foreground/20 dark:bg-primary-foreground/30 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FileUp className="w-10 h-10 text-primary-foreground dark:text-primary-foreground" />
             </div>
             <CardTitle className="text-xl">Upload Document</CardTitle>
             <CardDescription className="text-base">
