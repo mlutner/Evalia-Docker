@@ -37,27 +37,29 @@ export default function Header({ showActions = true }: HeaderProps) {
               {typedUser.email || `${typedUser.firstName || ''} ${typedUser.lastName || ''}`.trim() || 'User'}
             </span>
           )}
-          {showActions && (
-            <Button 
-              onClick={() => setLocation("/builder")} 
-              data-testid="button-create-survey"
-              className="text-sm sm:text-base"
-            >
-              <span className="hidden sm:inline">Create Survey</span>
-              <span className="sm:hidden">Create</span>
-            </Button>
-          )}
           {typedUser && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLogout}
-              data-testid="button-logout"
-              className="px-2 sm:px-3"
-            >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline ml-2">Logout</span>
-            </Button>
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setLocation("/account")}
+                data-testid="button-account"
+                className="px-2 sm:px-3"
+              >
+                <span className="hidden sm:inline">Account</span>
+                <span className="sm:hidden">⚙️</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                data-testid="button-logout"
+                className="px-2 sm:px-3"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline ml-2">Logout</span>
+              </Button>
+            </>
           )}
         </div>
       </div>
