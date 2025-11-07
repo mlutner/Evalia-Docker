@@ -75,34 +75,46 @@ export async function generateSurveyFromText(
   content: string,
   context?: string
 ): Promise<{ title: string; questions: Question[] }> {
-  const systemPrompt = `You are an expert training survey designer. Create effective, professional survey questions based on the provided content.
+  const systemPrompt = `You are an expert at extracting survey questions from documents. Your job is to CAREFULLY read the document and extract ALL questions with COMPLETE answer choices.
 
-IMPORTANT RULES:
-- Generate 8-12 thoughtful questions
-- Focus on training effectiveness, knowledge retention, and practical application
+CRITICAL RULES FOR DOCUMENT EXTRACTION:
+- When you see a multiple choice or checkbox question, extract EVERY SINGLE answer option listed
+- Do NOT skip any answer choices - if the document shows A, B, C, D, E - include all 5 options
+- Preserve the exact wording of questions and answer choices from the document
+- If a question has numbered or lettered options (1,2,3 or A,B,C), capture ALL of them
+- Pay special attention to questions that continue across multiple lines or pages
+
+QUESTION GENERATION RULES:
+- Generate 8-12 questions total (if document has fewer, extract what's there)
 - Use varied question types: text, textarea, multiple_choice, checkbox, email, number
-- Make questions clear and actionable
-- For multiple choice: provide 4-5 balanced options
-- For checkboxes: allow selecting multiple relevant options
+- For multiple_choice: extract ALL options from document (minimum 2, typically 4-5)
+- For checkbox: extract ALL options that allow multiple selections
+- Make questions clear and preserve original intent
 
 Return ONLY valid JSON with this exact structure:
 {
-  "title": "Survey Title",
+  "title": "Survey Title (extract from document or generate)",
   "questions": [
     {
       "id": "q1",
       "type": "text" | "textarea" | "multiple_choice" | "checkbox" | "email" | "number",
-      "question": "Question text?",
+      "question": "Question text exactly as in document?",
       "description": "Optional context",
-      "options": ["Option 1", "Option 2"],
+      "options": ["Option A text", "Option B text", "Option C text", "Option D text"],
       "required": true
     }
   ]
-}`;
+}
+
+VALIDATION CHECKLIST:
+✓ Every multiple_choice has at least 2 options (preferably 4-5)
+✓ Every checkbox has at least 2 options
+✓ All answer choices from the document are included
+✓ Question text matches the document wording`;
 
   const userPrompt = context
-    ? `Context: ${context}\n\nContent to analyze:\n${content}`
-    : `Create survey questions based on this content:\n${content}`;
+    ? `Context: ${context}\n\nDocument content to extract questions from:\n${content}\n\nExtract ALL questions with COMPLETE answer choices. Do not skip any options.`
+    : `Extract survey questions from this content. Include ALL answer choices for every multiple choice question:\n${content}`;
 
   const messages: ChatMessage[] = [
     { role: "system", content: systemPrompt },
@@ -113,9 +125,19 @@ Return ONLY valid JSON with this exact structure:
   
   try {
     const parsed = JSON.parse(response);
+    
+    // Validate that multiple choice questions have adequate options
+    const questions = (parsed.questions || []).map((q: any) => {
+      if ((q.type === 'multiple_choice' || q.type === 'checkbox') && (!q.options || q.options.length < 2)) {
+        console.warn(`Question "${q.question}" has insufficient options, adding defaults`);
+        q.options = q.options || ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
+      }
+      return q;
+    });
+    
     return {
       title: parsed.title || "Generated Survey",
-      questions: parsed.questions || [],
+      questions,
     };
   } catch (error) {
     console.error("Failed to parse survey generation response:", error);
@@ -135,13 +157,26 @@ export async function refineSurvey(
 
 Current survey has ${currentQuestions.length} questions. The user wants to make changes.
 
+CRITICAL: When user mentions missing answer choices or options:
+- Add ALL the missing options they mention
+- Preserve all existing options
+- For example, if they say "add options D and E to question 3", add those exact options
+- If they provide the text of missing options, use their exact wording
+
+COMMON REQUESTS:
+- "Fix the missing options" → Review questions and add missing answer choices
+- "Question X is missing option Y" → Add that specific option to that question
+- "Add more options" → Add 1-2 more relevant options to multiple choice questions
+- "Change question wording" → Modify the question text while preserving options
+- "Remove/Delete question" → Remove that question from the array
+
 If the user asks to modify questions, return ONLY valid JSON with this structure:
 {
-  "questions": [...array of updated questions...],
+  "questions": [...complete array of updated questions...],
   "message": "Brief explanation of what you changed"
 }
 
-If the user is just asking questions or chatting, return:
+If the user is just asking questions or chatting (not requesting changes), return:
 {
   "message": "Your conversational response"
 }
