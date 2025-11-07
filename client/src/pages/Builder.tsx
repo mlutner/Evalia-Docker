@@ -148,8 +148,16 @@ export default function Builder() {
         setTimeout(() => setCurrentWizardStep(2), 100);
       }
     } catch (error: any) {
-      console.error("Document parsing error:", error);
-      // Error toast already shown above
+      console.error("Document parsing error:", error.message || error);
+      
+      // If toast wasn't shown (network error, etc), show generic error
+      if (!error.message || error.message === 'Failed to fetch') {
+        toast({
+          title: "Connection Error",
+          description: "Could not connect to the server. Please check your connection and try again.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsProcessing(false);
     }
