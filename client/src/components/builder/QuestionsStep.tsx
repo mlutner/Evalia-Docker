@@ -157,6 +157,7 @@ export default function QuestionsStep({
                     messages={messages}
                     onSendMessage={onSendMessage}
                     isLoading={isProcessing}
+                    showHeader={false}
                   />
                 </CardContent>
               </Card>

@@ -14,9 +14,10 @@ interface ChatPanelProps {
   messages: Message[];
   onSendMessage: (message: string) => void;
   isLoading?: boolean;
+  showHeader?: boolean;
 }
 
-export default function ChatPanel({ messages, onSendMessage, isLoading = false }: ChatPanelProps) {
+export default function ChatPanel({ messages, onSendMessage, isLoading = false, showHeader = true }: ChatPanelProps) {
   const [input, setInput] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -29,15 +30,17 @@ export default function ChatPanel({ messages, onSendMessage, isLoading = false }
 
   return (
     <div className="flex flex-col h-full border rounded-xl bg-card">
-      <div className="p-4 border-b">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-primary" />
-          <h3 className="font-semibold">AI Assistant</h3>
+      {showHeader && (
+        <div className="p-4 border-b">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-primary" />
+            <h3 className="font-semibold">AI Assistant</h3>
+          </div>
+          <p className="text-sm text-muted-foreground mt-1">
+            Refine your survey with natural language
+          </p>
         </div>
-        <p className="text-sm text-muted-foreground mt-1">
-          Refine your survey with natural language
-        </p>
-      </div>
+      )}
 
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-4">
