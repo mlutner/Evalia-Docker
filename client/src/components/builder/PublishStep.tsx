@@ -45,10 +45,15 @@ export default function PublishStep({
           <Input
             value={title}
             onChange={(e) => onTitleChange(e.target.value)}
-            className="text-base"
+            className={`text-base ${!title.trim() ? 'border-destructive' : ''}`}
             placeholder="Enter a clear, descriptive title..."
             data-testid="input-survey-title"
           />
+          {!title.trim() && (
+            <p className="text-xs text-destructive mt-1">
+              Title is required to publish your survey
+            </p>
+          )}
         </div>
 
         <div>

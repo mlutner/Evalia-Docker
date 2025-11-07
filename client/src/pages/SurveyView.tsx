@@ -3,6 +3,7 @@ import { useParams } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import QuestionCard from "@/components/QuestionCard";
 import ProgressBar from "@/components/ProgressBar";
 import { ArrowLeft, ArrowRight, Check, Loader2, Sparkles, AlertCircle, FileQuestion } from "lucide-react";
@@ -14,6 +15,7 @@ export default function SurveyView() {
   const [currentStep, setCurrentStep] = useState(-1); // -1 = welcome screen, 0+ = questions
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [isCompleted, setIsCompleted] = useState(false);
+  const [showBackWarning, setShowBackWarning] = useState(false);
 
   const { data: survey, isLoading, error } = useQuery<Survey>({
     queryKey: ["/api/surveys", id],
@@ -82,6 +84,16 @@ export default function SurveyView() {
   };
 
   const handleBack = () => {
+    // Show warning if user has answered any questions and is leaving the question flow
+    if (currentStep >= 0 && Object.keys(answers).length > 0) {
+      setShowBackWarning(true);
+    } else if (currentStep > -1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const confirmBack = () => {
+    setShowBackWarning(false);
     if (currentStep > -1) {
       setCurrentStep(currentStep - 1);
     }
@@ -215,12 +227,12 @@ export default function SurveyView() {
 
   // Question View
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-[100dvh] flex flex-col bg-background">
       <ProgressBar current={currentStep + 1} total={questions.length} />
       
       {/* Question Counter */}
-      <div className="fixed top-6 left-6 z-40">
-        <div className="text-sm font-medium text-muted-foreground bg-background/80 backdrop-blur-sm px-4 py-2 rounded-full border shadow-sm" data-testid="text-question-counter">
+      <div className="fixed top-4 sm:top-6 left-4 sm:left-6 z-40">
+        <div className="text-xs sm:text-sm font-medium text-muted-foreground bg-background/80 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border shadow-sm" data-testid="text-question-counter">
           <span className="text-foreground font-semibold">
             {currentStep + 1}
           </span>
@@ -228,7 +240,7 @@ export default function SurveyView() {
         </div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center p-6 pt-20">
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 pt-16 sm:pt-20 pb-24 sm:pb-28 overflow-y-auto">
         <div key={currentStep} className="w-full">
           <QuestionCard
             question={questions[currentStep]}
@@ -239,7 +251,7 @@ export default function SurveyView() {
       </div>
 
       {/* Navigation Footer */}
-      <div className="sticky bottom-0 p-4 sm:p-6 bg-background/95 backdrop-blur-md border-t shadow-lg">
+      <div className="fixed bottom-0 left-0 right-0 p-3 sm:p-4 md:p-6 bg-background/95 backdrop-blur-md border-t shadow-lg">
         <div className="container mx-auto max-w-4xl flex items-center justify-between gap-2 sm:gap-4">
           <Button
             variant="ghost"
@@ -247,7 +259,7 @@ export default function SurveyView() {
             onClick={handleBack}
             disabled={currentStep === 0}
             data-testid="button-back"
-            className="text-base sm:text-lg"
+            className="text-sm sm:text-base md:text-lg"
           >
             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
             <span className="hidden xs:inline">Back</span>
@@ -263,7 +275,7 @@ export default function SurveyView() {
             onClick={handleNext}
             disabled={!canGoNext() || submitMutation.isPending}
             data-testid="button-next"
-            className="text-base sm:text-lg px-4 sm:px-8 shadow-md hover:shadow-lg transition-shadow"
+            className="text-sm sm:text-base md:text-lg px-4 sm:px-6 md:px-8 shadow-md hover:shadow-lg transition-shadow"
           >
             {submitMutation.isPending ? (
               <>
@@ -284,6 +296,24 @@ export default function SurveyView() {
           </Button>
         </div>
       </div>
+
+      {/* Back Button Warning Dialog */}
+      <AlertDialog open={showBackWarning} onOpenChange={setShowBackWarning}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Go back?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Your current answer will be saved, but you can review or change it if needed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-back">Stay Here</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmBack} data-testid="button-confirm-back">
+              Go Back
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

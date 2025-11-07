@@ -55,35 +55,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/parse-document", isAuthenticated, upload.single("file"), async (req, res) => {
     try {
       if (!req.file) {
-        return res.status(400).json({ error: "No file uploaded" });
+        return res.status(400).json({ 
+          error: "No file was uploaded", 
+          tip: "Please select a PDF, DOCX, or TXT file to continue" 
+        });
+      }
+
+      const fileName = req.file.originalname;
+      const fileType = req.file.mimetype;
+      const fileSizeKB = Math.round(req.file.size / 1024);
+
+      // Check file size (max 10MB)
+      if (req.file.size > 10 * 1024 * 1024) {
+        return res.status(400).json({ 
+          error: `File is too large (${fileSizeKB} KB)`, 
+          tip: "Please upload a file smaller than 10MB" 
+        });
       }
 
       let extractedText = "";
-      const fileName = req.file.originalname;
-      const fileType = req.file.mimetype;
 
       // Extract text based on file type
       if (fileType === "application/pdf") {
-        const pdfData = await pdfParse(req.file.buffer);
-        extractedText = pdfData.text;
+        try {
+          const pdfData = await pdfParse(req.file.buffer);
+          extractedText = pdfData.text;
+        } catch (pdfError: any) {
+          console.error("PDF parsing error:", pdfError);
+          return res.status(400).json({ 
+            error: "Unable to read this PDF file", 
+            tip: "The PDF might be password-protected, corrupted, or contain only images. Try saving it as a new PDF or using a different file." 
+          });
+        }
       } else if (
         fileType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
         fileType === "application/msword"
       ) {
-        const result = await mammoth.extractRawText({ buffer: req.file.buffer });
-        extractedText = result.value;
+        try {
+          const result = await mammoth.extractRawText({ buffer: req.file.buffer });
+          extractedText = result.value;
+        } catch (docxError: any) {
+          console.error("DOCX parsing error:", docxError);
+          return res.status(400).json({ 
+            error: "Unable to read this Word document", 
+            tip: "The document might be corrupted or in an unsupported format. Try saving it as a new .docx file." 
+          });
+        }
       } else if (fileType === "text/plain") {
         extractedText = req.file.buffer.toString("utf-8");
       } else {
-        return res.status(400).json({ error: "Unsupported file type. Please upload PDF, Word, or text files." });
+        return res.status(400).json({ 
+          error: `Unsupported file type: ${fileType}`, 
+          tip: "Please upload a PDF (.pdf), Word (.docx), or text (.txt) file." 
+        });
       }
 
       if (!extractedText.trim()) {
-        return res.status(400).json({ error: "No text could be extracted from the document" });
+        return res.status(400).json({ 
+          error: "No text content found in the document", 
+          tip: "The document appears to be empty or contains only images. Please upload a document with text content." 
+        });
+      }
+
+      // Check minimum text length
+      if (extractedText.trim().length < 50) {
+        return res.status(400).json({ 
+          error: "Document contains very little text", 
+          tip: "The document needs more content to generate meaningful survey questions. Please upload a document with at least a few sentences." 
+        });
       }
 
       // Generate survey from extracted text
-      const survey = await generateSurveyFromText(extractedText, `Document: ${fileName}`);
+      let survey;
+      try {
+        survey = await generateSurveyFromText(extractedText, `Document: ${fileName}`);
+      } catch (aiError: any) {
+        console.error("AI generation error:", aiError);
+        return res.status(500).json({ 
+          error: "AI failed to generate questions from the document", 
+          tip: "The document content might be too complex or unclear. Try uploading a different document or use the AI prompt feature instead." 
+        });
+      }
+
+      if (!survey.questions || survey.questions.length === 0) {
+        return res.status(400).json({ 
+          error: "Could not generate questions from this document", 
+          tip: "The document content might not be suitable for survey generation. Try uploading a training manual, course outline, or educational document." 
+        });
+      }
 
       res.json({
         parsedText: extractedText,
@@ -92,7 +151,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error: any) {
       console.error("Document parsing error:", error);
-      res.status(500).json({ error: error.message || "Failed to parse document" });
+      res.status(500).json({ 
+        error: "An unexpected error occurred while processing your document", 
+        tip: "Please try again or contact support if the problem persists." 
+      });
     }
   });
 

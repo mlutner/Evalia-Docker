@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRoute, useLocation } from "wouter";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Sparkles, FileText, MessageSquare, Layers, Upload, Plus, Edit3, Loader2, ArrowRight, ArrowLeft, FileUp } from "lucide-react";
+import { Sparkles, FileText, MessageSquare, Layers, Upload, Plus, Edit3, Loader2, ArrowRight, ArrowLeft, FileUp, Save } from "lucide-react";
 import { surveyTemplates } from "@shared/templates";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -30,6 +30,19 @@ const WIZARD_STEPS = [
   { number: 2, title: "Questions", description: "Build your survey" },
   { number: 3, title: "Publish", description: "Add details & share" },
 ];
+
+function formatTimeAgo(date: Date): string {
+  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+  
+  if (seconds < 10) return "just now";
+  if (seconds < 60) return `${seconds} seconds ago`;
+  
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return minutes === 1 ? "1 minute ago" : `${minutes} minutes ago`;
+  
+  const hours = Math.floor(minutes / 60);
+  return hours === 1 ? "1 hour ago" : `${hours} hours ago`;
+}
 
 export default function Builder() {
   const [, params] = useRoute("/builder/:id");
@@ -58,6 +71,9 @@ export default function Builder() {
   const [showPreview, setShowPreview] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [generatingField, setGeneratingField] = useState<string | null>(null);
+  const [lastAutoSave, setLastAutoSave] = useState<Date | null>(null);
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
 
   // Load existing survey if in edit mode
   const { data: existingSurvey, isLoading: isLoadingSurvey } = useQuery<Survey>({
@@ -101,8 +117,18 @@ export default function Builder() {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to parse document");
+        const errorData = await response.json();
+        const errorMessage = errorData.error || "Failed to parse document";
+        const errorTip = errorData.tip;
+        
+        // Show error toast with helpful tip
+        toast({
+          title: errorMessage,
+          description: errorTip,
+          variant: "destructive",
+        });
+        
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
@@ -116,15 +142,14 @@ export default function Builder() {
           content: `I've analyzed your document and created ${data.questions.length} questions based on the content. You can edit the questions directly, preview the survey, or ask me to make changes!`,
         },
       ]);
+      
+      // Auto-advance to questions step
+      if (data.questions.length > 0) {
+        setTimeout(() => setCurrentWizardStep(2), 100);
+      }
     } catch (error: any) {
       console.error("Document parsing error:", error);
-      setMessages([
-        {
-          id: "1",
-          role: "assistant",
-          content: `Sorry, I encountered an error parsing your document: ${error.message}. Please try again or use a different file.`,
-        },
-      ]);
+      // Error toast already shown above
     } finally {
       setIsProcessing(false);
     }
@@ -154,8 +179,13 @@ export default function Builder() {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to process message");
+        const errorData = await response.json();
+        toast({
+          title: "AI chat error",
+          description: errorData.error || "Failed to process your message. Please try again.",
+          variant: "destructive",
+        });
+        throw new Error(errorData.error || "Failed to process message");
       }
 
       const data = await response.json();
@@ -216,13 +246,11 @@ export default function Builder() {
       setPrompt(""); // Clear prompt after generation
     } catch (error: any) {
       console.error("Survey generation error:", error);
-      setMessages([
-        {
-          id: "1",
-          role: "assistant",
-          content: `Sorry, I encountered an error generating your survey: ${error.message}. Please try again with a different description.`,
-        },
-      ]);
+      toast({
+        title: "AI generation failed",
+        description: error.message || "Failed to generate survey. Please try again with a different description.",
+        variant: "destructive",
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -310,6 +338,72 @@ export default function Builder() {
       });
     },
   });
+
+  // Auto-save mutation (silent, doesn't redirect)
+  const autoSaveMutation = useMutation({
+    mutationFn: async (data: { title: string; description?: string; welcomeMessage?: string; thankYouMessage?: string; questions: Question[] }) => {
+      if (isEditMode) {
+        return apiRequest("PUT", `/api/surveys/${surveyId}`, data);
+      } else {
+        return apiRequest("POST", "/api/surveys", data);
+      }
+    },
+    onSuccess: (response, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/surveys"] });
+      if (isEditMode) {
+        queryClient.invalidateQueries({ queryKey: ["/api/surveys", surveyId] });
+      }
+      setLastAutoSave(new Date());
+      setIsAutoSaving(false);
+      
+      // If this was a new survey, update the URL to edit mode
+      if (!isEditMode && response) {
+        response.json().then((data: any) => {
+          if (data.id) {
+            window.history.replaceState({}, '', `/builder/${data.id}`);
+          }
+        });
+      }
+    },
+    onError: (error: any) => {
+      console.error("Auto-save failed:", error);
+      setIsAutoSaving(false);
+    },
+  });
+
+  // Auto-save effect - triggers 3 seconds after changes
+  useEffect(() => {
+    // Don't auto-save if no questions yet or if we're on step 1
+    if (currentQuestions.length === 0 || currentWizardStep === 1) {
+      return;
+    }
+
+    // Clear existing timer
+    if (autoSaveTimer.current) {
+      clearTimeout(autoSaveTimer.current);
+    }
+
+    // Set new timer for 3 seconds
+    autoSaveTimer.current = setTimeout(() => {
+      const surveyData = {
+        title: currentSurveyTitle || "Untitled Survey",
+        description: currentSurveyDescription || undefined,
+        welcomeMessage: welcomeMessage || undefined,
+        thankYouMessage: thankYouMessage || undefined,
+        questions: currentQuestions,
+      };
+
+      setIsAutoSaving(true);
+      autoSaveMutation.mutate(surveyData);
+    }, 3000);
+
+    // Cleanup timer on unmount
+    return () => {
+      if (autoSaveTimer.current) {
+        clearTimeout(autoSaveTimer.current);
+      }
+    };
+  }, [currentQuestions, currentSurveyTitle, currentSurveyDescription, welcomeMessage, thankYouMessage, currentWizardStep]);
 
   const handleGenerateText = async (fieldType: "description" | "welcomeMessage" | "thankYouMessage") => {
     if (!currentSurveyTitle.trim()) {
@@ -463,9 +557,17 @@ export default function Builder() {
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-semibold mb-2">
-            {isEditMode ? "Edit Survey" : "Create Survey"}
-          </h1>
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-4xl font-semibold">
+              {isEditMode ? "Edit Survey" : "Create Survey"}
+            </h1>
+            {lastAutoSave && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Save className="w-3 h-3" />
+                {isAutoSaving ? "Saving..." : `Saved ${formatTimeAgo(lastAutoSave)}`}
+              </div>
+            )}
+          </div>
           <p className="text-muted-foreground mb-6">
             {WIZARD_STEPS[currentWizardStep - 1].description}
           </p>
@@ -621,6 +723,7 @@ export default function Builder() {
             onUpdateQuestion={handleUpdateQuestion}
             onDeleteQuestion={handleDeleteQuestion}
             onAddQuestion={handleAddQuestion}
+            onPreview={handlePreviewSurvey}
           />
         )}
 
