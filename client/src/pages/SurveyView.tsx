@@ -120,35 +120,28 @@ export default function SurveyView() {
 
   if (isCompleted) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 dark:from-green-950/20 dark:via-emerald-950/20 dark:to-teal-950/20 relative overflow-hidden">
-        {/* Decorative Background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-20 w-96 h-96 bg-green-400/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-80 h-80 bg-emerald-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        </div>
-
-        <div className="text-center max-w-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 relative z-10">
+      <div className="min-h-screen flex items-center justify-center p-6 bg-background">
+        <div className="text-center max-w-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
           <div className="relative mb-8">
-            <div className="w-24 h-24 bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500 rounded-full flex items-center justify-center mx-auto shadow-xl">
-              <Check className="w-12 h-12 text-white" strokeWidth={3} />
+            <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center mx-auto shadow-lg">
+              <Check className="w-12 h-12 text-primary-foreground" strokeWidth={3} />
             </div>
-            <div className="absolute inset-0 w-24 h-24 mx-auto bg-green-500/30 rounded-full animate-ping" style={{ animationDuration: '2s' }}></div>
-            <div className="absolute inset-0 w-24 h-24 mx-auto bg-green-400/20 rounded-full blur-xl"></div>
+            <div className="absolute inset-0 w-24 h-24 mx-auto bg-primary/20 rounded-full animate-ping" style={{ animationDuration: '2s' }}></div>
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 dark:from-green-400 dark:via-emerald-400 dark:to-teal-400 bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6">
             Thank you!
           </h1>
-          <p className="text-2xl text-foreground/70 mb-4" data-testid="text-thank-you-message">
+          <p className="text-2xl text-muted-foreground mb-4" data-testid="text-thank-you-message">
             {survey.thankYouMessage || "Your responses have been recorded successfully."}
           </p>
-          <p className="text-lg text-muted-foreground mb-10" data-testid="text-thank-you-subtitle">
+          <p className="text-lg text-muted-foreground/80 mb-10" data-testid="text-thank-you-subtitle">
             We appreciate you taking the time to share your thoughts.
           </p>
           <Button 
             size="lg" 
             onClick={() => window.location.reload()} 
             data-testid="button-submit-another"
-            className="text-lg px-8 py-6 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 border-0 shadow-lg hover:shadow-xl transition-all"
+            className="text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all"
           >
             Submit Another Response
           </Button>
@@ -176,28 +169,23 @@ export default function SurveyView() {
   // Welcome Screen
   if (currentStep === -1) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/20 dark:via-purple-950/20 dark:to-pink-950/20 relative overflow-hidden">
-        {/* Decorative Background Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-pink-400/10 rounded-full blur-3xl"></div>
+      <div className="min-h-screen flex items-center justify-center p-6 bg-background relative overflow-hidden">
+        {/* Subtle Background Accent */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
+          <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl"></div>
         </div>
 
         <div className="text-center max-w-3xl animate-in fade-in slide-in-from-bottom-6 duration-500 relative z-10">
-          <div className="mb-8 relative">
-            <div className="relative inline-block">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl rotate-3 hover:rotate-6 transition-transform">
-                <Sparkles className="w-10 h-10 text-white" />
-              </div>
-              <div className="absolute inset-0 w-20 h-20 mx-auto bg-blue-500/30 rounded-2xl blur-xl"></div>
+          <div className="mb-8">
+            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Sparkles className="w-8 h-8 text-primary" />
             </div>
           </div>
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
             {survey.title}
           </h1>
           {survey.description && (
-            <p className="text-xl md:text-2xl text-foreground/70 mb-8 leading-relaxed">
+            <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
               {survey.description}
             </p>
           )}
@@ -211,12 +199,12 @@ export default function SurveyView() {
               size="lg" 
               onClick={handleStart}
               data-testid="button-start-survey"
-              className="text-xl px-10 py-7 shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 group"
+              className="text-xl px-10 py-7 shadow-lg hover:shadow-xl transition-all group"
             >
               Start Survey
               <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <p className="text-sm text-muted-foreground bg-background/60 backdrop-blur-sm px-4 py-2 rounded-full" data-testid="text-survey-info">
+            <p className="text-sm text-muted-foreground" data-testid="text-survey-info">
               {questions.length} {questions.length === 1 ? 'question' : 'questions'} · Takes about {Math.max(1, Math.ceil(questions.length / 2))} {Math.ceil(questions.length / 2) === 1 ? 'minute' : 'minutes'}
             </p>
           </div>
@@ -227,22 +215,16 @@ export default function SurveyView() {
 
   // Question View
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50/30 via-background to-purple-50/30 dark:from-blue-950/10 dark:via-background dark:to-purple-950/10 relative overflow-hidden">
-      {/* Subtle Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
-        <div className="absolute top-40 right-20 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-40 left-20 w-80 h-80 bg-purple-400/10 rounded-full blur-3xl"></div>
-      </div>
-
+    <div className="min-h-screen flex flex-col bg-background">
       <ProgressBar current={currentStep + 1} total={questions.length} />
       
       {/* Question Counter */}
       <div className="fixed top-6 left-6 z-40">
-        <div className="text-sm font-medium text-foreground bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm px-4 py-2 rounded-full border border-blue-500/20 shadow-sm" data-testid="text-question-counter">
-          <span className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent font-semibold">
+        <div className="text-sm font-medium text-muted-foreground bg-background/80 backdrop-blur-sm px-4 py-2 rounded-full border shadow-sm" data-testid="text-question-counter">
+          <span className="text-foreground font-semibold">
             {currentStep + 1}
           </span>
-          <span className="text-muted-foreground"> of {questions.length}</span>
+          <span> of {questions.length}</span>
         </div>
       </div>
 
