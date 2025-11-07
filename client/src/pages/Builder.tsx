@@ -308,13 +308,19 @@ export default function Builder() {
     mutationFn: async (data: { title: string; description?: string; welcomeMessage?: string; thankYouMessage?: string; questions: Question[] }) => {
       return apiRequest("POST", "/api/surveys", data);
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ["/api/surveys"] });
       toast({
-        title: "Survey created!",
-        description: "Your survey has been saved successfully.",
+        title: "Survey published!",
+        description: "Your survey has been saved and is ready to share.",
       });
-      setLocation("/dashboard");
+      
+      // Update URL to edit mode without redirecting
+      response.json().then((data: any) => {
+        if (data.id) {
+          window.history.replaceState({}, '', `/builder/${data.id}`);
+        }
+      });
     },
     onError: (error: any) => {
       toast({
@@ -336,7 +342,6 @@ export default function Builder() {
         title: "Survey updated!",
         description: "Your changes have been saved successfully.",
       });
-      setLocation("/dashboard");
     },
     onError: (error: any) => {
       toast({
