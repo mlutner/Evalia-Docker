@@ -53,6 +53,7 @@ export default function Builder() {
 
   // Wizard state
   const [currentWizardStep, setCurrentWizardStep] = useState(1);
+  const [hasLoadedSurvey, setHasLoadedSurvey] = useState(false);
   
   // Survey data state
   const [currentSurveyTitle, setCurrentSurveyTitle] = useState("");
@@ -86,7 +87,7 @@ export default function Builder() {
   });
 
   useEffect(() => {
-    if (existingSurvey && isEditMode) {
+    if (existingSurvey && isEditMode && !hasLoadedSurvey) {
       setCurrentSurveyTitle(existingSurvey.title);
       setCurrentSurveyDescription(existingSurvey.description || "");
       setWelcomeMessage(existingSurvey.welcomeMessage || "");
@@ -100,8 +101,9 @@ export default function Builder() {
           content: `You're editing "${existingSurvey.title}" with ${existingSurvey.questions.length} questions. Make any changes you'd like, then proceed to publish!`,
         },
       ]);
+      setHasLoadedSurvey(true); // Mark as loaded to prevent resetting wizard step
     }
-  }, [existingSurvey, isEditMode]);
+  }, [existingSurvey, isEditMode, hasLoadedSurvey]);
 
   const handleFileSelect = async (file: File) => {
     console.log("File selected:", file.name);
