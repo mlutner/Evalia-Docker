@@ -44,18 +44,23 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
+      <main className="container mx-auto px-4 py-6 md:py-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
           <div>
-            <h1 className="text-4xl font-semibold mb-2">Your Surveys</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-2">Your Surveys</h1>
+            <p className="text-sm md:text-base text-muted-foreground">
               {surveys.length === 0 
                 ? "Create, manage, and analyze your training surveys"
                 : `${surveys.length} ${surveys.length === 1 ? 'survey' : 'surveys'} created`
               }
             </p>
           </div>
-          <Button size="lg" onClick={() => setLocation("/builder")} data-testid="button-new-survey">
+          <Button 
+            size="lg" 
+            onClick={() => setLocation("/builder")} 
+            data-testid="button-new-survey"
+            className="w-full sm:w-auto"
+          >
             <Plus className="w-5 h-5 mr-2" />
             New Survey
           </Button>
@@ -66,15 +71,20 @@ export default function Dashboard() {
             <div className="text-muted-foreground">Loading your surveys...</div>
           </div>
         ) : surveys.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-6">
-              <FileText className="w-12 h-12 text-primary" />
+          <div className="flex flex-col items-center justify-center py-12 md:py-20 px-4">
+            <div className="w-20 h-20 md:w-24 md:h-24 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+              <FileText className="w-10 h-10 md:w-12 md:h-12 text-primary" />
             </div>
-            <h3 className="text-2xl font-semibold mb-2">No surveys yet</h3>
-            <p className="text-muted-foreground mb-8 text-center max-w-md">
+            <h3 className="text-xl md:text-2xl font-semibold mb-2 text-center">No surveys yet</h3>
+            <p className="text-sm md:text-base text-muted-foreground mb-8 text-center max-w-md px-4">
               Create your first AI-powered survey in minutes. Choose from templates, generate with AI, or upload a document.
             </p>
-            <Button size="lg" onClick={() => setLocation("/builder")} data-testid="button-create-first">
+            <Button 
+              size="lg" 
+              onClick={() => setLocation("/builder")} 
+              data-testid="button-create-first"
+              className="w-full sm:w-auto"
+            >
               <Plus className="w-5 h-5 mr-2" />
               Create Your First Survey
             </Button>

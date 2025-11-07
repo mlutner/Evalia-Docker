@@ -38,14 +38,14 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-6 animate-in fade-in slide-in-from-bottom-6 duration-500" data-testid={`question-${question.id}`}>
-      <div className="mb-12">
-        <h2 className="text-4xl md:text-5xl font-semibold mb-4 leading-tight">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 animate-in fade-in slide-in-from-bottom-6 duration-500" data-testid={`question-${question.id}`}>
+      <div className="mb-8 md:mb-12">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold mb-3 md:mb-4 leading-tight">
           {question.question}
           {question.required && <span className="text-destructive ml-2">*</span>}
         </h2>
         {question.description && (
-          <p className="text-muted-foreground text-xl mt-3">{question.description}</p>
+          <p className="text-muted-foreground text-base sm:text-lg md:text-xl mt-2 md:mt-3">{question.description}</p>
         )}
       </div>
 
@@ -56,7 +56,7 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
             value={answer as string}
             onChange={(e) => handleTextChange(e.target.value)}
             placeholder="Type your answer here..."
-            className="text-xl h-14 border-2 focus:border-primary transition-colors"
+            className="text-base sm:text-lg md:text-xl h-12 sm:h-14 border-2 focus:border-primary transition-colors"
             data-testid="input-text-answer"
             autoFocus
           />
@@ -68,7 +68,7 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
             value={answer as string}
             onChange={(e) => handleTextChange(e.target.value)}
             placeholder="your@email.com"
-            className="text-xl h-14 border-2 focus:border-primary transition-colors"
+            className="text-base sm:text-lg md:text-xl h-12 sm:h-14 border-2 focus:border-primary transition-colors"
             data-testid="input-email-answer"
             autoFocus
           />
@@ -80,7 +80,7 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
             value={answer as string}
             onChange={(e) => handleTextChange(e.target.value)}
             placeholder="Enter a number..."
-            className="text-xl h-14 border-2 focus:border-primary transition-colors"
+            className="text-base sm:text-lg md:text-xl h-12 sm:h-14 border-2 focus:border-primary transition-colors"
             data-testid="input-number-answer"
             autoFocus
           />
@@ -91,7 +91,7 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
             value={answer as string}
             onChange={(e) => handleTextChange(e.target.value)}
             placeholder="Type your answer here..."
-            className="text-xl min-h-[160px] border-2 focus:border-primary transition-colors"
+            className="text-base sm:text-lg md:text-xl min-h-[120px] sm:min-h-[160px] border-2 focus:border-primary transition-colors"
             data-testid="input-textarea-answer"
             autoFocus
           />
@@ -99,16 +99,16 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
 
         {question.type === "multiple_choice" && question.options && (
           <RadioGroup value={answer as string} onValueChange={handleMultipleChoice}>
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               {question.options.map((option, index) => (
                 <div 
                   key={index} 
-                  className="group flex items-center space-x-4 p-5 rounded-xl hover-elevate active-elevate-2 border-2 border-border hover:border-primary/50 transition-all cursor-pointer" 
+                  className="group flex items-center space-x-3 sm:space-x-4 p-4 sm:p-5 rounded-xl hover-elevate active-elevate-2 border-2 border-border hover:border-primary/50 transition-all cursor-pointer" 
                   data-testid={`option-${index}`}
                   onClick={() => handleMultipleChoice(option)}
                 >
-                  <RadioGroupItem value={option} id={`option-${index}`} className="w-5 h-5" />
-                  <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer text-lg font-medium">
+                  <RadioGroupItem value={option} id={`option-${index}`} className="w-5 h-5 shrink-0" />
+                  <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer text-base sm:text-lg font-medium">
                     {option}
                   </Label>
                 </div>

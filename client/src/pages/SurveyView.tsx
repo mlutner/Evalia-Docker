@@ -128,20 +128,20 @@ export default function SurveyView() {
             </div>
             <div className="absolute inset-0 w-24 h-24 mx-auto bg-primary/20 rounded-full animate-ping" style={{ animationDuration: '2s' }}></div>
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 px-4">
             Thank you!
           </h1>
-          <p className="text-2xl text-muted-foreground mb-4" data-testid="text-thank-you-message">
+          <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-3 sm:mb-4 px-4" data-testid="text-thank-you-message">
             {survey.thankYouMessage || "Your responses have been recorded successfully."}
           </p>
-          <p className="text-lg text-muted-foreground/80 mb-10" data-testid="text-thank-you-subtitle">
+          <p className="text-base sm:text-lg text-muted-foreground/80 mb-8 sm:mb-10 px-4" data-testid="text-thank-you-subtitle">
             We appreciate you taking the time to share your thoughts.
           </p>
           <Button 
             size="lg" 
             onClick={() => window.location.reload()} 
             data-testid="button-submit-another"
-            className="text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all"
+            className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 shadow-lg hover:shadow-xl transition-all w-full sm:w-auto mx-4"
           >
             Submit Another Response
           </Button>
@@ -181,30 +181,30 @@ export default function SurveyView() {
               <Sparkles className="w-8 h-8 text-primary" />
             </div>
           </div>
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-tight px-4">
             {survey.title}
           </h1>
           {survey.description && (
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
+            <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-6 sm:mb-8 leading-relaxed px-4">
               {survey.description}
             </p>
           )}
           {survey.welcomeMessage && (
-            <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto" data-testid="text-welcome-message">
+            <p className="text-base sm:text-lg text-muted-foreground mb-8 sm:mb-10 max-w-2xl mx-auto px-4" data-testid="text-welcome-message">
               {survey.welcomeMessage}
             </p>
           )}
-          <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-4 px-4">
             <Button 
               size="lg" 
               onClick={handleStart}
               data-testid="button-start-survey"
-              className="text-xl px-10 py-7 shadow-lg hover:shadow-xl transition-all group"
+              className="text-lg sm:text-xl px-8 sm:px-10 py-6 sm:py-7 shadow-lg hover:shadow-xl transition-all group w-full sm:w-auto"
             >
               Start Survey
               <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <p className="text-sm text-muted-foreground" data-testid="text-survey-info">
+            <p className="text-xs sm:text-sm text-muted-foreground text-center" data-testid="text-survey-info">
               {questions.length} {questions.length === 1 ? 'question' : 'questions'} · Takes about {Math.max(1, Math.ceil(questions.length / 2))} {Math.ceil(questions.length / 2) === 1 ? 'minute' : 'minutes'}
             </p>
           </div>
@@ -239,18 +239,18 @@ export default function SurveyView() {
       </div>
 
       {/* Navigation Footer */}
-      <div className="sticky bottom-0 p-6 bg-background/95 backdrop-blur-md border-t shadow-lg">
-        <div className="container mx-auto max-w-4xl flex items-center justify-between">
+      <div className="sticky bottom-0 p-4 sm:p-6 bg-background/95 backdrop-blur-md border-t shadow-lg">
+        <div className="container mx-auto max-w-4xl flex items-center justify-between gap-2 sm:gap-4">
           <Button
             variant="ghost"
             size="lg"
             onClick={handleBack}
             disabled={currentStep === 0}
             data-testid="button-back"
-            className="text-lg"
+            className="text-base sm:text-lg"
           >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Back
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+            <span className="hidden xs:inline">Back</span>
           </Button>
 
           <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-4 py-2 rounded-lg">
@@ -263,22 +263,22 @@ export default function SurveyView() {
             onClick={handleNext}
             disabled={!canGoNext() || submitMutation.isPending}
             data-testid="button-next"
-            className="text-lg px-8 shadow-md hover:shadow-lg transition-shadow"
+            className="text-base sm:text-lg px-4 sm:px-8 shadow-md hover:shadow-lg transition-shadow"
           >
             {submitMutation.isPending ? (
               <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Submitting...
+                <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2 animate-spin" />
+                <span className="hidden xs:inline">Submitting...</span>
               </>
             ) : currentStep === questions.length - 1 ? (
               <>
                 Submit
-                <Check className="w-5 h-5 ml-2" />
+                <Check className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
               </>
             ) : (
               <>
                 Next
-                <ArrowRight className="w-5 h-5 ml-2" />
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
               </>
             )}
           </Button>
