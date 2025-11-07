@@ -15,15 +15,9 @@ export default function Header({ showActions = true }: HeaderProps) {
   const { user } = useAuth();
   const typedUser = user as User | null | undefined;
 
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/logout", { method: "POST", credentials: "include" });
-      queryClient.clear();
-      window.location.href = "/login";
-    } catch (error) {
-      queryClient.clear();
-      window.location.href = "/login";
-    }
+  const handleLogout = () => {
+    queryClient.clear();
+    window.location.href = "/api/logout";
   };
 
   return (
