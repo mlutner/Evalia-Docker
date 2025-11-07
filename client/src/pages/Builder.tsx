@@ -805,8 +805,6 @@ export default function Builder() {
               >
                 {createSurveyMutation.isPending || updateSurveyMutation.isPending
                   ? "Saving..."
-                  : isEditMode
-                  ? "Update Survey"
                   : "Save & Publish"}
               </Button>
             )}
