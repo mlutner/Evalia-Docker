@@ -71,10 +71,24 @@ export async function setupAuth(app: Express) {
     tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
     verified: passport.AuthenticateCallback
   ) => {
-    const user = {};
-    updateUserSession(user, tokens);
-    await upsertUser(tokens.claims());
-    verified(null, user);
+    try {
+      const claims = tokens.claims();
+      if (!claims) {
+        throw new Error("No claims received from authentication provider");
+      }
+      
+      console.log("[Auth] User claims received:", { sub: claims.sub, email: claims.email });
+      
+      const user = {};
+      updateUserSession(user, tokens);
+      await upsertUser(claims);
+      
+      console.log("[Auth] User authenticated successfully:", claims.sub);
+      verified(null, user);
+    } catch (error) {
+      console.error("[Auth Error] Verification failed:", error);
+      verified(error as Error);
+    }
   };
 
   const registeredStrategies = new Set<string>();
@@ -112,6 +126,22 @@ export async function setupAuth(app: Express) {
     passport.authenticate(`replitauth:${req.hostname}`, {
       successReturnToOrRedirect: "/",
       failureRedirect: "/api/login",
+    }, (err: any, user: any, info: any) => {
+      if (err) {
+        console.error("[Auth Error] Callback failed:", err);
+        return res.redirect("/api/login?error=auth_failed");
+      }
+      if (!user) {
+        console.error("[Auth Error] No user returned:", info);
+        return res.redirect("/api/login?error=no_user");
+      }
+      req.logIn(user, (loginErr) => {
+        if (loginErr) {
+          console.error("[Auth Error] Login failed:", loginErr);
+          return res.redirect("/api/login?error=login_failed");
+        }
+        return res.redirect("/");
+      });
     })(req, res, next);
   });
 
