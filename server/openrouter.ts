@@ -149,13 +149,24 @@ VALIDATION CHECKLIST:
  * Handle conversational refinements to survey questions
  */
 export async function refineSurvey(
-  currentQuestions: Question[],
+  survey: { 
+    title: string; 
+    description?: string | null; 
+    questions: Question[];
+    welcomeMessage?: string | null;
+    thankYouMessage?: string | null;
+  },
   userMessage: string,
   conversationHistory: ChatMessage[] = []
 ): Promise<{ questions?: Question[]; message: string }> {
-  const systemPrompt = `You are an AI assistant helping refine training surveys. 
+  const systemPrompt = `You are an AI assistant helping refine training surveys. You have full context about the survey.
 
-Current survey has ${currentQuestions.length} questions. The user wants to make changes.
+SURVEY INFORMATION:
+- Title: ${survey.title}
+- Description: ${survey.description || 'None'}
+- Welcome Message: ${survey.welcomeMessage || 'None'}
+- Thank You Message: ${survey.thankYouMessage || 'None'}
+- Number of questions: ${survey.questions.length}
 
 CRITICAL: When user mentions missing answer choices or options:
 - Add ALL the missing options they mention
@@ -164,6 +175,8 @@ CRITICAL: When user mentions missing answer choices or options:
 - If they provide the text of missing options, use their exact wording
 
 COMMON REQUESTS:
+- "What is this survey about?" → Explain based on title, description, and questions
+- "How many questions are there?" → Answer based on the current question count
 - "Fix the missing options" → Review questions and add missing answer choices
 - "Question X is missing option Y" → Add that specific option to that question
 - "Add more options" → Add 1-2 more relevant options to multiple choice questions
@@ -182,7 +195,7 @@ If the user is just asking questions or chatting (not requesting changes), retur
 }
 
 Current questions:
-${JSON.stringify(currentQuestions, null, 2)}`;
+${JSON.stringify(survey.questions, null, 2)}`;
 
   const messages: ChatMessage[] = [
     { role: "system", content: systemPrompt },

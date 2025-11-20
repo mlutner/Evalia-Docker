@@ -183,7 +183,13 @@ export default function Builder() {
         },
         body: JSON.stringify({
           message,
-          questions: currentQuestions,
+          survey: {
+            title: currentSurveyTitle,
+            description: currentSurveyDescription,
+            questions: currentQuestions,
+            welcomeMessage: welcomeMessage,
+            thankYouMessage: thankYouMessage,
+          },
           history: updatedMessages.map(m => ({ role: m.role, content: m.content })),
         }),
       });

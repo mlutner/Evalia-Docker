@@ -1,6 +1,5 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
-import { createRequire } from "module";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText } from "./openrouter";
@@ -8,11 +7,8 @@ import { insertSurveySchema, questionSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
 import mammoth from "mammoth";
+import { PDFParse } from "pdf-parse";
 import "./types";
-
-// pdf-parse needs CommonJS require for proper default export
-const require = createRequire(import.meta.url);
-const pdfParse = require("pdf-parse");
 
 const upload = multer({ 
   storage: multer.memoryStorage(),
@@ -77,16 +73,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Extract text based on file type
       if (fileType === "application/pdf") {
+        const parser = new PDFParse({ data: req.file.buffer });
         try {
-          const pdfData = await pdfParse(req.file.buffer);
-          extractedText = pdfData.text;
-          console.log(`PDF extracted ${extractedText.length} characters from ${pdfData.numpages || 'unknown'} pages`);
+          const result = await parser.getText();
+          extractedText = result.text;
+          console.log(`PDF extracted ${extractedText.length} characters from ${result.pages.length} pages`);
         } catch (pdfError: any) {
           console.error("PDF parsing error:", pdfError);
           return res.status(400).json({ 
             error: "Unable to read this PDF file", 
             tip: "The PDF might be password-protected, corrupted, or contain only images. Try saving it as a new PDF or using a different file." 
           });
+        } finally {
+          await parser.destroy(); // Always clean up resources
         }
       } else if (
         fileType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
@@ -183,17 +182,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI chat for survey refinements (protected)
   app.post("/api/chat", isAuthenticated, async (req, res) => {
     try {
-      const { message, questions, history } = req.body;
+      const { message, survey, history } = req.body;
 
       if (!message || typeof message !== "string") {
         return res.status(400).json({ error: "Message is required" });
       }
 
-      if (!Array.isArray(questions)) {
-        return res.status(400).json({ error: "Current questions are required" });
+      if (!survey || typeof survey !== "object") {
+        return res.status(400).json({ error: "Survey data is required" });
       }
 
-      const result = await refineSurvey(questions, message, history || []);
+      if (!Array.isArray(survey.questions)) {
+        return res.status(400).json({ error: "Survey questions are required" });
+      }
+
+      const result = await refineSurvey(survey, message, history || []);
 
       res.json(result);
     } catch (error: any) {
