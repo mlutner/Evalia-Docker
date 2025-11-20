@@ -78,8 +78,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Extract text based on file type
       if (fileType === "application/pdf") {
         try {
-          const pdfData = await pdfParse(req.file.buffer);
+          const pdfData = await pdfParse(req.file.buffer, {
+            max: 0 // Parse all pages (0 = unlimited)
+          });
           extractedText = pdfData.text;
+          console.log(`PDF extracted ${extractedText.length} characters from ${pdfData.numpages || 'unknown'} pages`);
         } catch (pdfError: any) {
           console.error("PDF parsing error:", pdfError);
           return res.status(400).json({ 
