@@ -91,6 +91,13 @@ export default function SurveyPreviewDialog({
                 <>
                   {/* Welcome Header */}
                   <header className="survey-header">
+                    <div className="survey-logo">
+                      <img 
+                        src={logoImage} 
+                        alt="Survey logo" 
+                        data-testid="icon-survey-logo"
+                      />
+                    </div>
                     <h1 className="survey-title" data-testid="text-preview-title">
                       {title}
                     </h1>
