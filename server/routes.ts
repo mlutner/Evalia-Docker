@@ -1,5 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
+import express from "express";
+import path from "path";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { parsePDFWithVision, parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText } from "./openrouter";
@@ -28,6 +30,10 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  
+  // Serve static assets from attached_assets directory
+  const assetsPath = path.resolve(import.meta.dirname, "..", "attached_assets");
+  app.use("/attached_assets", express.static(assetsPath));
   
   // Setup Replit Auth (supports Google + Email/Password)
   await setupAuth(app);
