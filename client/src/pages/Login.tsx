@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import trainerImage from "@assets/ChatGPT Image Nov 6, 2025, 03_45_09 PM_1762472718165.png";
 import evaliaLogo from "@assets/Heading (300 x 50 px) (1000 x 250 px) (2)_1762359727994.png";
 
+import ChatGPT_Image_Nov_21__2025__12_41_07_PM from "@assets/ChatGPT Image Nov 21, 2025, 12_41_07 PM.png";
+
 export default function Login() {
   const [, setLocation] = useLocation();
   const { isAuthenticated, isLoading } = useAuth();
@@ -33,12 +35,11 @@ export default function Login() {
       {/* Left side - Image */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <img
-          src={trainerImage}
+          src={ChatGPT_Image_Nov_21__2025__12_41_07_PM}
           alt="Professional trainer"
-          className="w-full h-full object-cover object-center"
+          className="w-full h-full object-cover object-center ml-[40px] mr-[40px] mt-[20px] mb-[20px] pl-[20px] pr-[20px] pt-[20px] pb-[20px]"
         />
       </div>
-
       {/* Right side - Login */}
       <div className="flex flex-col justify-center w-full lg:w-1/2 px-8 sm:px-12 lg:px-24 bg-background">
         <div className="w-full max-w-md mx-auto">
