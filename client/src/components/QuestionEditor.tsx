@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { GripVertical, Trash2, Plus } from "lucide-react";
 import type { Question, QuestionType } from "@shared/schema";
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface QuestionEditorProps {
   question: Question;
@@ -23,6 +25,14 @@ export default function QuestionEditor({
   onUpdate,
   onDelete,
 }: QuestionEditorProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: question.id });
   const updateField = (field: keyof Question, value: any) => {
     onUpdate({ ...question, [field]: value });
   };
@@ -54,9 +64,24 @@ export default function QuestionEditor({
 
   const needsOptions = question.type === "multiple_choice" || question.type === "checkbox";
 
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
   return (
-    <Card className="relative" data-testid={`question-editor-${question.id}`}>
-      <div className="absolute left-2 top-4 cursor-move text-muted-foreground hover:text-foreground">
+    <Card 
+      ref={setNodeRef} 
+      style={style}
+      className="relative" 
+      data-testid={`question-editor-${question.id}`}
+    >
+      <div 
+        {...attributes}
+        {...listeners}
+        className="absolute left-2 top-4 cursor-move text-muted-foreground hover:text-foreground touch-none"
+      >
         <GripVertical className="w-5 h-5" />
       </div>
       

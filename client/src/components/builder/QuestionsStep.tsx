@@ -7,6 +7,21 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Plus, MessageSquare, FileQuestion, ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import type { Message } from "@/components/ChatPanel";
 import type { Question } from "@shared/schema";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 
 interface QuestionsStepProps {
   questions: Question[];
@@ -16,6 +31,7 @@ interface QuestionsStepProps {
   onUpdateQuestion: (index: number, question: Question) => void;
   onDeleteQuestion: (index: number) => void;
   onAddQuestion: () => void;
+  onReorderQuestions: (questions: Question[]) => void;
   onPreview?: () => void;
 }
 
@@ -27,9 +43,29 @@ export default function QuestionsStep({
   onUpdateQuestion,
   onDeleteQuestion,
   onAddQuestion,
+  onReorderQuestions,
   onPreview,
 }: QuestionsStepProps) {
   const [chatOpen, setChatOpen] = useState(true);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = questions.findIndex((q) => q.id === active.id);
+      const newIndex = questions.findIndex((q) => q.id === over.id);
+      
+      const reorderedQuestions = arrayMove(questions, oldIndex, newIndex);
+      onReorderQuestions(reorderedQuestions);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -115,15 +151,26 @@ export default function QuestionsStep({
             </Card>
           ) : (
             <>
-              {questions.map((question, index) => (
-                <QuestionEditor
-                  key={question.id}
-                  question={question}
-                  index={index}
-                  onUpdate={(updated) => onUpdateQuestion(index, updated)}
-                  onDelete={() => onDeleteQuestion(index)}
-                />
-              ))}
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={questions.map(q => q.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {questions.map((question, index) => (
+                    <QuestionEditor
+                      key={question.id}
+                      question={question}
+                      index={index}
+                      onUpdate={(updated) => onUpdateQuestion(index, updated)}
+                      onDelete={() => onDeleteQuestion(index)}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
               
               <Button
                 variant="outline"
