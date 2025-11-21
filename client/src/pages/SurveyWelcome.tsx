@@ -43,6 +43,18 @@ export default function SurveyWelcome({
   return (
     <div className="survey-shell">
       <main className="survey-card pl-[45px] pr-[45px]" aria-labelledby="survey-title">
+        {/* Back Button */}
+        {onBack && (
+          <button
+            onClick={onBack}
+            data-testid="button-back-survey"
+            className="survey-back-button"
+            type="button"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+        )}
         {/* Header Section */}
         <header className="survey-header pt-[0px] pb-[0px] mt-[0px] mb-[0px]">
           {/* Logo */}
@@ -58,7 +70,7 @@ export default function SurveyWelcome({
             id="survey-title"
             data-testid="text-survey-title"
             className="survey-title text-center text-[40px]">
-            {survey.title}
+            Training Check-in
           </h1>
         </header>
 

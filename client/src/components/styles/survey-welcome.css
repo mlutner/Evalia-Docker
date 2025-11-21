@@ -36,6 +36,33 @@
   padding-top: 0;
 }
 
+.survey-back-button {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.survey-back-button:hover {
+  background: #f3f4f6;
+  color: #071a32;
+  border-color: #d1d5db;
+}
+
+.survey-back-button:active {
+  background: #e5e7eb;
+}
+
 .survey-exit-button {
   position: absolute;
   top: 12px;
