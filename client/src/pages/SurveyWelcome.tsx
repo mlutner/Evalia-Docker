@@ -73,12 +73,11 @@ export default function SurveyWelcome({
         <h2 className="section-heading text-[24px] font-extrabold" data-testid="text-what-youll-gain">
           What you'll gain:
         </h2>
-        <ul className="benefits ml-[75px] mr-[75px] mt-[5px] mb-[5px]">
+        <ul className="benefits">
           {benefitPoints.map((point, idx) => (
             <li
               key={idx}
-              data-testid={`text-benefit-${idx}`}
-              className="mt-[4px] mb-[4px]">
+              data-testid={`text-benefit-${idx}`}>
               {point.trim()}
             </li>
           ))}
@@ -89,7 +88,7 @@ export default function SurveyWelcome({
           size="lg"
           onClick={onStart}
           data-testid="button-start-survey"
-          className="w-full max-w-md mx-auto block rounded-full font-semibold py-4 text-[22px] ml-[55px] mr-[55px] pt-[10px] pb-[10px] pl-[35px] pr-[35px] mt-[10px] mb-[10px]"
+          className="w-full max-w-md mx-auto block rounded-full font-semibold py-4 text-[22px] mt-4 mb-3"
         >
           Begin Self-Assessment
         </Button>
