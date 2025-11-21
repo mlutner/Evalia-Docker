@@ -53,6 +53,9 @@ export const surveys = pgTable("surveys", {
   welcomeMessage: text("welcome_message"),
   thankYouMessage: text("thank_you_message"),
   illustrationUrl: text("illustration_url"),
+  status: varchar("status").notNull().default("Active"), // Active, Paused, Closed
+  expiresAt: timestamp("expires_at"),
+  maxResponses: integer("max_responses"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -74,6 +77,7 @@ export const surveyResponses = pgTable("survey_responses", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   surveyId: varchar("survey_id").notNull().references(() => surveys.id),
   answers: jsonb("answers").notNull().$type<Record<string, string | string[]>>(),
+  startedAt: timestamp("started_at").notNull().defaultNow(),
   completedAt: timestamp("completed_at").notNull().defaultNow(),
 });
 

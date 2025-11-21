@@ -392,6 +392,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Survey not found" });
       }
 
+      // Check survey status
+      if (survey.status !== "Active") {
+        return res.status(403).json({ error: `Survey is ${survey.status}. No new responses are being accepted.` });
+      }
+
+      // Check expiration date
+      if (survey.expiresAt && new Date(survey.expiresAt) < new Date()) {
+        return res.status(403).json({ error: "Survey has expired and is no longer accepting responses." });
+      }
+
+      // Check response limit
+      if (survey.maxResponses) {
+        const count = await storage.getResponseCount(id);
+        if (count >= survey.maxResponses) {
+          return res.status(403).json({ error: "Survey has reached its maximum number of responses." });
+        }
+      }
+
       // Validate answers exist
       if (!answers || typeof answers !== "object") {
         return res.status(400).json({ error: "Answers are required" });
@@ -536,6 +554,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Duplicate detection error:", error);
       res.status(500).json({ error: "Failed to detect duplicates" });
+    }
+  });
+
+  // Update survey status (protected)
+  app.patch("/api/surveys/:id/status", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const userId = req.user.claims.sub;
+
+      if (!["Active", "Paused", "Closed"].includes(status)) {
+        return res.status(400).json({ error: "Invalid status. Must be Active, Paused, or Closed." });
+      }
+
+      const isOwner = await storage.checkSurveyOwnership(id, userId);
+      if (!isOwner) return res.status(403).json({ error: "Access denied" });
+
+      const updated = await storage.updateSurvey(id, { status } as any);
+      if (!updated) return res.status(404).json({ error: "Survey not found" });
+
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Update status error:", error);
+      res.status(500).json({ error: "Failed to update survey status" });
+    }
+  });
+
+  // Update survey control settings (protected)
+  app.patch("/api/surveys/:id/settings", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const { expiresAt, maxResponses } = req.body;
+      const userId = req.user.claims.sub;
+
+      const isOwner = await storage.checkSurveyOwnership(id, userId);
+      if (!isOwner) return res.status(403).json({ error: "Access denied" });
+
+      const updates: any = {};
+      if (expiresAt !== undefined) updates.expiresAt = expiresAt ? new Date(expiresAt) : null;
+      if (maxResponses !== undefined) updates.maxResponses = maxResponses > 0 ? maxResponses : null;
+
+      const updated = await storage.updateSurvey(id, updates);
+      if (!updated) return res.status(404).json({ error: "Survey not found" });
+
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Update settings error:", error);
+      res.status(500).json({ error: "Failed to update survey settings" });
     }
   });
 

@@ -20,6 +20,7 @@ export default function SurveyView() {
   const [isCompleted, setIsCompleted] = useState(false);
   const [showBackWarning, setShowBackWarning] = useState(false);
   const [showExitWarning, setShowExitWarning] = useState(false);
+  const [startTime] = useState(new Date());
 
   const { data: survey, isLoading, error } = useQuery<Survey>({
     queryKey: ["/api/surveys", id],
@@ -28,7 +29,11 @@ export default function SurveyView() {
 
   const submitMutation = useMutation({
     mutationFn: async (answers: Record<string, string | string[]>) => {
-      return apiRequest("POST", `/api/surveys/${id}/responses`, { answers });
+      return apiRequest("POST", `/api/surveys/${id}/responses`, { 
+        answers,
+        startedAt: startTime.toISOString(),
+        completedAt: new Date().toISOString(),
+      });
     },
     onSuccess: () => {
       setIsCompleted(true);
@@ -230,9 +235,21 @@ export default function SurveyView() {
           <h1 className="survey-title" data-testid="text-question-number">
             Question {currentStep + 1}
           </h1>
-          <p className="survey-progress" data-testid="text-progress">
-            {currentStep + 1} of {questions.length} • {Math.round(((currentStep + 1) / questions.length) * 100)}% complete
-          </p>
+          <div className="w-full max-w-xs mx-auto mb-3">
+            <div className="flex justify-between items-center mb-1">
+              <p className="survey-progress text-sm" data-testid="text-progress">
+                {currentStep + 1} of {questions.length} 
+              </p>
+              <span className="text-xs font-medium text-muted-foreground">{Math.round(((currentStep + 1) / questions.length) * 100)}%</span>
+            </div>
+            <div className="w-full h-2 bg-muted rounded-full overflow-hidden" data-testid="progress-bar">
+              <div 
+                className="h-full bg-primary rounded-full transition-all duration-300 ease-out"
+                style={{ width: `${((currentStep + 1) / questions.length) * 100}%` }}
+                data-testid="progress-bar-fill"
+              />
+            </div>
+          </div>
         </header>
 
         {/* Body - Question Content */}

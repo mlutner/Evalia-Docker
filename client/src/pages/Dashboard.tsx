@@ -4,9 +4,10 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import SurveyCard from "@/components/SurveyCard";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Plus, FileText, BarChart3, Calendar } from "lucide-react";
+import { Plus, FileText, BarChart3, Calendar, Clock, Users } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { Survey } from "@shared/schema";
@@ -57,6 +58,18 @@ export default function Dashboard() {
   const handleExport = (id: string) => {
     console.log("Export survey:", id);
   };
+
+  const getStatusBadge = (survey: Survey) => {
+    if (survey.status === "Active") {
+      return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200" data-testid={`badge-status-active-${survey.id}`}>Active</Badge>;
+    } else if (survey.status === "Paused") {
+      return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200" data-testid={`badge-status-paused-${survey.id}`}>Paused</Badge>;
+    } else {
+      return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200" data-testid={`badge-status-closed-${survey.id}`}>Closed</Badge>;
+    }
+  };
+
+  const isExpired = (survey: Survey) => survey.expiresAt && new Date(survey.expiresAt) < new Date();
 
   const handleDelete = (id: string) => {
     setDeleteConfirm(id);
@@ -168,22 +181,43 @@ export default function Dashboard() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {surveys.map((survey, index) => (
-                  <SurveyCard
-                    key={survey.id}
-                    survey={{
-                      id: survey.id,
-                      title: survey.title,
-                      createdAt: survey.createdAt.toString(),
-                      responseCount: 0,
-                      questionCount: survey.questions.length,
-                    }}
-                    onEdit={() => handleEdit(survey.id)}
-                    onView={() => handleView(survey.id)}
-                    onAnalyze={() => handleAnalyze(survey.id)}
-                    onExport={() => handleExport(survey.id)}
-                    onDelete={() => handleDelete(survey.id)}
-                    index={index}
-                  />
+                  <div key={survey.id} className="relative">
+                    {isExpired(survey) && (
+                      <div className="absolute top-2 right-2 z-10">
+                        <Badge variant="destructive" data-testid={`badge-expired-${survey.id}`}>Expired</Badge>
+                      </div>
+                    )}
+                    <SurveyCard
+                      survey={{
+                        id: survey.id,
+                        title: survey.title,
+                        createdAt: survey.createdAt.toString(),
+                        responseCount: 0,
+                        questionCount: survey.questions.length,
+                      }}
+                      onEdit={() => handleEdit(survey.id)}
+                      onView={() => handleView(survey.id)}
+                      onAnalyze={() => handleAnalyze(survey.id)}
+                      onExport={() => handleExport(survey.id)}
+                      onDelete={() => handleDelete(survey.id)}
+                      index={index}
+                    />
+                    <div className="flex gap-2 mt-2 flex-wrap items-center">
+                      {getStatusBadge(survey)}
+                      {survey.expiresAt && (
+                        <Badge variant="outline" className="text-xs" data-testid={`badge-expires-${survey.id}`}>
+                          <Clock className="w-3 h-3 mr-1" />
+                          {new Date(survey.expiresAt).toLocaleDateString()}
+                        </Badge>
+                      )}
+                      {survey.maxResponses && (
+                        <Badge variant="outline" className="text-xs" data-testid={`badge-limit-${survey.id}`}>
+                          <Users className="w-3 h-3 mr-1" />
+                          {survey.maxResponses}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
                 ))}
               </div>
             </TabsContent>
@@ -196,22 +230,43 @@ export default function Dashboard() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {recentSurveys.map((survey, index) => (
-                  <SurveyCard
-                    key={survey.id}
-                    survey={{
-                      id: survey.id,
-                      title: survey.title,
-                      createdAt: survey.createdAt.toString(),
-                      responseCount: 0,
-                      questionCount: survey.questions.length,
-                    }}
-                    onEdit={() => handleEdit(survey.id)}
-                    onView={() => handleView(survey.id)}
-                    onAnalyze={() => handleAnalyze(survey.id)}
-                    onExport={() => handleExport(survey.id)}
-                    onDelete={() => handleDelete(survey.id)}
-                    index={index}
-                  />
+                  <div key={survey.id} className="relative">
+                    {isExpired(survey) && (
+                      <div className="absolute top-2 right-2 z-10">
+                        <Badge variant="destructive" data-testid={`badge-expired-${survey.id}`}>Expired</Badge>
+                      </div>
+                    )}
+                    <SurveyCard
+                      survey={{
+                        id: survey.id,
+                        title: survey.title,
+                        createdAt: survey.createdAt.toString(),
+                        responseCount: 0,
+                        questionCount: survey.questions.length,
+                      }}
+                      onEdit={() => handleEdit(survey.id)}
+                      onView={() => handleView(survey.id)}
+                      onAnalyze={() => handleAnalyze(survey.id)}
+                      onExport={() => handleExport(survey.id)}
+                      onDelete={() => handleDelete(survey.id)}
+                      index={index}
+                    />
+                    <div className="flex gap-2 mt-2 flex-wrap items-center">
+                      {getStatusBadge(survey)}
+                      {survey.expiresAt && (
+                        <Badge variant="outline" className="text-xs" data-testid={`badge-expires-${survey.id}`}>
+                          <Clock className="w-3 h-3 mr-1" />
+                          {new Date(survey.expiresAt).toLocaleDateString()}
+                        </Badge>
+                      )}
+                      {survey.maxResponses && (
+                        <Badge variant="outline" className="text-xs" data-testid={`badge-limit-${survey.id}`}>
+                          <Users className="w-3 h-3 mr-1" />
+                          {survey.maxResponses}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
                 ))}
               </div>
             </TabsContent>
