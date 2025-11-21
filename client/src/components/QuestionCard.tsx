@@ -185,7 +185,6 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
                   key={index} 
                   className="flex items-center space-x-4 p-3.5 rounded-lg hover-elevate active-elevate-2 border border-border/50 bg-card/30 hover:bg-primary/5 hover:border-primary/30 transition-all cursor-pointer" 
                   data-testid={`checkbox-${index}`}
-                  onClick={() => handleCheckboxChange(option, !isChecked)}
                 >
                   <Checkbox
                     id={`checkbox-${index}`}
@@ -193,7 +192,7 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
                     onCheckedChange={(checked) => handleCheckboxChange(option, checked as boolean)}
                     className="w-4 h-4"
                   />
-                  <Label htmlFor={`checkbox-${index}`} className="flex-1 cursor-pointer text-sm sm:text-base font-normal">
+                  <Label htmlFor={`checkbox-${index}`} className="flex-1 cursor-pointer text-sm sm:text-base font-normal" onClick={() => handleCheckboxChange(option, !isChecked)}>
                     {option}
                   </Label>
                 </div>
