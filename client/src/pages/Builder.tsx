@@ -666,6 +666,9 @@ export default function Builder() {
       <SurveyPreviewDialog
         questions={surveyState.currentQuestions}
         title={surveyState.currentSurveyTitle}
+        description={surveyState.currentSurveyDescription}
+        welcomeMessage={surveyState.welcomeMessage}
+        illustration={existingSurvey?.illustrationUrl || "/assets/1_1763757398561.png"}
         open={showPreview}
         onOpenChange={setShowPreview}
       />
