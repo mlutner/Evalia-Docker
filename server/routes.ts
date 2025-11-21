@@ -557,51 +557,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update survey status (protected)
-  app.patch("/api/surveys/:id/status", isAuthenticated, async (req: any, res) => {
+  // Invite respondents to survey (protected) - Phase 4
+  app.post("/api/surveys/:id/invite", isAuthenticated, async (req: any, res) => {
     try {
       const { id } = req.params;
-      const { status } = req.body;
+      const { respondents } = req.body; // Array of {email, name}
       const userId = req.user.claims.sub;
-
-      if (!["Active", "Paused", "Closed"].includes(status)) {
-        return res.status(400).json({ error: "Invalid status. Must be Active, Paused, or Closed." });
-      }
 
       const isOwner = await storage.checkSurveyOwnership(id, userId);
       if (!isOwner) return res.status(403).json({ error: "Access denied" });
 
-      const updated = await storage.updateSurvey(id, { status } as any);
-      if (!updated) return res.status(404).json({ error: "Survey not found" });
+      const survey = await storage.getSurvey(id);
+      if (!survey) return res.status(404).json({ error: "Survey not found" });
 
-      res.json(updated);
+      const created = [];
+      for (const respondent of respondents) {
+        const r = await storage.createRespondent(id, respondent);
+        const surveyUrl = `${process.env.APP_URL || "http://localhost:5000"}/survey/${id}?respondent=${r.respondentToken}`;
+        console.log(`[RESPONDENT INVITED] ${respondent.email} - Survey: ${survey.title} - Link: ${surveyUrl}`);
+        created.push(r);
+      }
+
+      res.json({ invited: created.length, respondents: created });
     } catch (error: any) {
-      console.error("Update status error:", error);
-      res.status(500).json({ error: "Failed to update survey status" });
+      console.error("Invite respondents error:", error);
+      res.status(500).json({ error: "Failed to invite respondents" });
     }
   });
 
-  // Update survey control settings (protected)
-  app.patch("/api/surveys/:id/settings", isAuthenticated, async (req: any, res) => {
+  // Get respondents for survey (protected)
+  app.get("/api/surveys/:id/respondents", isAuthenticated, async (req: any, res) => {
     try {
       const { id } = req.params;
-      const { expiresAt, maxResponses } = req.body;
       const userId = req.user.claims.sub;
 
       const isOwner = await storage.checkSurveyOwnership(id, userId);
       if (!isOwner) return res.status(403).json({ error: "Access denied" });
 
-      const updates: any = {};
-      if (expiresAt !== undefined) updates.expiresAt = expiresAt ? new Date(expiresAt) : null;
-      if (maxResponses !== undefined) updates.maxResponses = maxResponses > 0 ? maxResponses : null;
-
-      const updated = await storage.updateSurvey(id, updates);
-      if (!updated) return res.status(404).json({ error: "Survey not found" });
-
-      res.json(updated);
+      const respondents = await storage.getAllRespondents(id);
+      res.json(respondents);
     } catch (error: any) {
-      console.error("Update settings error:", error);
-      res.status(500).json({ error: "Failed to update survey settings" });
+      console.error("Get respondents error:", error);
+      res.status(500).json({ error: "Failed to fetch respondents" });
+    }
+  });
+
+  // Delete respondent (protected)
+  app.delete("/api/surveys/:surveyId/respondents/:respondentId", isAuthenticated, async (req: any, res) => {
+    try {
+      const { surveyId, respondentId } = req.params;
+      const userId = req.user.claims.sub;
+
+      const isOwner = await storage.checkSurveyOwnership(surveyId, userId);
+      if (!isOwner) return res.status(403).json({ error: "Access denied" });
+
+      const deleted = await storage.deleteRespondent(respondentId);
+      if (!deleted) return res.status(404).json({ error: "Respondent not found" });
+
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Delete respondent error:", error);
+      res.status(500).json({ error: "Failed to delete respondent" });
     }
   });
 
