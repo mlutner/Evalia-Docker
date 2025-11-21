@@ -88,8 +88,8 @@ export default function SurveyWelcomeTemplate({
           Begin Survey
         </button>
       </footer>
-      <p className="survey-footnote" data-testid="text-helper">
-        Your responses are confidential, anonymous, and used solely for survey purposes.
+      <p className="survey-footnote text-center" data-testid="text-helper">
+        Confidential and anonymous
       </p>
     </>
   );
