@@ -68,7 +68,11 @@ export async function parsePDFWithVision(pdfBuffer: Buffer, fileName: string): P
         Authorization: `Bearer ${MISTRAL_API_KEY}`,
       },
       body: JSON.stringify({
-        document: `data:application/pdf;base64,${base64PDF}`,
+        model: MODELS.OCR,
+        document: {
+          type: "document_url",
+          document_url: `data:application/pdf;base64,${base64PDF}`,
+        },
       }),
     });
 
@@ -78,8 +82,8 @@ export async function parsePDFWithVision(pdfBuffer: Buffer, fileName: string): P
     }
 
     const data = await response.json();
-    // OCR returns markdown content
-    return data.content || data.text || data.pages?.map((p: any) => p.markdown || p.content).join("\n") || "";
+    // OCR returns markdown content in the result
+    return data.result?.markdown || data.content || data.text || data.result?.content || "";
   } catch (error: any) {
     throw new Error(`PDF OCR failed: ${error.message}`);
   }
