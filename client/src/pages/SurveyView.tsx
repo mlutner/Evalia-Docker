@@ -268,42 +268,4 @@ export default function SurveyView() {
       </main>
     </div>
   );
-
-      {/* Back Button Warning Dialog */}
-      <AlertDialog open={showBackWarning} onOpenChange={setShowBackWarning}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Go back?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Your current answer will be saved, but you can review or change it if needed.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel data-testid="button-cancel-back">Stay Here</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmBack} data-testid="button-confirm-back">
-              Go Back
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Exit Warning Dialog */}
-      <AlertDialog open={showExitWarning} onOpenChange={setShowExitWarning}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Exit survey?</AlertDialogTitle>
-            <AlertDialogDescription>
-              You have started answering this survey. Are you sure you want to exit? Your answers will not be saved.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel data-testid="button-cancel-exit">Keep Answering</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmExit} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" data-testid="button-confirm-exit">
-              Exit Survey
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
-  );
 }
