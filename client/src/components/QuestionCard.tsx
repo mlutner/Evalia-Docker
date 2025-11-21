@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,6 +17,11 @@ interface QuestionCardProps {
 
 export default function QuestionCard({ question, onAnswer, initialAnswer }: QuestionCardProps) {
   const [answer, setAnswer] = useState<string | string[]>(initialAnswer || (question.type === 'checkbox' ? [] : ''));
+
+  // Reset answer state when moving to a new question
+  useEffect(() => {
+    setAnswer(initialAnswer || (question.type === 'checkbox' ? [] : ''));
+  }, [question.id, question.type]);
 
   const handleTextChange = (value: string) => {
     setAnswer(value);
