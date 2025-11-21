@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import QuestionCard from "@/components/QuestionCard";
 import ProgressBar from "@/components/ProgressBar";
-import logoImage from "@assets/Untitled design (3)_1763756722973.png";
+import logoImage from "@assets/targeted_element_1763764396546.png";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { Question } from "@shared/schema";
 
