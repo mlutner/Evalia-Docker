@@ -79,8 +79,7 @@ export default function SurveyWelcome({
           {benefitPoints.map((point, idx) => (
             <li
               key={idx}
-              data-testid={`text-benefit-${idx}`}
-              className="mt-[0px] mb-[0px]">
+              data-testid={`text-benefit-${idx}`}>
               {point.trim()}
             </li>
           ))}
