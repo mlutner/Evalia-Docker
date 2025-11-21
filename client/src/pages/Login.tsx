@@ -33,11 +33,11 @@ export default function Login() {
   return (
     <div className="flex h-screen">
       {/* Left side - Image */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center">
         <img
           src={ChatGPT_Image_Nov_21__2025__12_41_07_PM}
           alt="Professional trainer"
-          className="w-full h-full object-cover object-center ml-[0px] mr-[0px] mt-[0px] mb-[0px] pt-[0px] pb-[0px] pl-[0px] pr-[0px]"
+          className="max-w-xs max-h-80 object-contain ml-[0px] mr-[0px] mt-[0px] mb-[0px] pt-[0px] pb-[0px] pl-[0px] pr-[0px]"
         />
       </div>
       {/* Right side - Login */}
