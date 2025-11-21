@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Loader2, AlertCircle } from "lucide-react";
 import type { Survey } from "@shared/schema";
-import logoImage from "@assets/Untitled design (3)_1763753243586.png";
 
 interface SurveyWelcomeProps {
   survey: Survey;
@@ -38,14 +37,6 @@ export default function SurveyWelcome({
   return (
     <div className="page">
       <main className="card text-[14px] pl-[40px] pr-[40px] pt-[40px] pb-[40px]" aria-labelledby="survey-title">
-        {/* Logo mark */}
-        <img 
-          src={logoImage} 
-          alt="Survey logo" 
-          className="logo-mark"
-          data-testid="icon-survey-logo"
-        />
-
         {/* Heading & subtitle */}
         <h1
           id="survey-title"
