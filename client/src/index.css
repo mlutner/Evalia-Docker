@@ -40,14 +40,15 @@ body {
 }
 
 .survey-logo {
-  width: 64px;
-  height: 64px;
-  border-radius: 999px;
-  background: #071a32;
+  width: 51px;
+  height: 51px;
+  border-radius: 50%;
+  background: rgba(43, 180, 160, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  padding: 16px;
 }
 
 .survey-logo img {
@@ -134,14 +135,14 @@ body {
 
 .survey-primary {
   padding: 10px 24px;
-  border-radius: 999px;
+  border-radius: 24px;
   border: none;
   background: #071a32;
   color: #ccff00;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 17px;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 12px 28px rgba(7, 26, 50, 0.25);
+  box-shadow: 0 12px 30px rgba(7, 26, 50, 0.15);
   transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
