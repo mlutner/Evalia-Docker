@@ -38,9 +38,12 @@ export default function SurveyWelcome({
     <div className="page">
       <main className="card text-[14px] pl-[40px] pr-[40px] pt-[40px] pb-[40px]" aria-labelledby="survey-title">
         {/* Logo mark */}
-        <div className="logo-mark" data-testid="icon-survey-logo">
-          <div className="logo-mark-icon"></div>
-        </div>
+        <img 
+          src="/attached_assets/Untitled design (3)_1763753101604.png" 
+          alt="Survey logo" 
+          className="logo-mark"
+          data-testid="icon-survey-logo"
+        />
 
         {/* Heading & subtitle */}
         <h1
