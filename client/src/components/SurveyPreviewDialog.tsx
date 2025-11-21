@@ -140,10 +140,6 @@ export default function SurveyPreviewDialog({
                   </button>
                 </footer>
               )}
-
-              <p className="survey-footnote">
-                {isWelcome ? "Welcome" : `Question ${currentQuestion + 1} of ${questions.length}`}
-              </p>
             </div>
           </div>
         </div>
