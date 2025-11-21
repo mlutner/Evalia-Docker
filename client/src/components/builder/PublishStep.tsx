@@ -31,9 +31,9 @@ export default function PublishStep({
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-semibold mb-3">Finalize Your Survey</h2>
+        <h2 className="text-3xl font-semibold mb-3">Review & Finalize</h2>
         <p className="text-muted-foreground text-lg">
-          Add details to make your survey shine
+          Add optional details to enhance your survey
         </p>
       </div>
 

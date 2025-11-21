@@ -25,9 +25,9 @@ import type { SurveyTemplate } from "@shared/templates";
 import type { Question, Survey } from "@shared/schema";
 
 const WIZARD_STEPS = [
-  { number: 1, title: "Start", description: "Choose how to begin" },
+  { number: 1, title: "Start", description: "Create your survey" },
   { number: 2, title: "Questions", description: "Build your survey" },
-  { number: 3, title: "Publish", description: "Add details & share" },
+  { number: 3, title: "Review", description: "Finalize & share" },
 ];
 
 function formatTimeAgo(date: Date): string {
@@ -545,10 +545,18 @@ export default function Builder() {
 
   const handleNextStep = () => {
     if (currentWizardStep === 1) {
+      if (!currentSurveyTitle.trim()) {
+        toast({
+          title: "Title required",
+          description: "Please enter a title for your survey to continue",
+          variant: "destructive",
+        });
+        return;
+      }
       if (currentQuestions.length === 0) {
         toast({
-          title: "Choose a method",
-          description: "Please select a template, use AI, or upload a document to continue",
+          title: "Questions needed",
+          description: "Please select a template, use AI, or upload a document to create questions",
           variant: "destructive",
         });
         return;
@@ -648,6 +656,23 @@ export default function Builder() {
         {currentWizardStep === 1 && (
           <div className="space-y-8">
             <div className="max-w-5xl mx-auto">
+              {/* Survey Title Input */}
+              <div className="mb-8 bg-card border rounded-lg p-6">
+                <label className="text-sm font-medium mb-2 block">
+                  Survey Title <span className="text-destructive">*</span>
+                </label>
+                <Input
+                  value={currentSurveyTitle}
+                  onChange={(e) => setCurrentSurveyTitle(e.target.value)}
+                  placeholder="Enter a clear, descriptive title for your survey..."
+                  className="text-base"
+                  data-testid="input-survey-title-step1"
+                />
+                <p className="text-xs text-muted-foreground mt-2">
+                  Give your survey a clear title that describes what it's about
+                </p>
+              </div>
+
               {/* Tab Header */}
               <div className="mb-8">
                 <h2 className="text-2xl font-semibold mb-1">Choose your creation method</h2>
@@ -939,7 +964,7 @@ export default function Builder() {
               <Button 
                 size="lg" 
                 onClick={handleNextStep}
-                disabled={currentWizardStep === 1 && currentQuestions.length === 0}
+                disabled={currentWizardStep === 1 && (!currentSurveyTitle.trim() || currentQuestions.length === 0)}
                 data-testid="button-next-step"
               >
                 Next
