@@ -10,6 +10,18 @@ import mammoth from "mammoth";
 import { PDFParse } from "pdf-parse";
 import "./types";
 
+// Pool of survey illustrations - rotated across surveys
+const SURVEY_ILLUSTRATIONS = [
+  "https://replit.com/assets/1_1763757398561.png",
+  "https://replit.com/assets/2_1763757398561.png",
+  "https://replit.com/assets/3_1763757398561.png",
+];
+
+// Helper to get a random illustration from the pool
+function getRandomIllustration(): string {
+  return SURVEY_ILLUSTRATIONS[Math.floor(Math.random() * SURVEY_ILLUSTRATIONS.length)];
+}
+
 const upload = multer({ 
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
@@ -252,7 +264,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const userId = req.user.claims.sub;
-      const survey = await storage.createSurvey(validationResult.data, userId);
+      // Auto-assign a random illustration to the survey
+      const surveyData = {
+        ...validationResult.data,
+        illustrationUrl: getRandomIllustration(),
+      };
+      const survey = await storage.createSurvey(surveyData, userId);
       res.status(201).json(survey);
     } catch (error: any) {
       console.error("Create survey error:", error);
