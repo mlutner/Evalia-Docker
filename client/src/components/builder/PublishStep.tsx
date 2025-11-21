@@ -36,7 +36,6 @@ export default function PublishStep({
           Add optional details to enhance your survey
         </p>
       </div>
-
       <div className="space-y-6 bg-card border rounded-lg p-6">
         <div>
           <label className="text-sm font-medium mb-2 block">
@@ -96,7 +95,7 @@ export default function PublishStep({
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium">Welcome Message</label>
+              <label className="text-sm font-medium">Purpose of the survey</label>
               <Button
                 size="sm"
                 variant="ghost"
@@ -169,7 +168,6 @@ export default function PublishStep({
           </div>
         </div>
       </div>
-
       <div className="bg-muted/50 border rounded-lg p-4">
         <p className="text-sm text-muted-foreground text-center">
           Ready to share? Click "Save & Publish" below to make your survey live!
