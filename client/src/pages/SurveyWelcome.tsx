@@ -38,27 +38,30 @@ export default function SurveyWelcome({
   return (
     <div className="survey-shell">
       <main className="survey-card" aria-labelledby="survey-title">
-        {/* Logo and Title Section */}
-        <div className="hero-header">
-          {/* Logo mark */}
-          <img 
-            src={logoImage} 
-            alt="Survey logo" 
-            className="hero-logo"
-            data-testid="icon-survey-logo"
-          />
+        {/* Header Section */}
+        <header className="survey-header">
+          {/* Logo */}
+          <div className="survey-logo">
+            <img 
+              src={logoImage} 
+              alt="Survey logo" 
+              data-testid="icon-survey-logo"
+            />
+          </div>
 
-          {/* Heading */}
+          {/* Title */}
           <h1
             id="survey-title"
             data-testid="text-survey-title"
-            className="hero-title">
+            className="survey-title">
             {survey.title}
           </h1>
-          <p className="hero-subtitle" data-testid="text-survey-description">
-            {survey.description}
-          </p>
-        </div>
+        </header>
+
+        {/* Subtitle */}
+        <p className="hero-subtitle" data-testid="text-survey-description">
+          {survey.description}
+        </p>
 
         {/* Illustration */}
         {illustrationImage && (
