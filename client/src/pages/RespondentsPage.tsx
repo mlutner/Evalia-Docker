@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, Check, Clock, Upload, AlertCircle, Info } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -20,31 +22,23 @@ export default function RespondentsPage() {
   const [csvData, setCsvData] = useState<Array<{ email: string; name?: string }>>([]);
   const [preview, setPreview] = useState<string>("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [textInput, setTextInput] = useState("");
 
   const { data: respondents = [], isLoading, refetch } = useQuery<SurveyRespondent[]>({
     queryKey: [`/api/surveys/${surveyId}/respondents`],
   });
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Support CSV, TSV, and Excel files
-    const isExcel = file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || 
-                    file.type === "application/vnd.ms-excel";
-
+  const parseCsvFile = (file: File) => {
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
       complete: (results: any) => {
         const rows = results.data;
         
-        // Try to detect email column (supports: email, Email, e-mail, E-mail)
         const emailCol = Object.keys(rows[0] || {}).find(k => 
           k.toLowerCase().includes("email") || k.toLowerCase().includes("e-mail") || k.toLowerCase() === "email address"
         );
         
-        // Try to detect name column (supports: name, Name, first_name, First Name, full_name, etc.)
         const nameCol = Object.keys(rows[0] || {}).find(k => 
           k.toLowerCase().includes("name") || k.toLowerCase().includes("first")
         );
@@ -74,6 +68,103 @@ export default function RespondentsPage() {
         });
       },
     });
+  };
+
+  const handleCsvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) parseCsvFile(file);
+  };
+
+  const parsePdfFile = async (file: File) => {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdfParse = (await import("pdf-parse")).default;
+      const data = await pdfParse(arrayBuffer);
+      const text = data.text;
+
+      // Extract emails from PDF text using regex
+      const emailRegex = /([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
+      const emails = text.match(emailRegex) || [];
+
+      if (emails.length === 0) {
+        toast({
+          title: "No emails found",
+          description: "PDF doesn't contain any email addresses",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const parsed = [...new Set(emails)].map(email => ({
+        email: email.trim(),
+        name: undefined,
+      }));
+
+      setCsvData(parsed);
+      setPreview(`Found ${parsed.length} unique email${parsed.length !== 1 ? 's' : ''} in PDF`);
+    } catch (error: any) {
+      toast({
+        title: "Error parsing PDF",
+        description: error.message || "Failed to extract emails from PDF",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      parsePdfFile(file);
+    }
+  };
+
+  const parseTextInput = (text: string) => {
+    if (!text.trim()) {
+      toast({
+        title: "Empty input",
+        description: "Please paste some data",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const lines = text.trim().split('\n').filter(line => line.trim());
+    const parsed: Array<{ email: string; name?: string }> = [];
+
+    lines.forEach(line => {
+      // Format: email@example.com | Name or email@example.com
+      if (line.includes('|')) {
+        const [email, name] = line.split('|').map(s => s.trim());
+        if (email && email.includes('@')) {
+          parsed.push({ email, name: name || undefined });
+        }
+      }
+      // Format: Name <email@example.com>
+      else if (line.includes('<') && line.includes('>')) {
+        const match = line.match(/(.+?)\s*<(.+?)>/);
+        if (match) {
+          const [, name, email] = match;
+          parsed.push({ email: email.trim(), name: name.trim() });
+        }
+      }
+      // Format: just email
+      else if (line.includes('@')) {
+        parsed.push({ email: line.trim() });
+      }
+    });
+
+    if (parsed.length === 0) {
+      toast({
+        title: "No emails found",
+        description: "Please use format: email@example.com | Name or email@example.com",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setCsvData(parsed);
+    setPreview(`Ready to invite ${parsed.length} respondent${parsed.length !== 1 ? 's' : ''}`);
+    setTextInput("");
   };
 
   const inviteMutation = useMutation({
@@ -161,60 +252,119 @@ export default function RespondentsPage() {
             <DialogHeader>
               <DialogTitle>Import Respondents</DialogTitle>
               <DialogDescription>
-                Upload a CSV or Excel file with columns: email (required), name (optional)
+                Choose how to import: CSV/Excel file, PDF, or paste text
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4">
-              {/* File Upload */}
-              <div className="border-2 border-dashed rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer"
-                   onClick={() => document.getElementById("csv-upload")?.click()}
-                   data-testid="dropzone-csv">
-                <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                <p className="font-medium mb-1">Click to upload or drag CSV/Excel file</p>
-                <p className="text-sm text-muted-foreground">Supported: CSV, TSV, XLS, XLSX</p>
-                <input
-                  id="csv-upload"
-                  type="file"
-                  accept=".csv,.tsv,.xls,.xlsx"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                  data-testid="input-csv-file"
+
+            <Tabs defaultValue="csv" className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="csv">CSV/Excel</TabsTrigger>
+                <TabsTrigger value="pdf">PDF</TabsTrigger>
+                <TabsTrigger value="text">Text/Paste</TabsTrigger>
+              </TabsList>
+
+              {/* CSV Tab */}
+              <TabsContent value="csv" className="space-y-4">
+                <div className="border-2 border-dashed rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer"
+                     onClick={() => document.getElementById("csv-upload")?.click()}
+                     data-testid="dropzone-csv">
+                  <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                  <p className="font-medium mb-1">Click to upload or drag CSV/Excel file</p>
+                  <p className="text-sm text-muted-foreground">Supported: CSV, TSV, XLS, XLSX</p>
+                  <input
+                    id="csv-upload"
+                    type="file"
+                    accept=".csv,.tsv,.xls,.xlsx"
+                    onChange={handleCsvUpload}
+                    className="hidden"
+                    data-testid="input-csv-file"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Format: Must contain "email" column (required), "name" column (optional)
+                </p>
+              </TabsContent>
+
+              {/* PDF Tab */}
+              <TabsContent value="pdf" className="space-y-4">
+                <div className="border-2 border-dashed rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer"
+                     onClick={() => document.getElementById("pdf-upload")?.click()}
+                     data-testid="dropzone-pdf">
+                  <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                  <p className="font-medium mb-1">Click to upload or drag PDF file</p>
+                  <p className="text-sm text-muted-foreground">PDF with email addresses</p>
+                  <input
+                    id="pdf-upload"
+                    type="file"
+                    accept=".pdf"
+                    onChange={handlePdfUpload}
+                    className="hidden"
+                    data-testid="input-pdf-file"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  We'll extract all email addresses found in the PDF automatically
+                </p>
+              </TabsContent>
+
+              {/* Text/Paste Tab */}
+              <TabsContent value="text" className="space-y-4">
+                <Textarea
+                  placeholder="Paste your respondent list here. Supported formats:&#10;1. One email per line: john@example.com&#10;2. With names: john@example.com | John Smith&#10;3. Email with name: John Smith <john@example.com>"
+                  value={textInput}
+                  onChange={(e) => setTextInput(e.target.value)}
+                  className="min-h-40 font-mono text-sm"
+                  data-testid="textarea-paste-respondents"
                 />
-              </div>
-
-              {/* Preview */}
-              {preview && (
-                <div className="p-3 bg-green-50 dark:bg-green-950 border border-green-200 rounded-lg text-sm text-green-900 dark:text-green-100" data-testid="text-csv-preview">
-                  ✓ {preview}
-                </div>
-              )}
-
-              {csvData.length > 0 && (
-                <div className="max-h-40 overflow-y-auto border rounded-lg p-3 bg-muted/50">
-                  <p className="text-sm font-medium mb-2">Preview ({csvData.length} rows):</p>
-                  {csvData.slice(0, 5).map((row, i) => (
-                    <div key={i} className="text-sm text-muted-foreground truncate" data-testid={`row-preview-${i}`}>
-                      {row.name ? `${row.name} (${row.email})` : row.email}
-                    </div>
-                  ))}
-                  {csvData.length > 5 && (
-                    <div className="text-sm text-muted-foreground">... and {csvData.length - 5} more</div>
-                  )}
-                </div>
-              )}
-
-              <div className="flex gap-2 justify-end">
-                <Button variant="outline" onClick={() => setInviteOpen(false)} data-testid="button-cancel">
-                  Cancel
-                </Button>
                 <Button
-                  onClick={() => inviteMutation.mutate()}
-                  disabled={inviteMutation.isPending || csvData.length === 0}
-                  data-testid="button-send-invites"
+                  variant="outline"
+                  onClick={() => parseTextInput(textInput)}
+                  className="w-full"
+                  data-testid="button-parse-text"
                 >
-                  {inviteMutation.isPending ? "Sending..." : `Send Invites (${csvData.length})`}
+                  Parse Text
                 </Button>
+                <div className="text-xs text-muted-foreground space-y-2">
+                  <p><strong>Supported formats:</strong></p>
+                  <p className="font-mono">john@example.com</p>
+                  <p className="font-mono">john@example.com | John Smith</p>
+                  <p className="font-mono">John Smith &lt;john@example.com&gt;</p>
+                </div>
+              </TabsContent>
+            </Tabs>
+
+            {/* Preview */}
+            {preview && (
+              <div className="p-3 bg-green-50 dark:bg-green-950 border border-green-200 rounded-lg text-sm text-green-900 dark:text-green-100" data-testid="text-csv-preview">
+                ✓ {preview}
               </div>
+            )}
+
+            {csvData.length > 0 && (
+              <div className="max-h-40 overflow-y-auto border rounded-lg p-3 bg-muted/50">
+                <p className="text-sm font-medium mb-2">Preview ({csvData.length} rows):</p>
+                {csvData.slice(0, 5).map((row, i) => (
+                  <div key={i} className="text-sm text-muted-foreground truncate" data-testid={`row-preview-${i}`}>
+                    {row.name ? `${row.name} (${row.email})` : row.email}
+                  </div>
+                ))}
+                {csvData.length > 5 && (
+                  <div className="text-sm text-muted-foreground">... and {csvData.length - 5} more</div>
+                )}
+              </div>
+            )}
+
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => setInviteOpen(false)} data-testid="button-cancel">
+                Cancel
+              </Button>
+              <Button
+                onClick={() => inviteMutation.mutate()}
+                disabled={inviteMutation.isPending || csvData.length === 0}
+                data-testid="button-send-invites"
+              >
+                {inviteMutation.isPending ? "Sending..." : `Send Invites (${csvData.length})`}
+              </Button>
             </div>
           </DialogContent>
         </Dialog>
