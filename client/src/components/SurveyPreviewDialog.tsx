@@ -77,8 +77,8 @@ export default function SurveyPreviewDialog({
 
   if (questions.length === 0) return null;
 
-  const purposePoints = description
-    ? description.split("\n").filter((line) => line.trim())
+  const purposePoints = welcomeMessage
+    ? welcomeMessage.split("\n").filter((line) => line.trim())
     : [];
 
   return (

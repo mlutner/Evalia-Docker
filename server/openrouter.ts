@@ -285,7 +285,32 @@ export async function generateSurveyText(
     case "description":
       systemPrompt = `You are an expert survey copywriter specializing in professional training and feedback systems.
 
-YOUR TASK: Generate exactly 3 bullet points explaining the PURPOSE and VALUE of this survey. These appear as "The purpose of the survey:" on the welcome screen.
+YOUR TASK: Write a brief, welcoming intro text for the survey welcome screen (appears as subtitle below the title).
+
+TONE: Conversational, warm, and action-focused. Make respondents feel their feedback is valued and will create real impact.
+
+REQUIREMENTS:
+- Length: 45-75 words (must fit comfortably as a subtitle under the title)
+- Lead with the benefit or outcome to the respondent
+- Keep it personal and warm—address them directly
+- Emphasize that their insights matter and will create real change
+- Use "you" language to make it relatable
+- Avoid corporate jargon; be authentic and sincere
+- End with an implicit invitation to participate
+
+BEST PRACTICES:
+- Action verbs: "help," "ensure," "shape," "improve," "enhance"
+- Specific outcomes: reference what their feedback enables
+- NO hype, NO urgency language, NO sales tactics
+
+OUTPUT FORMAT: Plain text paragraph, no line breaks.`;
+      userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nWrite a 45-75 word welcome intro for the survey. Make it warm, personal, and benefit-focused. This appears as subtitle text under the title on the welcome screen.`;
+      break;
+    
+    case "welcomeMessage":
+      systemPrompt = `You are an expert survey copywriter specializing in professional training and feedback systems.
+
+YOUR TASK: Generate exactly 3 bullet points explaining the PURPOSE and VALUE of this survey. These appear under "The purpose of the survey:" on the welcome screen.
 
 TONE: Clear, direct, and action-focused. Explain WHY respondents should take the survey and what it achieves.
 
@@ -297,7 +322,7 @@ REQUIREMENTS FOR EACH POINT:
 - Start with a concrete outcome or value proposition
 - Avoid generic statements—be specific to THIS survey
 
-EXAMPLES (format only, NOT content):
+EXAMPLES (format only):
 ✓ "Identify areas where training aligns with your role requirements"
 ✓ "Evaluate program effectiveness for your professional growth"
 ✓ "Provide feedback that directly shapes program improvements"
@@ -311,37 +336,6 @@ CRITICAL FORMAT:
 - NO header text or introduction
 - Plain text only`;
       userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nGenerate exactly 3 bullet points explaining the PURPOSE and VALUE of this survey. 10-20 words each. Each on its own line. NO bullets, NO numbers, NO dashes. Just the text, one purpose per line.`;
-      break;
-    
-    case "welcomeMessage":
-      systemPrompt = `You are an expert survey copywriter specializing in professional training and feedback systems.
-
-YOUR TASK: Generate 3-4 specific, tangible benefits or insights respondents will gain by completing this survey. Format as bullet points (newline-separated).
-
-TONE: Aspirational, specific, and empowering. Show respondents exactly what they'll take away.
-
-REQUIREMENTS FOR EACH POINT:
-- Length: 8-15 words per point (concise, scannable)
-- Start with a concrete outcome or insight (not a generic phrase)
-- Be specific to THIS survey and its questions—derive from the actual survey topics
-- Use benefit-focused language: "discover," "understand," "gain insight into," "identify," etc.
-- Avoid motherhood statements or generic platitudes
-- Each point should answer: "What will I know/be able to do after this?"
-
-EXAMPLES (NOT for this survey, just format):
-✓ "How your communication style impacts team dynamics"
-✓ "Concrete strategies to enhance your decision-making approach"
-✓ "Areas of strength you can leverage in your role"
-✗ "Great insights"
-✗ "Personal growth"
-
-CRITICAL FORMAT:
-- Output EXACTLY 3-4 bullet points
-- Separate each point with a newline character (\n)
-- NO bullet symbols, NO numbers, NO dashes—just the text
-- NO header text or introduction
-- Plain text only`;
-      userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nGenerate 3-4 specific benefits respondents will gain. Each 8-15 words. Each on its own line. NO bullets, NO numbers, NO dashes. Just the text, one benefit per line.`;
       break;
     
     case "thankYouMessage":

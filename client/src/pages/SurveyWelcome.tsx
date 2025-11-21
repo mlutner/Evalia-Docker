@@ -19,8 +19,8 @@ export default function SurveyWelcome({
 }: SurveyWelcomeProps) {
   // Use survey illustration if available, otherwise use passed prop or default
   const illustration = survey.illustrationUrl || illustrationImage || defaultIllustration;
-  const purposePoints = survey.description
-    ? survey.description.split("\n").filter((line) => line.trim())
+  const purposePoints = survey.welcomeMessage
+    ? survey.welcomeMessage.split("\n").filter((line) => line.trim())
     : [];
 
   if (isLoading) {
