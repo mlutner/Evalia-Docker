@@ -4,6 +4,8 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import surveyIllustration from "@/assets/survey-illustration-simple.png";
+import SurveyLayout from "@/components/SurveyLayout";
+import SurveyWelcome from "@/pages/SurveyWelcome";
 import "@/components/styles/survey-welcome.css";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import QuestionCard from "@/components/QuestionCard";
@@ -197,53 +199,14 @@ export default function SurveyView() {
   // Welcome Screen
   if (currentStep === -1) {
     return (
-      <div className="page">
-        <main className="card" aria-labelledby="title">
-          {/* Logo mark */}
-          <div className="logo-mark">
-            <div className="logo-mark-icon"></div>
-          </div>
-
-          {/* Heading & subtitle */}
-          <h1 id="title">{survey.title}</h1>
-          <p className="subtitle">
-            {survey.description}
-          </p>
-
-          {/* Illustration */}
-          <div className="illustration-wrapper">
-            <img
-              src={surveyIllustration}
-              alt="Survey illustration"
-              className="illustration"
-            />
-          </div>
-
-          {/* Benefits list */}
-          <h2 className="section-heading">What you'll gain:</h2>
-          <ul className="benefits">
-            {survey.welcomeMessage ? (
-              survey.welcomeMessage.split('\n').filter(line => line.trim()).map((point, idx) => (
-                <li key={idx}>{point.trim()}</li>
-              ))
-            ) : (
-              <>
-                <li>A snapshot of how others experience your leadership</li>
-                <li>Insight into communication &amp; decision styles</li>
-                <li>A personalized style profile you can use immediately</li>
-              </>
-            )}
-          </ul>
-
-          {/* CTA */}
-          <button className="btn-primary" onClick={handleStart} data-testid="button-start-survey" type="button">
-            Begin Self-Assessment
-          </button>
-          <p className="helper-text">
-            Fast, confidential, and designed for personal growth.
-          </p>
-        </main>
-      </div>
+      <SurveyLayout>
+        <SurveyWelcome
+          survey={survey}
+          onStart={handleStart}
+          isLoading={false}
+          illustrationImage={surveyIllustration}
+        />
+      </SurveyLayout>
     );
   }
 
