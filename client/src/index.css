@@ -147,6 +147,21 @@ body {
   text-align: center;
 }
 
+.survey-exit-link {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  font-family: inherit;
+}
+
+.survey-exit-link:hover {
+  color: #071a32;
+}
+
 /* LIGHT MODE */
 :root {
   --button-outline: rgba(0,0,0, .10);

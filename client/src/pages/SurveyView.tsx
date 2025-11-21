@@ -266,9 +266,34 @@ export default function SurveyView() {
         </footer>
 
         <p className="survey-footnote" data-testid="text-exit-hint">
-          {currentStep === questions.length - 1 ? 'Thank you for your responses.' : 'Press Enter to continue'}
+          <button
+            onClick={handleExit}
+            className="survey-exit-link"
+            type="button"
+            data-testid="button-exit-survey"
+          >
+            Exit Survey
+          </button>
         </p>
       </main>
+
+      {/* Exit Warning Dialog */}
+      <AlertDialog open={showExitWarning} onOpenChange={setShowExitWarning}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Exit survey?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have started answering this survey. Are you sure you want to exit? Your answers will not be saved.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-exit">Keep Answering</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmExit} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" data-testid="button-confirm-exit">
+              Exit Survey
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
