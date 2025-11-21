@@ -121,12 +121,12 @@ export default function PublishStep({
               value={welcomeMessage}
               onChange={(e) => onWelcomeChange(e.target.value)}
               className="text-sm resize-none"
-              placeholder="Greet your respondents (optional)"
+              placeholder="Enter 3 bullet points (one per line, no dashes or bullets)"
               rows={3}
               data-testid="input-welcome-message"
             />
             <p className="text-xs text-muted-foreground mt-1">
-              Shown on the welcome screen before questions
+              Exactly 3 bullet points (8-12 words each, one per line) shown under "The purpose of the survey:" on the welcome screen
             </p>
           </div>
 

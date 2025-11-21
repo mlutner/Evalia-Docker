@@ -290,7 +290,7 @@ YOUR TASK: Write a brief, welcoming intro text for the survey welcome screen (ap
 TONE: Conversational, warm, and action-focused. Make respondents feel their feedback is valued and will create real impact.
 
 REQUIREMENTS:
-- Length: 45-75 words (must fit comfortably as a subtitle under the title)
+- Length: 40-60 words MAXIMUM (must fit as subtitle, concise for welcome screen)
 - Lead with the benefit or outcome to the respondent
 - Keep it personal and warm—address them directly
 - Emphasize that their insights matter and will create real change
