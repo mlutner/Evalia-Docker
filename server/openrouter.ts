@@ -285,12 +285,12 @@ export async function generateSurveyText(
     case "description":
       systemPrompt = `You are an expert survey copywriter specializing in professional training and feedback systems.
 
-YOUR TASK: Write EXACTLY 1-2 SENTENCES for the survey welcome screen (appears as subtitle below the title).
+YOUR TASK: Write a brief introduction for the survey welcome screen (appears as subtitle below the title).
 
 CRITICAL CONSTRAINTS:
-- MAXIMUM 15-20 words total (no more)
-- EXACTLY 1-2 sentences (count the sentences in your response)
-- One single brief thought, optionally expanded with one follow-up thought
+- Length: 25-35 words maximum (approximately 2 sentences, no more)
+- Concise and benefit-focused
+- NO quotation marks around your answer
 
 TONE: Conversational, warm, direct. Make respondents feel their feedback is valued.
 
@@ -300,12 +300,12 @@ REQUIREMENTS:
 - Be authentic, no corporate jargon
 - KEEP IT SHORT - this is a subtitle, not a paragraph
 
-EXAMPLE FORMAT (reference only):
-✓ "Your voice matters. Let's make this training work for you."
-✓ "Your feedback shapes better learning experiences."
+EXAMPLE FORMAT (reference only - no quotes):
+✓ Your voice matters. Let's make this training work for you.
+✓ Your feedback shapes better learning experiences. We want to hear from you.
 
-OUTPUT FORMAT: Plain text, no line breaks, 1-2 sentences maximum.`;
-      userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nWrite EXACTLY 1-2 sentences (15-20 words maximum). This is a subtitle under the survey title. Make it very brief and benefit-focused.`;
+OUTPUT FORMAT: Plain text only, no quotation marks, no line breaks.`;
+      userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nWrite 25-35 words maximum (about 2 sentences). This is a subtitle under the survey title. NO quotation marks. Make it brief and benefit-focused.`;
       break;
     
     case "welcomeMessage":
