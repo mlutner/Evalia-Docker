@@ -2,9 +2,9 @@ import logoImage from "@assets/Untitled design (3)_1763764996441.png";
 
 interface SurveyWelcomeTemplateProps {
   title: string;
-  description?: string;
+  description?: string | null;
   illustration?: string;
-  welcomeMessage?: string;
+  welcomeMessage?: string | null;
   onStart: () => void;
 }
 

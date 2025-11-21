@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import QuestionCard from "@/components/QuestionCard";
 import ProgressBar from "@/components/ProgressBar";
 import SurveyWelcomeTemplate from "@/components/SurveyWelcomeTemplate";
-import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { Question } from "@shared/schema";
 
 interface SurveyPreviewDialogProps {
@@ -99,12 +98,6 @@ export default function SurveyPreviewDialog({
                 <>
                   {/* Question Header */}
                   <header className="survey-header">
-                    <img 
-                      src={logoImage} 
-                      alt="Survey logo" 
-                      data-testid="icon-survey-logo"
-                      className="survey-logo-img"
-                    />
                     <h1 className="survey-title" data-testid="text-preview-question-number">
                       Question {currentQuestion + 1}
                     </h1>
@@ -125,8 +118,8 @@ export default function SurveyPreviewDialog({
               )}
 
               {/* Footer */}
-              <footer className="survey-footer">
-                {!isWelcome && (
+              {!isWelcome && (
+                <footer className="survey-footer">
                   <button
                     onClick={handleBack}
                     className="survey-back"
@@ -135,18 +128,18 @@ export default function SurveyPreviewDialog({
                   >
                     Back
                   </button>
-                )}
-                <button
-                  onClick={handleNext}
-                  disabled={!canGoNext() || (currentQuestion === questions.length - 1 && !isWelcome)}
-                  className="survey-primary"
-                  type="button"
-                  data-testid="button-preview-next"
-                  style={{ opacity: (!canGoNext() || (currentQuestion === questions.length - 1 && !isWelcome)) ? 0.6 : 1 }}
-                >
-                  {isWelcome ? "Begin Survey" : currentQuestion === questions.length - 1 ? "Finish" : "Next"}
-                </button>
-              </footer>
+                  <button
+                    onClick={handleNext}
+                    disabled={!canGoNext() || currentQuestion === questions.length - 1}
+                    className="survey-primary"
+                    type="button"
+                    data-testid="button-preview-next"
+                    style={{ opacity: (!canGoNext() || currentQuestion === questions.length - 1) ? 0.6 : 1 }}
+                  >
+                    {currentQuestion === questions.length - 1 ? "Finish" : "Next"}
+                  </button>
+                </footer>
+              )}
 
               <p className="survey-footnote">
                 {isWelcome ? "Welcome" : `Question ${currentQuestion + 1} of ${questions.length}`}
