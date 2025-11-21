@@ -1,11 +1,11 @@
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle, ArrowLeft } from "lucide-react";
 import type { Survey } from "@shared/schema";
 import logoImage from "@assets/Untitled design (3)_1763762102562.png";
 
 interface SurveyWelcomeProps {
   survey: Survey;
   onStart: () => void;
-  onExit?: () => void;
+  onBack?: () => void;
   isLoading?: boolean;
   illustrationImage?: string;
   defaultIllustration?: string;
@@ -14,7 +14,7 @@ interface SurveyWelcomeProps {
 export default function SurveyWelcome({
   survey,
   onStart,
-  onExit,
+  onBack,
   isLoading = false,
   illustrationImage,
   defaultIllustration,
@@ -46,7 +46,7 @@ export default function SurveyWelcome({
         {/* Header Section */}
         <header className="survey-header pt-[0px] pb-[0px] mt-[0px] mb-[0px]">
           {/* Logo */}
-          <div className="survey-logo bg-[#ffffff] pt-[0px] pb-[0px] pl-[0px] pr-[0px]">
+          <div className="survey-logo pt-[0px] pb-[0px] pl-[0px] pr-[0px] mt-[0px] mb-[0px] ml-[0px] mr-[0px] bg-[#ffffff]">
             <img 
               src={logoImage} 
               alt="Survey logo" 
