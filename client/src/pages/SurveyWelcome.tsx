@@ -37,7 +37,7 @@ export default function SurveyWelcome({
 
   return (
     <div className="page">
-      <main className="card text-[14px] pl-[40px] pr-[40px] pt-[40px] pb-[40px] ml-[55px] mr-[55px]" aria-labelledby="survey-title">
+      <main className="hero-card" aria-labelledby="survey-title">
         {/* Logo mark */}
         <img 
           src={logoImage} 
