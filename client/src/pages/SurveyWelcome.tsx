@@ -42,7 +42,7 @@ export default function SurveyWelcome({
 
   return (
     <div className="survey-shell">
-      <main className="survey-card" aria-labelledby="survey-title">
+      <main className="survey-card pl-[45px] pr-[45px]" aria-labelledby="survey-title">
         {/* Exit Button */}
         {onExit && (
           <button
