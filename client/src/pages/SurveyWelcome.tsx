@@ -56,7 +56,7 @@ export default function SurveyWelcome({
           <h1
             id="survey-title"
             data-testid="text-survey-title"
-            className="survey-title text-center">
+            className="survey-title text-center pt-[20px] pb-[20px]">
             {survey.title}
           </h1>
         </header>
