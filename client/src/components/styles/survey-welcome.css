@@ -21,18 +21,20 @@
 
 
 .hero-illustration {
-  margin: 16px auto;
+  margin: 20px auto;
   display: flex;
   justify-content: center;
+  align-items: center;
+  overflow: visible;
+  padding: 0 8px;
 }
 
 .hero-illustration img {
-  max-width: 220px;
+  max-width: 280px;
   width: 100%;
   height: auto;
   border-radius: 8px;
   display: block;
-  margin: 0 auto;
 }
 
 
