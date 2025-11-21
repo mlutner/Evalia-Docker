@@ -63,36 +63,45 @@ export default function SurveyWelcome({
           {survey.description}
         </p>
 
-        {/* Illustration */}
-        {illustrationImage && (
-          <div className="hero-illustration">
-            <img
-              src={illustrationImage}
-              alt="Survey illustration"
-              data-testid="img-survey-illustration"
-            />
-          </div>
-        )}
+        {/* Body */}
+        <div className="survey-body">
+          {/* Illustration */}
+          {illustrationImage && (
+            <div className="hero-illustration">
+              <img
+                src={illustrationImage}
+                alt="Survey illustration"
+                data-testid="img-survey-illustration"
+              />
+            </div>
+          )}
 
-        {/* Benefits list */}
-        <h2 className="hero-section-title text-[20px]" data-testid="text-what-youll-gain">
-          What you'll gain:
-        </h2>
-        <ul className="hero-benefits">
-          {benefitPoints.map((point, idx) => (
-            <li key={idx} data-testid={`text-benefit-${idx}`}>
-              {point.trim()}
-            </li>
-          ))}
-        </ul>
+          {/* Benefits list */}
+          <h2 className="hero-section-title text-[20px]" data-testid="text-what-youll-gain">
+            What you'll gain:
+          </h2>
+          <ul className="hero-benefits">
+            {benefitPoints.map((point, idx) => (
+              <li key={idx} data-testid={`text-benefit-${idx}`}>
+                {point.trim()}
+              </li>
+            ))}
+          </ul>
+        </div>
 
-        {/* CTA */}
-        <button
-          onClick={onStart}
-          data-testid="button-start-survey"
-          className="hero-button"
-        >Begin Survey</button>
-        <p className="hero-footnote" data-testid="text-helper">
+        {/* Footer */}
+        <footer className="survey-footer">
+          <button className="survey-back" type="button" style={{ visibility: 'hidden' }}>Back</button>
+          <button
+            onClick={onStart}
+            data-testid="button-start-survey"
+            className="survey-primary"
+            type="button"
+          >
+            Begin Survey
+          </button>
+        </footer>
+        <p className="survey-footnote" data-testid="text-helper">
           Fast, confidential, and designed for personal growth.
         </p>
       </main>
