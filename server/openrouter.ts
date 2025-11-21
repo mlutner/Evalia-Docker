@@ -7,9 +7,9 @@ const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 // Free models from OpenRouter (November 2025)
 const MODELS = {
   // For survey generation and chat
-  GENERATION: "moonshotai/kimi-k2:free", // Kimi K2 model for improved survey generation
+  GENERATION: "meta-llama/llama-3.2-90b-vision-instruct:free", // Meta Llama 3.2 with vision/OCR
   // For OCR/document parsing (vision model)
-  OCR: "moonshotai/kimi-k2:free", // Kimi K2 model for document parsing
+  OCR: "meta-llama/llama-3.2-90b-vision-instruct:free", // Meta Llama 3.2 for document parsing
 };
 
 interface ChatMessage {
