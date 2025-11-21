@@ -668,7 +668,7 @@ export default function Builder() {
         title={surveyState.currentSurveyTitle}
         description={surveyState.currentSurveyDescription}
         welcomeMessage={surveyState.welcomeMessage}
-        illustration={existingSurvey?.illustrationUrl || "/assets/1_1763757398561.png"}
+        illustration={existingSurvey?.illustrationUrl || "/attached_assets/1_1763757398561.png"}
         open={showPreview}
         onOpenChange={setShowPreview}
       />

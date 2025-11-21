@@ -12,10 +12,9 @@ import "./types";
 
 // Pool of survey illustrations - rotated across surveys
 const SURVEY_ILLUSTRATIONS = [
-  "/assets/1_1763757398561.png",
-  "/assets/2_1763757398561.png",
-  "/assets/3_1763757398561.png",
-  "/assets/image_1763757582480.png",
+  "/attached_assets/1_1763757398561.png",
+  "/attached_assets/2_1763757398561.png",
+  "/attached_assets/3_1763757398561.png",
 ];
 
 // Helper to get a random illustration from the pool
