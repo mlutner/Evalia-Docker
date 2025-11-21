@@ -37,7 +37,7 @@ export default function Login() {
         <img
           src={ChatGPT_Image_Nov_21__2025__12_41_07_PM}
           alt="Professional trainer"
-          className="w-full h-full object-cover object-center ml-[40px] mr-[40px] mt-[20px] mb-[20px] pl-[20px] pr-[20px] pt-[20px] pb-[20px]"
+          className="w-full h-full object-cover object-center ml-[0px] mr-[0px] mt-[0px] mb-[0px] pt-[0px] pb-[0px] pl-[0px] pr-[0px]"
         />
       </div>
       {/* Right side - Login */}
