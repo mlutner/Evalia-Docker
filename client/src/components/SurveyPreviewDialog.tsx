@@ -105,7 +105,7 @@ export default function SurveyPreviewDialog({
 
                   {/* Welcome Subtitle */}
                   {description && (
-                    <p className="hero-subtitle" data-testid="text-preview-description">
+                    <p className="hero-subtitle mt-[20px] mb-[20px] text-[14px]" data-testid="text-preview-description">
                       {description}
                     </p>
                   )}
