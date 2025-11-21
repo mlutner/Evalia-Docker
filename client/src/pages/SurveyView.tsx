@@ -9,7 +9,7 @@ import ProgressBar from "@/components/ProgressBar";
 import { ArrowLeft, ArrowRight, Check, Loader2, Sparkles, AlertCircle, FileQuestion, X } from "lucide-react";
 import type { Question } from "@/components/QuestionCard";
 import type { Survey } from "@shared/schema";
-import surveyCollaborationIllustration from "@assets/illustrations/survey-collaboration.png";
+import surveyCollaborationIllustration from "@assets/generated_images/three_people_collaborative_circle_line_art.png";
 
 export default function SurveyView() {
   const { id } = useParams();
