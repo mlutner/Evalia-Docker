@@ -7,9 +7,9 @@ const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 // Free models from OpenRouter (November 2025)
 const MODELS = {
   // For survey generation and chat
-  GENERATION: "nvidia/nemotron-nano-12b-v2-vl:free", // NVIDIA Nemotron Nano for survey generation and refinement
+  GENERATION: "mistralai/pixtral-large-2411", // Mistral Pixtral Large for survey generation and refinement
   // For OCR/document parsing (vision model)
-  OCR: "nvidia/nemotron-nano-12b-v2-vl:free", // NVIDIA Nemotron Nano for document OCR/parsing
+  OCR: "mistralai/pixtral-large-2411", // Mistral Pixtral Large for document OCR/parsing - excellent at understanding documents and charts
 };
 
 interface ChatMessage {
