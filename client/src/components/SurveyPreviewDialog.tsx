@@ -170,16 +170,16 @@ export default function SurveyPreviewDialog({
 
               {/* Footer */}
               <footer className="survey-footer">
-                <button
-                  onClick={handleBack}
-                  disabled={isWelcome}
-                  className="survey-back"
-                  type="button"
-                  data-testid="button-preview-back"
-                  style={{ opacity: isWelcome ? 0.5 : 1 }}
-                >
-                  Back
-                </button>
+                {!isWelcome && (
+                  <button
+                    onClick={handleBack}
+                    className="survey-back"
+                    type="button"
+                    data-testid="button-preview-back"
+                  >
+                    Back
+                  </button>
+                )}
                 <button
                   onClick={handleNext}
                   disabled={!canGoNext() || (currentQuestion === questions.length - 1 && !isWelcome)}
