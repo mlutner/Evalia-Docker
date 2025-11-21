@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import QuestionCard from "@/components/QuestionCard";
 import ProgressBar from "@/components/ProgressBar";
-import logoImage from "@assets/Untitled design (3)_1763764616793.png";
+import logoImage from "@assets/Untitled design (3)_1763764996441.png";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { Question } from "@shared/schema";
 
@@ -91,13 +91,12 @@ export default function SurveyPreviewDialog({
                 <>
                   {/* Welcome Header */}
                   <header className="survey-header">
-                    <div className="survey-logo">
-                      <img 
-                        src={logoImage} 
-                        alt="Survey logo" 
-                        data-testid="icon-survey-logo"
-                      />
-                    </div>
+                    <img 
+                      src={logoImage} 
+                      alt="Survey logo" 
+                      data-testid="icon-survey-logo"
+                      className="survey-logo-img"
+                    />
                     <h1 className="survey-title" data-testid="text-preview-title">
                       {title}
                     </h1>
@@ -142,13 +141,12 @@ export default function SurveyPreviewDialog({
                 <>
                   {/* Question Header */}
                   <header className="survey-header">
-                    <div className="survey-logo">
-                      <img 
-                        src={logoImage} 
-                        alt="Survey logo" 
-                        data-testid="icon-survey-logo"
-                      />
-                    </div>
+                    <img 
+                      src={logoImage} 
+                      alt="Survey logo" 
+                      data-testid="icon-survey-logo"
+                      className="survey-logo-img"
+                    />
                     <h1 className="survey-title" data-testid="text-preview-question-number">
                       Question {currentQuestion + 1}
                     </h1>

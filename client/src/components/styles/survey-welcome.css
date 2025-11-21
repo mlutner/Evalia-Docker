@@ -95,18 +95,16 @@
   position: relative;
 }
 
-.survey-logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  margin-bottom: 16px;
-}
-
-.survey-logo img {
+.survey-logo-img {
+  display: block;
   width: auto;
   height: auto;
-  object-fit: contain;
+  margin: 0 auto 16px auto;
+  padding: 0;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
 }
 
 .survey-title {
