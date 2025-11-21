@@ -303,5 +303,5 @@ export async function generateSurveyText(
     { role: "user", content: userPrompt },
   ];
 
-  return callOpenRouter(messages, MODELS.GENERATION);
+  return callMistral(messages, MODELS.GENERATION);
 }
