@@ -9,7 +9,6 @@ import ProgressBar from "@/components/ProgressBar";
 import { ArrowLeft, ArrowRight, Check, Loader2, Sparkles, AlertCircle, FileQuestion, X } from "lucide-react";
 import type { Question } from "@/components/QuestionCard";
 import type { Survey } from "@shared/schema";
-import surveyCollaborationIllustration from "@assets/generated_images/three_people_collaborative_circle_line_art.png";
 
 export default function SurveyView() {
   const { id } = useParams();
@@ -196,90 +195,79 @@ export default function SurveyView() {
   // Welcome Screen
   if (currentStep === -1) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-background relative overflow-hidden">
-        {/* Subtle Background Accents */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl opacity-50"></div>
-          <div className="absolute bottom-1/4 left-1/4 w-72 h-72 bg-accent/5 rounded-full blur-2xl opacity-40"></div>
-        </div>
-
-        <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-6 duration-500 relative z-10">
-          {/* Icon - Small, top aligned */}
-          <div className="flex justify-center mb-6">
-            <div className="w-14 h-14 bg-accent/20 rounded-2xl flex items-center justify-center">
-              <Sparkles className="w-7 h-7 text-accent" />
+      <div className="min-h-screen flex items-center justify-center p-6 bg-background">
+        <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-6 duration-500">
+          {/* Icon - Top centered */}
+          <div className="flex justify-center mb-8">
+            <div className="w-16 h-16 bg-accent rounded-lg flex items-center justify-center">
+              <Sparkles className="w-8 h-8 text-white" />
             </div>
           </div>
 
           {/* Title */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-4 leading-snug tracking-tight px-4">
+          <h1 className="text-4xl sm:text-5xl font-bold text-center mb-4 leading-tight text-foreground">
             {survey.title}
           </h1>
 
-          {/* Subtitle/Description */}
+          {/* Subtitle */}
           {survey.description && (
-            <p className="text-base sm:text-lg text-muted-foreground text-center mb-12 px-4 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg text-center text-muted-foreground mb-12 px-4">
               {survey.description}
             </p>
           )}
 
-          {/* Illustration - Centered */}
+          {/* Image Placeholder */}
           <div className="mb-12 px-4">
-            <div className="w-full flex justify-center">
-              <img 
-                src={surveyCollaborationIllustration} 
-                alt="Team collaboration and feedback" 
-                className="w-full max-w-lg h-auto"
-              />
+            <div className="w-full aspect-square bg-muted rounded-lg border border-border/40 flex items-center justify-center">
+              <p className="text-sm text-muted-foreground">Illustration area</p>
             </div>
           </div>
 
           {/* What You'll Gain Section */}
           {survey.welcomeMessage && (
-            <div className="mb-12 px-4 max-w-2xl mx-auto">
-              <h3 className="text-lg sm:text-xl font-semibold mb-5 text-foreground">What you'll gain:</h3>
+            <div className="mb-12 px-4">
+              <h3 className="text-xl font-bold mb-6 text-foreground">What you'll gain:</h3>
               <ul className="space-y-3">
-                {/* Parse welcome message as bullet points or use default */}
                 {survey.welcomeMessage.split('\n').filter(line => line.trim()).map((point, idx) => (
                   <li key={idx} className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-accent shrink-0 mt-0.5" />
-                    <span className="text-sm sm:text-base text-muted-foreground">{point.trim()}</span>
+                    <span className="text-muted-foreground mt-1">•</span>
+                    <span className="text-base text-foreground">{point.trim()}</span>
                   </li>
                 ))}
               </ul>
             </div>
           )}
 
-          {/* Survey Info & Required Fields */}
-          <div className="mb-8 px-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
-            <span className="font-medium">{questions.length} {questions.length === 1 ? 'question' : 'questions'}</span>
-            <span className="hidden sm:block">•</span>
-            <span className="font-medium">Takes about {Math.max(1, Math.ceil(questions.length / 2))} {Math.ceil(questions.length / 2) === 1 ? 'minute' : 'minutes'}</span>
-            {questions.some(q => q.required) && (
-              <>
-                <span className="hidden sm:block">•</span>
-                <span><span className="text-destructive font-semibold">*</span> indicates required fields</span>
-              </>
-            )}
-          </div>
-
           {/* CTA Button */}
-          <div className="flex justify-center px-4 mb-6">
+          <div className="flex justify-center mb-6 px-4">
             <Button 
               size="lg" 
               onClick={handleStart}
               data-testid="button-start-survey"
-              className="text-base sm:text-lg px-12 sm:px-14 py-3 sm:py-3.5 shadow-md hover:shadow-lg transition-all group font-semibold"
+              className="w-full sm:w-auto text-base px-12 py-3 bg-accent hover:bg-accent/90 font-semibold rounded-lg"
             >
               Start Survey
-              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
 
           {/* Footer Text */}
-          <p className="text-xs sm:text-sm text-muted-foreground/70 text-center px-4">
+          <p className="text-center text-sm text-muted-foreground">
             Fast, confidential, and designed for your growth.
           </p>
+
+          {/* Survey Info */}
+          {(questions.length > 0) && (
+            <p className="text-center text-xs text-muted-foreground mt-8 px-4">
+              {questions.length} {questions.length === 1 ? 'question' : 'questions'} · Takes about {Math.max(1, Math.ceil(questions.length / 2))} {Math.ceil(questions.length / 2) === 1 ? 'minute' : 'minutes'}
+            </p>
+          )}
+
+          {/* Required Fields Legend */}
+          {questions.some(q => q.required) && (
+            <p className="text-center text-xs text-muted-foreground mt-3 px-4">
+              <span className="text-destructive font-semibold">*</span> indicates required fields
+            </p>
+          )}
         </div>
       </div>
     );
