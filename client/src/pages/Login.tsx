@@ -31,7 +31,7 @@ export default function Login() {
   }
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-[#f6f7f9] to-[#f0f1f5]">
+    <div className="flex h-screen">
       {/* Left side - Image */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center">
         <img
@@ -41,7 +41,7 @@ export default function Login() {
         />
       </div>
       {/* Right side - Login */}
-      <div className="flex flex-col justify-center w-full lg:w-1/2 px-8 sm:px-12 lg:px-24 bg-gradient-to-br from-[#f6f7f9] to-[#f0f1f5]">
+      <div className="flex flex-col justify-center w-full lg:w-1/2 px-8 sm:px-12 lg:px-24">
         <div className="w-full max-w-md mx-auto">
           {/* Logo and title */}
           <div className="mb-12">
