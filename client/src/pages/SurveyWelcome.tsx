@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import type { Survey } from "@shared/schema";
 
 interface SurveyWelcomeProps {
@@ -43,7 +43,10 @@ export default function SurveyWelcome({
         </div>
 
         {/* Heading & subtitle */}
-        <h1 id="survey-title" data-testid="text-survey-title">
+        <h1
+          id="survey-title"
+          data-testid="text-survey-title"
+          className="font-semibold text-[36px]">
           {survey.title}
         </h1>
         <p className="subtitle" data-testid="text-survey-description">
@@ -52,7 +55,7 @@ export default function SurveyWelcome({
 
         {/* Illustration */}
         {illustrationImage && (
-          <div className="illustration-wrapper">
+          <div className="illustration-wrapper ml-[10px] mr-[10px] pl-[10px] pr-[10px]">
             <img
               src={illustrationImage}
               alt="Survey illustration"
@@ -63,10 +66,10 @@ export default function SurveyWelcome({
         )}
 
         {/* Benefits list */}
-        <h2 className="section-heading" data-testid="text-what-youll-gain">
+        <h2 className="section-heading text-[24px] font-extrabold" data-testid="text-what-youll-gain">
           What you'll gain:
         </h2>
-        <ul className="benefits">
+        <ul className="benefits ml-[75px] mr-[75px]">
           {benefitPoints.map((point, idx) => (
             <li key={idx} data-testid={`text-benefit-${idx}`}>
               {point.trim()}
@@ -75,30 +78,14 @@ export default function SurveyWelcome({
         </ul>
 
         {/* CTA */}
-        <div className="cta-button-wrapper">
-          <Button
-            size="lg"
-            onClick={onStart}
-            data-testid="button-start-survey"
-            className="w-full max-w-md mx-auto block rounded-full font-semibold py-3 text-lg"
-            style={{
-              backgroundColor: "#0A1F32",
-              color: "#CCFF00",
-              height: "54px",
-              borderRadius: "28px",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#112A45";
-              e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.12)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "#0A1F32";
-              e.currentTarget.style.boxShadow = "none";
-            }}
-          >
-            Begin Self-Assessment
-          </Button>
-        </div>
+        <Button
+          size="lg"
+          onClick={onStart}
+          data-testid="button-start-survey"
+          className="w-full max-w-md mx-auto block rounded-full mt-2 font-semibold py-4 text-[22px]"
+        >
+          Begin Self-Assessment
+        </Button>
         <p className="helper-text" data-testid="text-helper">
           Fast, confidential, and designed for personal growth.
         </p>
