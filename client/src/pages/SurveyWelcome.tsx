@@ -70,7 +70,7 @@ export default function SurveyWelcome({
         )}
 
         {/* Benefits list */}
-        <h2 className="section-heading text-[24px] font-extrabold" data-testid="text-what-youll-gain">
+        <h2 className="section-heading font-extrabold text-[28px]" data-testid="text-what-youll-gain">
           What you'll gain:
         </h2>
         <ul className="benefits ml-[65px] mr-[65px]">
