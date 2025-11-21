@@ -67,12 +67,12 @@
 }
 
 h1 {
-  font-size: 38px;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
-  margin-bottom: 14px;
+  font-size: 48px;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  margin-bottom: 16px;
   color: var(--navy);
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .subtitle {
@@ -99,29 +99,33 @@ h1 {
 }
 
 .section-heading {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
   color: var(--navy);
   letter-spacing: -0.01em;
 }
 
 .benefits {
   list-style: none;
-  text-align: left;
-  max-width: 480px;
+  text-align: center;
   margin: 0 auto 32px;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .benefits li {
-  display: flex;
+  display: inline-flex;
   align-items: flex-start;
   font-size: 15px;
   line-height: 1.6;
   color: var(--navy-soft);
   margin-bottom: 12px;
   padding: 0;
+  max-width: 480px;
+  justify-content: center;
 }
 
 .benefits li::before {
@@ -130,7 +134,7 @@ h1 {
   color: var(--navy-soft);
   font-size: 18px;
   font-weight: 700;
-  margin-right: 10px;
+  margin-right: 12px;
   line-height: 1.2;
   flex-shrink: 0;
   margin-top: 2px;
@@ -150,8 +154,8 @@ h1 {
   }
 
   h1 {
-    font-size: 32px;
-    line-height: 1.25;
+    font-size: 40px;
+    line-height: 1.2;
   }
 
   .subtitle {
@@ -168,8 +172,8 @@ h1 {
   }
 
   .section-heading {
-    font-size: 17px;
-    margin-bottom: 14px;
+    font-size: 19px;
+    margin-bottom: 16px;
   }
 
   .benefits {
@@ -178,7 +182,7 @@ h1 {
 
   .benefits li {
     font-size: 14px;
-    margin-bottom: 10px;
+    margin-bottom: 11px;
   }
 }
 
@@ -199,7 +203,7 @@ h1 {
   }
 
   h1 {
-    font-size: 26px;
+    font-size: 32px;
     line-height: 1.2;
   }
 
@@ -213,8 +217,8 @@ h1 {
   }
 
   .section-heading {
-    font-size: 16px;
-    margin-bottom: 12px;
+    font-size: 18px;
+    margin-bottom: 14px;
   }
 
   .benefits {
@@ -223,7 +227,7 @@ h1 {
 
   .benefits li {
     font-size: 13px;
-    margin-bottom: 8px;
+    margin-bottom: 9px;
   }
 
   .helper-text {
