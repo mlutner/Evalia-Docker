@@ -9,6 +9,7 @@ import ProgressBar from "@/components/ProgressBar";
 import { ArrowLeft, ArrowRight, Check, Loader2, Sparkles, AlertCircle, FileQuestion, X } from "lucide-react";
 import type { Question } from "@/components/QuestionCard";
 import type { Survey } from "@shared/schema";
+import surveyCollaborationIllustration from "@assets/illustrations/survey-collaboration.png";
 
 export default function SurveyView() {
   const { id } = useParams();
@@ -222,16 +223,14 @@ export default function SurveyView() {
             </p>
           )}
 
-          {/* Illustration Placeholder - Centered */}
+          {/* Illustration - Centered */}
           <div className="mb-12 px-4">
-            <div className="w-full aspect-video bg-gradient-to-br from-muted/40 to-muted/20 rounded-2xl border-2 border-dashed border-border/40 flex items-center justify-center min-h-[300px] sm:min-h-[350px]">
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground">
-                  {/* Placeholder for SVG illustration */}
-                  {/* Import and render your SVG here */}
-                  Illustration area
-                </p>
-              </div>
+            <div className="w-full flex justify-center">
+              <img 
+                src={surveyCollaborationIllustration} 
+                alt="Team collaboration and feedback" 
+                className="w-full max-w-lg h-auto"
+              />
             </div>
           </div>
 
