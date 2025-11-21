@@ -17,13 +17,15 @@
 }
 
 .survey-card {
-  max-width: 560px;
-  width: 100%;
-  padding: 32px 48px 24px;
+  width: 560px;
+  max-width: 100%;
+  padding: 40px 48px 32px 48px;
   border-radius: 16px;
   background: #ffffff;
   border: 1px solid #e5e7eb;
   box-shadow: 0 20px 50px rgba(7, 26, 50, 0.15);
+  position: relative;
+  box-sizing: border-box;
 }
 
 .survey-header {
@@ -31,27 +33,28 @@
   flex-direction: column;
   align-items: center;
   gap: 0;
-  margin-bottom: 12px;
+  margin-bottom: 24px;
   margin-top: 0;
   padding-top: 0;
 }
 
 .survey-exit-button {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 36px;
-  height: 36px;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: transparent;
   border: 1px solid #e5e7eb;
   color: #6b7280;
-  font-size: 20px;
+  font-size: 22px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .survey-exit-button:hover {
@@ -64,20 +67,17 @@
   background: #e5e7eb;
 }
 
-.survey-card {
-  position: relative;
-}
-
 .survey-logo {
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  flex-shrink: 0;
 }
 
 .survey-logo img {
@@ -88,14 +88,17 @@
 }
 
 .survey-title {
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.01em;
   color: #071a32;
-  margin: 0 auto 8px;
+  margin: 0;
+  padding: 0;
   text-align: center;
-  line-height: 1.15;
-  max-width: 420px;
+  line-height: 1.25;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .survey-progress {
@@ -105,7 +108,7 @@
 }
 
 .survey-body {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .hero-subtitle {
@@ -114,19 +117,20 @@
   line-height: 1.6;
   color: #6b7280;
   text-align: center;
-  max-width: 480px;
-  margin: 0 auto 32px;
+  margin: 0;
   padding: 0;
+  margin-bottom: 28px;
 }
 
 .hero-illustration {
-  margin: 0 auto 36px;
+  margin: 0 auto 32px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   overflow: visible;
   position: relative;
+  min-height: 220px;
 }
 
 .hero-illustration::before {
@@ -151,8 +155,7 @@
 }
 
 .hero-illustration img {
-  max-width: 240px;
-  width: 100%;
+  width: 220px;
   height: auto;
   display: block;
   position: relative;
@@ -160,7 +163,7 @@
 }
 
 .hero-section-title {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   text-align: center;
   color: #071a32;
@@ -171,11 +174,11 @@
 .hero-benefits {
   list-style: none;
   padding: 0;
-  margin: 0 auto 24px;
+  margin: 0 0 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 400px;
+  gap: 0;
 }
 
 .hero-benefits li {
@@ -186,7 +189,8 @@
   font-weight: 400;
   line-height: 1.55;
   color: #071a32;
-  margin-bottom: 8px;
+  margin: 0;
+  margin-bottom: 12px;
   width: 100%;
   text-align: left;
   padding: 0;
@@ -198,11 +202,11 @@
 
 .hero-benefits li::before {
   content: "";
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: #2bb4a0;
-  margin-top: 5px;
+  margin-top: 6px;
   flex-shrink: 0;
 }
 
