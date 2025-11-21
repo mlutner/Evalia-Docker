@@ -104,29 +104,39 @@ export default function PublishStep({
         </div>
 
         <div>
-          <label className="text-sm font-medium mb-3 block">Welcome Illustration</label>
-          <div className="grid grid-cols-3 gap-3 mb-3">
-            {illustrations.map((url) => (
-              <div
-                key={url}
-                onClick={() => onIllustrationChange?.(url)}
-                className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
-                  illustrationUrl === url ? "border-primary" : "border-border"
-                }`}
-              >
-                <img src={url} alt="Survey illustration" className="w-full h-24 object-cover" />
-                {illustrationUrl === url && (
-                  <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
-                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                      <div className="w-3 h-3 bg-white rounded-full" />
+          <label className="text-sm font-medium mb-4 block">Welcome Illustration</label>
+          
+          {/* Choose from Images Section */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm font-medium text-muted-foreground">Choose from images</p>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {illustrations.map((url) => (
+                <div
+                  key={url}
+                  onClick={() => onIllustrationChange?.(url)}
+                  className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
+                    illustrationUrl === url ? "border-primary" : "border-border hover:border-muted-foreground/50"
+                  }`}
+                >
+                  <img src={url} alt="Survey illustration" className="w-full h-24 object-cover" />
+                  {illustrationUrl === url && (
+                    <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                      <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                        <div className="w-3 h-3 bg-white rounded-full" />
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="flex gap-2 mb-4">
-            <label className="flex-1">
+
+          {/* Upload Image Section */}
+          <div>
+            <p className="text-sm font-medium text-muted-foreground mb-3">Upload image</p>
+            <label>
               <input
                 type="file"
                 accept="image/*"
@@ -134,34 +144,37 @@ export default function PublishStep({
                 disabled={uploadingImage}
                 className="hidden"
               />
-              <div className="border-2 border-dashed rounded-lg p-3 text-center cursor-pointer hover:bg-muted/50 transition-colors">
+              <div className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:bg-muted/50 transition-colors">
                 {uploadingImage ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin mx-auto" />
-                    <p className="text-xs text-muted-foreground mt-1">Uploading...</p>
+                    <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">Uploading...</p>
                   </>
                 ) : (
                   <>
-                    <Upload className="w-4 h-4 mx-auto" />
-                    <p className="text-xs text-muted-foreground mt-1">Upload image</p>
+                    <Upload className="w-5 h-5 mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
                   </>
                 )}
               </div>
             </label>
-            {illustrationUrl && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onIllustrationChange?.("")}
-                className="px-2"
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            )}
           </div>
+
           {illustrationUrl && (
-            <div className="mb-4 rounded-lg overflow-hidden border">
+            <div className="mt-6 rounded-lg overflow-hidden border">
+              <p className="text-xs font-medium text-muted-foreground px-3 pt-3">Selected illustration</p>
               <img src={illustrationUrl} alt="Selected illustration" className="w-full max-h-48 object-cover" />
+              <div className="p-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onIllustrationChange?.("")}
+                  className="w-full"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Remove
+                </Button>
+              </div>
             </div>
           )}
         </div>

@@ -253,6 +253,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       description: currentSurveyDescription || undefined,
       welcomeMessage: welcomeMessage || undefined,
       thankYouMessage: thankYouMessage || undefined,
+      illustrationUrl: illustrationUrl || undefined,
       questions: currentQuestions,
     };
 
@@ -273,6 +274,8 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
     setWelcomeMessage,
     thankYouMessage,
     setThankYouMessage,
+    illustrationUrl,
+    setIllustrationUrl,
     currentQuestions,
     setCurrentQuestions,
     currentWizardStep,

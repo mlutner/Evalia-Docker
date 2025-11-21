@@ -78,6 +78,7 @@ export default function Builder() {
       surveyState.setCurrentSurveyDescription(existingSurvey.description || "");
       surveyState.setWelcomeMessage(existingSurvey.welcomeMessage || "");
       surveyState.setThankYouMessage(existingSurvey.thankYouMessage || "");
+      surveyState.setIllustrationUrl(existingSurvey.illustrationUrl || "");
       surveyState.setCurrentQuestions(existingSurvey.questions);
       surveyState.setCurrentWizardStep(2);
       aiChat.setMessages([
@@ -579,11 +580,13 @@ export default function Builder() {
             description={surveyState.currentSurveyDescription}
             welcomeMessage={surveyState.welcomeMessage}
             thankYouMessage={surveyState.thankYouMessage}
+            illustrationUrl={surveyState.illustrationUrl}
             generatingField={aiChat.generatingField}
             onTitleChange={surveyState.setCurrentSurveyTitle}
             onDescriptionChange={surveyState.setCurrentSurveyDescription}
             onWelcomeChange={surveyState.setWelcomeMessage}
             onThankYouChange={surveyState.setThankYouMessage}
+            onIllustrationChange={surveyState.setIllustrationUrl}
             onGenerateText={handleGenerateText}
           />
         )}
