@@ -27,7 +27,7 @@
   background: var(--card-bg);
   max-width: 640px;
   width: 100%;
-  padding: 48px 40px 44px;
+  padding: 44px 40px 40px;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
   text-align: center;
@@ -70,7 +70,7 @@ h1 {
   font-size: 48px;
   line-height: 1.2;
   letter-spacing: -0.025em;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   color: var(--navy);
   font-weight: 800;
 }
@@ -79,12 +79,12 @@ h1 {
   font-size: 16px;
   line-height: 1.6;
   color: var(--navy-soft);
-  margin-bottom: 32px;
+  margin-bottom: 24px;
   letter-spacing: -0.01em;
 }
 
 .illustration-wrapper {
-  margin: 32px 0 40px;
+  margin: 24px 0 28px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -101,7 +101,7 @@ h1 {
 .section-heading {
   font-size: 20px;
   font-weight: 700;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
   color: var(--navy);
   letter-spacing: -0.01em;
 }
@@ -109,7 +109,7 @@ h1 {
 .benefits {
   list-style: none;
   text-align: left;
-  margin: 0 auto 32px;
+  margin: 0 auto 24px;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -123,9 +123,13 @@ h1 {
   font-size: 15px;
   line-height: 1.6;
   color: var(--navy-soft);
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   padding: 0;
   width: 100%;
+}
+
+.benefits li:last-child {
+  margin-bottom: 0;
 }
 
 .benefits li::before {
@@ -141,7 +145,7 @@ h1 {
 }
 
 .helper-text {
-  margin-top: 12px;
+  margin-top: 10px;
   font-size: 13px;
   color: var(--navy-soft);
   letter-spacing: -0.01em;
@@ -150,84 +154,86 @@ h1 {
 /* Responsive Design */
 @media (max-width: 640px) {
   .card {
-    padding: 40px 32px 36px;
+    padding: 36px 32px 32px;
   }
 
   h1 {
     font-size: 40px;
     line-height: 1.2;
+    margin-bottom: 10px;
   }
 
   .subtitle {
     font-size: 15px;
-    margin-bottom: 28px;
+    margin-bottom: 20px;
   }
 
   .logo-mark {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
 
   .illustration-wrapper {
-    margin: 28px 0 36px;
+    margin: 20px 0 24px;
   }
 
   .section-heading {
     font-size: 19px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
 
   .benefits {
-    margin: 0 auto 28px;
+    margin: 0 auto 20px;
   }
 
   .benefits li {
     font-size: 14px;
-    margin-bottom: 11px;
+    margin-bottom: 9px;
   }
 }
 
 @media (max-width: 480px) {
   .page {
-    padding: 24px 12px;
+    padding: 20px 12px;
   }
 
   .card {
-    padding: 32px 24px 28px;
+    padding: 28px 20px 24px;
     border-radius: 12px;
   }
 
   .logo-mark {
     width: 44px;
     height: 44px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
 
   h1 {
     font-size: 32px;
     line-height: 1.2;
+    margin-bottom: 8px;
   }
 
   .subtitle {
     font-size: 14px;
-    margin-bottom: 24px;
+    margin-bottom: 18px;
   }
 
   .illustration-wrapper {
-    margin: 24px 0 32px;
+    margin: 18px 0 20px;
   }
 
   .section-heading {
     font-size: 18px;
-    margin-bottom: 14px;
+    margin-bottom: 11px;
   }
 
   .benefits {
-    margin: 0 auto 24px;
+    margin: 0 auto 18px;
   }
 
   .benefits li {
     font-size: 13px;
-    margin-bottom: 9px;
+    margin-bottom: 8px;
   }
 
   .helper-text {
