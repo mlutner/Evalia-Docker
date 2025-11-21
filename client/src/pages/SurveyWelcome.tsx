@@ -66,11 +66,6 @@ export default function SurveyWelcome({
           {survey.description}
         </p>
 
-        {/* Subtitle */}
-        <p className="hero-subtitle" data-testid="text-survey-description">
-          {survey.description}
-        </p>
-
         {/* Body */}
         <div className="survey-body">
           {/* Illustration */}
