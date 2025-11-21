@@ -29,15 +29,16 @@ export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 
 // Question types
-export type QuestionType = "text" | "textarea" | "multiple_choice" | "checkbox" | "email" | "number";
+export type QuestionType = "text" | "textarea" | "multiple_choice" | "checkbox" | "email" | "number" | "rating";
 
 export const questionSchema = z.object({
   id: z.string(),
-  type: z.enum(["text", "textarea", "multiple_choice", "checkbox", "email", "number"]),
+  type: z.enum(["text", "textarea", "multiple_choice", "checkbox", "email", "number", "rating"]),
   question: z.string(),
   description: z.string().optional(),
   options: z.array(z.string()).optional(),
   required: z.boolean().optional(),
+  ratingScale: z.number().optional(), // 5 or 10 for rating questions
 });
 
 export type Question = z.infer<typeof questionSchema>;

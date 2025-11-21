@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { MessageSquare, AtSign, Hash, Type, CheckCircle2, Radio } from "lucide-react";
+import { MessageSquare, AtSign, Hash, Type, CheckCircle2, Radio, ThumbsUp } from "lucide-react";
 import type { Question, QuestionType } from "@shared/schema";
 
 export type { Question, QuestionType };
@@ -30,6 +30,8 @@ function getQuestionTypeIcon(type: QuestionType) {
       return <Radio className="w-5 h-5" />;
     case "checkbox":
       return <CheckCircle2 className="w-5 h-5" />;
+    case "rating":
+      return <ThumbsUp className="w-5 h-5" />;
     default:
       return null;
   }
@@ -43,6 +45,7 @@ function getQuestionTypeLabel(type: QuestionType) {
     textarea: "Long answer",
     multiple_choice: "Multiple choice",
     checkbox: "Select all that apply",
+    rating: "Rating scale",
   };
   return labels[type] || type;
 }
@@ -198,6 +201,53 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
               );
             })}
             <p className="text-xs sm:text-sm text-muted-foreground mt-2">Select one or more options</p>
+          </div>
+        )}
+
+        {question.type === "rating" && (
+          <div className="space-y-6 sm:space-y-8">
+            {/* Labels */}
+            <div className="flex items-center justify-between px-2 text-xs sm:text-sm font-medium text-muted-foreground">
+              <span>Disagree</span>
+              <span>Neutral</span>
+              <span>Agree</span>
+            </div>
+
+            {/* Rating Scale - Top to Bottom (Disagree to Agree) */}
+            <div className="space-y-2 sm:space-y-3">
+              {[1, 2, 3, 4, 5].map((rating) => {
+                const isSelected = answer === rating.toString();
+                const labels = {
+                  1: "Strongly Disagree",
+                  2: "Disagree",
+                  3: "Neutral",
+                  4: "Agree",
+                  5: "Strongly Agree",
+                };
+                return (
+                  <button
+                    key={rating}
+                    onClick={() => handleMultipleChoice(rating.toString())}
+                    data-testid={`rating-${rating}`}
+                    className={`w-full p-4 sm:p-5 rounded-xl border-2 transition-all text-left ${
+                      isSelected
+                        ? "border-primary bg-primary/10 shadow-md"
+                        : "border-border bg-card/40 hover:bg-primary/5 hover:border-primary/50"
+                    } hover-elevate active-elevate-2`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="text-base sm:text-lg font-medium">{labels[rating as keyof typeof labels]}</div>
+                        <div className="text-xs sm:text-sm text-muted-foreground">{rating} of 5</div>
+                      </div>
+                      <div className={`text-lg sm:text-xl font-bold ${isSelected ? "text-primary" : "text-muted-foreground"}`}>
+                        {rating}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
