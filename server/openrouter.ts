@@ -57,17 +57,19 @@ export async function parsePDFWithVision(pdfBuffer: Buffer, fileName: string): P
     throw new Error("Mistral API key not configured");
   }
 
-  const formData = new FormData();
-  const blob = new Blob([pdfBuffer], { type: "application/pdf" });
-  formData.append("document", blob, fileName);
-
   try {
+    // Encode PDF as base64
+    const base64PDF = pdfBuffer.toString("base64");
+
     const response = await fetch(MISTRAL_OCR_URL, {
       method: "POST",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${MISTRAL_API_KEY}`,
       },
-      body: formData,
+      body: JSON.stringify({
+        document: `data:application/pdf;base64,${base64PDF}`,
+      }),
     });
 
     if (!response.ok) {
@@ -77,7 +79,7 @@ export async function parsePDFWithVision(pdfBuffer: Buffer, fileName: string): P
 
     const data = await response.json();
     // OCR returns markdown content
-    return data.content || data.text || "";
+    return data.content || data.text || data.pages?.map((p: any) => p.markdown || p.content).join("\n") || "";
   } catch (error: any) {
     throw new Error(`PDF OCR failed: ${error.message}`);
   }
