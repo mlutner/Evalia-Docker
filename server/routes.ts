@@ -246,6 +246,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get available illustrations (public)
+  app.get("/api/illustrations", async (req, res) => {
+    try {
+      res.json({ illustrations: SURVEY_ILLUSTRATIONS });
+    } catch (error: any) {
+      console.error("Get illustrations error:", error);
+      res.status(500).json({ error: "Failed to fetch illustrations" });
+    }
+  });
+
+  // Upload illustration (protected)
+  app.post("/api/upload-illustration", isAuthenticated, upload.single("file"), async (req: any, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+
+      // Save the file to attached_assets directory
+      const timestamp = Date.now();
+      const filename = `illustration_${timestamp}_${req.file.originalname}`;
+      const filepath = `/attached_assets/${filename}`;
+
+      // Write file to disk
+      const fs = require("fs");
+      const fullPath = path.resolve(import.meta.dirname, "..", "attached_assets", filename);
+      fs.writeFileSync(fullPath, req.file.buffer);
+
+      res.json({ url: filepath });
+    } catch (error: any) {
+      console.error("Upload illustration error:", error);
+      res.status(500).json({ error: "Failed to upload illustration" });
+    }
+  });
+
   // Get all surveys (protected)
   app.get("/api/surveys", isAuthenticated, async (req: any, res) => {
     try {
