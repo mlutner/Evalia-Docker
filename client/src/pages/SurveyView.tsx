@@ -3,6 +3,7 @@ import { useParams } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
+import surveyIllustration from "@/assets/survey-illustration.png";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import QuestionCard from "@/components/QuestionCard";
 import ProgressBar from "@/components/ProgressBar";
@@ -217,7 +218,7 @@ export default function SurveyView() {
           {/* Illustration */}
           <div style={{ marginBottom: '28px' }}>
             <img
-              src="https://via.placeholder.com/210x210?text=Illustration"
+              src={surveyIllustration}
               alt="Survey illustration"
               style={{ width: '210px', maxWidth: '100%' }}
             />

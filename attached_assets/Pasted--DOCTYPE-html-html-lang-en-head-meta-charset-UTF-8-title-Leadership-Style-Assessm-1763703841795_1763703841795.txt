@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Leadership Style Assessment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --navy: #071a32;
+      --navy-soft: #42526b;
+      --green: #22c55e;      /* adjust if you want a different green */
+      --bg: #f5f7fb;
+      --card-bg: #ffffff;
+      --border-soft: #e2e8f0;
+      --radius-lg: 16px;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: #f9fafb;
+      color: var(--navy);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      max-width: 520px;
+      width: 100%;
+      padding: 40px 32px 36px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      text-align: center;
+    }
+
+    .logo-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: #22c55e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+
+    .logo-mark-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 2px solid #ffffff;
+      position: relative;
+    }
+
+    .logo-mark-icon::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      right: 3px;
+      bottom: 3px;
+      border-radius: 2px;
+      background: #ffffff;
+      opacity: 0.35;
+    }
+
+    h1 {
+      font-size: 30px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--navy-soft);
+      margin-bottom: 28px;
+    }
+
+    .illustration-wrapper {
+      margin-bottom: 28px;
+    }
+
+    .illustration {
+      width: 210px;
+      max-width: 100%;
+    }
+
+    .section-heading {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    .benefits {
+      list-style: none;
+      text-align: left;
+      max-width: 420px;
+      margin: 0 auto 28px;
+      padding-left: 0;
+    }
+
+    .benefits li {
+      display: flex;
+      align-items: flex-start;
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--navy-soft);
+      margin-bottom: 8px;
+    }
+
+    .benefits li::before {
+      content: "•";
+      display: inline-block;
+      color: var(--navy-soft);
+      font-size: 18px;
+      margin-right: 8px;
+      line-height: 1.2;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 13px 24px;
+      border-radius: 999px;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      background: var(--green);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 15px;
+      box-shadow: 0 10px 25px rgba(34, 197, 94, 0.35);
+      transition: transform 0.08s ease, box-shadow 0.08s ease,
+        background 0.1s ease;
+      width: 100%;
+      max-width: 260px;
+    }
+
+    .btn-primary:hover {
+      background: #16a34a;
+      transform: translateY(-1px);
+      box-shadow: 0 16px 35px rgba(34, 197, 94, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
+    }
+
+    .helper-text {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--navy-soft);
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 32px 20px 28px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .subtitle {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <main class="card" aria-labelledby="title">
+      <!-- Logo mark (you can replace with your real logo) -->
+      <div class="logo-mark">
+        <div class="logo-mark-icon"></div>
+      </div>
+
+      <!-- Heading & subtitle -->
+      <h1 id="title">Discover Your Leadership Style</h1>
+      <p class="subtitle">
+        This quick assessment reveals how you lead, communicate, and inspire.
+      </p>
+
+      <!-- Illustration -->
+      <div class="illustration-wrapper">
+        <!-- Replace src with your PNG/SVG -->
+        <img
+          src="leadership-illustration.png"
+          alt="Three people discussing leadership"
+          class="illustration"
+        />
+      </div>
+
+      <!-- Benefits list -->
+      <h2 class="section-heading">What you'll gain:</h2>
+      <ul class="benefits">
+        <li>A snapshot of how others experience your leadership</li>
+        <li>Insight into communication &amp; decision styles</li>
+        <li>A personalized style profile you can use immediately</li>
+      </ul>
+
+      <!-- CTA -->
+      <button class="btn-primary" type="button">
+        Begin Self-Assessment
+      </button>
+      <p class="helper-text">
+        Fast, confidential, and designed for personal growth.
+      </p>
+    </main>
+  </div>
+</body>
+</html>
