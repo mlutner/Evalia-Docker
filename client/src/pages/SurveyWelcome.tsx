@@ -1,6 +1,6 @@
 import { Loader2, AlertCircle, ArrowLeft } from "lucide-react";
 import type { Survey } from "@shared/schema";
-import logoImage from "@assets/targeted_element_1763764396546.png";
+import logoImage from "@assets/Untitled design (3)_1763764529938.png";
 
 interface SurveyWelcomeProps {
   survey: Survey;
