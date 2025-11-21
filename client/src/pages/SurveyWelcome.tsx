@@ -43,7 +43,10 @@ export default function SurveyWelcome({
         </div>
 
         {/* Heading & subtitle */}
-        <h1 id="survey-title" data-testid="text-survey-title">
+        <h1
+          id="survey-title"
+          data-testid="text-survey-title"
+          className="text-[31px] font-bold">
           {survey.title}
         </h1>
         <p className="subtitle" data-testid="text-survey-description">
