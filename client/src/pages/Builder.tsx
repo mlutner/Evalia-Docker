@@ -630,6 +630,20 @@ export default function Builder() {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 py-8">
+        {/* Back to Dashboard Button */}
+        <div className="mb-8">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setLocation("/dashboard")}
+            className="mb-4 text-muted-foreground hover:text-foreground"
+            data-testid="button-back-to-dashboard"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Dashboard
+          </Button>
+        </div>
+
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
             <h1 className="text-4xl font-semibold">
