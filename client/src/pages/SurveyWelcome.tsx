@@ -75,7 +75,7 @@ export default function SurveyWelcome({
         <h2 className="hero-section-title" data-testid="text-what-youll-gain">
           What you'll gain:
         </h2>
-        <ul className="hero-benefits">
+        <ul className="hero-benefits text-left">
           {benefitPoints.map((point, idx) => (
             <li
               key={idx}
