@@ -1,15 +1,15 @@
 import type { Question } from "@shared/schema";
 
-// User added OpenRouter key as OPENAI_API_KEY in secrets
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY;
-const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
+// Use Mistral API key
+const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
+const MISTRAL_BASE_URL = "https://api.mistral.ai/v1";
 
-// Free models from OpenRouter (November 2025)
+// Mistral models
 const MODELS = {
   // For survey generation and chat
-  GENERATION: "mistralai/pixtral-large-2411", // Mistral Pixtral Large for survey generation and refinement
+  GENERATION: "pixtral-large-latest", // Mistral Pixtral Large for survey generation and refinement
   // For OCR/document parsing (vision model)
-  OCR: "mistralai/pixtral-large-2411", // Mistral Pixtral Large for document OCR/parsing - excellent at understanding documents and charts
+  OCR: "pixtral-large-latest", // Mistral Pixtral Large for document OCR/parsing - excellent at understanding documents and charts
 };
 
 interface ChatMessage {
@@ -17,22 +17,20 @@ interface ChatMessage {
   content: string;
 }
 
-async function callOpenRouter(
+async function callMistral(
   messages: ChatMessage[],
   model: string = MODELS.GENERATION,
   responseFormat?: { type: "json_object" }
 ): Promise<string> {
-  if (!OPENROUTER_API_KEY) {
-    throw new Error("OpenRouter API key not configured");
+  if (!MISTRAL_API_KEY) {
+    throw new Error("Mistral API key not configured");
   }
 
-  const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
+  const response = await fetch(`${MISTRAL_BASE_URL}/chat/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-      "HTTP-Referer": process.env.REPLIT_DOMAINS || "http://localhost:5000",
-      "X-Title": "Evalia Survey Builder",
+      Authorization: `Bearer ${MISTRAL_API_KEY}`,
     },
     body: JSON.stringify({
       model,
@@ -43,7 +41,7 @@ async function callOpenRouter(
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(`OpenRouter API error: ${error}`);
+    throw new Error(`Mistral API error: ${error}`);
   }
 
   const data = await response.json();
@@ -65,7 +63,7 @@ export async function parseDocument(fileContent: string, fileName: string): Prom
     },
   ];
 
-  return callOpenRouter(messages, MODELS.OCR);
+  return callMistral(messages, MODELS.OCR);
 }
 
 /**
@@ -121,7 +119,7 @@ VALIDATION CHECKLIST:
     { role: "user", content: userPrompt },
   ];
 
-  const response = await callOpenRouter(messages, MODELS.GENERATION, { type: "json_object" });
+  const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
   
   try {
     const parsed = JSON.parse(response);
@@ -203,7 +201,7 @@ ${JSON.stringify(survey.questions, null, 2)}`;
     { role: "user", content: userMessage },
   ];
 
-  const response = await callOpenRouter(messages, MODELS.GENERATION, { type: "json_object" });
+  const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
   
   try {
     const parsed = JSON.parse(response);
