@@ -1,4 +1,4 @@
-import { type User, type UpsertUser, type Survey, type InsertSurvey, users, surveys, surveyResponses, type SurveyResponse } from "@shared/schema";
+import { type User, type UpsertUser, type Survey, type InsertSurvey, users, surveys, surveyResponses, surveyRespondents, type SurveyResponse, type SurveyRespondent, type InsertSurveyRespondent } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
 import { eq, sql } from "drizzle-orm";
@@ -16,6 +16,14 @@ export interface IStorage {
   deleteSurvey(id: string): Promise<boolean>;
   checkSurveyOwnership(surveyId: string, userId: string): Promise<boolean>;
   
+  // Respondent operations
+  createRespondent(surveyId: string, respondent: InsertSurveyRespondent): Promise<SurveyRespondent>;
+  getRespondent(token: string): Promise<SurveyRespondent | undefined>;
+  getRespondentsByEmail(surveyId: string, email: string): Promise<SurveyRespondent[]>;
+  getAllRespondents(surveyId: string): Promise<SurveyRespondent[]>;
+  markRespondentAsSubmitted(respondentId: string): Promise<boolean>;
+  deleteRespondent(id: string): Promise<boolean>;
+
   // Response operations
   createResponse(surveyId: string, answers: Record<string, string | string[]>): Promise<SurveyResponse>;
   getResponses(surveyId: string): Promise<SurveyResponse[]>;
@@ -77,6 +85,9 @@ export class MemStorage implements IStorage {
       userId,
       ...insertSurvey,
       description: insertSurvey.description ?? null,
+      welcomeMessage: insertSurvey.welcomeMessage ?? null,
+      thankYouMessage: insertSurvey.thankYouMessage ?? null,
+      illustrationUrl: insertSurvey.illustrationUrl ?? null,
       createdAt: now,
       updatedAt: now,
     };
@@ -107,11 +118,13 @@ export class MemStorage implements IStorage {
   }
 
   async createResponse(surveyId: string, answers: Record<string, string | string[]>): Promise<SurveyResponse> {
+    const now = new Date();
     const response: SurveyResponse = {
       id: randomUUID(),
       surveyId,
       answers,
-      completedAt: new Date(),
+      startedAt: now,
+      completedAt: now,
     };
     this.responses.set(response.id, response);
     return response;
@@ -158,6 +171,41 @@ export class MemStorage implements IStorage {
     });
     
     return Array.from(answerMap.values()).filter(group => group.length > 1);
+  }
+
+  async createRespondent(surveyId: string, respondent: InsertSurveyRespondent): Promise<SurveyRespondent> {
+    const id = randomUUID();
+    const token = randomUUID();
+    const surveyRespondent: SurveyRespondent = {
+      id,
+      surveyId,
+      email: respondent.email || null,
+      name: respondent.name || null,
+      respondentToken: token,
+      invitedAt: new Date(),
+      submittedAt: null,
+    };
+    return surveyRespondent;
+  }
+
+  async getRespondent(token: string): Promise<SurveyRespondent | undefined> {
+    return undefined;
+  }
+
+  async getRespondentsByEmail(surveyId: string, email: string): Promise<SurveyRespondent[]> {
+    return [];
+  }
+
+  async getAllRespondents(surveyId: string): Promise<SurveyRespondent[]> {
+    return [];
+  }
+
+  async markRespondentAsSubmitted(respondentId: string): Promise<boolean> {
+    return false;
+  }
+
+  async deleteRespondent(id: string): Promise<boolean> {
+    return false;
   }
 }
 
@@ -247,6 +295,78 @@ export class DbStorage implements IStorage {
       .from(surveyResponses)
       .where(eq(surveyResponses.surveyId, surveyId));
     return Number(result[0]?.count || 0);
+  }
+
+  async deleteResponse(id: string): Promise<boolean> {
+    const result = await db.delete(surveyResponses).where(eq(surveyResponses.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async deleteResponsesBulk(ids: string[]): Promise<number> {
+    if (ids.length === 0) return 0;
+    const result = await db.delete(surveyResponses).where(sql`${surveyResponses.id} IN (${sql.join(ids)})`).returning();
+    return result.length;
+  }
+
+  async searchResponses(surveyId: string, searchTerm: string): Promise<SurveyResponse[]> {
+    const term = `%${searchTerm}%`;
+    return db.select()
+      .from(surveyResponses)
+      .where(sql`${surveyResponses.surveyId} = ${surveyId} AND ${surveyResponses.answers}::text ILIKE ${term}`)
+      .orderBy(sql`${surveyResponses.completedAt} DESC`);
+  }
+
+  async detectDuplicates(surveyId: string): Promise<SurveyResponse[][]> {
+    const responses = await this.getResponses(surveyId);
+    const answerMap = new Map<string, SurveyResponse[]>();
+    
+    responses.forEach(r => {
+      const key = JSON.stringify(r.answers);
+      if (!answerMap.has(key)) answerMap.set(key, []);
+      answerMap.get(key)!.push(r);
+    });
+    
+    return Array.from(answerMap.values()).filter(group => group.length > 1);
+  }
+
+  async createRespondent(surveyId: string, respondent: InsertSurveyRespondent): Promise<SurveyRespondent> {
+    const token = randomUUID();
+    const result = await db.insert(surveyRespondents).values({
+      surveyId,
+      email: respondent.email,
+      name: respondent.name,
+      respondentToken: token,
+    }).returning();
+    return result[0];
+  }
+
+  async getRespondent(token: string): Promise<SurveyRespondent | undefined> {
+    const result = await db.select().from(surveyRespondents).where(eq(surveyRespondents.respondentToken, token)).limit(1);
+    return result[0];
+  }
+
+  async getRespondentsByEmail(surveyId: string, email: string): Promise<SurveyRespondent[]> {
+    return db.select().from(surveyRespondents)
+      .where(sql`${surveyRespondents.surveyId} = ${surveyId} AND ${surveyRespondents.email} = ${email}`);
+  }
+
+  async getAllRespondents(surveyId: string): Promise<SurveyRespondent[]> {
+    return db.select().from(surveyRespondents)
+      .where(eq(surveyRespondents.surveyId, surveyId))
+      .orderBy(sql`${surveyRespondents.invitedAt} DESC`);
+  }
+
+  async markRespondentAsSubmitted(respondentId: string): Promise<boolean> {
+    const result = await db.update(surveyRespondents)
+      .set({ submittedAt: new Date() })
+      .where(eq(surveyRespondents.id, respondentId))
+      .returning();
+    return result.length > 0;
+  }
+
+  async deleteRespondent(id: string): Promise<boolean> {
+    const result = await db.delete(surveyRespondents).where(eq(surveyRespondents.id, id)).returning();
+    return result.length > 0;
   }
 }
 

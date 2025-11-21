@@ -61,8 +61,21 @@ export const surveys = pgTable("surveys", {
   welcomeMessage: text("welcome_message"),
   thankYouMessage: text("thank_you_message"),
   illustrationUrl: text("illustration_url"),
+  isAnonymous: boolean("is_anonymous").default(false),
+  webhookUrl: text("webhook_url"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Survey respondents table (Phase 4)
+export const surveyRespondents = pgTable("survey_respondents", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  surveyId: varchar("survey_id").notNull().references(() => surveys.id),
+  email: varchar("email"),
+  name: varchar("name"),
+  respondentToken: varchar("respondent_token").unique(),
+  invitedAt: timestamp("invited_at").defaultNow(),
+  submittedAt: timestamp("submitted_at"),
 });
 
 export const insertSurveySchema = createInsertSchema(surveys, {
@@ -76,6 +89,15 @@ export const insertSurveySchema = createInsertSchema(surveys, {
 
 export type InsertSurvey = z.infer<typeof insertSurveySchema>;
 export type Survey = typeof surveys.$inferSelect;
+
+export type SurveyRespondent = typeof surveyRespondents.$inferSelect;
+
+export const insertSurveyRespondentSchema = z.object({
+  email: z.string().email().optional(),
+  name: z.string().optional(),
+});
+
+export type InsertSurveyRespondent = z.infer<typeof insertSurveyRespondentSchema>;
 
 // Survey responses table
 export const surveyResponses = pgTable("survey_responses", {
