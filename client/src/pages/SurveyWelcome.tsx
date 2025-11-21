@@ -18,7 +18,11 @@ export default function SurveyWelcome({
   defaultIllustration,
 }: SurveyWelcomeProps) {
   // Use survey illustration if available, otherwise use passed prop or default
-  const illustration = survey.illustrationUrl || illustrationImage || defaultIllustration;
+  let illustration = survey.illustrationUrl || illustrationImage || defaultIllustration;
+  // Fix old paths that use /assets/ instead of /attached_assets/
+  if (illustration && illustration.startsWith('/assets/')) {
+    illustration = illustration.replace('/assets/', '/attached_assets/');
+  }
   const purposePoints = survey.welcomeMessage
     ? survey.welcomeMessage.split("\n").filter((line) => line.trim())
     : [];
