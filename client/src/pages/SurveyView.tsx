@@ -221,7 +221,7 @@ export default function SurveyView() {
       <main className="survey-card" key={currentStep}>
         {/* Header */}
         <header className="survey-header">
-          <div className="survey-logo">
+          <div className="survey-logo pl-[0px] pr-[0px] pt-[0px] pb-[0px]">
             <img 
               src={logoImage} 
               alt="Survey logo" 
@@ -280,7 +280,6 @@ export default function SurveyView() {
           </button>
         </p>
       </main>
-
       {/* Exit Warning Dialog */}
       <AlertDialog open={showExitWarning} onOpenChange={setShowExitWarning}>
         <AlertDialogContent>
