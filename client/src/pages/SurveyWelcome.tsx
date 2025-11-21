@@ -43,18 +43,6 @@ export default function SurveyWelcome({
   return (
     <div className="survey-shell">
       <main className="survey-card pl-[45px] pr-[45px]" aria-labelledby="survey-title">
-        {/* Exit Button */}
-        {onExit && (
-          <button
-            onClick={onExit}
-            data-testid="button-exit-survey"
-            className="survey-exit-button"
-            type="button"
-            aria-label="Exit survey"
-          >
-            ✕
-          </button>
-        )}
         {/* Header Section */}
         <header className="survey-header pt-[0px] pb-[0px] mt-[0px] mb-[0px]">
           {/* Logo */}
