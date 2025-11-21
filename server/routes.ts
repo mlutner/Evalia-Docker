@@ -283,12 +283,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id } = req.params;
       const updates = req.body;
 
-      const survey = await storage.updateSurvey(id, updates);
-      
-      if (!survey) {
+      // Get current survey to preserve illustrationUrl if not provided
+      const currentSurvey = await storage.getSurvey(id);
+      if (!currentSurvey) {
         return res.status(404).json({ error: "Survey not found" });
       }
 
+      // Preserve illustrationUrl if not in updates
+      const surveyUpdates = {
+        ...updates,
+        illustrationUrl: updates.illustrationUrl || currentSurvey.illustrationUrl || getRandomIllustration(),
+      };
+
+      const survey = await storage.updateSurvey(id, surveyUpdates);
       res.json(survey);
     } catch (error: any) {
       console.error("Update survey error:", error);
