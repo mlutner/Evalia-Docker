@@ -37,7 +37,7 @@ export default function SurveyWelcome({
 
   return (
     <div className="page">
-      <main className="card" aria-labelledby="survey-title">
+      <main className="card text-[14px] pl-[40px] pr-[40px] pt-[40px] pb-[40px] ml-[55px] mr-[55px]" aria-labelledby="survey-title">
         {/* Logo mark */}
         <img 
           src={logoImage} 
@@ -49,7 +49,8 @@ export default function SurveyWelcome({
         {/* Heading & subtitle */}
         <h1
           id="survey-title"
-          data-testid="text-survey-title">
+          data-testid="text-survey-title"
+          className="font-semibold text-[41px]">
           {survey.title}
         </h1>
         <p className="subtitle" data-testid="text-survey-description">
@@ -58,7 +59,7 @@ export default function SurveyWelcome({
 
         {/* Illustration */}
         {illustrationImage && (
-          <div className="illustration-wrapper">
+          <div className="illustration-wrapper ml-[10px] mr-[10px] pl-[10px] pr-[10px] mt-[0px] mb-[0px]">
             <img
               src={illustrationImage}
               alt="Survey illustration"
@@ -69,10 +70,10 @@ export default function SurveyWelcome({
         )}
 
         {/* Benefits list */}
-        <h2 className="section-heading" data-testid="text-what-youll-gain">
+        <h2 className="section-heading text-[24px] font-extrabold" data-testid="text-what-youll-gain">
           What you'll gain:
         </h2>
-        <ul className="benefits">
+        <ul className="benefits ml-[65px] mr-[65px]">
           {benefitPoints.map((point, idx) => (
             <li
               key={idx}
@@ -87,7 +88,7 @@ export default function SurveyWelcome({
           size="lg"
           onClick={onStart}
           data-testid="button-start-survey"
-          className="w-full max-w-md mx-auto block rounded-full font-semibold py-4 text-[22px] mt-6 mb-4"
+          className="w-full max-w-md mx-auto block rounded-full font-semibold py-4 text-[22px] mt-4 mb-3"
         >
           Begin Self-Assessment
         </Button>
