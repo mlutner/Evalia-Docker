@@ -52,21 +52,20 @@ export default function SurveyWelcome({
           <h1
             id="survey-title"
             data-testid="text-survey-title"
-            className="font-semibold text-[50px]">
+            className="hero-title">
             {survey.title}
           </h1>
+          <p className="hero-subtitle" data-testid="text-survey-description">
+            {survey.description}
+          </p>
         </div>
-        <p className="subtitle" data-testid="text-survey-description">
-          {survey.description}
-        </p>
 
         {/* Illustration */}
         {illustrationImage && (
-          <div className="illustration-wrapper ml-[10px] mr-[10px] pl-[10px] pr-[10px] mt-[0px] mb-[0px]">
+          <div className="hero-illustration">
             <img
               src={illustrationImage}
               alt="Survey illustration"
-              className="illustration"
               data-testid="img-survey-illustration"
             />
           </div>
