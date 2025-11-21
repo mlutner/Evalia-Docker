@@ -285,70 +285,82 @@ export async function generateSurveyText(
     case "description":
       systemPrompt = `You are an expert survey copywriter specializing in professional training and feedback systems.
 
-YOUR TASK: Write a compelling survey description that hooks respondents and sets expectations.
+YOUR TASK: Write a brief, engaging survey description for the welcome screen (appears as subtitle below title).
 
-TONE: Professional, clear, and action-oriented. Make respondents feel their input matters.
+TONE: Conversational, approachable, and action-focused. Make respondents feel their feedback is valued and impactful.
 
 REQUIREMENTS:
-- Length: 50-85 words (approximately 2-3 sentences)
-- Start with the VALUE they'll provide (not what YOU want)
-- Mention what the survey covers in a natural way (based on the questions)
-- End with a subtle call-to-action or reassurance
-- Use active voice and conversational language
-- Avoid jargon; be direct and sincere
-- NO sales language or hype
+- Length: 45-75 words (fits as a subtitle on welcome screen)
+- Lead with the immediate benefit or outcome
+- Keep it personal and warm—address the respondent directly
+- Emphasize that their insights matter and will create real change
+- Use "you" language to make it relatable
+- Avoid corporate jargon; be authentic and sincere
+- End with an implicit or explicit invitation to participate
 
-EXAMPLE STRUCTURE:
-"This [topic] survey captures [key insight]. Your feedback on [what matters] will help [positive outcome]. It takes about [time] and requires only honest responses."
+BEST PRACTICES:
+- Action verbs: "help," "ensure," "shape," "improve"
+- Specific outcomes: reference what their feedback enables
+- NO hype, NO urgency language, NO sales tactics
 
-Output ONLY the description text, nothing else.`;
-      userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nWrite the survey description now. Remember: 50-85 words, focus on value, professional tone, active voice only.`;
+OUTPUT FORMAT: Plain text only, no formatting.`;
+      userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nWrite a 45-75 word description for the welcome screen. Make it personal, benefit-focused, and warm. This appears as the subtitle under the title.`;
       break;
     
     case "welcomeMessage":
       systemPrompt = `You are an expert survey copywriter specializing in professional training and feedback systems.
 
-YOUR TASK: Write a warm, welcoming message that sets the tone and builds trust.
+YOUR TASK: Generate 3-4 specific, tangible benefits or insights respondents will gain by completing this survey. Format as bullet points (newline-separated).
 
-TONE: Professional yet approachable. Make respondents feel welcomed and valued.
+TONE: Aspirational, specific, and empowering. Show respondents exactly what they'll take away.
 
-REQUIREMENTS:
-- Length: 60-100 words (approximately 2-3 sentences)
-- Open with genuine gratitude for their time
-- Explain WHY their perspective matters (not generic—tie to the survey topic)
-- Include a subtle note about confidentiality or brevity to reduce anxiety
-- Use conversational, human language
-- Create a sense of partnership—they're helping solve something real
-- End on a positive, motivating note
+REQUIREMENTS FOR EACH POINT:
+- Length: 8-15 words per point (concise, scannable)
+- Start with a concrete outcome or insight (not a generic phrase)
+- Be specific to THIS survey and its questions—derive from the actual survey topics
+- Use benefit-focused language: "discover," "understand," "gain insight into," "identify," etc.
+- Avoid motherhood statements or generic platitudes
+- Each point should answer: "What will I know/be able to do after this?"
 
-EXAMPLE STRUCTURE:
-"Thank you for taking time to share your perspective. Your honest feedback on [topic] is invaluable to [improvement goal]. This survey is [time estimate] and completely confidential. Let's get started—your insights matter."
+EXAMPLES (NOT for this survey, just format):
+✓ "How your communication style impacts team dynamics"
+✓ "Concrete strategies to enhance your decision-making approach"
+✓ "Areas of strength you can leverage in your role"
+✗ "Great insights"
+✗ "Personal growth"
 
-Output ONLY the welcome message, nothing else.`;
-      userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nWrite the welcome message now. Remember: 60-100 words, warm and professional, emphasize their value, confidentiality note recommended.`;
+CRITICAL FORMAT:
+- Output EXACTLY 3-4 bullet points
+- Separate each point with a newline character (\n)
+- NO bullet symbols, NO numbers, NO dashes—just the text
+- NO header text or introduction
+- Plain text only`;
+      userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nGenerate 3-4 specific benefits respondents will gain. Each 8-15 words. Each on its own line. NO bullets, NO numbers, NO dashes. Just the text, one benefit per line.`;
       break;
     
     case "thankYouMessage":
       systemPrompt = `You are an expert survey copywriter specializing in professional training and feedback systems.
 
-YOUR TASK: Write a genuine thank you message that closes the survey experience on a high note.
+YOUR TASK: Write a warm, genuine thank you message for the survey completion screen.
 
-TONE: Sincere, appreciative, and forward-looking. Make respondents feel their time was well-spent.
+TONE: Sincere, appreciative, and forward-focused. Make respondents feel their effort mattered and created real impact.
 
 REQUIREMENTS:
-- Length: 40-65 words (approximately 1-2 sentences)
-- Start with genuine gratitude specific to what they provided
-- Briefly mention what happens next or the impact of their feedback
-- Close with a positive sentiment or invitation to stay engaged
-- Avoid being overly effusive or generic
-- Use simple, direct language
-- Leave them feeling like they made a difference
+- Length: 50-70 words (approximately 2-3 sentences, fits on completion screen)
+- Open with specific, authentic gratitude (reference what they just provided if possible)
+- Acknowledge the value of their insights—be concrete about impact
+- Close with an empowering or positive sentiment
+- Avoid generic "thank yous" or corporate language
+- Use warm, human-centered language
+- Leave them feeling they contributed to something meaningful
 
-EXAMPLE STRUCTURE:
-"Thank you for your thoughtful feedback—it truly helps us [specific outcome]. Your insights will directly inform [action/improvement]. We appreciate you."
+BEST PRACTICES:
+- Use their language: reference the survey topic
+- Show impact: "Your feedback will help us..." or "Your insights shape..."
+- End on an inspiring note—not a goodbye, but a connection
 
-Output ONLY the thank you message, nothing else.`;
-      userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nWrite the thank you message now. Remember: 40-65 words, genuine and specific, mention next steps, close positively.`;
+OUTPUT FORMAT: Plain text only, no special formatting.`;
+      userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nWrite a 50-70 word thank you message for the completion screen. Specific, warm, and impact-focused. Reference the survey topic to make it authentic.`;
       break;
   }
 
