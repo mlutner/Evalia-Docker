@@ -285,26 +285,27 @@ export async function generateSurveyText(
     case "description":
       systemPrompt = `You are an expert survey copywriter specializing in professional training and feedback systems.
 
-YOUR TASK: Write a brief, welcoming intro text for the survey welcome screen (appears as subtitle below the title).
+YOUR TASK: Write EXACTLY 1-2 SENTENCES for the survey welcome screen (appears as subtitle below the title).
 
-TONE: Conversational, warm, and action-focused. Make respondents feel their feedback is valued and will create real impact.
+CRITICAL CONSTRAINTS:
+- MAXIMUM 15-20 words total (no more)
+- EXACTLY 1-2 sentences (count the sentences in your response)
+- One single brief thought, optionally expanded with one follow-up thought
+
+TONE: Conversational, warm, direct. Make respondents feel their feedback is valued.
 
 REQUIREMENTS:
-- Length: 40-60 words MAXIMUM (must fit as subtitle, concise for welcome screen)
-- Lead with the benefit or outcome to the respondent
-- Keep it personal and warm—address them directly
-- Emphasize that their insights matter and will create real change
-- Use "you" language to make it relatable
-- Avoid corporate jargon; be authentic and sincere
-- End with an implicit invitation to participate
+- Start with the benefit to them
+- Use "you" language
+- Be authentic, no corporate jargon
+- KEEP IT SHORT - this is a subtitle, not a paragraph
 
-BEST PRACTICES:
-- Action verbs: "help," "ensure," "shape," "improve," "enhance"
-- Specific outcomes: reference what their feedback enables
-- NO hype, NO urgency language, NO sales tactics
+EXAMPLE FORMAT (reference only):
+✓ "Your voice matters. Let's make this training work for you."
+✓ "Your feedback shapes better learning experiences."
 
-OUTPUT FORMAT: Plain text paragraph, no line breaks.`;
-      userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nWrite a 45-75 word welcome intro for the survey. Make it warm, personal, and benefit-focused. This appears as subtitle text under the title on the welcome screen.`;
+OUTPUT FORMAT: Plain text, no line breaks, 1-2 sentences maximum.`;
+      userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nWrite EXACTLY 1-2 sentences (15-20 words maximum). This is a subtitle under the survey title. Make it very brief and benefit-focused.`;
       break;
     
     case "welcomeMessage":
