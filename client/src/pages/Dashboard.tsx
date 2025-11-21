@@ -1,19 +1,45 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import SurveyCard from "@/components/SurveyCard";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Plus, FileText, BarChart3, Calendar } from "lucide-react";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import type { Survey } from "@shared/schema";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<"all" | "recent">("all");
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const { data: surveys = [], isLoading } = useQuery<Survey[]>({
     queryKey: ["/api/surveys"],
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiRequest("DELETE", `/api/surveys/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/surveys"] });
+      toast({
+        title: "Survey deleted",
+        description: "The survey has been permanently removed.",
+      });
+      setDeleteConfirm(null);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete survey",
+        variant: "destructive",
+      });
+    },
   });
 
   const handleEdit = (id: string) => {
@@ -33,7 +59,13 @@ export default function Dashboard() {
   };
 
   const handleDelete = (id: string) => {
-    console.log("Delete survey:", id);
+    setDeleteConfirm(id);
+  };
+
+  const confirmDelete = () => {
+    if (deleteConfirm) {
+      deleteMutation.mutate(deleteConfirm);
+    }
   };
 
   // Sort surveys by creation date for "Recent" tab
@@ -41,9 +73,35 @@ export default function Dashboard() {
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   ).slice(0, 6);
 
+  const surveyToDelete = surveys.find(s => s.id === deleteConfirm);
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteConfirm} onOpenChange={(open) => !open && setDeleteConfirm(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Survey</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{surveyToDelete?.title}"? This action cannot be undone. All responses will be permanently removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-delete">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteMutation.isPending}
+              data-testid="button-confirm-delete"
+            >
+              {deleteMutation.isPending ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <main className="container mx-auto px-4 py-6 md:py-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
           <div>
