@@ -31,17 +31,17 @@ export default function Login() {
   }
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-gradient-to-br from-[#f6f7f9] to-[#f0f1f5]">
       {/* Left side - Image */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center">
         <img
           src={ChatGPT_Image_Nov_21__2025__12_41_07_PM}
           alt="Professional trainer"
-          className="max-w-xs max-h-80 object-contain ml-[0px] mr-[0px] mt-[0px] mb-[0px] pt-[0px] pb-[0px] pl-[0px] pr-[0px]"
+          className="w-4/5 h-4/5 object-contain ml-[0px] mr-[0px] mt-[0px] mb-[0px] pt-[0px] pb-[0px] pl-[0px] pr-[0px]"
         />
       </div>
       {/* Right side - Login */}
-      <div className="flex flex-col justify-center w-full lg:w-1/2 px-8 sm:px-12 lg:px-24 bg-background">
+      <div className="flex flex-col justify-center w-full lg:w-1/2 px-8 sm:px-12 lg:px-24 bg-gradient-to-br from-[#f6f7f9] to-[#f0f1f5]">
         <div className="w-full max-w-md mx-auto">
           {/* Logo and title */}
           <div className="mb-12">
