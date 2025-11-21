@@ -115,9 +115,7 @@ export default function SurveyWelcome({
             Begin Survey
           </button>
         </footer>
-        <p className="survey-footnote" data-testid="text-helper">
-          Fast, confidential, and designed for personal growth.
-        </p>
+        <p className="survey-footnote" data-testid="text-helper">Confidential and anonymous survey</p>
       </main>
     </div>
   );
