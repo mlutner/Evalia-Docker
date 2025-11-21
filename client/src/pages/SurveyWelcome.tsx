@@ -66,6 +66,11 @@ export default function SurveyWelcome({
           {survey.description}
         </p>
 
+        {/* Subtitle */}
+        <p className="hero-subtitle" data-testid="text-survey-description">
+          {survey.description}
+        </p>
+
         {/* Body */}
         <div className="survey-body">
           {/* Illustration */}
@@ -80,7 +85,7 @@ export default function SurveyWelcome({
           )}
 
           {/* Purpose list */}
-          <h2 className="hero-section-title text-[20px]" data-testid="text-survey-purpose">The purpose of the survey:</h2>
+          <h2 className="hero-section-title" data-testid="text-survey-purpose">The purpose of the survey:</h2>
           <ul className="hero-benefits">
             {purposePoints.map((point, idx) => (
               <li key={idx} data-testid={`text-purpose-${idx}`}>
