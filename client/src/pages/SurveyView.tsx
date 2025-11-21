@@ -88,6 +88,11 @@ export default function SurveyView() {
   };
 
   const handleBack = () => {
+    // If on welcome screen, go back to dashboard
+    if (currentStep === -1) {
+      window.location.href = '/';
+      return;
+    }
     // Show warning if user has answered any questions and is leaving the question flow
     if (currentStep >= 0 && Object.keys(answers).length > 0) {
       setShowBackWarning(true);
