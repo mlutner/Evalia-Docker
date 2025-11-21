@@ -78,24 +78,23 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 animate-in fade-in slide-in-from-bottom-6 duration-500" data-testid={`question-${question.id}`}>
-      {/* Question Type Badge */}
-      <div className="mb-6 inline-flex items-center gap-2 px-3 py-1.5 bg-primary/8 text-primary rounded-full text-xs font-medium tracking-slight">
-        {getQuestionTypeIcon(question.type)}
-        <span>{getQuestionTypeLabel(question.type)}</span>
-      </div>
+    <div data-testid={`question-${question.id}`}>
+      {/* Question Type Label */}
+      <p className="question-label-type" data-testid="text-question-type">
+        {getQuestionTypeLabel(question.type)}
+      </p>
 
-      <div className="mb-10">
-        <h2 className="text-2xl sm:text-2.5xl md:text-3xl font-semibold mb-3 leading-snug tracking-tight">
-          {question.question}
-          {question.required && (
-            <span className="text-destructive ml-2" title="This field is required">*</span>
-          )}
-        </h2>
-        {question.description && (
-          <p className="text-muted-foreground text-sm sm:text-base mt-2">{question.description}</p>
+      {/* Question Title */}
+      <h2 className="question-title" data-testid="text-question">
+        {question.question}
+        {question.required && (
+          <span className="required" title="This field is required">*</span>
         )}
-      </div>
+      </h2>
+
+      {question.description && (
+        <p className="text-muted-foreground text-sm mt-2 mb-4" data-testid="text-question-description">{question.description}</p>
+      )}
 
       <div className="space-y-6">
         {question.type === "text" && (
@@ -145,15 +144,15 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
 
         {question.type === "textarea" && (
           <>
-            <Textarea
+            <textarea
               value={answer as string}
               onChange={(e) => handleTextChange(e.target.value)}
               placeholder="Type your answer here..."
-              className="text-base min-h-[120px] border border-border/60 focus:border-primary transition-colors bg-white dark:bg-slate-950 resize-none"
+              className="question-textarea"
               data-testid="input-textarea-answer"
               autoFocus
             />
-            <p className="text-xs text-muted-foreground">Detailed text response</p>
+            <p className="question-hint">Detailed text response</p>
           </>
         )}
 

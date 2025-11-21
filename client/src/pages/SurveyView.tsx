@@ -212,85 +212,62 @@ export default function SurveyView() {
 
   // Question View
   return (
-    <div className="min-h-[100dvh] flex flex-col bg-background">
-      <ProgressBar current={currentStep + 1} total={questions.length} />
-      
-      {/* Question Counter & Exit Button */}
-      <div className="fixed top-4 sm:top-6 left-4 sm:left-6 right-4 sm:right-6 z-40 flex items-center justify-between">
-        <div className="text-xs sm:text-sm font-medium text-muted-foreground bg-background/80 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border shadow-sm" data-testid="text-question-counter">
-          <span className="text-foreground font-semibold">
-            {currentStep + 1}
-          </span>
-          <span> of {questions.length}</span>
-        </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleExit}
-          data-testid="button-exit-survey"
-          title="Exit survey"
-          className="text-muted-foreground hover:text-foreground"
-        >
-          <X className="w-5 h-5" />
-        </Button>
-      </div>
+    <div className="survey-shell">
+      <main className="survey-card" key={currentStep}>
+        {/* Header */}
+        <header className="survey-header">
+          <div className="survey-logo" style={{ background: 'transparent', boxShadow: 'none' }}>
+            <div className="text-3xl font-bold text-primary" data-testid="icon-question-counter">
+              {currentStep + 1}
+            </div>
+          </div>
+          <h1 className="survey-title" data-testid="text-question-number">
+            Question {currentStep + 1}
+          </h1>
+          <p className="survey-progress" data-testid="text-progress">
+            {currentStep + 1} of {questions.length} • {Math.round(((currentStep + 1) / questions.length) * 100)}% complete
+          </p>
+        </header>
 
-      <div className="flex-1 flex items-center justify-center p-4 sm:p-8 pt-20 sm:pt-24 pb-28 sm:pb-32 overflow-y-auto">
-        <div key={currentStep} className="w-full max-w-2xl">
+        {/* Body - Question Content */}
+        <div className="survey-body">
           <QuestionCard
             question={questions[currentStep]}
             onAnswer={handleAnswer}
             initialAnswer={answers[questions[currentStep].id]}
           />
         </div>
-      </div>
 
-      {/* Navigation Footer */}
-      <div className="fixed bottom-0 left-0 right-0 p-3 sm:p-4 md:p-6 bg-background/95 backdrop-blur-md border-t shadow-lg">
-        <div className="container mx-auto max-w-4xl flex items-center justify-between gap-2 sm:gap-4">
-          <Button
-            variant="ghost"
-            size="lg"
+        {/* Footer */}
+        <footer className="survey-footer">
+          <button 
             onClick={handleBack}
             disabled={currentStep === 0}
+            className="survey-back"
+            type="button"
             data-testid="button-back"
-            className="text-sm sm:text-base md:text-lg"
+            style={{ opacity: currentStep === 0 ? 0.5 : 1, cursor: currentStep === 0 ? 'default' : 'pointer' }}
           >
-            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
-            <span className="hidden xs:inline">Back</span>
-          </Button>
-
-          <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-4 py-2 rounded-lg">
-            <kbd className="px-2 py-1 bg-background rounded text-xs font-mono border shadow-sm">Enter ↵</kbd>
-            <span>to continue</span>
-          </div>
-
-          <Button
-            size="lg"
+            Back
+          </button>
+          <button
             onClick={handleNext}
             disabled={!canGoNext() || submitMutation.isPending}
+            className="survey-primary"
+            type="button"
             data-testid="button-next"
-            className="text-sm sm:text-base md:text-lg px-4 sm:px-6 md:px-8 shadow-md hover:shadow-lg transition-shadow"
+            style={{ opacity: (!canGoNext() || submitMutation.isPending) ? 0.6 : 1 }}
           >
-            {submitMutation.isPending ? (
-              <>
-                <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2 animate-spin" />
-                <span className="hidden xs:inline">Submitting...</span>
-              </>
-            ) : currentStep === questions.length - 1 ? (
-              <>
-                Submit
-                <Check className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-              </>
-            ) : (
-              <>
-                Next
-                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-              </>
-            )}
-          </Button>
-        </div>
-      </div>
+            {submitMutation.isPending ? 'Submitting...' : (currentStep === questions.length - 1 ? 'Submit' : 'Next')}
+          </button>
+        </footer>
+
+        <p className="survey-footnote" data-testid="text-exit-hint">
+          {currentStep === questions.length - 1 ? 'Thank you for your responses.' : 'Press Enter to continue'}
+        </p>
+      </main>
+    </div>
+  );
 
       {/* Back Button Warning Dialog */}
       <AlertDialog open={showBackWarning} onOpenChange={setShowBackWarning}>

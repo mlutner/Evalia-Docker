@@ -65,50 +65,60 @@ export default function SurveyPreviewDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] p-0 gap-0" data-testid="dialog-survey-preview">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b">
-          <DialogTitle className="text-xl">Preview: {title}</DialogTitle>
-          <p className="text-sm text-muted-foreground mt-1">
-            This is how respondents will experience your survey
-          </p>
-        </DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[90vh] p-0 gap-0 bg-white" data-testid="dialog-survey-preview">
+        <div className="overflow-y-auto p-0" style={{ backgroundColor: '#f6f7f9' }}>
+          <div style={{ padding: '40px 16px' }} className="flex items-center justify-center min-h-[90vh]">
+            <div className="survey-card" style={{ maxWidth: '520px' }}>
+              {/* Header */}
+              <header className="survey-header">
+                <div style={{ fontSize: '28px', fontWeight: 700, color: '#071a32' }}>
+                  Q{currentQuestion + 1}
+                </div>
+                <h1 className="survey-title" data-testid="text-preview-question-number">
+                  Question {currentQuestion + 1}
+                </h1>
+                <p className="survey-progress" data-testid="text-preview-progress">
+                  {currentQuestion + 1} of {questions.length} • {Math.round(((currentQuestion + 1) / questions.length) * 100)}% complete
+                </p>
+              </header>
 
-        <div className="px-6 py-4">
-          <ProgressBar current={currentQuestion + 1} total={questions.length} />
-        </div>
+              {/* Body */}
+              <div className="survey-body">
+                <QuestionCard
+                  question={questions[currentQuestion]}
+                  onAnswer={handleAnswer}
+                  initialAnswer={answers[questions[currentQuestion].id]}
+                />
+              </div>
 
-        <div className="flex-1 px-6 py-8 overflow-y-auto min-h-[400px] flex items-center justify-center">
-          <QuestionCard
-            question={questions[currentQuestion]}
-            onAnswer={handleAnswer}
-            initialAnswer={answers[questions[currentQuestion].id]}
-          />
-        </div>
+              {/* Footer */}
+              <footer className="survey-footer">
+                <button
+                  onClick={handleBack}
+                  disabled={currentQuestion === 0}
+                  className="survey-back"
+                  type="button"
+                  data-testid="button-preview-back"
+                  style={{ opacity: currentQuestion === 0 ? 0.5 : 1 }}
+                >
+                  Back
+                </button>
+                <button
+                  onClick={handleNext}
+                  disabled={!canGoNext() || currentQuestion === questions.length - 1}
+                  className="survey-primary"
+                  type="button"
+                  data-testid="button-preview-next"
+                  style={{ opacity: (!canGoNext() || currentQuestion === questions.length - 1) ? 0.6 : 1 }}
+                >
+                  Next
+                </button>
+              </footer>
 
-        <div className="px-6 py-4 border-t bg-card/50">
-          <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              onClick={handleBack}
-              disabled={currentQuestion === 0}
-              data-testid="button-preview-back"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-
-            <div className="text-sm text-muted-foreground">
-              Question {currentQuestion + 1} of {questions.length}
+              <p className="survey-footnote">
+                Question {currentQuestion + 1} of {questions.length}
+              </p>
             </div>
-
-            <Button
-              onClick={handleNext}
-              disabled={!canGoNext() || currentQuestion === questions.length - 1}
-              data-testid="button-preview-next"
-            >
-              Next
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
           </div>
         </div>
       </DialogContent>
