@@ -91,7 +91,7 @@ export default function SurveyPreviewDialog({
                 <>
                   {/* Welcome Header */}
                   <header className="survey-header">
-                    <div className="survey-logo">
+                    <div className="survey-logo pt-[0px] pb-[0px] pl-[0px] pr-[0px]">
                       <img 
                         src={logoImage} 
                         alt="Survey logo" 
