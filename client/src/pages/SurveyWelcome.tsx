@@ -52,7 +52,7 @@ export default function SurveyWelcome({
         </header>
 
         {/* Subtitle */}
-        <p className="hero-subtitle" data-testid="text-survey-description">
+        <p className="hero-subtitle pl-[25px] pr-[25px] text-[13px]" data-testid="text-survey-description">
           {survey.description}
         </p>
 
