@@ -82,8 +82,15 @@ export async function parsePDFWithVision(pdfBuffer: Buffer, fileName: string): P
     }
 
     const data = await response.json();
-    // OCR returns markdown content in the result
-    return data.result?.markdown || data.content || data.text || data.result?.content || "";
+    console.log("Mistral OCR response:", JSON.stringify(data).substring(0, 500));
+    
+    // OCR returns pages array with markdown content
+    if (data.pages && Array.isArray(data.pages)) {
+      return data.pages.map((page: any) => page.markdown || "").join("\n");
+    }
+    
+    // Try alternative response formats
+    return data.result?.markdown || data.markdown || data.content || data.text || "";
   } catch (error: any) {
     throw new Error(`PDF OCR failed: ${error.message}`);
   }
