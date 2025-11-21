@@ -744,6 +744,7 @@ export default function Builder() {
             onUpdateQuestion={handleUpdateQuestion}
             onDeleteQuestion={handleDeleteQuestion}
             onAddQuestion={handleAddQuestion}
+            onReorderQuestions={setCurrentQuestions}
             onPreview={handlePreviewSurvey}
           />
         )}
