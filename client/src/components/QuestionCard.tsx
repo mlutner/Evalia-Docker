@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { MessageSquare, AtSign, Hash, Type, CheckCircle2, Radio, ThumbsUp } from "lucide-react";
+import { MessageSquare, AtSign, Hash, Type, CheckCircle2, Radio, ThumbsUp, Gauge, Grid3x3, List, Calendar } from "lucide-react";
 import type { Question, QuestionType } from "@shared/schema";
 
 export type { Question, QuestionType };
@@ -32,6 +32,14 @@ function getQuestionTypeIcon(type: QuestionType) {
       return <CheckCircle2 className="w-5 h-5" />;
     case "rating":
       return <ThumbsUp className="w-5 h-5" />;
+    case "nps":
+      return <Gauge className="w-5 h-5" />;
+    case "matrix":
+      return <Grid3x3 className="w-5 h-5" />;
+    case "ranking":
+      return <List className="w-5 h-5" />;
+    case "date":
+      return <Calendar className="w-5 h-5" />;
     default:
       return null;
   }
@@ -46,6 +54,10 @@ function getQuestionTypeLabel(type: QuestionType) {
     multiple_choice: "Multiple choice",
     checkbox: "Select all that apply",
     rating: "Rating scale",
+    nps: "Net Promoter Score",
+    matrix: "Matrix/Grid",
+    ranking: "Ranking",
+    date: "Date picker",
   };
   return labels[type] || type;
 }
@@ -75,6 +87,18 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
       : currentAnswers.filter(a => a !== option);
     setAnswer(newAnswers);
     onAnswer(newAnswers);
+  };
+
+  const handleMatrixChange = (row: string, col: string) => {
+    const currentAnswers = typeof answer === "string" ? answer : "";
+    const key = `${row}|${col}`;
+    setAnswer(key);
+    onAnswer(key);
+  };
+
+  const handleRankingChange = (items: string[]) => {
+    setAnswer(items);
+    onAnswer(items);
   };
 
   return (

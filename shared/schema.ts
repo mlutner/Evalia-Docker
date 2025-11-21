@@ -29,19 +29,36 @@ export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 
 // Question types
-export type QuestionType = "text" | "textarea" | "multiple_choice" | "checkbox" | "email" | "number" | "rating";
+export type QuestionType = "text" | "textarea" | "multiple_choice" | "checkbox" | "email" | "number" | "rating" | "nps" | "matrix" | "ranking" | "date";
+
+export const skipConditionSchema = z.object({
+  questionId: z.string(),
+  answer: z.string(),
+}).optional();
 
 export const questionSchema = z.object({
   id: z.string(),
-  type: z.enum(["text", "textarea", "multiple_choice", "checkbox", "email", "number", "rating"]),
+  sectionId: z.string().optional(),
+  type: z.enum(["text", "textarea", "multiple_choice", "checkbox", "email", "number", "rating", "nps", "matrix", "ranking", "date"]),
   question: z.string(),
   description: z.string().optional(),
   options: z.array(z.string()).optional(),
+  rowLabels: z.array(z.string()).optional(), // for matrix questions
+  colLabels: z.array(z.string()).optional(), // for matrix questions
   required: z.boolean().optional(),
   ratingScale: z.number().optional(), // 5 or 10 for rating questions
+  skipCondition: skipConditionSchema, // show this question only if condition is met
 });
 
 export type Question = z.infer<typeof questionSchema>;
+
+export const sectionSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string().optional(),
+});
+
+export type Section = z.infer<typeof sectionSchema>;
 
 // Surveys table
 export const surveys = pgTable("surveys", {
@@ -50,12 +67,14 @@ export const surveys = pgTable("surveys", {
   title: text("title").notNull(),
   description: text("description"),
   questions: jsonb("questions").notNull().$type<Question[]>(),
+  sections: jsonb("sections").$type<Section[]>(),
   welcomeMessage: text("welcome_message"),
   thankYouMessage: text("thank_you_message"),
   illustrationUrl: text("illustration_url"),
   status: varchar("status").notNull().default("Active"), // Active, Paused, Closed
   expiresAt: timestamp("expires_at"),
   maxResponses: integer("max_responses"),
+  randomizeQuestions: boolean("randomize_questions").default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
