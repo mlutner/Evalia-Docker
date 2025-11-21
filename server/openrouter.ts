@@ -1,16 +1,16 @@
 import type { Question } from "@shared/schema";
-import { PDFParse } from "pdf-parse";
 
 // Use Mistral API key
 const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
 const MISTRAL_BASE_URL = "https://api.mistral.ai/v1";
+const MISTRAL_OCR_URL = "https://api.mistral.ai/v1/ocr";
 
 // Mistral models
 const MODELS = {
   // For survey generation and chat
   GENERATION: "pixtral-large-latest", // Mistral Pixtral Large for survey generation and refinement
-  // For OCR/document parsing (vision model)
-  OCR: "pixtral-large-latest", // Mistral Pixtral Large for document OCR/parsing - excellent at understanding documents and charts
+  // For OCR/document parsing (native OCR model)
+  OCR: "mistral-ocr-2505", // Mistral OCR native model - specialized for document OCR
 };
 
 interface ChatMessage {
@@ -50,17 +50,36 @@ async function callMistral(
 }
 
 /**
- * Parse PDF using pdf-parse
+ * Parse PDF using Mistral OCR native API
  */
 export async function parsePDFWithVision(pdfBuffer: Buffer, fileName: string): Promise<string> {
-  const parser = new PDFParse({ data: pdfBuffer });
+  if (!MISTRAL_API_KEY) {
+    throw new Error("Mistral API key not configured");
+  }
+
+  const formData = new FormData();
+  const blob = new Blob([pdfBuffer], { type: "application/pdf" });
+  formData.append("document", blob, fileName);
+
   try {
-    const result = await parser.getText();
-    return result.text;
+    const response = await fetch(MISTRAL_OCR_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${MISTRAL_API_KEY}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Mistral OCR API error: ${error}`);
+    }
+
+    const data = await response.json();
+    // OCR returns markdown content
+    return data.content || data.text || "";
   } catch (error: any) {
-    throw new Error(`PDF extraction failed: ${error.message}`);
-  } finally {
-    await parser.destroy();
+    throw new Error(`PDF OCR failed: ${error.message}`);
   }
 }
 
