@@ -9,7 +9,6 @@ import TemplatePreviewModal from "@/components/TemplatePreviewModal";
 import SurveyPreviewDialog from "@/components/SurveyPreviewDialog";
 import QuestionEditor from "@/components/QuestionEditor";
 import WizardSteps from "@/components/WizardSteps";
-import StartStep from "@/components/builder/StartStep";
 import QuestionsStep from "@/components/builder/QuestionsStep";
 import PublishStep from "@/components/builder/PublishStep";
 import { Button } from "@/components/ui/button";
@@ -533,18 +532,6 @@ export default function Builder() {
     }
   };
 
-  // Wizard navigation handlers
-  const handleStartStepChooseTemplate = () => {
-    setActiveTab("templates");
-  };
-
-  const handleStartStepChooseAI = () => {
-    setActiveTab("ai");
-  };
-
-  const handleStartStepChooseUpload = () => {
-    setActiveTab("upload");
-  };
 
   const handleNextStep = () => {
     if (currentWizardStep === 1) {
@@ -650,14 +637,6 @@ export default function Builder() {
         {/* Step 1: Start - Choose creation method */}
         {currentWizardStep === 1 && (
           <div className="space-y-8">
-            {currentQuestions.length === 0 && activeTab === "templates" && (
-              <StartStep
-                onChooseTemplate={handleStartStepChooseTemplate}
-                onChooseAI={handleStartStepChooseAI}
-                onChooseUpload={handleStartStepChooseUpload}
-              />
-            )}
-            
             <div className="max-w-6xl mx-auto">
               <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "templates" | "ai" | "upload")}>
                 <TabsList className="grid w-full grid-cols-3 mb-6">
