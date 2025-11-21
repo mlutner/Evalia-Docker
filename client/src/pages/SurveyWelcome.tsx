@@ -50,7 +50,7 @@ export default function SurveyWelcome({
         <h1
           id="survey-title"
           data-testid="text-survey-title"
-          className="font-semibold text-[36px]">
+          className="font-semibold text-[39px]">
           {survey.title}
         </h1>
         <p className="subtitle" data-testid="text-survey-description">
