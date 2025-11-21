@@ -200,6 +200,7 @@ export default function Dashboard() {
                       onAnalyze={() => handleAnalyze(survey.id)}
                       onExport={() => handleExport(survey.id)}
                       onDelete={() => handleDelete(survey.id)}
+                      onManageRespondents={() => setLocation(`/respondents/${survey.id}`)}
                       index={index}
                     />
                     <div className="flex gap-2 mt-2 flex-wrap items-center">
@@ -249,6 +250,7 @@ export default function Dashboard() {
                       onAnalyze={() => handleAnalyze(survey.id)}
                       onExport={() => handleExport(survey.id)}
                       onDelete={() => handleDelete(survey.id)}
+                      onManageRespondents={() => setLocation(`/respondents/${survey.id}`)}
                       index={index}
                     />
                     <div className="flex gap-2 mt-2 flex-wrap items-center">
