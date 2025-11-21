@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import QuestionCard from "@/components/QuestionCard";
 import ProgressBar from "@/components/ProgressBar";
+import logoImage from "@assets/Untitled design (3)_1763756722973.png";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { Question } from "@shared/schema";
 
@@ -71,8 +72,12 @@ export default function SurveyPreviewDialog({
             <div className="survey-card" style={{ maxWidth: '520px' }}>
               {/* Header */}
               <header className="survey-header">
-                <div style={{ fontSize: '28px', fontWeight: 700, color: '#071a32' }}>
-                  Q{currentQuestion + 1}
+                <div className="survey-logo">
+                  <img 
+                    src={logoImage} 
+                    alt="Survey logo" 
+                    data-testid="icon-survey-logo"
+                  />
                 </div>
                 <h1 className="survey-title" data-testid="text-preview-question-number">
                   Question {currentQuestion + 1}

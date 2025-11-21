@@ -4,6 +4,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import leadershipIllustration from "@assets/Heading_1763750607423.png";
+import logoImage from "@assets/Untitled design (3)_1763756722973.png";
 import SurveyLayout from "@/components/SurveyLayout";
 import SurveyWelcome from "@/pages/SurveyWelcome";
 import "@/components/styles/survey-welcome.css";
@@ -216,10 +217,12 @@ export default function SurveyView() {
       <main className="survey-card" key={currentStep}>
         {/* Header */}
         <header className="survey-header">
-          <div className="survey-logo" style={{ background: 'transparent', boxShadow: 'none' }}>
-            <div className="text-3xl font-bold text-primary" data-testid="icon-question-counter">
-              {currentStep + 1}
-            </div>
+          <div className="survey-logo">
+            <img 
+              src={logoImage} 
+              alt="Survey logo" 
+              data-testid="icon-survey-logo"
+            />
           </div>
           <h1 className="survey-title" data-testid="text-question-number">
             Question {currentStep + 1}
