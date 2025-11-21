@@ -242,6 +242,11 @@
   gap: 12px;
   margin-top: 16px;
   margin-bottom: 16px;
+  width: 100%;
+}
+
+.survey-footer .survey-primary {
+  margin: 0 auto;
 }
 
 .survey-primary {

@@ -3,7 +3,7 @@ import { useParams } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import leadershipIllustration from "@assets/Heading_1763750607423.png";
-import logoImage from "@assets/Untitled design (3)_1763764529938.png";
+import logoImage from "@assets/Untitled design (3)_1763764616793.png";
 import SurveyLayout from "@/components/SurveyLayout";
 import SurveyWelcome from "@/pages/SurveyWelcome";
 import "@/components/styles/survey-welcome.css";
