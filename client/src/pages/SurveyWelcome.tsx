@@ -8,6 +8,7 @@ interface SurveyWelcomeProps {
   onStart: () => void;
   isLoading?: boolean;
   illustrationImage?: string;
+  defaultIllustration?: string;
 }
 
 export default function SurveyWelcome({
@@ -15,7 +16,10 @@ export default function SurveyWelcome({
   onStart,
   isLoading = false,
   illustrationImage,
+  defaultIllustration,
 }: SurveyWelcomeProps) {
+  // Use survey illustration if available, otherwise use passed prop or default
+  const illustration = survey.illustrationUrl || illustrationImage || defaultIllustration;
   const benefitPoints = survey.welcomeMessage
     ? survey.welcomeMessage.split("\n").filter((line) => line.trim())
     : [
@@ -66,10 +70,10 @@ export default function SurveyWelcome({
         {/* Body */}
         <div className="survey-body">
           {/* Illustration */}
-          {illustrationImage && (
+          {illustration && (
             <div className="hero-illustration">
               <img
-                src={illustrationImage}
+                src={illustration}
                 alt="Survey illustration"
                 data-testid="img-survey-illustration"
               />

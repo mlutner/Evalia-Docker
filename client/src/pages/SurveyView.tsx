@@ -205,7 +205,7 @@ export default function SurveyView() {
           survey={survey}
           onStart={handleStart}
           isLoading={false}
-          illustrationImage={leadershipIllustration}
+          defaultIllustration={leadershipIllustration}
         />
       </SurveyLayout>
     );

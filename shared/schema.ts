@@ -52,6 +52,7 @@ export const surveys = pgTable("surveys", {
   questions: jsonb("questions").notNull().$type<Question[]>(),
   welcomeMessage: text("welcome_message"),
   thankYouMessage: text("thank_you_message"),
+  illustrationUrl: text("illustration_url"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
