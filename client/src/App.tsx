@@ -9,6 +9,7 @@ import Dashboard from "@/pages/Dashboard";
 import Builder from "@/pages/Builder";
 import SurveyView from "@/pages/SurveyView";
 import AnalyticsPage from "@/pages/AnalyticsPage";
+import RespondentsPage from "@/pages/RespondentsPage";
 import Account from "@/pages/Account";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/not-found";
@@ -49,6 +50,9 @@ function Router() {
       </Route>
       <Route path="/analytics/:id">
         {() => <ProtectedRoute component={AnalyticsPage} />}
+      </Route>
+      <Route path="/respondents/:surveyId">
+        {() => <ProtectedRoute component={RespondentsPage} />}
       </Route>
       <Route path="/builder/:id">
         {() => <ProtectedRoute component={Builder} />}

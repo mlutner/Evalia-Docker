@@ -1,6 +1,6 @@
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Eye, BarChart3, Download, Share2, Check, Copy, Edit3 } from "lucide-react";
+import { MoreVertical, Eye, BarChart3, Download, Share2, Check, Copy, Edit3, Users } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
@@ -20,11 +20,12 @@ interface SurveyCardProps {
   onAnalyze: () => void;
   onExport: () => void;
   onDelete: () => void;
+  onManageRespondents?: () => void;
   onShare?: () => void;
   index?: number;
 }
 
-export default function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport, onDelete, index = 0 }: SurveyCardProps) {
+export default function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport, onDelete, onManageRespondents, index = 0 }: SurveyCardProps) {
   const [copied, setCopied] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   
@@ -60,6 +61,12 @@ export default function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport
               <Share2 className="w-4 h-4 mr-2" />
               Share Survey
             </DropdownMenuItem>
+            {onManageRespondents && (
+              <DropdownMenuItem onClick={onManageRespondents} data-testid="menu-respondents">
+                <Users className="w-4 h-4 mr-2" />
+                Manage Respondents
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem onClick={onView} data-testid="menu-view">
               <Eye className="w-4 h-4 mr-2" />
               Preview
