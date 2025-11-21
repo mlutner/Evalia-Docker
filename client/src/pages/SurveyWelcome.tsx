@@ -56,7 +56,7 @@ export default function SurveyWelcome({
           </button>
         )}
         {/* Header Section */}
-        <header className="survey-header mt-[0px] mb-[0px] pt-[0px] pb-[0px]">
+        <header className="survey-header mt-[0px] mb-[0px] pt-[29px] pb-[29px]">
           {/* Logo */}
           <div className="survey-logo mt-[0px] mb-[0px] ml-[0px] mr-[0px] bg-[#ffffff] pl-[0px] pr-[0px] pt-[0px] pb-[0px]">
             <img 
