@@ -9,7 +9,7 @@
   --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.12);
 }
 
-.survey-welcome-page {
+.page {
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -18,7 +18,7 @@
   background: #f9fafb;
 }
 
-.survey-welcome-card {
+.card {
   background: var(--card-bg);
   max-width: 520px;
   width: 100%;
@@ -28,7 +28,7 @@
   text-align: center;
 }
 
-.survey-logo-mark {
+.logo-mark {
   width: 40px;
   height: 40px;
   border-radius: 12px;
@@ -39,7 +39,7 @@
   margin: 0 auto 24px;
 }
 
-.survey-logo-mark-icon {
+.logo-mark-icon {
   width: 18px;
   height: 18px;
   border-radius: 4px;
@@ -47,7 +47,7 @@
   position: relative;
 }
 
-.survey-logo-mark-icon::after {
+.logo-mark-icon::after {
   content: "";
   position: absolute;
   top: 3px;
@@ -59,7 +59,7 @@
   opacity: 0.35;
 }
 
-.survey-welcome-title {
+h1 {
   font-size: 30px;
   line-height: 1.15;
   letter-spacing: -0.02em;
@@ -68,31 +68,31 @@
   font-weight: bold;
 }
 
-.survey-welcome-subtitle {
+.subtitle {
   font-size: 15px;
   line-height: 1.5;
   color: var(--navy-soft);
   margin-bottom: 28px;
 }
 
-.survey-illustration-wrapper {
+.illustration-wrapper {
   margin-bottom: 28px;
 }
 
-.survey-illustration {
+.illustration {
   width: 210px;
   max-width: 100%;
   height: auto;
 }
 
-.survey-section-heading {
+.section-heading {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 14px;
   color: var(--navy);
 }
 
-.survey-benefits {
+.benefits {
   list-style: none;
   text-align: left;
   max-width: 420px;
@@ -100,7 +100,7 @@
   padding-left: 0;
 }
 
-.survey-benefits li {
+.benefits li {
   display: flex;
   align-items: flex-start;
   font-size: 15px;
@@ -109,7 +109,7 @@
   margin-bottom: 8px;
 }
 
-.survey-benefits li::before {
+.benefits li::before {
   content: "•";
   display: inline-block;
   color: var(--navy-soft);
@@ -119,7 +119,7 @@
   flex-shrink: 0;
 }
 
-.survey-btn-primary {
+.btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -138,33 +138,33 @@
   max-width: 260px;
 }
 
-.survey-btn-primary:hover {
+.btn-primary:hover {
   background: #16a34a;
   transform: translateY(-1px);
   box-shadow: 0 16px 35px rgba(34, 197, 94, 0.4);
 }
 
-.survey-btn-primary:active {
+.btn-primary:active {
   transform: translateY(0);
   box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
 }
 
-.survey-helper-text {
+.helper-text {
   margin-top: 10px;
   font-size: 13px;
   color: var(--navy-soft);
 }
 
 @media (max-width: 480px) {
-  .survey-welcome-card {
+  .card {
     padding: 32px 20px 28px;
   }
 
-  .survey-welcome-title {
+  h1 {
     font-size: 24px;
   }
 
-  .survey-welcome-subtitle {
+  .subtitle {
     font-size: 14px;
   }
 }
