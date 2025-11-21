@@ -97,8 +97,7 @@ export default function SurveyWelcome({
             {purposePoints.map((point, idx) => (
               <li
                 key={idx}
-                data-testid={`text-purpose-${idx}`}
-                className="mt-[3px] mb-[3px]">
+                data-testid={`text-purpose-${idx}`}>
                 {point.trim()}
               </li>
             ))}
