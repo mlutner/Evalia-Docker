@@ -87,7 +87,7 @@ export default function SurveyWelcome({
                 src={illustration}
                 alt="Survey illustration"
                 data-testid="img-survey-illustration"
-              />
+                className="mt-[10px] mb-[10px]" />
             </div>
           )}
 
