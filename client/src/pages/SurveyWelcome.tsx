@@ -43,15 +43,6 @@ export default function SurveyWelcome({
       <main className="survey-card" aria-labelledby="survey-title">
         {/* Header Section */}
         <header className="survey-header">
-          {/* Logo */}
-          <div className="survey-logo">
-            <img 
-              src={logoImage} 
-              alt="Survey logo" 
-              data-testid="icon-survey-logo"
-            />
-          </div>
-
           {/* Title */}
           <h1
             id="survey-title"
