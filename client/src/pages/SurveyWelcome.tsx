@@ -43,10 +43,7 @@ export default function SurveyWelcome({
         </div>
 
         {/* Heading & subtitle */}
-        <h1
-          id="survey-title"
-          data-testid="text-survey-title"
-          className="text-[31px] font-bold">
+        <h1 id="survey-title" data-testid="text-survey-title">
           {survey.title}
         </h1>
         <p className="subtitle" data-testid="text-survey-description">
@@ -55,7 +52,7 @@ export default function SurveyWelcome({
 
         {/* Illustration */}
         {illustrationImage && (
-          <div className="illustration-wrapper mt-[0px] mb-[0px]">
+          <div className="illustration-wrapper">
             <img
               src={illustrationImage}
               alt="Survey illustration"
@@ -66,15 +63,12 @@ export default function SurveyWelcome({
         )}
 
         {/* Benefits list */}
-        <h2 className="section-heading text-[26px]" data-testid="text-what-youll-gain">
+        <h2 className="section-heading" data-testid="text-what-youll-gain">
           What you'll gain:
         </h2>
-        <ul className="benefits text-left text-[18px] font-light mt-[0px] mb-[0px]">
+        <ul className="benefits">
           {benefitPoints.map((point, idx) => (
-            <li
-              key={idx}
-              data-testid={`text-benefit-${idx}`}
-              className="mt-[3px] mb-[3px]">
+            <li key={idx} data-testid={`text-benefit-${idx}`}>
               {point.trim()}
             </li>
           ))}
@@ -85,7 +79,7 @@ export default function SurveyWelcome({
           size="lg"
           onClick={onStart}
           data-testid="button-start-survey"
-          className="w-full max-w-xs mx-auto block rounded-full py-3 text-base font-semibold ml-[69px] mr-[69px] pl-[10px] pr-[10px] pt-[10px] pb-[10px]"
+          className="w-full max-w-xs mx-auto block rounded-full"
         >
           Begin Self-Assessment
         </Button>
