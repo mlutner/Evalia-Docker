@@ -18,6 +18,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
   const [currentSurveyDescription, setCurrentSurveyDescription] = useState("");
   const [welcomeMessage, setWelcomeMessage] = useState("");
   const [thankYouMessage, setThankYouMessage] = useState("");
+  const [illustrationUrl, setIllustrationUrl] = useState("");
   const [currentQuestions, setCurrentQuestions] = useState<Question[]>([]);
 
   // Wizard state
@@ -35,6 +36,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       description?: string;
       welcomeMessage?: string;
       thankYouMessage?: string;
+      illustrationUrl?: string;
       questions: Question[];
     }) => {
       return apiRequest("POST", "/api/surveys", data);
@@ -68,6 +70,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       description?: string;
       welcomeMessage?: string;
       thankYouMessage?: string;
+      illustrationUrl?: string;
       questions: Question[];
     }) => {
       return apiRequest("PUT", `/api/surveys/${surveyId}`, data);
@@ -96,6 +99,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       description?: string;
       welcomeMessage?: string;
       thankYouMessage?: string;
+      illustrationUrl?: string;
       questions: Question[];
     }) => {
       if (isEditMode) {
@@ -142,6 +146,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
         description: currentSurveyDescription || undefined,
         welcomeMessage: welcomeMessage || undefined,
         thankYouMessage: thankYouMessage || undefined,
+        illustrationUrl: illustrationUrl || undefined,
         questions: currentQuestions,
       };
 
@@ -160,6 +165,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
     currentSurveyDescription,
     welcomeMessage,
     thankYouMessage,
+    illustrationUrl,
     currentWizardStep,
   ]);
 
