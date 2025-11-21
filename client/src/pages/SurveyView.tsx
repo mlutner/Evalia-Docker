@@ -3,7 +3,7 @@ import { useParams } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
-import surveyWelcomeIllustration from "@/assets/survey-welcome.png";
+import surveyIllustration from "@/assets/survey-illustration-simple.png";
 import "@/components/styles/survey-welcome.css";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import QuestionCard from "@/components/QuestionCard";
@@ -197,57 +197,50 @@ export default function SurveyView() {
   // Welcome Screen
   if (currentStep === -1) {
     return (
-      <div className="survey-welcome-page">
-        <main className="survey-welcome-card" aria-labelledby="survey-title">
+      <div className="page">
+        <main className="card" aria-labelledby="title">
           {/* Logo mark */}
-          <div className="survey-logo-mark">
-            <div className="survey-logo-mark-icon"></div>
+          <div className="logo-mark">
+            <div className="logo-mark-icon"></div>
           </div>
 
-          {/* Title & Subtitle */}
-          <h1 id="survey-title" className="survey-welcome-title">
-            {survey.title}
-          </h1>
-          {survey.description && (
-            <p className="survey-welcome-subtitle">
-              {survey.description}
-            </p>
-          )}
+          {/* Heading & subtitle */}
+          <h1 id="title">{survey.title}</h1>
+          <p className="subtitle">
+            {survey.description}
+          </p>
 
           {/* Illustration */}
-          <div className="survey-illustration-wrapper">
+          <div className="illustration-wrapper">
             <img
-              src={surveyWelcomeIllustration}
+              src={surveyIllustration}
               alt="Survey illustration"
-              className="survey-illustration"
+              className="illustration"
             />
           </div>
 
           {/* Benefits list */}
-          {survey.welcomeMessage && (
-            <>
-              <h2 className="survey-section-heading">What you'll gain:</h2>
-              <ul className="survey-benefits">
-                {survey.welcomeMessage.split('\n').filter(line => line.trim()).map((point, idx) => (
-                  <li key={idx}>{point.trim()}</li>
-                ))}
-              </ul>
-            </>
-          )}
+          <h2 className="section-heading">What you'll gain:</h2>
+          <ul className="benefits">
+            {survey.welcomeMessage ? (
+              survey.welcomeMessage.split('\n').filter(line => line.trim()).map((point, idx) => (
+                <li key={idx}>{point.trim()}</li>
+              ))
+            ) : (
+              <>
+                <li>A snapshot of how others experience your leadership</li>
+                <li>Insight into communication &amp; decision styles</li>
+                <li>A personalized style profile you can use immediately</li>
+              </>
+            )}
+          </ul>
 
-          {/* CTA Button */}
-          <button
-            onClick={handleStart}
-            data-testid="button-start-survey"
-            className="survey-btn-primary"
-            type="button"
-          >
-            Start Survey
+          {/* CTA */}
+          <button className="btn-primary" onClick={handleStart} data-testid="button-start-survey" type="button">
+            Begin Self-Assessment
           </button>
-
-          {/* Helper text */}
-          <p className="survey-helper-text">
-            Fast, confidential, and designed for your growth.
+          <p className="helper-text">
+            Fast, confidential, and designed for personal growth.
           </p>
         </main>
       </div>
