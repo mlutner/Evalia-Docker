@@ -86,7 +86,7 @@ export default function SurveyWelcome({
           size="lg"
           onClick={onStart}
           data-testid="button-start-survey"
-          className="w-full max-w-md mx-auto block rounded-full mt-2 font-semibold py-4 text-[22px] ml-[55px] mr-[55px] pt-[7px] pb-[7px]"
+          className="w-full max-w-md mx-auto block rounded-full font-semibold py-4 text-[22px] ml-[55px] mr-[55px] pt-[10px] pb-[10px] pl-[35px] pr-[35px] mt-[10px] mb-[10px]"
         >
           Begin Self-Assessment
         </Button>
