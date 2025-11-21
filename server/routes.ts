@@ -12,9 +12,10 @@ import "./types";
 
 // Pool of survey illustrations - rotated across surveys
 const SURVEY_ILLUSTRATIONS = [
-  "https://replit.com/assets/1_1763757398561.png",
-  "https://replit.com/assets/2_1763757398561.png",
-  "https://replit.com/assets/3_1763757398561.png",
+  "/assets/1_1763757398561.png",
+  "/assets/2_1763757398561.png",
+  "/assets/3_1763757398561.png",
+  "/assets/image_1763757582480.png",
 ];
 
 // Helper to get a random illustration from the pool
