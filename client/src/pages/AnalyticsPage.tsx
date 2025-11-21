@@ -1,9 +1,14 @@
 import { useParams, useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Users, FileText, Calendar, Download, Loader2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ArrowLeft, Users, FileText, Calendar, Download, Loader2, Trash2, AlertTriangle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 import type { Survey, SurveyResponse } from "@shared/schema";
 
 interface AnalyticsData {
@@ -15,11 +20,62 @@ interface AnalyticsData {
 export default function AnalyticsPage() {
   const { id } = useParams();
   const [, setLocation] = useLocation();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const { toast } = useToast();
 
   const { data, isLoading, error } = useQuery<AnalyticsData>({
-    queryKey: ["/api/surveys", id, "responses"],
+    queryKey: ["/api/surveys", id, "responses", searchTerm],
     enabled: !!id,
+    queryFn: async () => {
+      const url = `/api/surveys/${id}/responses${searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : ""}`;
+      return fetch(url).then(r => r.json());
+    }
   });
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      return apiRequest("POST", `/api/surveys/${id}/responses/bulk-delete`, { ids });
+    },
+    onSuccess: () => {
+      setSelectedIds(new Set());
+      queryClient.invalidateQueries({ queryKey: ["/api/surveys", id, "responses"] });
+      toast({ title: "Responses deleted successfully" });
+    },
+  });
+
+  const handleExport = async (format: "csv" | "json") => {
+    try {
+      const response = await fetch(`/api/surveys/${id}/responses/export?format=${format}`);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `responses_${id}.${format === "csv" ? "csv" : "json"}`;
+      a.click();
+      toast({ title: `Exported as ${format.toUpperCase()}` });
+    } catch (e) {
+      toast({ title: "Export failed", variant: "destructive" });
+    }
+  };
+
+  const toggleSelect = (responseId: string) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(responseId)) {
+      newSelected.delete(responseId);
+    } else {
+      newSelected.add(responseId);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === data?.responses.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(data?.responses.map(r => r.id) || []));
+    }
+  };
 
   // Calculate statistics for a question
   const getQuestionStats = (questionId: string) => {
@@ -142,10 +198,16 @@ export default function AnalyticsPage() {
                 <p className="text-muted-foreground">{survey.description}</p>
               )}
             </div>
-            <Button variant="outline" data-testid="button-export">
-              <Download className="w-4 h-4 mr-2" />
-              Export Data
-            </Button>
+            <div className="flex gap-2 flex-wrap">
+              <Button variant="outline" size="sm" onClick={() => handleExport("csv")} data-testid="button-export-csv">
+                <Download className="w-4 h-4 mr-2" />
+                CSV
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => handleExport("json")} data-testid="button-export-json">
+                <Download className="w-4 h-4 mr-2" />
+                JSON
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -197,6 +259,76 @@ export default function AnalyticsPage() {
           </Card>
         ) : (
           <div className="space-y-6">
+            {/* Search & Filter Bar */}
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex gap-3 flex-wrap items-center justify-between">
+                  <div className="flex-1 min-w-[200px]">
+                    <Input
+                      placeholder="Search responses..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      data-testid="input-search-responses"
+                    />
+                  </div>
+                  {selectedIds.size > 0 && (
+                    <Button 
+                      variant="destructive" 
+                      size="sm"
+                      onClick={() => bulkDeleteMutation.mutate(Array.from(selectedIds))}
+                      disabled={bulkDeleteMutation.isPending}
+                      data-testid="button-bulk-delete"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete {selectedIds.size}
+                    </Button>
+                  )}
+                </div>
+              </CardHeader>
+            </Card>
+
+            {/* Response List */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Response Details</CardTitle>
+                  <Checkbox
+                    checked={selectedIds.size === data?.responses.length && data?.responses.length > 0}
+                    onCheckedChange={toggleSelectAll}
+                    data-testid="checkbox-select-all"
+                  />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {data?.responses.map((response) => (
+                    <div key={response.id} className="flex items-start gap-3 p-3 border rounded-lg hover:bg-muted/50">
+                      <Checkbox
+                        checked={selectedIds.has(response.id)}
+                        onCheckedChange={() => toggleSelect(response.id)}
+                        data-testid={`checkbox-response-${response.id}`}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-muted-foreground">
+                          {new Date(response.completedAt).toLocaleString()}
+                        </p>
+                        <div className="text-xs mt-1 space-y-1">
+                          {survey.questions.slice(0, 2).map(q => {
+                            const answer = response.answers[q.id];
+                            return (
+                              <p key={q.id} className="truncate">
+                                <strong>{q.question}:</strong> {Array.isArray(answer) ? answer.join(", ") : answer || "—"}
+                              </p>
+                            );
+                          })}
+                          {survey.questions.length > 2 && <p className="text-xs text-muted-foreground">+{survey.questions.length - 2} more</p>}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
             <h2 className="text-2xl font-semibold">Question Breakdown</h2>
             {survey.questions.map((question, index) => {
               const stats = getQuestionStats(question.id);

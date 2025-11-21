@@ -20,6 +20,10 @@ export interface IStorage {
   createResponse(surveyId: string, answers: Record<string, string | string[]>): Promise<SurveyResponse>;
   getResponses(surveyId: string): Promise<SurveyResponse[]>;
   getResponseCount(surveyId: string): Promise<number>;
+  deleteResponse(id: string): Promise<boolean>;
+  deleteResponsesBulk(ids: string[]): Promise<number>;
+  searchResponses(surveyId: string, searchTerm: string): Promise<SurveyResponse[]>;
+  detectDuplicates(surveyId: string): Promise<SurveyResponse[][]>;
 }
 
 export class MemStorage implements IStorage {
@@ -121,6 +125,39 @@ export class MemStorage implements IStorage {
 
   async getResponseCount(surveyId: string): Promise<number> {
     return Array.from(this.responses.values()).filter(r => r.surveyId === surveyId).length;
+  }
+
+  async deleteResponse(id: string): Promise<boolean> {
+    return this.responses.delete(id);
+  }
+
+  async deleteResponsesBulk(ids: string[]): Promise<number> {
+    let deleted = 0;
+    ids.forEach(id => {
+      if (this.responses.delete(id)) deleted++;
+    });
+    return deleted;
+  }
+
+  async searchResponses(surveyId: string, searchTerm: string): Promise<SurveyResponse[]> {
+    const term = searchTerm.toLowerCase();
+    return Array.from(this.responses.values())
+      .filter(r => r.surveyId === surveyId && 
+        JSON.stringify(r.answers).toLowerCase().includes(term))
+      .sort((a, b) => b.completedAt.getTime() - a.completedAt.getTime());
+  }
+
+  async detectDuplicates(surveyId: string): Promise<SurveyResponse[][]> {
+    const responses = await this.getResponses(surveyId);
+    const answerMap = new Map<string, SurveyResponse[]>();
+    
+    responses.forEach(r => {
+      const key = JSON.stringify(r.answers);
+      if (!answerMap.has(key)) answerMap.set(key, []);
+      answerMap.get(key)!.push(r);
+    });
+    
+    return Array.from(answerMap.values()).filter(group => group.length > 1);
   }
 }
 
