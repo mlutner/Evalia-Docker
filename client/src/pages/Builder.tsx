@@ -656,23 +656,6 @@ export default function Builder() {
         {currentWizardStep === 1 && (
           <div className="space-y-8">
             <div className="max-w-5xl mx-auto">
-              {/* Survey Title Input */}
-              <div className="mb-8 bg-card border rounded-lg p-6">
-                <label className="text-sm font-medium mb-2 block">
-                  Survey Title <span className="text-destructive">*</span>
-                </label>
-                <Input
-                  value={currentSurveyTitle}
-                  onChange={(e) => setCurrentSurveyTitle(e.target.value)}
-                  placeholder="Enter a clear, descriptive title for your survey..."
-                  className="text-base"
-                  data-testid="input-survey-title-step1"
-                />
-                <p className="text-xs text-muted-foreground mt-2">
-                  Give your survey a clear title that describes what it's about
-                </p>
-              </div>
-
               {/* Tab Header */}
               <div className="mb-8">
                 <h2 className="text-2xl font-semibold mb-1">Choose your creation method</h2>
@@ -778,6 +761,24 @@ export default function Builder() {
                       />
                     ))}
                   </div>
+
+                  {currentQuestions.length > 0 && (
+                    <div className="mt-8 bg-card border rounded-lg p-6">
+                      <label className="text-sm font-medium mb-2 block">
+                        Survey Title <span className="text-destructive">*</span>
+                      </label>
+                      <Input
+                        value={currentSurveyTitle}
+                        onChange={(e) => setCurrentSurveyTitle(e.target.value)}
+                        placeholder="Enter a title for your survey..."
+                        className="text-base"
+                        data-testid="input-survey-title-templates"
+                      />
+                      <p className="text-xs text-muted-foreground mt-2">
+                        You can edit the template title to customize it for your needs
+                      </p>
+                    </div>
+                  )}
                 </TabsContent>
 
                 <TabsContent value="ai" className="space-y-8 pt-2">
@@ -826,6 +827,24 @@ export default function Builder() {
                           Generate Survey with AI
                         </Button>
                       </>
+                    )}
+
+                    {currentQuestions.length > 0 && (
+                      <div className="mt-8 bg-card border rounded-lg p-6">
+                        <label className="text-sm font-medium mb-2 block">
+                          Survey Title <span className="text-destructive">*</span>
+                        </label>
+                        <Input
+                          value={currentSurveyTitle}
+                          onChange={(e) => setCurrentSurveyTitle(e.target.value)}
+                          placeholder="Enter a title for your survey..."
+                          className="text-base"
+                          data-testid="input-survey-title-ai"
+                        />
+                        <p className="text-xs text-muted-foreground mt-2">
+                          AI has suggested a title based on your description. Feel free to customize it.
+                        </p>
+                      </div>
                     )}
                   </div>
                 </TabsContent>
@@ -894,6 +913,24 @@ export default function Builder() {
                         Process Text & Generate Survey
                       </Button>
                     </div>
+
+                    {currentQuestions.length > 0 && (
+                      <div className="mt-8 bg-card border rounded-lg p-6">
+                        <label className="text-sm font-medium mb-2 block">
+                          Survey Title <span className="text-destructive">*</span>
+                        </label>
+                        <Input
+                          value={currentSurveyTitle}
+                          onChange={(e) => setCurrentSurveyTitle(e.target.value)}
+                          placeholder="Enter a title for your survey..."
+                          className="text-base"
+                          data-testid="input-survey-title-upload"
+                        />
+                        <p className="text-xs text-muted-foreground mt-2">
+                          AI has suggested a title based on your document. Feel free to customize it.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
               </Tabs>
