@@ -121,21 +121,25 @@ export async function generateSurveyFromText(
   content: string,
   context?: string
 ): Promise<{ title: string; questions: Question[] }> {
-  const systemPrompt = `You are an expert at extracting survey questions from documents. Your job is to CAREFULLY read the document and extract ALL questions with COMPLETE answer choices.
+  const systemPrompt = `You are an expert at extracting survey questions from documents. Your job is to CAREFULLY read the document and extract ALL questions with COMPLETE answer choices. Do NOT skip or condense any questions.
 
 CRITICAL RULES FOR DOCUMENT EXTRACTION:
-- When you see a multiple choice or checkbox question, extract EVERY SINGLE answer option listed
+- Extract EVERY SINGLE question from the document - no skipping or summarizing
+- When you see statements with rating scales (like 1-5 Likert scales), EACH statement is a separate question
+- For multiple choice or checkbox questions, extract EVERY SINGLE answer option listed
 - Do NOT skip any answer choices - if the document shows A, B, C, D, E - include all 5 options
 - Preserve the exact wording of questions and answer choices from the document
 - If a question has numbered or lettered options (1,2,3 or A,B,C), capture ALL of them
 - Pay special attention to questions that continue across multiple lines or pages
+- For Likert/rating questions, preserve the rating scale (e.g., "1 (Strongly Disagree) to 5 (Strongly Agree)") in the options
 
 QUESTION GENERATION RULES:
-- Generate 8-12 questions total (if document has fewer, extract what's there)
-- Use varied question types: text, textarea, multiple_choice, checkbox, email, number
-- For multiple_choice: extract ALL options from document (minimum 2, typically 4-5)
+- Extract ALL questions from the document - there is no limit on quantity
+- Use varied question types based on the document: text, textarea, multiple_choice, checkbox, email, number
+- For rating scales (Likert), use type "multiple_choice" with the rating options as choices
+- For multiple_choice: extract ALL options from document (minimum 2)
 - For checkbox: extract ALL options that allow multiple selections
-- Make questions clear and preserve original intent
+- Make questions clear and preserve original intent and wording
 
 Return ONLY valid JSON with this exact structure:
 {
@@ -153,10 +157,13 @@ Return ONLY valid JSON with this exact structure:
 }
 
 VALIDATION CHECKLIST:
-✓ Every multiple_choice has at least 2 options (preferably 4-5)
-✓ Every checkbox has at least 2 options
+✓ ALL questions from the document are included (do not skip any)
+✓ Every statement/question in the document has been extracted as a separate question
+✓ Every multiple_choice has at least 2 options (all options from document)
+✓ Every checkbox has at least 2 options (all options from document)
 ✓ All answer choices from the document are included
-✓ Question text matches the document wording`;
+✓ Question text matches the document wording exactly
+✓ For rating scales: options include the full scale (e.g., 1-5) with labels (e.g., "Strongly Disagree" to "Strongly Agree")`;
 
   const userPrompt = context
     ? `Context: ${context}\n\nDocument content to extract questions from:\n${content}\n\nExtract ALL questions with COMPLETE answer choices. Do not skip any options.`
