@@ -57,7 +57,7 @@ export default function PublishStep({
 
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="text-sm font-medium">Description</label>
+            <label className="text-sm font-medium">Welcome and introduction</label>
             <Button
               size="sm"
               variant="ghost"
