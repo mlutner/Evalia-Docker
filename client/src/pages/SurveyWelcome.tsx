@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Loader2, AlertCircle } from "lucide-react";
 import type { Survey } from "@shared/schema";
+import logoImage from "@assets/Untitled design (3)_1763753243586.png";
 
 interface SurveyWelcomeProps {
   survey: Survey;
@@ -37,6 +38,14 @@ export default function SurveyWelcome({
   return (
     <div className="page">
       <main className="card text-[14px] pl-[40px] pr-[40px] pt-[40px] pb-[40px]" aria-labelledby="survey-title">
+        {/* Logo mark */}
+        <img 
+          src={logoImage} 
+          alt="Survey logo" 
+          className="logo-mark"
+          data-testid="icon-survey-logo"
+        />
+
         {/* Heading & subtitle */}
         <h1
           id="survey-title"
@@ -49,14 +58,16 @@ export default function SurveyWelcome({
         </p>
 
         {/* Illustration */}
-        <div className="illustration-wrapper ml-[10px] mr-[10px] pl-[10px] pr-[10px]">
-          <img
-            src="attached_assets/Untitled design (3).png"
-            alt="Survey illustration"
-            className="illustration"
-            data-testid="img-survey-illustration"
-          />
-        </div>
+        {illustrationImage && (
+          <div className="illustration-wrapper ml-[10px] mr-[10px] pl-[10px] pr-[10px]">
+            <img
+              src={illustrationImage}
+              alt="Survey illustration"
+              className="illustration"
+              data-testid="img-survey-illustration"
+            />
+          </div>
+        )}
 
         {/* Benefits list */}
         <h2 className="section-heading text-[24px] font-extrabold" data-testid="text-what-youll-gain">
