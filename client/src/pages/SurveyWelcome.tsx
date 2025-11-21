@@ -58,7 +58,7 @@ export default function SurveyWelcome({
         {/* Header Section */}
         <header className="survey-header">
           {/* Logo */}
-          <div className="survey-logo">
+          <div className="survey-logo bg-[#ffffff]">
             <img 
               src={logoImage} 
               alt="Survey logo" 
@@ -69,7 +69,7 @@ export default function SurveyWelcome({
           <h1
             id="survey-title"
             data-testid="text-survey-title"
-            className="survey-title text-center">
+            className="survey-title text-center text-[38px]">
             {survey.title}
           </h1>
         </header>
