@@ -9,11 +9,11 @@
 
 .hero-subtitle {
   margin-top: 12px;
-  font-size: 15px;
-  line-height: 1.4;
+  font-size: 16px;
+  line-height: 1.45;
   color: #4b5563;
   text-align: center;
-  max-width: 100%;
+  max-width: 520px;
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 0;
@@ -23,6 +23,7 @@
 .hero-illustration {
   margin: 28px auto 32px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   overflow: visible;
@@ -33,9 +34,10 @@
 .hero-illustration::before {
   content: "";
   position: absolute;
-  width: 360px;
-  height: 320px;
+  width: 380px;
+  height: 340px;
   border-radius: 50%;
+  background: rgba(43, 180, 160, 0.1);
   border: 3px solid rgba(43, 180, 160, 0.15);
   top: 50%;
   left: 50%;
@@ -44,12 +46,27 @@
   box-shadow: 0 20px 40px rgba(7, 26, 50, 0.08);
 }
 
+.hero-illustration::after {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 12px;
+  background: rgba(7, 26, 50, 0.05);
+  border-radius: 50%;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: -1;
+}
+
 .hero-illustration img {
-  max-width: 280px;
+  max-width: 314px;
   width: 100%;
   height: auto;
   border-radius: 8px;
   display: block;
+  position: relative;
+  z-index: 1;
 }
 
 
