@@ -1035,6 +1035,20 @@ export default function Builder() {
             )}
           </div>
         </div>
+
+        {/* Bottom Back Button */}
+        <div className="mt-12 pt-8 border-t flex justify-center">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setLocation("/dashboard")}
+            className="text-muted-foreground hover:text-foreground"
+            data-testid="button-back-to-dashboard-bottom"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Dashboard
+          </Button>
+        </div>
       </main>
 
       <TemplatePreviewModal
