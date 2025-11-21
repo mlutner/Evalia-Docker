@@ -46,13 +46,13 @@ export default function SurveyWelcome({
           <h1
             id="survey-title"
             data-testid="text-survey-title"
-            className="survey-title text-center pt-[20px] pb-[20px] text-[35px]">
+            className="survey-title text-center">
             {survey.title}
           </h1>
         </header>
 
         {/* Subtitle */}
-        <p className="hero-subtitle pl-[25px] pr-[25px] text-[13px]" data-testid="text-survey-description">
+        <p className="hero-subtitle" data-testid="text-survey-description">
           {survey.description}
         </p>
 
@@ -70,8 +70,8 @@ export default function SurveyWelcome({
           )}
 
           {/* Purpose list */}
-          <h2 className="hero-section-title text-[20px]" data-testid="text-survey-purpose">The purpose of the survey:</h2>
-          <ul className="hero-benefits ml-[70px] mr-[70px]">
+          <h2 className="hero-section-title" data-testid="text-survey-purpose">The purpose of the survey:</h2>
+          <ul className="hero-benefits">
             {purposePoints.map((point, idx) => (
               <li key={idx} data-testid={`text-purpose-${idx}`}>
                 {point.trim()}
