@@ -265,6 +265,11 @@ export default function Builder() {
         },
       ]);
       setPrompt(""); // Clear prompt after generation
+      
+      // Auto-advance to questions step smoothly
+      if (data.questions.length > 0) {
+        setTimeout(() => setCurrentWizardStep(2), 400);
+      }
     } catch (error: any) {
       console.error("Survey generation error:", error);
       toast({
@@ -308,9 +313,9 @@ export default function Builder() {
       ]);
       setPastedText(""); // Clear text after generation
       
-      // Auto-advance to questions step
+      // Auto-advance to questions step smoothly
       if (data.questions.length > 0) {
-        setTimeout(() => setCurrentWizardStep(2), 100);
+        setTimeout(() => setCurrentWizardStep(2), 400);
       }
     } catch (error: any) {
       console.error("Text processing error:", error);
@@ -787,15 +792,7 @@ export default function Builder() {
                         </div>
                         <Button
                           size="lg"
-                          onClick={() => {
-                            handleGenerateFromPrompt();
-                            // Wait for questions to be generated then move to next step
-                            setTimeout(() => {
-                              if (currentQuestions.length > 0) {
-                                setCurrentWizardStep(2);
-                              }
-                            }, 1000);
-                          }}
+                          onClick={handleGenerateFromPrompt}
                           disabled={!prompt.trim() || isProcessing}
                           className="w-full"
                           data-testid="button-generate"
