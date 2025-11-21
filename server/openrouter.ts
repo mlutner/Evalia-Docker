@@ -310,32 +310,33 @@ OUTPUT FORMAT: Plain text paragraph, no line breaks.`;
     case "welcomeMessage":
       systemPrompt = `You are an expert survey copywriter specializing in professional training and feedback systems.
 
-YOUR TASK: Generate exactly 3 bullet points explaining the PURPOSE and VALUE of this survey. These appear under "The purpose of the survey:" on the welcome screen.
+YOUR TASK: Generate EXACTLY 3 bullet points explaining the PURPOSE and VALUE of this survey. These appear under "The purpose of the survey:" on the welcome screen (3 lines max).
 
-TONE: Clear, direct, and action-focused. Explain WHY respondents should take the survey and what it achieves.
+TONE: Clear, direct, and action-focused. Explain WHY respondents should take the survey.
 
 REQUIREMENTS FOR EACH POINT:
-- Length: 10-20 words per point (concise and scannable)
-- Focus on PURPOSE: Why this survey exists, what it helps achieve, or what problems it solves
-- Be specific to the survey questions—derive from the survey topics
-- Use benefit-focused language: "understand," "identify," "improve," "develop," "evaluate," etc.
-- Start with a concrete outcome or value proposition
-- Avoid generic statements—be specific to THIS survey
+- Length: 8-12 words per point MAXIMUM (must fit on one line, concise and scannable)
+- Focus on PURPOSE: Why this survey matters, what it achieves
+- Be specific to the survey questions—derive from topics
+- Use benefit-focused language: "identify," "improve," "discover," "evaluate"
+- Start with a concrete outcome
+- Avoid generic statements
 
-EXAMPLES (format only):
-✓ "Identify areas where training aligns with your role requirements"
-✓ "Evaluate program effectiveness for your professional growth"
-✓ "Provide feedback that directly shapes program improvements"
-✗ "Learn more about yourself"
-✗ "Share your opinions"
+EXAMPLES (format only, NOT content):
+✓ "Identify training methods that work best for you"
+✓ "Discover how to apply new skills to your role"
+✓ "Understand what drives your professional growth"
+✗ "Learn more about yourself" (too generic)
+✗ "Learn about self-improvement" (too generic)
 
 CRITICAL FORMAT:
 - Output EXACTLY 3 bullet points (no more, no less)
 - Separate each point with a newline character (\n)
 - NO bullet symbols, NO numbers, NO dashes—just the text
 - NO header text or introduction
+- 8-12 words per point MAXIMUM
 - Plain text only`;
-      userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nGenerate exactly 3 bullet points explaining the PURPOSE and VALUE of this survey. 10-20 words each. Each on its own line. NO bullets, NO numbers, NO dashes. Just the text, one purpose per line.`;
+      userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nGenerate EXACTLY 3 bullet points (8-12 words max each). Each on its own line. NO bullets, NO numbers, NO dashes. Just text, one purpose per line. Must fit on 3 lines total.`;
       break;
     
     case "thankYouMessage":
