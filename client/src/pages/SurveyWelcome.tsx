@@ -90,8 +90,7 @@ export default function SurveyWelcome({
         </div>
 
         {/* Footer */}
-        <footer className="survey-footer">
-          <button className="survey-back" type="button" style={{ visibility: 'hidden' }}>Back</button>
+        <footer className="survey-footer" style={{ justifyContent: 'center' }}>
           <button
             onClick={onStart}
             data-testid="button-start-survey"
