@@ -234,6 +234,38 @@ h1 {
   letter-spacing: -0.01em;
 }
 
+.hero-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 32px;
+  min-width: 260px;
+  border-radius: 999px;
+  border: none;
+  background: #071a32;
+  color: #ccff00;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(7, 26, 50, 0.35);
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.12s ease;
+  margin-top: 16px;
+  margin-bottom: 12px;
+}
+
+.hero-button:hover {
+  transform: translateY(-1px);
+  background: #0b2543;
+  box-shadow: 0 18px 40px rgba(7, 26, 50, 0.45);
+}
+
+.hero-footnote {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
+}
+
 /* Responsive Design */
 @media (max-width: 640px) {
   .card {

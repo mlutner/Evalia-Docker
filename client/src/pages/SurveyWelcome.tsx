@@ -84,13 +84,12 @@ export default function SurveyWelcome({
         </ul>
 
         {/* CTA */}
-        <Button
-          size="lg"
+        <button
           onClick={onStart}
           data-testid="button-start-survey"
-          className="w-full max-w-md mx-auto block rounded-full font-semibold py-4 text-[22px] mt-4 mb-3 pl-[0px] pr-[0px]"
-        >Begin Survey</Button>
-        <p className="helper-text" data-testid="text-helper">
+          className="hero-button"
+        >Begin Survey</button>
+        <p className="hero-footnote" data-testid="text-helper">
           Fast, confidential, and designed for personal growth.
         </p>
       </main>
