@@ -40,8 +40,30 @@ export default function SurveyView() {
     },
   });
 
-  const questions = survey?.questions || [];
+  const allQuestions = survey?.questions || [];
+  
+  // Apply randomization if enabled
+  const questions = survey?.randomizeQuestions 
+    ? [...allQuestions].sort(() => Math.random() - 0.5)
+    : allQuestions;
+  
   const currentQuestion = currentStep >= 0 ? questions[currentStep] : null;
+
+  // Filter visible questions based on skip logic
+  const getVisibleQuestions = () => {
+    return questions.filter(q => {
+      if (!q.skipCondition) return true;
+      const conditionQuestion = questions.find(qu => qu.id === q.skipCondition.questionId);
+      if (!conditionQuestion) return true;
+      const answer = answers[conditionQuestion.id];
+      return answer === q.skipCondition.answer;
+    });
+  };
+
+  const visibleQuestions = getVisibleQuestions();
+  const visibleCurrentQuestion = currentStep >= 0 && currentStep < visibleQuestions.length 
+    ? visibleQuestions[currentStep] 
+    : null;
 
   // Keyboard navigation - Enter key
   useEffect(() => {
@@ -65,27 +87,27 @@ export default function SurveyView() {
   };
 
   const handleAnswer = (answer: string | string[]) => {
-    if (currentQuestion) {
+    if (visibleCurrentQuestion) {
       setAnswers({
         ...answers,
-        [currentQuestion.id]: answer,
+        [visibleCurrentQuestion.id]: answer,
       });
     }
   };
 
   const canGoNext = () => {
     if (currentStep === -1) return true;
-    if (!currentQuestion) return false;
+    if (!visibleCurrentQuestion) return false;
     
-    const answer = answers[currentQuestion.id];
+    const answer = answers[visibleCurrentQuestion.id];
     
-    if (!currentQuestion.required) return true;
+    if (!visibleCurrentQuestion.required) return true;
     if (Array.isArray(answer)) return answer.length > 0;
     return answer && answer.toString().trim().length > 0;
   };
 
   const handleNext = () => {
-    if (currentStep < questions.length - 1) {
+    if (currentStep < visibleQuestions.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       handleSubmit();
@@ -189,7 +211,7 @@ export default function SurveyView() {
     );
   }
 
-  if (questions.length === 0) {
+  if (allQuestions.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-background via-background to-muted/20">
         <div className="text-center max-w-md">
@@ -238,14 +260,14 @@ export default function SurveyView() {
           <div className="w-full max-w-xs mx-auto mb-3">
             <div className="flex justify-between items-center mb-1">
               <p className="survey-progress text-sm" data-testid="text-progress">
-                {currentStep + 1} of {questions.length} 
+                {currentStep + 1} of {visibleQuestions.length} 
               </p>
-              <span className="text-xs font-medium text-muted-foreground">{Math.round(((currentStep + 1) / questions.length) * 100)}%</span>
+              <span className="text-xs font-medium text-muted-foreground">{Math.round(((currentStep + 1) / visibleQuestions.length) * 100)}%</span>
             </div>
             <div className="w-full h-2 bg-muted rounded-full overflow-hidden" data-testid="progress-bar">
               <div 
                 className="h-full bg-primary rounded-full transition-all duration-300 ease-out"
-                style={{ width: `${((currentStep + 1) / questions.length) * 100}%` }}
+                style={{ width: `${((currentStep + 1) / visibleQuestions.length) * 100}%` }}
                 data-testid="progress-bar-fill"
               />
             </div>
@@ -254,18 +276,20 @@ export default function SurveyView() {
 
         {/* Body - Question Content */}
         <div className="survey-body">
-          <QuestionCard
-            question={questions[currentStep]}
-            onAnswer={handleAnswer}
-            initialAnswer={answers[questions[currentStep].id]}
-          />
+          {visibleCurrentQuestion && (
+            <QuestionCard
+              question={visibleCurrentQuestion}
+              onAnswer={handleAnswer}
+              initialAnswer={answers[visibleCurrentQuestion.id]}
+            />
+          )}
         </div>
 
         {/* Footer */}
         <footer className="survey-footer">
           <button 
             onClick={handleBack}
-            disabled={currentStep === 0}
+            disabled={currentStep <= 0}
             className="survey-back"
             type="button"
             data-testid="button-back"

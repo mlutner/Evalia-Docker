@@ -276,6 +276,113 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
             </div>
           </div>
         )}
+
+        {question.type === "nps" && (
+          <>
+            <div className="flex flex-col space-y-4">
+              <div className="flex justify-between items-center gap-1">
+                <span className="text-xs font-medium text-muted-foreground">Not likely</span>
+                <span className="text-xs font-medium text-muted-foreground">Extremely likely</span>
+              </div>
+              <div className="grid grid-cols-6 gap-1">
+                {Array.from({ length: 11 }).map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => {
+                      const val = i.toString();
+                      setAnswer(val);
+                      onAnswer(val);
+                    }}
+                    data-testid={`button-nps-${i}`}
+                    className={`h-10 rounded-lg border transition-all text-sm font-medium ${
+                      answer === i.toString()
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border/50 bg-card/30 hover:bg-primary/5 hover:border-primary/30"
+                    } hover-elevate active-elevate-2`}
+                  >
+                    {i}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">How likely are you to recommend this training? (0 = Not likely, 10 = Extremely likely)</p>
+          </>
+        )}
+
+        {question.type === "matrix" && (
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-sm">
+                <thead>
+                  <tr>
+                    <th className="border p-2 text-left font-medium bg-muted/50 min-w-[120px]"></th>
+                    {question.colLabels?.map((col) => (
+                      <th key={col} className="border p-2 text-center font-medium bg-muted/50 min-w-[80px]">{col}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {question.rowLabels?.map((row) => (
+                    <tr key={row}>
+                      <td className="border p-2 font-medium text-left">{row}</td>
+                      {question.colLabels?.map((col) => {
+                        const isSelected = answer === `${row}|${col}`;
+                        return (
+                          <td key={`${row}-${col}`} className="border p-2 text-center">
+                            <button
+                              onClick={() => handleMatrixChange(row, col)}
+                              data-testid={`button-matrix-${row}-${col}`}
+                              className={`w-6 h-6 mx-auto rounded-full border-2 transition-all ${
+                                isSelected
+                                  ? "border-primary bg-primary"
+                                  : "border-border/50 hover:border-primary/50"
+                              }`}
+                            />
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-xs text-muted-foreground">Select one response per row</p>
+          </>
+        )}
+
+        {question.type === "ranking" && (
+          <>
+            <div className="space-y-2">
+              {question.options?.map((option, idx) => (
+                <div 
+                  key={option} 
+                  className="flex items-center gap-3 p-3 border rounded-lg bg-card/30 hover:bg-primary/5 hover-elevate active-elevate-2"
+                  data-testid={`ranking-item-${idx}`}
+                >
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                    <span className="text-sm font-bold text-primary">{idx + 1}</span>
+                  </div>
+                  <span className="text-sm flex-1">{option}</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground">Items are ranked from most to least important</p>
+          </>
+        )}
+
+        {question.type === "date" && (
+          <>
+            <Input
+              type="date"
+              value={answer as string}
+              onChange={(e) => handleTextChange(e.target.value)}
+              className="text-base h-11 sm:h-12 border border-border/60 focus:border-primary transition-colors bg-white dark:bg-slate-950"
+              data-testid="input-date-answer"
+              autoFocus
+            />
+            <p className="text-xs text-muted-foreground">Select a date</p>
+          </>
+        )}
       </div>
     </div>
   );
