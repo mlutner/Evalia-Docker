@@ -68,6 +68,7 @@ export default function Builder() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [parsedText, setParsedText] = useState("");
   const [prompt, setPrompt] = useState("");
+  const [pastedText, setPastedText] = useState("");
   const [previewTemplate, setPreviewTemplate] = useState<SurveyTemplate | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -265,6 +266,53 @@ export default function Builder() {
       toast({
         title: "AI generation failed",
         description: error.message || "Failed to generate survey. Please try again with a different description.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handlePasteText = async () => {
+    if (!pastedText.trim()) return;
+    console.log("Processing pasted text");
+    setIsProcessing(true);
+    
+    try {
+      const response = await fetch("/api/generate-survey", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt: pastedText }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to process text");
+      }
+
+      const data = await response.json();
+      setCurrentSurveyTitle(data.title);
+      setCurrentQuestions(data.questions);
+      setMessages([
+        {
+          id: "1",
+          role: "assistant",
+          content: `I've created a ${data.questions.length}-question survey based on your text. You can edit the questions directly, preview the survey, or ask me to make changes!`,
+        },
+      ]);
+      setPastedText(""); // Clear text after generation
+      
+      // Auto-advance to questions step
+      if (data.questions.length > 0) {
+        setTimeout(() => setCurrentWizardStep(2), 100);
+      }
+    } catch (error: any) {
+      console.error("Text processing error:", error);
+      toast({
+        title: "Processing failed",
+        description: error.message || "Failed to process text. Please try again with more content.",
         variant: "destructive",
       });
     } finally {
@@ -711,21 +759,68 @@ export default function Builder() {
                 </TabsContent>
 
                 <TabsContent value="upload" className="space-y-8 pt-2">
-                  <div className="max-w-2xl mx-auto space-y-6">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-2">Upload Document</h3>
-                      <p className="text-muted-foreground mb-4">
-                        Upload a PDF, DOCX, or TXT document and AI will extract survey questions from it.
-                      </p>
+                  <div className="max-w-2xl mx-auto space-y-8">
+                    {/* File Upload Section */}
+                    <div className="space-y-4">
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">Upload Document</h3>
+                        <p className="text-muted-foreground mb-4">
+                          Upload a PDF, DOCX, or TXT document and AI will extract survey questions from it.
+                        </p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">
+                          Choose a document
+                        </label>
+                        <FileUploadZone
+                          onFileSelect={handleFileSelect}
+                          isProcessing={isProcessing}
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">
-                        Choose a document
-                      </label>
-                      <FileUploadZone
-                        onFileSelect={handleFileSelect}
-                        isProcessing={isProcessing}
-                      />
+
+                    {/* Divider */}
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-muted"></div>
+                      </div>
+                      <div className="relative flex justify-center text-sm">
+                        <span className="px-2 bg-background text-muted-foreground">Or</span>
+                      </div>
+                    </div>
+
+                    {/* Paste Text Section */}
+                    <div className="space-y-4">
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">Paste Text</h3>
+                        <p className="text-muted-foreground mb-4">
+                          Paste your content directly and AI will create survey questions from it.
+                        </p>
+                      </div>
+                      <div>
+                        <label htmlFor="paste-text" className="text-sm font-medium mb-2 block">
+                          Paste your text here
+                        </label>
+                        <Textarea
+                          id="paste-text"
+                          value={pastedText}
+                          onChange={(e) => setPastedText(e.target.value)}
+                          placeholder="Paste text content, training materials, course notes, or any document content..."
+                          className="min-h-32 resize-none"
+                          disabled={isProcessing}
+                          data-testid="textarea-paste-text"
+                        />
+                      </div>
+                      <Button
+                        size="lg"
+                        onClick={handlePasteText}
+                        disabled={!pastedText.trim() || isProcessing}
+                        className="w-full"
+                        data-testid="button-process-text"
+                      >
+                        <Sparkles className="w-5 h-5 mr-2" />
+                        Process Text & Generate Survey
+                      </Button>
                     </div>
                   </div>
                 </TabsContent>
