@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import QuestionCard from "@/components/QuestionCard";
 import ProgressBar from "@/components/ProgressBar";
-import logoImage from "@assets/Untitled design (3)_1763764996441.png";
+import SurveyWelcomeTemplate from "@/components/SurveyWelcomeTemplate";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { Question } from "@shared/schema";
 
@@ -88,55 +88,13 @@ export default function SurveyPreviewDialog({
           <div style={{ padding: '40px 16px' }} className="flex items-center justify-center min-h-[90vh]">
             <div className="survey-card" style={{ maxWidth: '520px' }}>
               {isWelcome ? (
-                <>
-                  {/* Welcome Header */}
-                  <header className="survey-header">
-                    <img 
-                      src={logoImage} 
-                      alt="Survey logo" 
-                      data-testid="icon-survey-logo"
-                      className="survey-logo-img"
-                    />
-                    <h1 className="survey-title" data-testid="text-preview-title">
-                      {title}
-                    </h1>
-                  </header>
-
-                  {/* Welcome Subtitle */}
-                  {description && (
-                    <p className="hero-subtitle mt-[20px] mb-[20px] text-[14px]" data-testid="text-preview-description">
-                      {description}
-                    </p>
-                  )}
-
-                  {/* Welcome Body */}
-                  <div className="survey-body">
-                    {illustration && (
-                      <div className="hero-illustration">
-                        <img
-                          src={illustration}
-                          alt="Survey illustration"
-                          data-testid="img-preview-illustration"
-                        />
-                      </div>
-                    )}
-
-                    {purposePoints.length > 0 && (
-                      <>
-                        <h2 className="hero-section-title text-[20px]" data-testid="text-survey-purpose">
-                          The purpose of the survey:
-                        </h2>
-                        <ul className="hero-benefits">
-                          {purposePoints.map((point, idx) => (
-                            <li key={idx} data-testid={`text-purpose-${idx}`}>
-                              {point.trim()}
-                            </li>
-                          ))}
-                        </ul>
-                      </>
-                    )}
-                  </div>
-                </>
+                <SurveyWelcomeTemplate
+                  title={title}
+                  description={description}
+                  illustration={illustration}
+                  welcomeMessage={welcomeMessage}
+                  onStart={() => handleNext()}
+                />
               ) : (
                 <>
                   {/* Question Header */}

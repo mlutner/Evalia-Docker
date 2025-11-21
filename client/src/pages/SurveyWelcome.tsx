@@ -1,6 +1,6 @@
-import { Loader2, AlertCircle, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 import type { Survey } from "@shared/schema";
-import logoImage from "@assets/Untitled design (3)_1763764996441.png";
+import SurveyWelcomeTemplate from "@/components/SurveyWelcomeTemplate";
 
 interface SurveyWelcomeProps {
   survey: Survey;
@@ -25,9 +25,6 @@ export default function SurveyWelcome({
   if (illustration && illustration.startsWith('/assets/')) {
     illustration = illustration.replace('/assets/', '/attached_assets/');
   }
-  const purposePoints = survey.welcomeMessage
-    ? survey.welcomeMessage.split("\n").filter((line) => line.trim())
-    : [];
 
   if (isLoading) {
     return (
@@ -55,67 +52,13 @@ export default function SurveyWelcome({
             <ArrowLeft className="w-5 h-5" />
           </button>
         )}
-        {/* Header Section */}
-        <header className="survey-header mt-[0px] mb-[0px] pt-[29px] pb-[29px]">
-          {/* Logo */}
-          <img 
-            src={logoImage} 
-            alt="Survey logo" 
-            data-testid="icon-survey-logo"
-            className="survey-logo-img mt-[0px] mb-[0px] pl-[20px] pr-[20px] pt-[10px] pb-[10px]"
-          />
-          {/* Title */}
-          <h1
-            id="survey-title"
-            data-testid="text-survey-title"
-            className="survey-title text-center text-[40px]">
-            Training Check-in
-          </h1>
-        </header>
-
-        {/* Subtitle */}
-        <p className="hero-subtitle ml-[40px] mr-[40px] mt-[0px] mb-[0px] text-[14px]" data-testid="text-survey-description">
-          {survey.description}
-        </p>
-
-        {/* Body */}
-        <div className="survey-body">
-          {/* Illustration */}
-          {illustration && (
-            <div className="hero-illustration">
-              <img
-                src={illustration}
-                alt="Survey illustration"
-                data-testid="img-survey-illustration"
-                className="mt-[10px] mb-[10px]" />
-            </div>
-          )}
-
-          {/* Purpose list */}
-          <h2 className="hero-section-title" data-testid="text-survey-purpose">The purpose of the survey:</h2>
-          <ul className="hero-benefits">
-            {purposePoints.map((point, idx) => (
-              <li
-                key={idx}
-                data-testid={`text-purpose-${idx}`}>
-                {point.trim()}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Footer */}
-        <footer className="survey-footer" style={{ justifyContent: 'center' }}>
-          <button
-            onClick={onStart}
-            data-testid="button-start-survey"
-            className="survey-primary mt-[10px] mb-[10px] pt-[10px] pb-[10px]"
-            type="button"
-          >
-            Begin Survey
-          </button>
-        </footer>
-        <p className="survey-footnote" data-testid="text-helper">Confidential and anonymous survey</p>
+        <SurveyWelcomeTemplate
+          title="Training Check-in"
+          description={survey.description}
+          illustration={illustration}
+          welcomeMessage={survey.welcomeMessage}
+          onStart={onStart}
+        />
       </main>
     </div>
   );
