@@ -55,7 +55,7 @@ export const surveyTemplates: SurveyTemplate[] = [
   },
   {
     id: "pulse-check",
-    title: "Pulse Check",
+    title: "Training Check-in",
     description: "Mid-training feedback to assess engagement and pacing during a session.",
     timing: "Mid-training",
     audience: "Participants",
