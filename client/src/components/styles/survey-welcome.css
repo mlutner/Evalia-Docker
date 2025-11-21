@@ -8,7 +8,7 @@
 }
 
 .hero-subtitle {
-  margin-top: 6px;
+  margin-top: 12px;
   font-size: 15px;
   line-height: 1.4;
   color: #4b5563;
@@ -21,7 +21,7 @@
 
 
 .hero-illustration {
-  margin: 20px auto 32px;
+  margin: 28px auto 32px;
   display: flex;
   justify-content: center;
   align-items: center;
