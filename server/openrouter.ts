@@ -49,6 +49,54 @@ async function callMistral(
 }
 
 /**
+ * Parse PDF using vision - send binary data to Mistral for OCR
+ */
+export async function parsePDFWithVision(pdfBuffer: Buffer, fileName: string): Promise<string> {
+  if (!MISTRAL_API_KEY) {
+    throw new Error("Mistral API key not configured");
+  }
+
+  // Convert PDF buffer to base64
+  const base64PDF = pdfBuffer.toString("base64");
+
+  const response = await fetch(`${MISTRAL_BASE_URL}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${MISTRAL_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: MODELS.OCR,
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: `Extract ALL text from this PDF document (${fileName}). Preserve structure, formatting, and all content including questions, options, and any numbered/lettered items. Return only the extracted text with no commentary.`,
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:application/pdf;base64,${base64PDF}`,
+              },
+            },
+          ],
+        },
+      ],
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Mistral Vision API error: ${error}`);
+  }
+
+  const data = await response.json();
+  return data.choices[0]?.message?.content || "";
+}
+
+/**
  * Parse text from an uploaded document using OCR
  */
 export async function parseDocument(fileContent: string, fileName: string): Promise<string> {

@@ -2,7 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText } from "./openrouter";
+import { parsePDFWithVision, parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText } from "./openrouter";
 import { insertSurveySchema, questionSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
@@ -73,19 +73,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Extract text based on file type
       if (fileType === "application/pdf") {
-        const parser = new PDFParse({ data: req.file.buffer });
         try {
-          const result = await parser.getText();
-          extractedText = result.text;
-          console.log(`PDF extracted ${extractedText.length} characters from ${result.pages.length} pages`);
+          // Use Mistral Vision API for PDF OCR
+          extractedText = await parsePDFWithVision(req.file.buffer, fileName);
+          console.log(`PDF extracted ${extractedText.length} characters via Mistral Vision`);
         } catch (pdfError: any) {
           console.error("PDF parsing error:", pdfError);
           return res.status(400).json({ 
             error: "Unable to read this PDF file", 
             tip: "The PDF might be password-protected, corrupted, or contain only images. Try saving it as a new PDF or using a different file." 
           });
-        } finally {
-          await parser.destroy(); // Always clean up resources
         }
       } else if (
         fileType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
