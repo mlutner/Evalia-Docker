@@ -195,72 +195,92 @@ export default function SurveyView() {
   // Welcome Screen
   if (currentStep === -1) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-background via-background to-primary/5 relative overflow-hidden">
-        {/* Enhanced Background Accents */}
+      <div className="min-h-screen flex items-center justify-center p-6 bg-background relative overflow-hidden">
+        {/* Subtle Background Accents */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-50"></div>
+          <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl opacity-50"></div>
           <div className="absolute bottom-1/4 left-1/4 w-72 h-72 bg-accent/5 rounded-full blur-2xl opacity-40"></div>
         </div>
 
-        <div className="text-center max-w-2xl animate-in fade-in slide-in-from-bottom-6 duration-500 relative z-10">
-          {/* Icon - Larger and More Prominent */}
-          <div className="mb-8">
-            <div className="w-20 h-20 bg-gradient-to-br from-primary/15 to-primary/5 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-sm border border-primary/10">
-              <Sparkles className="w-10 h-10 text-primary" />
+        <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-6 duration-500 relative z-10">
+          {/* Icon - Small, top aligned */}
+          <div className="flex justify-center mb-6">
+            <div className="w-14 h-14 bg-accent/20 rounded-2xl flex items-center justify-center">
+              <Sparkles className="w-7 h-7 text-accent" />
             </div>
           </div>
 
-          {/* Title - Better Hierarchy */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 leading-snug tracking-tight px-4 text-foreground">
+          {/* Title */}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-4 leading-snug tracking-tight px-4">
             {survey.title}
           </h1>
 
-          {/* Description - Enhanced Styling */}
+          {/* Subtitle/Description */}
           {survey.description && (
-            <p className="text-base sm:text-lg text-muted-foreground mb-6 leading-relaxed px-4 max-w-xl mx-auto">
+            <p className="text-base sm:text-lg text-muted-foreground text-center mb-12 px-4 max-w-2xl mx-auto leading-relaxed">
               {survey.description}
             </p>
           )}
 
-          {/* Welcome Message - If Present */}
-          {survey.welcomeMessage && (
-            <p className="text-sm sm:text-base text-muted-foreground/80 mb-10 max-w-xl mx-auto px-4 leading-relaxed" data-testid="text-welcome-message">
-              {survey.welcomeMessage}
-            </p>
-          )}
-
-          {/* Survey Info Cards - More Visual */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10 px-4">
-            <div className="flex items-center gap-2 px-4 py-2.5 bg-muted/40 border border-border/50 rounded-full text-xs sm:text-sm font-medium text-muted-foreground">
-              <span className="font-semibold text-foreground">{questions.length}</span>
-              <span>{questions.length === 1 ? 'question' : 'questions'}</span>
-            </div>
-            <div className="hidden sm:block text-muted-foreground/40">•</div>
-            <div className="flex items-center gap-2 px-4 py-2.5 bg-muted/40 border border-border/50 rounded-full text-xs sm:text-sm font-medium text-muted-foreground">
-              <span className="font-semibold text-foreground">{Math.max(1, Math.ceil(questions.length / 2))}</span>
-              <span>{Math.ceil(questions.length / 2) === 1 ? 'minute' : 'minutes'}</span>
+          {/* Illustration Placeholder - Centered */}
+          <div className="mb-12 px-4">
+            <div className="w-full aspect-video bg-gradient-to-br from-muted/40 to-muted/20 rounded-2xl border-2 border-dashed border-border/40 flex items-center justify-center min-h-[300px] sm:min-h-[350px]">
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">
+                  {/* Placeholder for SVG illustration */}
+                  {/* Import and render your SVG here */}
+                  Illustration area
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* CTA Button - More Prominent */}
-          <div className="flex flex-col items-center gap-6 px-4">
+          {/* What You'll Gain Section */}
+          {survey.welcomeMessage && (
+            <div className="mb-12 px-4 max-w-2xl mx-auto">
+              <h3 className="text-lg sm:text-xl font-semibold mb-5 text-foreground">What you'll gain:</h3>
+              <ul className="space-y-3">
+                {/* Parse welcome message as bullet points or use default */}
+                {survey.welcomeMessage.split('\n').filter(line => line.trim()).map((point, idx) => (
+                  <li key={idx} className="flex items-start gap-3">
+                    <Check className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                    <span className="text-sm sm:text-base text-muted-foreground">{point.trim()}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Survey Info & Required Fields */}
+          <div className="mb-8 px-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
+            <span className="font-medium">{questions.length} {questions.length === 1 ? 'question' : 'questions'}</span>
+            <span className="hidden sm:block">•</span>
+            <span className="font-medium">Takes about {Math.max(1, Math.ceil(questions.length / 2))} {Math.ceil(questions.length / 2) === 1 ? 'minute' : 'minutes'}</span>
+            {questions.some(q => q.required) && (
+              <>
+                <span className="hidden sm:block">•</span>
+                <span><span className="text-destructive font-semibold">*</span> indicates required fields</span>
+              </>
+            )}
+          </div>
+
+          {/* CTA Button */}
+          <div className="flex justify-center px-4 mb-6">
             <Button 
               size="lg" 
               onClick={handleStart}
               data-testid="button-start-survey"
-              className="text-base sm:text-lg px-10 sm:px-12 py-3 sm:py-3.5 shadow-md hover:shadow-lg transition-all group w-full sm:w-auto font-semibold"
+              className="text-base sm:text-lg px-12 sm:px-14 py-3 sm:py-3.5 shadow-md hover:shadow-lg transition-all group font-semibold"
             >
               Start Survey
               <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
-
-            {/* Required Field Legend - Integrated Better */}
-            {questions.some(q => q.required) && (
-              <p className="text-xs text-muted-foreground text-center max-w-sm">
-                <span className="text-destructive font-semibold">*</span> <span>indicates required fields</span>
-              </p>
-            )}
           </div>
+
+          {/* Footer Text */}
+          <p className="text-xs sm:text-sm text-muted-foreground/70 text-center px-4">
+            Fast, confidential, and designed for your growth.
+          </p>
         </div>
       </div>
     );
