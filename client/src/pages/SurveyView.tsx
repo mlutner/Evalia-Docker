@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import QuestionCard from "@/components/QuestionCard";
 import ProgressBar from "@/components/ProgressBar";
-import { ArrowLeft, ArrowRight, Check, Loader2, Sparkles, AlertCircle, FileQuestion } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Loader2, Sparkles, AlertCircle, FileQuestion, X } from "lucide-react";
 import type { Question } from "@/components/QuestionCard";
 import type { Survey } from "@shared/schema";
 
@@ -16,6 +16,7 @@ export default function SurveyView() {
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [isCompleted, setIsCompleted] = useState(false);
   const [showBackWarning, setShowBackWarning] = useState(false);
+  const [showExitWarning, setShowExitWarning] = useState(false);
 
   const { data: survey, isLoading, error } = useQuery<Survey>({
     queryKey: ["/api/surveys", id],
@@ -97,6 +98,19 @@ export default function SurveyView() {
     if (currentStep > -1) {
       setCurrentStep(currentStep - 1);
     }
+  };
+
+  const handleExit = () => {
+    if (Object.keys(answers).length > 0) {
+      setShowExitWarning(true);
+    } else {
+      window.location.href = '/';
+    }
+  };
+
+  const confirmExit = () => {
+    setShowExitWarning(false);
+    window.location.href = '/';
   };
 
   const handleSubmit = () => {
@@ -206,6 +220,12 @@ export default function SurveyView() {
               {survey.welcomeMessage}
             </p>
           )}
+          {/* Required Field Legend */}
+          {questions.some(q => q.required) && (
+            <div className="mb-8 px-4 py-3 bg-muted/40 rounded-lg inline-block text-sm text-muted-foreground">
+              <span className="text-destructive font-semibold">*</span> indicates required fields
+            </div>
+          )}
           <div className="flex flex-col items-center gap-4 px-4">
             <Button 
               size="lg" 
@@ -230,14 +250,24 @@ export default function SurveyView() {
     <div className="min-h-[100dvh] flex flex-col bg-background">
       <ProgressBar current={currentStep + 1} total={questions.length} />
       
-      {/* Question Counter */}
-      <div className="fixed top-4 sm:top-6 left-4 sm:left-6 z-40">
+      {/* Question Counter & Exit Button */}
+      <div className="fixed top-4 sm:top-6 left-4 sm:left-6 right-4 sm:right-6 z-40 flex items-center justify-between">
         <div className="text-xs sm:text-sm font-medium text-muted-foreground bg-background/80 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border shadow-sm" data-testid="text-question-counter">
           <span className="text-foreground font-semibold">
             {currentStep + 1}
           </span>
           <span> of {questions.length}</span>
         </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleExit}
+          data-testid="button-exit-survey"
+          title="Exit survey"
+          className="text-muted-foreground hover:text-foreground"
+        >
+          <X className="w-5 h-5" />
+        </Button>
       </div>
 
       <div className="flex-1 flex items-center justify-center p-4 sm:p-6 pt-16 sm:pt-20 pb-24 sm:pb-28 overflow-y-auto">
@@ -310,6 +340,24 @@ export default function SurveyView() {
             <AlertDialogCancel data-testid="button-cancel-back">Stay Here</AlertDialogCancel>
             <AlertDialogAction onClick={confirmBack} data-testid="button-confirm-back">
               Go Back
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Exit Warning Dialog */}
+      <AlertDialog open={showExitWarning} onOpenChange={setShowExitWarning}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Exit survey?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have started answering this survey. Are you sure you want to exit? Your answers will not be saved.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-exit">Keep Answering</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmExit} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" data-testid="button-confirm-exit">
+              Exit Survey
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
