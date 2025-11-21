@@ -62,7 +62,7 @@ export default function SurveyWelcome({
             src={logoImage} 
             alt="Survey logo" 
             data-testid="icon-survey-logo"
-            className="survey-logo-img"
+            className="survey-logo-img mt-[0px] mb-[0px] pl-[20px] pr-[20px] pt-[10px] pb-[10px]"
           />
           {/* Title */}
           <h1
