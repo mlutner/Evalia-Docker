@@ -91,8 +91,6 @@ h1 {
   justify-content: center;
   align-items: center;
   padding: 24px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #f0f4f8 0%, #e8f1f8 100%);
 }
 
 .illustration {
