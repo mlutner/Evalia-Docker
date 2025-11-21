@@ -39,7 +39,7 @@ export default function SurveyWelcome({
       <main className="card text-[14px] pl-[40px] pr-[40px] pt-[40px] pb-[40px]" aria-labelledby="survey-title">
         {/* Logo mark */}
         <img 
-          src="/attached_assets/Untitled design (3)_1763753101604.png" 
+          src="@assets/Untitled design (3)_1763753243586.png" 
           alt="Survey logo" 
           className="logo-mark"
           data-testid="icon-survey-logo"
