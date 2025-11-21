@@ -206,15 +206,13 @@ export default function SurveyView() {
 
           {/* Title */}
           <h1 className="text-5xl sm:text-6xl font-bold mb-6 leading-tight">
-            {survey.title}
+            Discover Your<br />Leadership Style
           </h1>
 
           {/* Subtitle */}
-          {survey.description && (
-            <p className="text-base sm:text-lg text-muted-foreground mb-12">
-              {survey.description}
-            </p>
-          )}
+          <p className="text-base sm:text-lg text-muted-foreground mb-12">
+            This quick assessment reveals how you<br />lead, communicate, and inspire.
+          </p>
 
           {/* Image Placeholder */}
           <div className="mb-12">
@@ -224,19 +222,23 @@ export default function SurveyView() {
           </div>
 
           {/* What You'll Gain Section */}
-          {survey.welcomeMessage && (
-            <div className="mb-12 text-left max-w-xl mx-auto">
-              <h3 className="text-2xl font-bold mb-6">What you'll gain:</h3>
-              <ul className="space-y-4">
-                {survey.welcomeMessage.split('\n').filter(line => line.trim()).map((point, idx) => (
-                  <li key={idx} className="flex items-start gap-4">
-                    <span className="text-muted-foreground text-lg flex-shrink-0">•</span>
-                    <span className="text-base text-foreground">{point.trim()}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <div className="mb-12 text-left max-w-xl mx-auto">
+            <h3 className="text-2xl font-bold mb-6">What you'll gain:</h3>
+            <ul className="space-y-4">
+              <li className="flex items-start gap-4">
+                <span className="text-muted-foreground text-lg flex-shrink-0">•</span>
+                <span className="text-base text-foreground">A snapshot of how others experience your leadership</span>
+              </li>
+              <li className="flex items-start gap-4">
+                <span className="text-muted-foreground text-lg flex-shrink-0">•</span>
+                <span className="text-base text-foreground">Insight into communication & decision styles</span>
+              </li>
+              <li className="flex items-start gap-4">
+                <span className="text-muted-foreground text-lg flex-shrink-0">•</span>
+                <span className="text-base text-foreground">A personalized style profile you can use immediately</span>
+              </li>
+            </ul>
+          </div>
 
           {/* CTA Button */}
           <div className="mb-6">
@@ -246,13 +248,13 @@ export default function SurveyView() {
               data-testid="button-start-survey"
               className="w-full sm:w-auto text-lg px-12 py-3 bg-accent hover:bg-accent/90 font-semibold rounded-xl"
             >
-              Start Survey
+              Begin Self-Assessment
             </Button>
           </div>
 
           {/* Footer Text */}
           <p className="text-sm text-muted-foreground">
-            Fast, confidential, and designed for your growth.
+            Fast, confidential, and designed for personal growth.
           </p>
         </div>
       </div>
