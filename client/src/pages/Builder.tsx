@@ -209,6 +209,11 @@ export default function Builder() {
       // Update questions if AI modified them
       if (data.questions) {
         setCurrentQuestions(data.questions);
+        
+        // Auto-advance to questions step if on step 1 and questions were created
+        if (currentWizardStep === 1 && data.questions.length > 0) {
+          setTimeout(() => setCurrentWizardStep(2), 300);
+        }
       }
       
       const aiResponse: Message = {
