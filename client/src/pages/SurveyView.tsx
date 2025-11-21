@@ -195,42 +195,42 @@ export default function SurveyView() {
   // Welcome Screen
   if (currentStep === -1) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-background">
-        <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-6 duration-500">
-          {/* Icon - Top centered */}
+      <div className="min-h-screen flex items-center justify-center p-6 sm:p-8 bg-background">
+        <div className="w-full max-w-2xl text-center">
+          {/* Icon */}
           <div className="flex justify-center mb-8">
-            <div className="w-16 h-16 bg-accent rounded-lg flex items-center justify-center">
+            <div className="w-16 h-16 bg-accent rounded-2xl flex items-center justify-center flex-shrink-0">
               <Sparkles className="w-8 h-8 text-white" />
             </div>
           </div>
 
           {/* Title */}
-          <h1 className="text-4xl sm:text-5xl font-bold text-center mb-4 leading-tight text-foreground">
+          <h1 className="text-5xl sm:text-6xl font-bold mb-6 leading-tight">
             {survey.title}
           </h1>
 
           {/* Subtitle */}
           {survey.description && (
-            <p className="text-base sm:text-lg text-center text-muted-foreground mb-12 px-4">
+            <p className="text-base sm:text-lg text-muted-foreground mb-12">
               {survey.description}
             </p>
           )}
 
           {/* Image Placeholder */}
-          <div className="mb-12 px-4">
-            <div className="w-full aspect-square bg-muted rounded-lg border border-border/40 flex items-center justify-center">
+          <div className="mb-12">
+            <div className="w-full aspect-video bg-muted/30 rounded-2xl border-2 border-dashed border-border/40 flex items-center justify-center">
               <p className="text-sm text-muted-foreground">Illustration area</p>
             </div>
           </div>
 
           {/* What You'll Gain Section */}
           {survey.welcomeMessage && (
-            <div className="mb-12 px-4">
-              <h3 className="text-xl font-bold mb-6 text-foreground">What you'll gain:</h3>
-              <ul className="space-y-3">
+            <div className="mb-12 text-left max-w-xl mx-auto">
+              <h3 className="text-2xl font-bold mb-6">What you'll gain:</h3>
+              <ul className="space-y-4">
                 {survey.welcomeMessage.split('\n').filter(line => line.trim()).map((point, idx) => (
-                  <li key={idx} className="flex items-start gap-3">
-                    <span className="text-muted-foreground mt-1">•</span>
+                  <li key={idx} className="flex items-start gap-4">
+                    <span className="text-muted-foreground text-lg flex-shrink-0">•</span>
                     <span className="text-base text-foreground">{point.trim()}</span>
                   </li>
                 ))}
@@ -239,35 +239,21 @@ export default function SurveyView() {
           )}
 
           {/* CTA Button */}
-          <div className="flex justify-center mb-6 px-4">
+          <div className="mb-6">
             <Button 
               size="lg" 
               onClick={handleStart}
               data-testid="button-start-survey"
-              className="w-full sm:w-auto text-base px-12 py-3 bg-accent hover:bg-accent/90 font-semibold rounded-lg"
+              className="w-full sm:w-auto text-lg px-12 py-3 bg-accent hover:bg-accent/90 font-semibold rounded-xl"
             >
               Start Survey
             </Button>
           </div>
 
           {/* Footer Text */}
-          <p className="text-center text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Fast, confidential, and designed for your growth.
           </p>
-
-          {/* Survey Info */}
-          {(questions.length > 0) && (
-            <p className="text-center text-xs text-muted-foreground mt-8 px-4">
-              {questions.length} {questions.length === 1 ? 'question' : 'questions'} · Takes about {Math.max(1, Math.ceil(questions.length / 2))} {Math.ceil(questions.length / 2) === 1 ? 'minute' : 'minutes'}
-            </p>
-          )}
-
-          {/* Required Fields Legend */}
-          {questions.some(q => q.required) && (
-            <p className="text-center text-xs text-muted-foreground mt-3 px-4">
-              <span className="text-destructive font-semibold">*</span> indicates required fields
-            </p>
-          )}
         </div>
       </div>
     );
