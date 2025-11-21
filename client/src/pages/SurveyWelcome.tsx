@@ -59,7 +59,7 @@ export default function SurveyWelcome({
 
         {/* Illustration */}
         {illustrationImage && (
-          <div className="illustration-wrapper ml-[10px] mr-[10px] pl-[10px] pr-[10px]">
+          <div className="illustration-wrapper ml-[10px] mr-[10px] pl-[10px] pr-[10px] mt-[0px] mb-[0px]">
             <img
               src={illustrationImage}
               alt="Survey illustration"
