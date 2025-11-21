@@ -3,7 +3,8 @@ import { useParams } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
-import surveyIllustration from "@/assets/survey-illustration.png";
+import surveyWelcomeIllustration from "@/assets/survey-welcome.png";
+import "@/components/styles/survey-welcome.css";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import QuestionCard from "@/components/QuestionCard";
 import ProgressBar from "@/components/ProgressBar";
@@ -196,65 +197,59 @@ export default function SurveyView() {
   // Welcome Screen
   if (currentStep === -1) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 16px', background: '#f9fafb' }}>
-        <div style={{ background: '#ffffff', maxWidth: '520px', width: '100%', padding: '40px 32px 36px', borderRadius: '16px', boxShadow: '0 18px 45px rgba(15, 23, 42, 0.12)', textAlign: 'center' }}>
+      <div className="survey-welcome-page">
+        <main className="survey-welcome-card" aria-labelledby="survey-title">
           {/* Logo mark */}
-          <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#22c55e', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-            <div style={{ width: '18px', height: '18px', borderRadius: '4px', border: '2px solid #ffffff', position: 'relative' }}></div>
+          <div className="survey-logo-mark">
+            <div className="survey-logo-mark-icon"></div>
           </div>
 
-          {/* Title */}
-          <h1 style={{ fontSize: '30px', lineHeight: '1.15', letterSpacing: '-0.02em', marginBottom: '10px', color: '#071a32' }}>
+          {/* Title & Subtitle */}
+          <h1 id="survey-title" className="survey-welcome-title">
             {survey.title}
           </h1>
-
-          {/* Subtitle */}
           {survey.description && (
-            <p style={{ fontSize: '15px', lineHeight: '1.5', color: '#42526b', marginBottom: '28px' }}>
+            <p className="survey-welcome-subtitle">
               {survey.description}
             </p>
           )}
 
           {/* Illustration */}
-          <div style={{ marginBottom: '28px' }}>
+          <div className="survey-illustration-wrapper">
             <img
-              src={surveyIllustration}
+              src={surveyWelcomeIllustration}
               alt="Survey illustration"
-              style={{ width: '210px', maxWidth: '100%' }}
+              className="survey-illustration"
             />
           </div>
 
-          {/* What You'll Gain Section */}
+          {/* Benefits list */}
           {survey.welcomeMessage && (
-            <div style={{ marginBottom: '28px' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '14px', color: '#071a32' }}>What you'll gain:</h2>
-              <ul style={{ listStyle: 'none', textAlign: 'left', maxWidth: '420px', margin: '0 auto 28px', paddingLeft: '0' }}>
+            <>
+              <h2 className="survey-section-heading">What you'll gain:</h2>
+              <ul className="survey-benefits">
                 {survey.welcomeMessage.split('\n').filter(line => line.trim()).map((point, idx) => (
-                  <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', fontSize: '15px', lineHeight: '1.5', color: '#42526b', marginBottom: '8px' }}>
-                    <span style={{ color: '#42526b', fontSize: '18px', marginRight: '8px', lineHeight: '1.2', flexShrink: 0 }}>•</span>
-                    <span>{point.trim()}</span>
-                  </li>
+                  <li key={idx}>{point.trim()}</li>
                 ))}
               </ul>
-            </div>
+            </>
           )}
 
           {/* CTA Button */}
           <button
             onClick={handleStart}
             data-testid="button-start-survey"
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '13px 24px', borderRadius: '999px', border: 'none', outline: 'none', cursor: 'pointer', background: '#22c55e', color: '#ffffff', fontWeight: '600', fontSize: '15px', boxShadow: '0 10px 25px rgba(34, 197, 94, 0.35)', transition: 'transform 0.08s ease, box-shadow 0.08s ease, background 0.1s ease', width: '100%', maxWidth: '260px' }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = '#16a34a'; e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 16px 35px rgba(34, 197, 94, 0.4)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = '#22c55e'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(34, 197, 94, 0.35)'; }}
+            className="survey-btn-primary"
+            type="button"
           >
             Start Survey
           </button>
 
           {/* Helper text */}
-          <p style={{ marginTop: '10px', fontSize: '13px', color: '#42526b' }}>
+          <p className="survey-helper-text">
             Fast, confidential, and designed for your growth.
           </p>
-        </div>
+        </main>
       </div>
     );
   }
