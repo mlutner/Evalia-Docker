@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useParams } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Button } from "@/components/ui/button";
 import leadershipIllustration from "@assets/Heading_1763750607423.png";
 import logoImage from "@assets/Untitled design (3)_1763756722973.png";
 import SurveyLayout from "@/components/SurveyLayout";
@@ -10,8 +9,7 @@ import SurveyWelcome from "@/pages/SurveyWelcome";
 import "@/components/styles/survey-welcome.css";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import QuestionCard from "@/components/QuestionCard";
-import ProgressBar from "@/components/ProgressBar";
-import { ArrowLeft, ArrowRight, Check, Loader2, Sparkles, AlertCircle, FileQuestion, X } from "lucide-react";
+import { Check, Loader2, AlertCircle, FileQuestion } from "lucide-react";
 import type { Question } from "@/components/QuestionCard";
 import type { Survey } from "@shared/schema";
 
