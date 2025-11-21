@@ -21,7 +21,7 @@
 
 
 .hero-illustration {
-  margin: 16px auto 24px -20px;
+  margin: 20px auto 32px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -33,8 +33,8 @@
 .hero-illustration::before {
   content: "";
   position: absolute;
-  width: 320px;
-  height: 280px;
+  width: 360px;
+  height: 320px;
   border-radius: 50%;
   border: 3px solid rgba(43, 180, 160, 0.15);
   top: 50%;
@@ -45,7 +45,7 @@
 }
 
 .hero-illustration img {
-  max-width: 220px;
+  max-width: 280px;
   width: 100%;
   height: auto;
   border-radius: 8px;

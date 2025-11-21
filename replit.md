@@ -89,6 +89,16 @@ The frontend employs a "conversational minimalism" approach, characterized by:
 - **Surveys Table**: Survey storage with UUID primary key, `userId` (foreign key to users), title, description, JSONB for questions, and timestamps.
 - **Survey Responses Table**: Response collection with UUID primary key, `surveyId` (foreign key to surveys), JSONB for answer data, and a `completedAt` timestamp.
 
+## Static Assets Configuration
+
+**Important Template Note**: Survey illustrations are served via Express static middleware at `/attached_assets`. This is configured in `server/routes.ts`:
+```typescript
+// Serve static assets from attached_assets directory
+const assetsPath = path.resolve(import.meta.dirname, "..", "attached_assets");
+app.use("/attached_assets", express.static(assetsPath));
+```
+This must be registered in the `registerRoutes()` function before other routes. All survey illustration URLs should use `/attached_assets/` paths.
+
 ## External Dependencies
 
 **AI Services:**
