@@ -637,22 +637,88 @@ export default function Builder() {
         {/* Step 1: Start - Choose creation method */}
         {currentWizardStep === 1 && (
           <div className="space-y-8">
-            <div className="max-w-6xl mx-auto">
-              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "templates" | "ai" | "upload")}>
-                <TabsList className="grid w-full grid-cols-3 mb-6">
-                  <TabsTrigger value="templates" data-testid="tab-templates">
-                    <Layers className="w-4 h-4 mr-2" />
-                    Templates
-                  </TabsTrigger>
-                  <TabsTrigger value="ai" data-testid="tab-ai">
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Generate with AI
-                  </TabsTrigger>
-                  <TabsTrigger value="upload" data-testid="tab-upload">
-                    <FileUp className="w-4 h-4 mr-2" />
-                    Upload Document
-                  </TabsTrigger>
-                </TabsList>
+            <div className="max-w-5xl mx-auto">
+              {/* Tab Header */}
+              <div className="mb-8">
+                <h2 className="text-2xl font-semibold mb-1">Choose your creation method</h2>
+                <p className="text-muted-foreground">Pick the option that works best for you</p>
+              </div>
+
+              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "templates" | "ai" | "upload")} className="w-full">
+                {/* Custom Tab Button Group */}
+                <div className="grid grid-cols-3 gap-4 mb-8">
+                  <button
+                    onClick={() => setActiveTab("templates")}
+                    data-testid="tab-templates"
+                    className={`p-6 rounded-lg border-2 transition-all ${
+                      activeTab === "templates"
+                        ? "border-primary bg-primary/5"
+                        : "border-muted hover:border-muted-foreground/50 bg-background hover:bg-muted/50"
+                    }`}
+                  >
+                    <div className="flex flex-col items-center text-center gap-3">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                        activeTab === "templates"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
+                      }`}>
+                        <Layers className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm">Templates</p>
+                        <p className="text-xs text-muted-foreground mt-1">Pre-built surveys</p>
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab("ai")}
+                    data-testid="tab-ai"
+                    className={`p-6 rounded-lg border-2 transition-all ${
+                      activeTab === "ai"
+                        ? "border-primary bg-primary/5"
+                        : "border-muted hover:border-muted-foreground/50 bg-background hover:bg-muted/50"
+                    }`}
+                  >
+                    <div className="flex flex-col items-center text-center gap-3">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                        activeTab === "ai"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
+                      }`}>
+                        <Sparkles className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm">Generate with AI</p>
+                        <p className="text-xs text-muted-foreground mt-1">Describe your needs</p>
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab("upload")}
+                    data-testid="tab-upload"
+                    className={`p-6 rounded-lg border-2 transition-all ${
+                      activeTab === "upload"
+                        ? "border-primary bg-primary/5"
+                        : "border-muted hover:border-muted-foreground/50 bg-background hover:bg-muted/50"
+                    }`}
+                  >
+                    <div className="flex flex-col items-center text-center gap-3">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                        activeTab === "upload"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
+                      }`}>
+                        <FileUp className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-sm">Upload or Paste</p>
+                        <p className="text-xs text-muted-foreground mt-1">Files or text</p>
+                      </div>
+                    </div>
+                  </button>
+                </div>
 
                 <TabsContent value="templates" className="space-y-8 pt-2">
                   <div>
