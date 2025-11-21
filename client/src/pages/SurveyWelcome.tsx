@@ -111,7 +111,7 @@ export default function SurveyWelcome({
           <button
             onClick={onStart}
             data-testid="button-start-survey"
-            className="survey-primary pt-[15px] pb-[15px] mt-[10px] mb-[10px]"
+            className="survey-primary mt-[10px] mb-[10px] pt-[10px] pb-[10px]"
             type="button"
           >
             Begin Survey
