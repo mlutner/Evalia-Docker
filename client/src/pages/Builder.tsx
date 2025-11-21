@@ -3,7 +3,7 @@ import { useRoute, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, Save, FileUp, Layers, Sparkles, Loader2 } from "lucide-react";
 import Header from "@/components/Header";
-import WizardSteps from "@/components/builder/WizardSteps";
+import WizardSteps from "@/components/WizardSteps";
 import QuestionsStep from "@/components/builder/QuestionsStep";
 import PublishStep from "@/components/builder/PublishStep";
 import TemplateCard from "@/components/TemplateCard";
