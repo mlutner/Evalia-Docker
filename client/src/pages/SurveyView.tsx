@@ -270,8 +270,8 @@ export default function SurveyView() {
         </Button>
       </div>
 
-      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 pt-16 sm:pt-20 pb-24 sm:pb-28 overflow-y-auto">
-        <div key={currentStep} className="w-full">
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-8 pt-20 sm:pt-24 pb-28 sm:pb-32 overflow-y-auto">
+        <div key={currentStep} className="w-full max-w-2xl">
           <QuestionCard
             question={questions[currentStep]}
             onAnswer={handleAnswer}

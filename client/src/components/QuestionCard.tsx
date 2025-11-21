@@ -78,26 +78,26 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 animate-in fade-in slide-in-from-bottom-6 duration-500" data-testid={`question-${question.id}`}>
+    <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 animate-in fade-in slide-in-from-bottom-6 duration-500" data-testid={`question-${question.id}`}>
       {/* Question Type Badge */}
-      <div className="mb-4 inline-flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs sm:text-sm font-medium">
+      <div className="mb-6 inline-flex items-center gap-2 px-3 py-1.5 bg-primary/8 text-primary rounded-full text-xs font-medium tracking-slight">
         {getQuestionTypeIcon(question.type)}
         <span>{getQuestionTypeLabel(question.type)}</span>
       </div>
 
-      <div className="mb-8 md:mb-12">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold mb-3 md:mb-4 leading-tight">
+      <div className="mb-10">
+        <h2 className="text-2xl sm:text-2.5xl md:text-3xl font-semibold mb-3 leading-snug tracking-tight">
           {question.question}
           {question.required && (
             <span className="text-destructive ml-2" title="This field is required">*</span>
           )}
         </h2>
         {question.description && (
-          <p className="text-muted-foreground text-base sm:text-lg md:text-xl mt-2 md:mt-3">{question.description}</p>
+          <p className="text-muted-foreground text-sm sm:text-base mt-2">{question.description}</p>
         )}
       </div>
 
-      <div className="space-y-5">
+      <div className="space-y-6">
         {question.type === "text" && (
           <>
             <Input
@@ -105,11 +105,11 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
               value={answer as string}
               onChange={(e) => handleTextChange(e.target.value)}
               placeholder="Type your answer here..."
-              className="text-base sm:text-lg md:text-xl h-12 sm:h-14 border-2 focus:border-primary transition-colors"
+              className="text-base h-11 sm:h-12 border border-border/60 focus:border-primary transition-colors bg-white dark:bg-slate-950"
               data-testid="input-text-answer"
               autoFocus
             />
-            <p className="text-xs sm:text-sm text-muted-foreground">Brief text response</p>
+            <p className="text-xs text-muted-foreground">Brief text response</p>
           </>
         )}
 
@@ -120,11 +120,11 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
               value={answer as string}
               onChange={(e) => handleTextChange(e.target.value)}
               placeholder="your@email.com"
-              className="text-base sm:text-lg md:text-xl h-12 sm:h-14 border-2 focus:border-primary transition-colors"
+              className="text-base h-11 sm:h-12 border border-border/60 focus:border-primary transition-colors bg-white dark:bg-slate-950"
               data-testid="input-email-answer"
               autoFocus
             />
-            <p className="text-xs sm:text-sm text-muted-foreground">Enter a valid email address</p>
+            <p className="text-xs text-muted-foreground">Enter a valid email address</p>
           </>
         )}
 
@@ -135,11 +135,11 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
               value={answer as string}
               onChange={(e) => handleTextChange(e.target.value)}
               placeholder="Enter a number..."
-              className="text-base sm:text-lg md:text-xl h-12 sm:h-14 border-2 focus:border-primary transition-colors"
+              className="text-base h-11 sm:h-12 border border-border/60 focus:border-primary transition-colors bg-white dark:bg-slate-950"
               data-testid="input-number-answer"
               autoFocus
             />
-            <p className="text-xs sm:text-sm text-muted-foreground">Numeric response only</p>
+            <p className="text-xs text-muted-foreground">Numeric response only</p>
           </>
         )}
 
@@ -149,26 +149,26 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
               value={answer as string}
               onChange={(e) => handleTextChange(e.target.value)}
               placeholder="Type your answer here..."
-              className="text-base sm:text-lg md:text-xl min-h-[120px] sm:min-h-[160px] border-2 focus:border-primary transition-colors"
+              className="text-base min-h-[120px] border border-border/60 focus:border-primary transition-colors bg-white dark:bg-slate-950 resize-none"
               data-testid="input-textarea-answer"
               autoFocus
             />
-            <p className="text-xs sm:text-sm text-muted-foreground">Detailed text response</p>
+            <p className="text-xs text-muted-foreground">Detailed text response</p>
           </>
         )}
 
         {question.type === "multiple_choice" && question.options && (
           <RadioGroup value={answer as string} onValueChange={handleMultipleChoice}>
-            <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-3">
               {question.options.map((option, index) => (
                 <div 
                   key={index} 
-                  className="group flex items-center space-x-3 sm:space-x-4 p-4 sm:p-5 rounded-xl hover-elevate active-elevate-2 border-2 border-border bg-card/40 hover:bg-primary/5 hover:border-primary/50 transition-all cursor-pointer" 
+                  className="flex items-center space-x-4 p-3.5 rounded-lg hover-elevate active-elevate-2 border border-border/50 bg-card/30 hover:bg-primary/5 hover:border-primary/30 transition-all cursor-pointer" 
                   data-testid={`option-${index}`}
                   onClick={() => handleMultipleChoice(option)}
                 >
-                  <RadioGroupItem value={option} id={`option-${index}`} className="w-5 h-5 shrink-0" />
-                  <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer text-base sm:text-lg font-medium">
+                  <RadioGroupItem value={option} id={`option-${index}`} className="w-4 h-4 shrink-0" />
+                  <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer text-sm sm:text-base font-normal">
                     {option}
                   </Label>
                 </div>
@@ -178,13 +178,13 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
         )}
 
         {question.type === "checkbox" && question.options && (
-          <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-3">
             {question.options.map((option, index) => {
               const isChecked = Array.isArray(answer) && answer.includes(option);
               return (
                 <div 
                   key={index} 
-                  className="group flex items-center space-x-4 p-4 sm:p-5 rounded-xl hover-elevate active-elevate-2 border-2 border-border bg-card/40 hover:bg-primary/5 hover:border-primary/50 transition-all cursor-pointer" 
+                  className="flex items-center space-x-4 p-3.5 rounded-lg hover-elevate active-elevate-2 border border-border/50 bg-card/30 hover:bg-primary/5 hover:border-primary/30 transition-all cursor-pointer" 
                   data-testid={`checkbox-${index}`}
                   onClick={() => handleCheckboxChange(option, !isChecked)}
                 >
@@ -192,29 +192,29 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
                     id={`checkbox-${index}`}
                     checked={isChecked}
                     onCheckedChange={(checked) => handleCheckboxChange(option, checked as boolean)}
-                    className="w-5 h-5"
+                    className="w-4 h-4"
                   />
-                  <Label htmlFor={`checkbox-${index}`} className="flex-1 cursor-pointer text-base sm:text-lg font-medium">
+                  <Label htmlFor={`checkbox-${index}`} className="flex-1 cursor-pointer text-sm sm:text-base font-normal">
                     {option}
                   </Label>
                 </div>
               );
             })}
-            <p className="text-xs sm:text-sm text-muted-foreground mt-2">Select one or more options</p>
+            <p className="text-xs text-muted-foreground mt-2">Select one or more options</p>
           </div>
         )}
 
         {question.type === "rating" && (
-          <div className="space-y-6 sm:space-y-8">
+          <div className="space-y-5">
             {/* Labels */}
-            <div className="flex items-center justify-between px-2 text-xs sm:text-sm font-medium text-muted-foreground">
+            <div className="flex items-center justify-between px-1 text-xs font-medium text-muted-foreground">
               <span>Disagree</span>
               <span>Neutral</span>
               <span>Agree</span>
             </div>
 
             {/* Rating Scale - Top to Bottom (Disagree to Agree) */}
-            <div className="space-y-2 sm:space-y-3">
+            <div className="space-y-2">
               {[1, 2, 3, 4, 5].map((rating) => {
                 const isSelected = answer === rating.toString();
                 const labels = {
@@ -229,18 +229,18 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
                     key={rating}
                     onClick={() => handleMultipleChoice(rating.toString())}
                     data-testid={`rating-${rating}`}
-                    className={`w-full p-4 sm:p-5 rounded-xl border-2 transition-all text-left ${
+                    className={`w-full p-3.5 rounded-lg border transition-all text-left ${
                       isSelected
-                        ? "border-primary bg-primary/10 shadow-md"
-                        : "border-border bg-card/40 hover:bg-primary/5 hover:border-primary/50"
+                        ? "border-primary bg-primary/8 shadow-sm"
+                        : "border-border/50 bg-card/30 hover:bg-primary/5 hover:border-primary/30"
                     } hover-elevate active-elevate-2`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="text-base sm:text-lg font-medium">{labels[rating as keyof typeof labels]}</div>
-                        <div className="text-xs sm:text-sm text-muted-foreground">{rating} of 5</div>
+                        <div className="text-sm sm:text-base font-normal">{labels[rating as keyof typeof labels]}</div>
+                        <div className="text-xs text-muted-foreground">{rating} of 5</div>
                       </div>
-                      <div className={`text-lg sm:text-xl font-bold ${isSelected ? "text-primary" : "text-muted-foreground"}`}>
+                      <div className={`text-base font-semibold ${isSelected ? "text-primary" : "text-muted-foreground/50"}`}>
                         {rating}
                       </div>
                     </div>
