@@ -4,6 +4,7 @@ import type { Survey } from "@shared/schema";
 interface SurveyWelcomeProps {
   survey: Survey;
   onStart: () => void;
+  onExit?: () => void;
   isLoading?: boolean;
   illustrationImage?: string;
   defaultIllustration?: string;
@@ -12,6 +13,7 @@ interface SurveyWelcomeProps {
 export default function SurveyWelcome({
   survey,
   onStart,
+  onExit,
   isLoading = false,
   illustrationImage,
   defaultIllustration,
@@ -40,6 +42,18 @@ export default function SurveyWelcome({
   return (
     <div className="survey-shell">
       <main className="survey-card" aria-labelledby="survey-title">
+        {/* Exit Button */}
+        {onExit && (
+          <button
+            onClick={onExit}
+            data-testid="button-exit-survey"
+            className="survey-exit-button"
+            type="button"
+            aria-label="Exit survey"
+          >
+            ✕
+          </button>
+        )}
         {/* Header Section */}
         <header className="survey-header">
           {/* Title */}

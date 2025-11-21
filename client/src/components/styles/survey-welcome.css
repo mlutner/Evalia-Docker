@@ -36,6 +36,38 @@
   padding-top: 0;
 }
 
+.survey-exit-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.survey-exit-button:hover {
+  background: #f3f4f6;
+  color: #071a32;
+  border-color: #d1d5db;
+}
+
+.survey-exit-button:active {
+  background: #e5e7eb;
+}
+
+.survey-card {
+  position: relative;
+}
+
 .survey-logo {
   width: 64px;
   height: 64px;
