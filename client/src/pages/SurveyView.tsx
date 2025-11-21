@@ -195,66 +195,63 @@ export default function SurveyView() {
   // Welcome Screen
   if (currentStep === -1) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 sm:p-8 bg-background">
-        <div className="w-full max-w-2xl text-center">
-          {/* Icon */}
-          <div className="flex justify-center mb-8">
-            <div className="w-16 h-16 bg-accent rounded-2xl flex items-center justify-center flex-shrink-0">
-              <Sparkles className="w-8 h-8 text-white" />
-            </div>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 16px', background: '#f9fafb' }}>
+        <div style={{ background: '#ffffff', maxWidth: '520px', width: '100%', padding: '40px 32px 36px', borderRadius: '16px', boxShadow: '0 18px 45px rgba(15, 23, 42, 0.12)', textAlign: 'center' }}>
+          {/* Logo mark */}
+          <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#22c55e', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+            <div style={{ width: '18px', height: '18px', borderRadius: '4px', border: '2px solid #ffffff', position: 'relative' }}></div>
           </div>
 
           {/* Title */}
-          <h1 className="text-5xl sm:text-6xl font-bold mb-6 leading-tight">
-            Discover Your<br />Leadership Style
+          <h1 style={{ fontSize: '30px', lineHeight: '1.15', letterSpacing: '-0.02em', marginBottom: '10px', color: '#071a32' }}>
+            {survey.title}
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base sm:text-lg text-muted-foreground mb-12">
-            This quick assessment reveals how you<br />lead, communicate, and inspire.
-          </p>
+          {survey.description && (
+            <p style={{ fontSize: '15px', lineHeight: '1.5', color: '#42526b', marginBottom: '28px' }}>
+              {survey.description}
+            </p>
+          )}
 
-          {/* Image Placeholder */}
-          <div className="mb-12">
-            <div className="w-full aspect-video bg-muted/30 rounded-2xl border-2 border-dashed border-border/40 flex items-center justify-center">
-              <p className="text-sm text-muted-foreground">Illustration area</p>
-            </div>
+          {/* Illustration */}
+          <div style={{ marginBottom: '28px' }}>
+            <img
+              src="https://via.placeholder.com/210x210?text=Illustration"
+              alt="Survey illustration"
+              style={{ width: '210px', maxWidth: '100%' }}
+            />
           </div>
 
           {/* What You'll Gain Section */}
-          <div className="mb-12 text-left max-w-xl mx-auto">
-            <h3 className="text-2xl font-bold mb-6">What you'll gain:</h3>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-4">
-                <span className="text-muted-foreground text-lg flex-shrink-0">•</span>
-                <span className="text-base text-foreground">A snapshot of how others experience your leadership</span>
-              </li>
-              <li className="flex items-start gap-4">
-                <span className="text-muted-foreground text-lg flex-shrink-0">•</span>
-                <span className="text-base text-foreground">Insight into communication & decision styles</span>
-              </li>
-              <li className="flex items-start gap-4">
-                <span className="text-muted-foreground text-lg flex-shrink-0">•</span>
-                <span className="text-base text-foreground">A personalized style profile you can use immediately</span>
-              </li>
-            </ul>
-          </div>
+          {survey.welcomeMessage && (
+            <div style={{ marginBottom: '28px' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '14px', color: '#071a32' }}>What you'll gain:</h2>
+              <ul style={{ listStyle: 'none', textAlign: 'left', maxWidth: '420px', margin: '0 auto 28px', paddingLeft: '0' }}>
+                {survey.welcomeMessage.split('\n').filter(line => line.trim()).map((point, idx) => (
+                  <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', fontSize: '15px', lineHeight: '1.5', color: '#42526b', marginBottom: '8px' }}>
+                    <span style={{ color: '#42526b', fontSize: '18px', marginRight: '8px', lineHeight: '1.2', flexShrink: 0 }}>•</span>
+                    <span>{point.trim()}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* CTA Button */}
-          <div className="mb-6">
-            <Button 
-              size="lg" 
-              onClick={handleStart}
-              data-testid="button-start-survey"
-              className="w-full sm:w-auto text-lg px-12 py-3 bg-accent hover:bg-accent/90 font-semibold rounded-xl"
-            >
-              Begin Self-Assessment
-            </Button>
-          </div>
+          <button
+            onClick={handleStart}
+            data-testid="button-start-survey"
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '13px 24px', borderRadius: '999px', border: 'none', outline: 'none', cursor: 'pointer', background: '#22c55e', color: '#ffffff', fontWeight: '600', fontSize: '15px', boxShadow: '0 10px 25px rgba(34, 197, 94, 0.35)', transition: 'transform 0.08s ease, box-shadow 0.08s ease, background 0.1s ease', width: '100%', maxWidth: '260px' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#16a34a'; e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 16px 35px rgba(34, 197, 94, 0.4)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = '#22c55e'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 10px 25px rgba(34, 197, 94, 0.35)'; }}
+          >
+            Start Survey
+          </button>
 
-          {/* Footer Text */}
-          <p className="text-sm text-muted-foreground">
-            Fast, confidential, and designed for personal growth.
+          {/* Helper text */}
+          <p style={{ marginTop: '10px', fontSize: '13px', color: '#42526b' }}>
+            Fast, confidential, and designed for your growth.
           </p>
         </div>
       </div>
