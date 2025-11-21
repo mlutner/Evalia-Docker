@@ -61,11 +61,6 @@ export const surveys = pgTable("surveys", {
   welcomeMessage: text("welcome_message"),
   thankYouMessage: text("thank_you_message"),
   illustrationUrl: text("illustration_url"),
-  status: varchar("status").notNull().default("Active"), // Active, Paused, Closed
-  expiresAt: timestamp("expires_at"),
-  maxResponses: integer("max_responses"),
-  isAnonymous: boolean("is_anonymous").default(false), // anonymous vs identified mode
-  webhookUrl: text("webhook_url"), // for integrations (Slack, Zapier, etc)
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -82,32 +77,10 @@ export const insertSurveySchema = createInsertSchema(surveys, {
 export type InsertSurvey = z.infer<typeof insertSurveySchema>;
 export type Survey = typeof surveys.$inferSelect;
 
-export const insertSurveyRespondentSchema = z.object({
-  email: z.string().email().optional(),
-  name: z.string().optional(),
-});
-
-export type InsertSurveyRespondent = z.infer<typeof insertSurveyRespondentSchema>;
-
-// Survey respondents table (for tracking who's been invited/submitted)
-export const surveyRespondents = pgTable("survey_respondents", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  surveyId: varchar("survey_id").notNull().references(() => surveys.id),
-  email: varchar("email"),
-  name: varchar("name"),
-  invitedAt: timestamp("invited_at").defaultNow(),
-  submittedAt: timestamp("submitted_at"),
-  respondentToken: varchar("respondent_token").unique(), // unique link for respondent
-});
-
-export type SurveyRespondent = typeof surveyRespondents.$inferSelect;
-
 // Survey responses table
 export const surveyResponses = pgTable("survey_responses", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   surveyId: varchar("survey_id").notNull().references(() => surveys.id),
-  respondentId: varchar("respondent_id").references(() => surveyRespondents.id),
-  respondentEmail: varchar("respondent_email"), // for identified responses
   answers: jsonb("answers").notNull().$type<Record<string, string | string[]>>(),
   startedAt: timestamp("started_at").notNull().defaultNow(),
   completedAt: timestamp("completed_at").notNull().defaultNow(),

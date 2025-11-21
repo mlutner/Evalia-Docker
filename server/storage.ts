@@ -1,4 +1,4 @@
-import { type User, type UpsertUser, type Survey, type InsertSurvey, users, surveys, surveyResponses, surveyRespondents, type SurveyResponse, type SurveyRespondent, type InsertSurveyRespondent } from "@shared/schema";
+import { type User, type UpsertUser, type Survey, type InsertSurvey, users, surveys, surveyResponses, type SurveyResponse } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
 import { eq, sql } from "drizzle-orm";
@@ -16,16 +16,8 @@ export interface IStorage {
   deleteSurvey(id: string): Promise<boolean>;
   checkSurveyOwnership(surveyId: string, userId: string): Promise<boolean>;
   
-  // Respondent operations (Phase 4)
-  createRespondent(surveyId: string, respondent: InsertSurveyRespondent): Promise<SurveyRespondent>;
-  getRespondent(token: string): Promise<SurveyRespondent | undefined>;
-  getRespondentsByEmail(surveyId: string, email: string): Promise<SurveyRespondent[]>;
-  getAllRespondents(surveyId: string): Promise<SurveyRespondent[]>;
-  markRespondentAsSubmitted(respondentId: string): Promise<boolean>;
-  deleteRespondent(id: string): Promise<boolean>;
-  
   // Response operations
-  createResponse(surveyId: string, answers: Record<string, string | string[]>, respondentId?: string, respondentEmail?: string): Promise<SurveyResponse>;
+  createResponse(surveyId: string, answers: Record<string, string | string[]>): Promise<SurveyResponse>;
   getResponses(surveyId: string): Promise<SurveyResponse[]>;
   getResponseCount(surveyId: string): Promise<number>;
   deleteResponse(id: string): Promise<boolean>;
@@ -37,13 +29,11 @@ export interface IStorage {
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
   private surveys: Map<string, Survey>;
-  private respondents: Map<string, SurveyRespondent>;
   private responses: Map<string, SurveyResponse>;
 
   constructor() {
     this.users = new Map();
     this.surveys = new Map();
-    this.respondents = new Map();
     this.responses = new Map();
   }
 
