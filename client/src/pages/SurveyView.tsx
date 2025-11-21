@@ -202,6 +202,7 @@ export default function SurveyView() {
         <SurveyWelcome
           survey={survey}
           onStart={handleStart}
+          onExit={handleExit}
           isLoading={false}
           defaultIllustration={leadershipIllustration}
         />

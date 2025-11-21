@@ -1,5 +1,6 @@
 import { Loader2, AlertCircle } from "lucide-react";
 import type { Survey } from "@shared/schema";
+import logoImage from "@assets/Untitled design (3)_1763762041497.png";
 
 interface SurveyWelcomeProps {
   survey: Survey;
@@ -56,11 +57,19 @@ export default function SurveyWelcome({
         )}
         {/* Header Section */}
         <header className="survey-header">
+          {/* Logo */}
+          <div className="survey-logo">
+            <img 
+              src={logoImage} 
+              alt="Survey logo" 
+              data-testid="icon-survey-logo"
+            />
+          </div>
           {/* Title */}
           <h1
             id="survey-title"
             data-testid="text-survey-title"
-            className="survey-title text-center pt-[22px] pb-[22px]">
+            className="survey-title text-center">
             {survey.title}
           </h1>
         </header>
