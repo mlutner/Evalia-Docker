@@ -49,16 +49,14 @@ export default function SurveyWelcome({
         </p>
 
         {/* Illustration */}
-        {illustrationImage && (
-          <div className="illustration-wrapper ml-[10px] mr-[10px] pl-[10px] pr-[10px]">
-            <img
-              src={illustrationImage}
-              alt="Survey illustration"
-              className="illustration"
-              data-testid="img-survey-illustration"
-            />
-          </div>
-        )}
+        <div className="illustration-wrapper ml-[10px] mr-[10px] pl-[10px] pr-[10px]">
+          <img
+            src="attached_assets/Untitled design (3).png"
+            alt="Survey illustration"
+            className="illustration"
+            data-testid="img-survey-illustration"
+          />
+        </div>
 
         {/* Benefits list */}
         <h2 className="section-heading text-[24px] font-extrabold" data-testid="text-what-youll-gain">
