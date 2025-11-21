@@ -4,13 +4,13 @@
   align-items: center;
   justify-content: center;
   padding: 32px 16px;
-  background: #f6f7f9;
+  background: linear-gradient(135deg, #f6f7f9 0%, #f0f3f7 100%);
 }
 
 .hero-subtitle {
-  margin-top: 8px;
+  margin-top: 6px;
   font-size: 15px;
-  line-height: 1.5;
+  line-height: 1.4;
   color: #4b5563;
   text-align: center;
   max-width: 360px;
@@ -21,20 +21,36 @@
 
 
 .hero-illustration {
-  margin: 20px auto;
+  margin: 16px auto 24px -20px;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: visible;
   padding: 0 8px;
+  position: relative;
+}
+
+.hero-illustration::before {
+  content: "";
+  position: absolute;
+  width: 320px;
+  height: 280px;
+  border-radius: 50%;
+  border: 3px solid rgba(43, 180, 160, 0.15);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  box-shadow: 0 20px 40px rgba(7, 26, 50, 0.08);
 }
 
 .hero-illustration img {
-  max-width: 200px;
+  max-width: 220px;
   width: 100%;
   height: auto;
   border-radius: 8px;
   display: block;
+  box-shadow: 0 12px 32px rgba(7, 26, 50, 0.12);
 }
 
 
