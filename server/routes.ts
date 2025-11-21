@@ -17,6 +17,9 @@ const SURVEY_ILLUSTRATIONS = [
   "/attached_assets/1_1763757398561.png",
   "/attached_assets/2_1763757398561.png",
   "/attached_assets/3_1763757398561.png",
+  "/attached_assets/image_1763763890940.png",
+  "/attached_assets/image_1763763953056.png",
+  "/attached_assets/Heading_1763764033818.png",
 ];
 
 // Helper to get a random illustration from the pool
