@@ -1,28 +1,28 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRoute, useLocation } from "wouter";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { ArrowLeft, ArrowRight, Save, FileUp, Layers, Sparkles, Loader2 } from "lucide-react";
 import Header from "@/components/Header";
-import FileUploadZone from "@/components/FileUploadZone";
-import ChatPanel from "@/components/ChatPanel";
+import WizardSteps from "@/components/builder/WizardSteps";
+import QuestionsStep from "@/components/builder/QuestionsStep";
+import PublishStep from "@/components/builder/PublishStep";
 import TemplateCard from "@/components/TemplateCard";
 import TemplatePreviewModal from "@/components/TemplatePreviewModal";
 import SurveyPreviewDialog from "@/components/SurveyPreviewDialog";
-import QuestionEditor from "@/components/QuestionEditor";
-import WizardSteps from "@/components/WizardSteps";
-import QuestionsStep from "@/components/builder/QuestionsStep";
-import PublishStep from "@/components/builder/PublishStep";
+import FileUploadZone from "@/components/FileUploadZone";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Sparkles, FileText, MessageSquare, Layers, Upload, Plus, Edit3, Loader2, ArrowRight, ArrowLeft, FileUp, Save } from "lucide-react";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { surveyTemplates } from "@shared/templates";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { Message } from "@/components/ChatPanel";
 import type { SurveyTemplate } from "@shared/templates";
 import type { Question, Survey } from "@shared/schema";
+import { useSurveyState } from "@/hooks/useSurveyState";
+import { useFileProcessing } from "@/hooks/useFileProcessing";
+import { useAIChat } from "@/hooks/useAIChat";
 
 const WIZARD_STEPS = [
   { number: 1, title: "Start", description: "Create your survey" },
@@ -50,31 +50,17 @@ export default function Builder() {
   const surveyId = params?.id;
   const isEditMode = !!surveyId;
 
-  // Wizard state
-  const [currentWizardStep, setCurrentWizardStep] = useState(1);
-  const [hasLoadedSurvey, setHasLoadedSurvey] = useState(false);
-  
-  // Survey data state
-  const [currentSurveyTitle, setCurrentSurveyTitle] = useState("");
-  const [currentSurveyDescription, setCurrentSurveyDescription] = useState("");
-  const [welcomeMessage, setWelcomeMessage] = useState("");
-  const [thankYouMessage, setThankYouMessage] = useState("");
-  const [currentQuestions, setCurrentQuestions] = useState<Question[]>([]);
-  
+  // Use custom hooks
+  const surveyState = useSurveyState({ surveyId, isEditMode });
+  const fileProcessing = useFileProcessing();
+  const aiChat = useAIChat();
+
   // UI state
   const [activeTab, setActiveTab] = useState<"templates" | "ai" | "upload">("templates");
   const [viewMode, setViewMode] = useState<"chat" | "edit">("chat");
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [parsedText, setParsedText] = useState("");
   const [prompt, setPrompt] = useState("");
-  const [pastedText, setPastedText] = useState("");
   const [previewTemplate, setPreviewTemplate] = useState<SurveyTemplate | null>(null);
   const [showPreview, setShowPreview] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [generatingField, setGeneratingField] = useState<string | null>(null);
-  const [lastAutoSave, setLastAutoSave] = useState<Date | null>(null);
-  const [isAutoSaving, setIsAutoSaving] = useState(false);
-  const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
 
   // Load existing survey if in edit mode
   const { data: existingSurvey, isLoading: isLoadingSurvey } = useQuery<Survey>({
@@ -87,256 +73,120 @@ export default function Builder() {
   });
 
   useEffect(() => {
-    if (existingSurvey && isEditMode && !hasLoadedSurvey) {
-      setCurrentSurveyTitle(existingSurvey.title);
-      setCurrentSurveyDescription(existingSurvey.description || "");
-      setWelcomeMessage(existingSurvey.welcomeMessage || "");
-      setThankYouMessage(existingSurvey.thankYouMessage || "");
-      setCurrentQuestions(existingSurvey.questions);
-      setCurrentWizardStep(2); // Skip to questions step when editing
-      setMessages([
+    if (existingSurvey && isEditMode && !surveyState.hasLoadedSurvey) {
+      surveyState.setCurrentSurveyTitle(existingSurvey.title);
+      surveyState.setCurrentSurveyDescription(existingSurvey.description || "");
+      surveyState.setWelcomeMessage(existingSurvey.welcomeMessage || "");
+      surveyState.setThankYouMessage(existingSurvey.thankYouMessage || "");
+      surveyState.setCurrentQuestions(existingSurvey.questions);
+      surveyState.setCurrentWizardStep(2);
+      aiChat.setMessages([
         {
           id: "1",
           role: "assistant",
           content: `You're editing "${existingSurvey.title}" with ${existingSurvey.questions.length} questions. Make any changes you'd like, then proceed to publish!`,
         },
       ]);
-      setHasLoadedSurvey(true); // Mark as loaded to prevent resetting wizard step
+      surveyState.setHasLoadedSurvey(true);
     }
-  }, [existingSurvey, isEditMode, hasLoadedSurvey]);
+  }, [existingSurvey, isEditMode, surveyState.hasLoadedSurvey]);
 
+  // Handlers for file processing
   const handleFileSelect = async (file: File) => {
-    console.log("File selected:", file.name);
-    setIsProcessing(true);
-    
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch("/api/parse-document", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMessage = errorData.error || "Failed to parse document";
-        const errorTip = errorData.tip;
-        
-        // Show error toast with helpful tip
-        toast({
-          title: errorMessage,
-          description: errorTip,
-          variant: "destructive",
-        });
-        
-        throw new Error(errorMessage);
-      }
-
-      const data = await response.json();
-      setParsedText(data.parsedText);
-      setCurrentSurveyTitle(data.title);
-      setCurrentQuestions(data.questions);
-      setMessages([
-        {
-          id: "1",
-          role: "assistant",
-          content: `I've analyzed your document and created ${data.questions.length} questions based on the content. You can edit the questions directly, preview the survey, or ask me to make changes!`,
-        },
-      ]);
-      
-      // Auto-advance to questions step
-      if (data.questions.length > 0) {
-        setTimeout(() => setCurrentWizardStep(2), 100);
-      }
-    } catch (error: any) {
-      console.error("Document parsing error:", error.message || error);
-      
-      // If toast wasn't shown (network error, etc), show generic error
-      if (!error.message || error.message === 'Failed to fetch') {
-        toast({
-          title: "Connection Error",
-          description: "Could not connect to the server. Please check your connection and try again.",
-          variant: "destructive",
-        });
-      }
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleSendMessage = async (message: string) => {
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: message,
-    };
-    const updatedMessages = [...messages, newMessage];
-    setMessages(updatedMessages);
-    setIsProcessing(true);
-    
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message,
-          survey: {
-            title: currentSurveyTitle,
-            description: currentSurveyDescription,
-            questions: currentQuestions,
-            welcomeMessage: welcomeMessage,
-            thankYouMessage: thankYouMessage,
+    fileProcessing.handleFileSelect(
+      file,
+      (result) => {
+        fileProcessing.setParsedText(result.parsedText);
+        surveyState.setCurrentSurveyTitle(result.title);
+        surveyState.setCurrentQuestions(result.questions);
+        aiChat.setMessages([
+          {
+            id: "1",
+            role: "assistant",
+            content: `I've analyzed your document and created ${result.questions.length} questions based on the content. You can edit the questions directly, preview the survey, or ask me to make changes!`,
           },
-          history: updatedMessages.map(m => ({ role: m.role, content: m.content })),
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        toast({
-          title: "AI chat error",
-          description: errorData.error || "Failed to process your message. Please try again.",
-          variant: "destructive",
-        });
-        throw new Error(errorData.error || "Failed to process message");
+        ]);
+      },
+      () => {
+        surveyState.setCurrentWizardStep(2);
       }
-
-      const data = await response.json();
-      
-      // Update questions if AI modified them
-      if (data.questions) {
-        setCurrentQuestions(data.questions);
-        
-        // Auto-advance to questions step if on step 1 and questions were created
-        if (currentWizardStep === 1 && data.questions.length > 0) {
-          setTimeout(() => setCurrentWizardStep(2), 300);
-        }
-      }
-      
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: data.message,
-      };
-      setMessages((prev) => [...prev, aiResponse]);
-    } catch (error: any) {
-      console.error("Chat error:", error);
-      const errorResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: `Sorry, I encountered an error: ${error.message}. Please try again.`,
-      };
-      setMessages((prev) => [...prev, errorResponse]);
-    } finally {
-      setIsProcessing(false);
-    }
+    );
   };
 
   const handleGenerateFromPrompt = async () => {
     if (!prompt.trim()) return;
-    console.log("Generating survey from prompt:", prompt);
-    setIsProcessing(true);
-    
-    try {
-      const response = await fetch("/api/generate-survey", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ prompt }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to generate survey");
+    fileProcessing.handleGenerateFromPrompt(
+      prompt,
+      (result, questionCount) => {
+        surveyState.setCurrentSurveyTitle(result.title);
+        surveyState.setCurrentQuestions(result.questions);
+        aiChat.setMessages([
+          {
+            id: "1",
+            role: "assistant",
+            content: `I've created a ${questionCount}-question survey based on your description. You can edit the questions directly, preview the survey, or ask me to make changes!`,
+          },
+        ]);
+        setPrompt("");
+      },
+      () => {
+        surveyState.setCurrentWizardStep(2);
       }
-
-      const data = await response.json();
-      setCurrentSurveyTitle(data.title);
-      setCurrentQuestions(data.questions);
-      setMessages([
-        {
-          id: "1",
-          role: "assistant",
-          content: `I've created a ${data.questions.length}-question survey based on your description. You can edit the questions directly, preview the survey, or ask me to make changes!`,
-        },
-      ]);
-      setPrompt(""); // Clear prompt after generation
-      
-      // Auto-advance to questions step smoothly
-      if (data.questions.length > 0) {
-        setTimeout(() => setCurrentWizardStep(2), 400);
-      }
-    } catch (error: any) {
-      console.error("Survey generation error:", error);
-      toast({
-        title: "AI generation failed",
-        description: error.message || "Failed to generate survey. Please try again with a different description.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessing(false);
-    }
+    );
   };
 
   const handlePasteText = async () => {
-    if (!pastedText.trim()) return;
-    console.log("Processing pasted text");
-    setIsProcessing(true);
-    
-    try {
-      const response = await fetch("/api/generate-survey", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ prompt: pastedText }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to process text");
+    if (!fileProcessing.parsedText.trim()) return;
+    fileProcessing.handlePasteText(
+      fileProcessing.parsedText,
+      (result, questionCount) => {
+        surveyState.setCurrentSurveyTitle(result.title);
+        surveyState.setCurrentQuestions(result.questions);
+        aiChat.setMessages([
+          {
+            id: "1",
+            role: "assistant",
+            content: `I've created a ${questionCount}-question survey based on your text. You can edit the questions directly, preview the survey, or ask me to make changes!`,
+          },
+        ]);
+        fileProcessing.setParsedText("");
+      },
+      () => {
+        surveyState.setCurrentWizardStep(2);
       }
+    );
+  };
 
-      const data = await response.json();
-      setCurrentSurveyTitle(data.title);
-      setCurrentQuestions(data.questions);
-      setMessages([
-        {
-          id: "1",
-          role: "assistant",
-          content: `I've created a ${data.questions.length}-question survey based on your text. You can edit the questions directly, preview the survey, or ask me to make changes!`,
-        },
-      ]);
-      setPastedText(""); // Clear text after generation
-      
-      // Auto-advance to questions step smoothly
-      if (data.questions.length > 0) {
-        setTimeout(() => setCurrentWizardStep(2), 400);
+  // Handle chat messages with question updates
+  const handleSendMessage = async (message: string) => {
+    const result = await aiChat.handleSendMessage(
+      message,
+      {
+        title: surveyState.currentSurveyTitle,
+        description: surveyState.currentSurveyDescription,
+        questions: surveyState.currentQuestions,
+        welcomeMessage: surveyState.welcomeMessage,
+        thankYouMessage: surveyState.thankYouMessage,
+      },
+      aiChat.messages
+    );
+
+    if (result && result.questions) {
+      surveyState.setCurrentQuestions(result.questions);
+      if (surveyState.currentWizardStep === 1 && result.questions.length > 0) {
+        setTimeout(() => surveyState.setCurrentWizardStep(2), 300);
       }
-    } catch (error: any) {
-      console.error("Text processing error:", error);
-      toast({
-        title: "Processing failed",
-        description: error.message || "Failed to process text. Please try again with more content.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessing(false);
     }
   };
 
   const handleUseTemplate = (template: SurveyTemplate) => {
     console.log("Using template:", template.title);
     setPreviewTemplate(null);
-    setCurrentSurveyTitle(template.title);
-    setCurrentQuestions(template.questions);
+    surveyState.setCurrentSurveyTitle(template.title);
+    surveyState.setCurrentQuestions(template.questions);
     setActiveTab("templates");
     setViewMode("chat");
-    setMessages([
+    aiChat.setMessages([
       {
         id: "1",
         role: "assistant",
@@ -349,269 +199,25 @@ export default function Builder() {
     setShowPreview(true);
   };
 
-  const handleUpdateQuestion = (index: number, updated: Question) => {
-    const newQuestions = [...currentQuestions];
-    newQuestions[index] = updated;
-    setCurrentQuestions(newQuestions);
-  };
-
-  const handleDeleteQuestion = (index: number) => {
-    setCurrentQuestions(currentQuestions.filter((_, i) => i !== index));
-  };
-
-  const handleAddQuestion = () => {
-    const newQuestion: Question = {
-      id: `q${Date.now()}`,
-      type: "text",
-      question: "",
-      required: false,
-    };
-    setCurrentQuestions([...currentQuestions, newQuestion]);
-  };
-
-  const createSurveyMutation = useMutation({
-    mutationFn: async (data: { title: string; description?: string; welcomeMessage?: string; thankYouMessage?: string; questions: Question[] }) => {
-      return apiRequest("POST", "/api/surveys", data);
-    },
-    onSuccess: (response) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/surveys"] });
-      toast({
-        title: "Survey published!",
-        description: "Your survey has been saved and is ready to share.",
-      });
-      
-      // Update URL to edit mode without redirecting
-      response.json().then((data: any) => {
-        if (data.id) {
-          window.history.replaceState({}, '', `/builder/${data.id}`);
-        }
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to create survey",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const updateSurveyMutation = useMutation({
-    mutationFn: async (data: { title: string; description?: string; welcomeMessage?: string; thankYouMessage?: string; questions: Question[] }) => {
-      return apiRequest("PUT", `/api/surveys/${surveyId}`, data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/surveys"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/surveys", surveyId] });
-      toast({
-        title: "Survey updated!",
-        description: "Your changes have been saved successfully.",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to update survey",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Auto-save mutation (silent, doesn't redirect)
-  const autoSaveMutation = useMutation({
-    mutationFn: async (data: { title: string; description?: string; welcomeMessage?: string; thankYouMessage?: string; questions: Question[] }) => {
-      if (isEditMode) {
-        return apiRequest("PUT", `/api/surveys/${surveyId}`, data);
-      } else {
-        return apiRequest("POST", "/api/surveys", data);
-      }
-    },
-    onSuccess: (response, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/surveys"] });
-      if (isEditMode) {
-        queryClient.invalidateQueries({ queryKey: ["/api/surveys", surveyId] });
-      }
-      setLastAutoSave(new Date());
-      setIsAutoSaving(false);
-      
-      // If this was a new survey, update the URL to edit mode
-      if (!isEditMode && response) {
-        response.json().then((data: any) => {
-          if (data.id) {
-            window.history.replaceState({}, '', `/builder/${data.id}`);
-          }
-        });
-      }
-    },
-    onError: (error: any) => {
-      console.error("Auto-save failed:", error);
-      setIsAutoSaving(false);
-    },
-  });
-
-  // Auto-save effect - triggers 3 seconds after changes
-  useEffect(() => {
-    // Don't auto-save if no questions yet or if we're on step 1
-    if (currentQuestions.length === 0 || currentWizardStep === 1) {
-      return;
-    }
-
-    // Clear existing timer
-    if (autoSaveTimer.current) {
-      clearTimeout(autoSaveTimer.current);
-    }
-
-    // Set new timer for 3 seconds
-    autoSaveTimer.current = setTimeout(() => {
-      const surveyData = {
-        title: currentSurveyTitle || "Untitled Survey",
-        description: currentSurveyDescription || undefined,
-        welcomeMessage: welcomeMessage || undefined,
-        thankYouMessage: thankYouMessage || undefined,
-        questions: currentQuestions,
-      };
-
-      setIsAutoSaving(true);
-      autoSaveMutation.mutate(surveyData);
-    }, 3000);
-
-    // Cleanup timer on unmount
-    return () => {
-      if (autoSaveTimer.current) {
-        clearTimeout(autoSaveTimer.current);
-      }
-    };
-  }, [currentQuestions, currentSurveyTitle, currentSurveyDescription, welcomeMessage, thankYouMessage, currentWizardStep]);
-
   const handleGenerateText = async (fieldType: "description" | "welcomeMessage" | "thankYouMessage") => {
-    if (!currentSurveyTitle.trim()) {
-      toast({
-        title: "Title required",
-        description: "Please add a survey title first",
-        variant: "destructive",
-      });
-      return;
-    }
+    const generatedText = await aiChat.handleGenerateText(
+      fieldType,
+      surveyState.currentSurveyTitle,
+      surveyState.currentQuestions
+    );
 
-    if (currentQuestions.length === 0) {
-      toast({
-        title: "Questions required",
-        description: "Please add questions to your survey first",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setGeneratingField(fieldType);
-
-    try {
-      const response = await apiRequest("POST", "/api/generate-text", {
-        fieldType,
-        surveyTitle: currentSurveyTitle,
-        questions: currentQuestions,
-      });
-
-      const data = await response.json();
-      const generatedText = data.text.trim();
-
+    if (generatedText) {
       switch (fieldType) {
         case "description":
-          setCurrentSurveyDescription(generatedText);
+          surveyState.setCurrentSurveyDescription(generatedText);
           break;
         case "welcomeMessage":
-          setWelcomeMessage(generatedText);
+          surveyState.setWelcomeMessage(generatedText);
           break;
         case "thankYouMessage":
-          setThankYouMessage(generatedText);
+          surveyState.setThankYouMessage(generatedText);
           break;
       }
-
-      toast({
-        title: "Generated!",
-        description: "AI has created a suggestion for you",
-      });
-    } catch (error: any) {
-      console.error("Text generation error:", error);
-      toast({
-        title: "Generation failed",
-        description: error.message || "Failed to generate text",
-        variant: "destructive",
-      });
-    } finally {
-      setGeneratingField(null);
-    }
-  };
-
-
-  const handleNextStep = () => {
-    if (currentWizardStep === 1) {
-      if (!currentSurveyTitle.trim()) {
-        toast({
-          title: "Title required",
-          description: "Please enter a title for your survey to continue",
-          variant: "destructive",
-        });
-        return;
-      }
-      if (currentQuestions.length === 0) {
-        toast({
-          title: "Questions needed",
-          description: "Please select a template, use AI, or upload a document to create questions",
-          variant: "destructive",
-        });
-        return;
-      }
-      setCurrentWizardStep(2);
-    } else if (currentWizardStep === 2) {
-      if (currentQuestions.length === 0) {
-        toast({
-          title: "Add questions",
-          description: "Please add at least one question before continuing",
-          variant: "destructive",
-        });
-        return;
-      }
-      setCurrentWizardStep(3);
-    }
-  };
-
-  const handlePrevStep = () => {
-    if (currentWizardStep > 1) {
-      setCurrentWizardStep(currentWizardStep - 1);
-    }
-  };
-
-  const handleSaveSurvey = () => {
-    if (!currentSurveyTitle.trim()) {
-      toast({
-        title: "Title required",
-        description: "Please enter a title for your survey",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (currentQuestions.length === 0) {
-      toast({
-        title: "Questions required",
-        description: "Please add at least one question to your survey",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const surveyData = {
-      title: currentSurveyTitle,
-      description: currentSurveyDescription || undefined,
-      welcomeMessage: welcomeMessage || undefined,
-      thankYouMessage: thankYouMessage || undefined,
-      questions: currentQuestions,
-    };
-
-    if (isEditMode) {
-      updateSurveyMutation.mutate(surveyData);
-    } else {
-      createSurveyMutation.mutate(surveyData);
     }
   };
 
@@ -649,25 +255,25 @@ export default function Builder() {
             <h1 className="text-4xl font-semibold">
               {isEditMode ? "Edit Survey" : "Create Survey"}
             </h1>
-            {lastAutoSave && (
+            {surveyState.lastAutoSave && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Save className="w-3 h-3" />
-                {isAutoSaving ? "Saving..." : `Saved ${formatTimeAgo(lastAutoSave)}`}
+                {surveyState.isAutoSaving ? "Saving..." : `Saved ${formatTimeAgo(surveyState.lastAutoSave)}`}
               </div>
             )}
           </div>
           <p className="text-muted-foreground mb-6">
-            {WIZARD_STEPS[currentWizardStep - 1].description}
+            {WIZARD_STEPS[surveyState.currentWizardStep - 1].description}
           </p>
           
           <WizardSteps
             steps={WIZARD_STEPS}
-            currentStep={currentWizardStep}
+            currentStep={surveyState.currentWizardStep}
           />
         </div>
 
         {/* Step 1: Start - Choose creation method */}
-        {currentWizardStep === 1 && (
+        {surveyState.currentWizardStep === 1 && (
           <div className="space-y-8">
             <div className="max-w-5xl mx-auto">
               {/* Tab Header */}
@@ -767,23 +373,22 @@ export default function Builder() {
                         onPreview={() => setPreviewTemplate(template)}
                         onUse={() => {
                           handleUseTemplate(template);
-                          if (currentQuestions.length === 0) {
-                            // Will be set by handleUseTemplate
-                            setTimeout(() => setCurrentWizardStep(2), 100);
+                          if (surveyState.currentQuestions.length === 0) {
+                            setTimeout(() => surveyState.setCurrentWizardStep(2), 100);
                           }
                         }}
                       />
                     ))}
                   </div>
 
-                  {currentQuestions.length > 0 && (
+                  {surveyState.currentQuestions.length > 0 && (
                     <div className="mt-8 bg-card border rounded-lg p-6">
                       <label className="text-sm font-medium mb-2 block">
                         Survey Title <span className="text-destructive">*</span>
                       </label>
                       <Input
-                        value={currentSurveyTitle}
-                        onChange={(e) => setCurrentSurveyTitle(e.target.value)}
+                        value={surveyState.currentSurveyTitle}
+                        onChange={(e) => surveyState.setCurrentSurveyTitle(e.target.value)}
                         placeholder="Enter a title for your survey..."
                         className="text-base"
                         data-testid="input-survey-title-templates"
@@ -804,7 +409,7 @@ export default function Builder() {
                       </p>
                     </div>
                     
-                    {isProcessing ? (
+                    {fileProcessing.isProcessing ? (
                       <div className="bg-primary/5 border border-primary/20 rounded-lg p-8 text-center space-y-4">
                         <div className="flex justify-center">
                           <Loader2 className="w-12 h-12 text-primary animate-spin" />
@@ -833,7 +438,7 @@ export default function Builder() {
                         <Button
                           size="lg"
                           onClick={handleGenerateFromPrompt}
-                          disabled={!prompt.trim() || isProcessing}
+                          disabled={!prompt.trim() || fileProcessing.isProcessing}
                           className="w-full"
                           data-testid="button-generate"
                         >
@@ -843,14 +448,14 @@ export default function Builder() {
                       </>
                     )}
 
-                    {currentQuestions.length > 0 && (
+                    {surveyState.currentQuestions.length > 0 && (
                       <div className="mt-8 bg-card border rounded-lg p-6">
                         <label className="text-sm font-medium mb-2 block">
                           Survey Title <span className="text-destructive">*</span>
                         </label>
                         <Input
-                          value={currentSurveyTitle}
-                          onChange={(e) => setCurrentSurveyTitle(e.target.value)}
+                          value={surveyState.currentSurveyTitle}
+                          onChange={(e) => surveyState.setCurrentSurveyTitle(e.target.value)}
                           placeholder="Enter a title for your survey..."
                           className="text-base"
                           data-testid="input-survey-title-ai"
@@ -879,7 +484,7 @@ export default function Builder() {
                         </label>
                         <FileUploadZone
                           onFileSelect={handleFileSelect}
-                          isProcessing={isProcessing}
+                          isProcessing={fileProcessing.isProcessing}
                         />
                       </div>
                     </div>
@@ -908,18 +513,18 @@ export default function Builder() {
                         </label>
                         <Textarea
                           id="paste-text"
-                          value={pastedText}
-                          onChange={(e) => setPastedText(e.target.value)}
+                          value={fileProcessing.parsedText}
+                          onChange={(e) => fileProcessing.setParsedText(e.target.value)}
                           placeholder="Paste text content, training materials, course notes, or any document content..."
                           className="min-h-32 resize-none"
-                          disabled={isProcessing}
+                          disabled={fileProcessing.isProcessing}
                           data-testid="textarea-paste-text"
                         />
                       </div>
                       <Button
                         size="lg"
                         onClick={handlePasteText}
-                        disabled={!pastedText.trim() || isProcessing}
+                        disabled={!fileProcessing.parsedText.trim() || fileProcessing.isProcessing}
                         className="w-full"
                         data-testid="button-process-text"
                       >
@@ -928,14 +533,14 @@ export default function Builder() {
                       </Button>
                     </div>
 
-                    {currentQuestions.length > 0 && (
+                    {surveyState.currentQuestions.length > 0 && (
                       <div className="mt-8 bg-card border rounded-lg p-6">
                         <label className="text-sm font-medium mb-2 block">
                           Survey Title <span className="text-destructive">*</span>
                         </label>
                         <Input
-                          value={currentSurveyTitle}
-                          onChange={(e) => setCurrentSurveyTitle(e.target.value)}
+                          value={surveyState.currentSurveyTitle}
+                          onChange={(e) => surveyState.setCurrentSurveyTitle(e.target.value)}
                           placeholder="Enter a title for your survey..."
                           className="text-base"
                           data-testid="input-survey-title-upload"
@@ -953,32 +558,32 @@ export default function Builder() {
         )}
 
         {/* Step 2: Questions - Build and refine */}
-        {currentWizardStep === 2 && (
+        {surveyState.currentWizardStep === 2 && (
           <QuestionsStep
-            questions={currentQuestions}
-            messages={messages}
-            isProcessing={isProcessing}
+            questions={surveyState.currentQuestions}
+            messages={aiChat.messages}
+            isProcessing={aiChat.isProcessing}
             onSendMessage={handleSendMessage}
-            onUpdateQuestion={handleUpdateQuestion}
-            onDeleteQuestion={handleDeleteQuestion}
-            onAddQuestion={handleAddQuestion}
-            onReorderQuestions={setCurrentQuestions}
+            onUpdateQuestion={surveyState.handleUpdateQuestion}
+            onDeleteQuestion={surveyState.handleDeleteQuestion}
+            onAddQuestion={surveyState.handleAddQuestion}
+            onReorderQuestions={surveyState.setCurrentQuestions}
             onPreview={handlePreviewSurvey}
           />
         )}
 
         {/* Step 3: Publish - Add metadata */}
-        {currentWizardStep === 3 && (
+        {surveyState.currentWizardStep === 3 && (
           <PublishStep
-            title={currentSurveyTitle}
-            description={currentSurveyDescription}
-            welcomeMessage={welcomeMessage}
-            thankYouMessage={thankYouMessage}
-            generatingField={generatingField}
-            onTitleChange={setCurrentSurveyTitle}
-            onDescriptionChange={setCurrentSurveyDescription}
-            onWelcomeChange={setWelcomeMessage}
-            onThankYouChange={setThankYouMessage}
+            title={surveyState.currentSurveyTitle}
+            description={surveyState.currentSurveyDescription}
+            welcomeMessage={surveyState.welcomeMessage}
+            thankYouMessage={surveyState.thankYouMessage}
+            generatingField={aiChat.generatingField}
+            onTitleChange={surveyState.setCurrentSurveyTitle}
+            onDescriptionChange={surveyState.setCurrentSurveyDescription}
+            onWelcomeChange={surveyState.setWelcomeMessage}
+            onThankYouChange={surveyState.setThankYouMessage}
             onGenerateText={handleGenerateText}
           />
         )}
@@ -986,11 +591,11 @@ export default function Builder() {
         {/* Wizard Navigation */}
         <div className="mt-8 flex justify-between items-center">
           <div>
-            {currentWizardStep > 1 && (
+            {surveyState.currentWizardStep > 1 && (
               <Button
                 variant="outline"
                 size="lg"
-                onClick={handlePrevStep}
+                onClick={surveyState.handlePrevStep}
                 data-testid="button-prev-step"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
@@ -1000,7 +605,7 @@ export default function Builder() {
           </div>
 
           <div className="flex gap-3">
-            {currentQuestions.length > 0 && currentWizardStep > 1 && (
+            {surveyState.currentQuestions.length > 0 && surveyState.currentWizardStep > 1 && (
               <Button 
                 variant="outline" 
                 size="lg" 
@@ -1011,11 +616,11 @@ export default function Builder() {
               </Button>
             )}
 
-            {currentWizardStep < 3 ? (
+            {surveyState.currentWizardStep < 3 ? (
               <Button 
                 size="lg" 
-                onClick={handleNextStep}
-                disabled={currentWizardStep === 1 && (!currentSurveyTitle.trim() || currentQuestions.length === 0)}
+                onClick={surveyState.handleNextStep}
+                disabled={surveyState.currentWizardStep === 1 && (!surveyState.currentSurveyTitle.trim() || surveyState.currentQuestions.length === 0)}
                 data-testid="button-next-step"
               >
                 Next
@@ -1024,11 +629,11 @@ export default function Builder() {
             ) : (
               <Button 
                 size="lg" 
-                onClick={handleSaveSurvey}
-                disabled={createSurveyMutation.isPending || updateSurveyMutation.isPending || !currentSurveyTitle.trim()}
+                onClick={surveyState.handleSaveSurvey}
+                disabled={surveyState.createSurveyMutation.isPending || surveyState.updateSurveyMutation.isPending || !surveyState.currentSurveyTitle.trim()}
                 data-testid="button-save-survey"
               >
-                {createSurveyMutation.isPending || updateSurveyMutation.isPending
+                {surveyState.createSurveyMutation.isPending || surveyState.updateSurveyMutation.isPending
                   ? "Saving..."
                   : "Save & Publish"}
               </Button>
@@ -1059,8 +664,8 @@ export default function Builder() {
       />
 
       <SurveyPreviewDialog
-        questions={currentQuestions}
-        title={currentSurveyTitle}
+        questions={surveyState.currentQuestions}
+        title={surveyState.currentSurveyTitle}
         open={showPreview}
         onOpenChange={setShowPreview}
       />
