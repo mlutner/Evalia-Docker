@@ -1,11 +1,14 @@
 import { useAuth } from "@/hooks/useAuth";
+import { useLocation } from "wouter";
 import Header from "@/components/Header";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { User, Palette, Bell, Shield } from "lucide-react";
+import { User, Palette, Bell, Shield, HelpCircle } from "lucide-react";
 
 export default function Account() {
   const { user } = useAuth();
+  const [, setLocation] = useLocation();
   const typedUser = user as any;
 
   return (
@@ -117,6 +120,29 @@ export default function Account() {
                   Two-factor authentication and privacy controls
                 </p>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Help & Documentation */}
+          <Card className="hover-elevate">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                  <HelpCircle className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>Help & Documentation</CardTitle>
+                  <CardDescription>Learn how to use Evalia</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Access comprehensive guides on surveys, respondent management, analytics, and more.
+              </p>
+              <Button onClick={() => setLocation("/help")} data-testid="button-help-docs">
+                Browse Documentation
+              </Button>
             </CardContent>
           </Card>
         </div>
