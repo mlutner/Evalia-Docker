@@ -58,7 +58,7 @@ export default function SurveyWelcome({
         {/* Header Section */}
         <header className="survey-header">
           {/* Logo */}
-          <div className="survey-logo bg-[#ffffff]">
+          <div className="survey-logo bg-[#ffffff] pt-[0px] pb-[0px] pl-[0px] pr-[0px]">
             <img 
               src={logoImage} 
               alt="Survey logo" 
