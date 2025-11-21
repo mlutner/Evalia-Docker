@@ -285,26 +285,32 @@ export async function generateSurveyText(
     case "description":
       systemPrompt = `You are an expert survey copywriter specializing in professional training and feedback systems.
 
-YOUR TASK: Write a brief, engaging survey description for the welcome screen (appears as subtitle below title).
+YOUR TASK: Generate exactly 3 bullet points explaining the PURPOSE and VALUE of this survey. These appear as "The purpose of the survey:" on the welcome screen.
 
-TONE: Conversational, approachable, and action-focused. Make respondents feel their feedback is valued and impactful.
+TONE: Clear, direct, and action-focused. Explain WHY respondents should take the survey and what it achieves.
 
-REQUIREMENTS:
-- Length: 45-75 words (fits as a subtitle on welcome screen)
-- Lead with the immediate benefit or outcome
-- Keep it personal and warm—address the respondent directly
-- Emphasize that their insights matter and will create real change
-- Use "you" language to make it relatable
-- Avoid corporate jargon; be authentic and sincere
-- End with an implicit or explicit invitation to participate
+REQUIREMENTS FOR EACH POINT:
+- Length: 10-20 words per point (concise and scannable)
+- Focus on PURPOSE: Why this survey exists, what it helps achieve, or what problems it solves
+- Be specific to the survey questions—derive from the survey topics
+- Use benefit-focused language: "understand," "identify," "improve," "develop," "evaluate," etc.
+- Start with a concrete outcome or value proposition
+- Avoid generic statements—be specific to THIS survey
 
-BEST PRACTICES:
-- Action verbs: "help," "ensure," "shape," "improve"
-- Specific outcomes: reference what their feedback enables
-- NO hype, NO urgency language, NO sales tactics
+EXAMPLES (format only, NOT content):
+✓ "Identify areas where training aligns with your role requirements"
+✓ "Evaluate program effectiveness for your professional growth"
+✓ "Provide feedback that directly shapes program improvements"
+✗ "Learn more about yourself"
+✗ "Share your opinions"
 
-OUTPUT FORMAT: Plain text only, no formatting.`;
-      userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nWrite a 45-75 word description for the welcome screen. Make it personal, benefit-focused, and warm. This appears as the subtitle under the title.`;
+CRITICAL FORMAT:
+- Output EXACTLY 3 bullet points (no more, no less)
+- Separate each point with a newline character (\n)
+- NO bullet symbols, NO numbers, NO dashes—just the text
+- NO header text or introduction
+- Plain text only`;
+      userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nGenerate exactly 3 bullet points explaining the PURPOSE and VALUE of this survey. 10-20 words each. Each on its own line. NO bullets, NO numbers, NO dashes. Just the text, one purpose per line.`;
       break;
     
     case "welcomeMessage":

@@ -19,13 +19,9 @@ export default function SurveyWelcome({
 }: SurveyWelcomeProps) {
   // Use survey illustration if available, otherwise use passed prop or default
   const illustration = survey.illustrationUrl || illustrationImage || defaultIllustration;
-  const benefitPoints = survey.welcomeMessage
-    ? survey.welcomeMessage.split("\n").filter((line) => line.trim())
-    : [
-        "A snapshot of how others experience your leadership",
-        "Insight into communication & decision styles",
-        "A personalized style profile you can use immediately",
-      ];
+  const purposePoints = survey.description
+    ? survey.description.split("\n").filter((line) => line.trim())
+    : [];
 
   if (isLoading) {
     return (
@@ -79,11 +75,11 @@ export default function SurveyWelcome({
             </div>
           )}
 
-          {/* Benefits list */}
-          <h2 className="hero-section-title text-[20px]" data-testid="text-what-youll-gain">The purpose of the survey:</h2>
+          {/* Purpose list */}
+          <h2 className="hero-section-title text-[20px]" data-testid="text-survey-purpose">The purpose of the survey:</h2>
           <ul className="hero-benefits">
-            {benefitPoints.map((point, idx) => (
-              <li key={idx} data-testid={`text-benefit-${idx}`}>
+            {purposePoints.map((point, idx) => (
+              <li key={idx} data-testid={`text-purpose-${idx}`}>
                 {point.trim()}
               </li>
             ))}

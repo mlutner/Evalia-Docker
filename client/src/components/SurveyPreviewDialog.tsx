@@ -77,8 +77,8 @@ export default function SurveyPreviewDialog({
 
   if (questions.length === 0) return null;
 
-  const benefitPoints = welcomeMessage
-    ? welcomeMessage.split("\n").filter((line) => line.trim())
+  const purposePoints = description
+    ? description.split("\n").filter((line) => line.trim())
     : [];
 
   return (
@@ -122,14 +122,14 @@ export default function SurveyPreviewDialog({
                       </div>
                     )}
 
-                    {benefitPoints.length > 0 && (
+                    {purposePoints.length > 0 && (
                       <>
-                        <h2 className="hero-section-title text-[20px]" data-testid="text-what-youll-gain">
-                          What you'll gain:
+                        <h2 className="hero-section-title text-[20px]" data-testid="text-survey-purpose">
+                          The purpose of the survey:
                         </h2>
                         <ul className="hero-benefits">
-                          {benefitPoints.map((point, idx) => (
-                            <li key={idx} data-testid={`text-benefit-${idx}`}>
+                          {purposePoints.map((point, idx) => (
+                            <li key={idx} data-testid={`text-purpose-${idx}`}>
                               {point.trim()}
                             </li>
                           ))}
