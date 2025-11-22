@@ -1,7 +1,7 @@
-import { type User, type UpsertUser, type Survey, type InsertSurvey, users, surveys, surveyResponses, surveyRespondents, type SurveyResponse, type SurveyRespondent, type InsertSurveyRespondent } from "@shared/schema";
+import { type User, type UpsertUser, type Survey, type InsertSurvey, users, surveys, surveyResponses, surveyRespondents, type SurveyResponse, type SurveyRespondent, type InsertSurveyRespondent, aiUsageLog, type AIUsageRecord } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, gte } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (Replit Auth compatible)
@@ -34,6 +34,10 @@ export interface IStorage {
   deleteResponsesBulk(ids: string[]): Promise<number>;
   searchResponses(surveyId: string, searchTerm: string): Promise<SurveyResponse[]>;
   detectDuplicates(surveyId: string): Promise<SurveyResponse[][]>;
+  
+  // AI usage tracking
+  logAIUsage(usage: Omit<AIUsageRecord, 'id' | 'createdAt'>): Promise<AIUsageRecord>;
+  getAIUsageStats(): Promise<{ total: AIUsageRecord[]; last24h: AIUsageRecord[] }>;
 }
 
 export class MemStorage implements IStorage {
@@ -268,6 +272,19 @@ export class MemStorage implements IStorage {
   async deleteRespondent(id: string): Promise<boolean> {
     return this.respondents.delete(id);
   }
+
+  async logAIUsage(usage: Omit<AIUsageRecord, 'id' | 'createdAt'>): Promise<AIUsageRecord> {
+    // Stub for memory storage - doesn't persist
+    return {
+      id: randomUUID(),
+      ...usage,
+      createdAt: new Date(),
+    };
+  }
+
+  async getAIUsageStats(): Promise<{ total: AIUsageRecord[]; last24h: AIUsageRecord[] }> {
+    return { total: [], last24h: [] };
+  }
 }
 
 export class DbStorage implements IStorage {
@@ -494,6 +511,21 @@ export class DbStorage implements IStorage {
   async deleteRespondent(id: string): Promise<boolean> {
     const result = await db.delete(surveyRespondents).where(eq(surveyRespondents.id, id)).returning();
     return result.length > 0;
+  }
+
+  async logAIUsage(usage: Omit<AIUsageRecord, 'id' | 'createdAt'>): Promise<AIUsageRecord> {
+    const result = await db.insert(aiUsageLog).values(usage).returning();
+    return result[0];
+  }
+
+  async getAIUsageStats(): Promise<{ total: AIUsageRecord[]; last24h: AIUsageRecord[] }> {
+    const now = new Date();
+    const last24hDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+    const total = await db.select().from(aiUsageLog);
+    const last24h = await db.select().from(aiUsageLog).where(gte(aiUsageLog.createdAt, last24hDate));
+
+    return { total, last24h };
   }
 }
 

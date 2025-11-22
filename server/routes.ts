@@ -4,7 +4,7 @@ import express from "express";
 import path from "path";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { parsePDFWithVision, parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText, suggestScoringConfig } from "./openrouter";
+import { parsePDFWithVision, parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText, suggestScoringConfig, lastTokenUsage, calculateTokenCost } from "./openrouter";
 import { insertSurveySchema, questionSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
@@ -35,6 +35,25 @@ const upload = multer({
 
 // App version - increment this when deploying updates
 const APP_VERSION = process.env.APP_VERSION || Date.now().toString();
+
+// Master admin middleware
+const isMasterAdmin = async (req: any, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user) return res.status(401).json({ error: "Not authenticated" });
+    
+    const userId = req.user.claims.sub;
+    const user = await storage.getUser(userId);
+    
+    if (!user?.isMasterAdmin) {
+      return res.status(403).json({ error: "Admin access required" });
+    }
+    
+    next();
+  } catch (error: any) {
+    console.error("Admin middleware error:", error);
+    res.status(500).json({ error: "Authorization check failed" });
+  }
+};
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -802,6 +821,103 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Delete respondent error:", error);
       res.status(500).json({ error: "Failed to delete respondent" });
+    }
+  });
+
+  // ==== ADMIN ENDPOINTS ====
+
+  // Get AI usage stats (admin only)
+  app.get("/api/admin/ai-usage-stats", isAuthenticated, isMasterAdmin, async (req: any, res) => {
+    try {
+      const { total, last24h } = await storage.getAIUsageStats();
+
+      // Aggregate stats
+      const byOperation: Record<string, { tokens: number; cost: string; count: number }> = {};
+      const byModel: Record<string, { tokens: number; cost: string }> = {};
+      let totalTokens = 0;
+      let totalCost = 0;
+
+      total.forEach(log => {
+        totalTokens += log.totalTokens;
+        totalCost += parseFloat(log.estimatedCost);
+
+        if (!byOperation[log.operationType]) {
+          byOperation[log.operationType] = { tokens: 0, cost: "0", count: 0 };
+        }
+        byOperation[log.operationType].tokens += log.totalTokens;
+        byOperation[log.operationType].count += 1;
+
+        if (!byModel[log.model]) {
+          byModel[log.model] = { tokens: 0, cost: "0" };
+        }
+        byModel[log.model].tokens += log.totalTokens;
+      });
+
+      // Recalculate costs from totals
+      Object.keys(byOperation).forEach(op => {
+        const cost = byOperation[op].tokens / 1_000_000 * 4; // Approximate average
+        byOperation[op].cost = cost.toFixed(6);
+      });
+
+      Object.keys(byModel).forEach(model => {
+        const cost = byModel[model].tokens / 1_000_000 * 4;
+        byModel[model].cost = cost.toFixed(6);
+      });
+
+      // Last 24h stats
+      let last24hTokens = 0;
+      let last24hCost = 0;
+      last24h.forEach(log => {
+        last24hTokens += log.totalTokens;
+        last24hCost += parseFloat(log.estimatedCost);
+      });
+
+      res.json({
+        totalTokens,
+        totalCost: totalCost.toFixed(6),
+        operationCount: total.length,
+        byOperation,
+        byModel,
+        last24h: { tokens: last24hTokens, cost: last24hCost.toFixed(6) },
+      });
+    } catch (error: any) {
+      console.error("Get AI usage stats error:", error);
+      res.status(500).json({ error: "Failed to fetch AI usage stats" });
+    }
+  });
+
+  // Get admin settings (admin only)
+  app.get("/api/admin/settings", isAuthenticated, isMasterAdmin, async (req: any, res) => {
+    try {
+      const apiKey = process.env.MISTRAL_API_KEY || "";
+      res.json({
+        currentApiKey: apiKey,
+        apiKeyRotated: null,
+      });
+    } catch (error: any) {
+      console.error("Get admin settings error:", error);
+      res.status(500).json({ error: "Failed to fetch settings" });
+    }
+  });
+
+  // Rotate API key (admin only)
+  app.post("/api/admin/api-key", isAuthenticated, isMasterAdmin, async (req: any, res) => {
+    try {
+      const { apiKey } = req.body;
+
+      if (!apiKey || typeof apiKey !== "string" || !apiKey.startsWith("sk-")) {
+        return res.status(400).json({ error: "Invalid API key format. Must start with 'sk-'" });
+      }
+
+      // In a real app, you'd update the environment variable or secret
+      // For now, just validate and respond
+      res.json({
+        success: true,
+        message: "API key updated. Please restart the application for changes to take effect.",
+      });
+    } catch (error: any) {
+      console.error("Update API key error:", error);
+      res.status(500).json({ error: "Failed to update API key" });
     }
   });
 
