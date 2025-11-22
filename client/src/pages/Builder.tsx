@@ -353,6 +353,25 @@ export default function Builder() {
                 <p className="text-muted-foreground text-base leading-relaxed">Pick the option that works best for you. You can edit questions in the next step regardless of which method you choose.</p>
               </div>
 
+              {/* Survey Title Input - Always Visible */}
+              {surveyState.currentQuestions.length > 0 && (
+                <div className="mb-10 p-6 bg-primary/5 border border-primary/20 rounded-lg">
+                  <label className="text-sm font-semibold mb-3 block text-foreground">
+                    Survey Title <span className="text-destructive">*</span>
+                  </label>
+                  <Input
+                    value={surveyState.currentSurveyTitle}
+                    onChange={(e) => surveyState.setCurrentSurveyTitle(e.target.value)}
+                    placeholder="Enter a title for your survey..."
+                    className="text-base"
+                    data-testid="input-survey-title-step1"
+                  />
+                  <p className="text-xs text-muted-foreground mt-2">
+                    This will be the name respondents see when they start the survey
+                  </p>
+                </div>
+              )}
+
               <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "templates" | "ai" | "upload")} className="w-full">
                 {/* Custom Tab Button Group */}
                 <div className="grid grid-cols-3 gap-4 mb-12 px-1">
@@ -452,23 +471,6 @@ export default function Builder() {
                     ))}
                   </div>
 
-                  {surveyState.currentQuestions.length > 0 && (
-                    <div className="mt-10 bg-muted/40 border border-border/50 rounded-xl p-6 md:p-8">
-                      <label className="text-sm font-semibold mb-3 block text-foreground">
-                        Survey Title <span className="text-destructive">*</span>
-                      </label>
-                      <Input
-                        value={surveyState.currentSurveyTitle}
-                        onChange={(e) => surveyState.setCurrentSurveyTitle(e.target.value)}
-                        placeholder="Enter a title for your survey..."
-                        className="text-base"
-                        data-testid="input-survey-title-templates"
-                      />
-                      <p className="text-xs text-muted-foreground mt-2">
-                        You can edit the template title to customize it for your needs
-                      </p>
-                    </div>
-                  )}
                 </TabsContent>
 
                 <TabsContent value="ai" className="space-y-10 pt-8">
@@ -603,7 +605,7 @@ export default function Builder() {
                   )}
                 </TabsContent>
 
-                <TabsContent value="upload" className="space-y-10 pt-8">
+                <TabsContent value="ai" className="space-y-10 pt-8">
                   {/* File Upload Section */}
                   <div className="space-y-4 bg-gradient-to-br from-yellow-100/30 via-yellow-50/15 to-background rounded-xl p-6 md:p-8 border-2 border-yellow-200/60" style={{borderLeft: '4px solid rgb(245, 223, 161)'}}>
                     <div>
