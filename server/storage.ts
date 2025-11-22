@@ -6,6 +6,8 @@ import { eq, sql, gte } from "drizzle-orm";
 export interface AdminAISettings {
   apiKeys: Record<string, { key: string; rotated?: string | null }>;
   models: Record<string, string>;
+  baseUrls: Record<string, string>;
+  parameters: Record<string, Record<string, any>>;
 }
 
 export interface IStorage {
@@ -79,6 +81,22 @@ export class MemStorage implements IStorage {
         response_scoring: process.env.MODEL_RESPONSE_SCORING || "gpt-3.5-turbo",
         quick_suggestions: process.env.MODEL_QUICK_SUGGESTIONS || "gpt-3.5-turbo",
         response_analysis: process.env.MODEL_RESPONSE_ANALYSIS || "gpt-4o",
+      },
+      baseUrls: {
+        survey_generation: "https://api.openai.com/v1",
+        survey_refinement: "https://api.openai.com/v1",
+        document_parsing: "https://api.openai.com/v1",
+        response_scoring: "https://api.openai.com/v1",
+        quick_suggestions: "https://api.openai.com/v1",
+        response_analysis: "https://api.openai.com/v1",
+      },
+      parameters: {
+        survey_generation: { temperature: 0.7, max_tokens: 4096 },
+        survey_refinement: { temperature: 0.7, max_tokens: 4096 },
+        document_parsing: { temperature: 0.0, max_tokens: 8192 },
+        response_scoring: { temperature: 0.0, max_tokens: 2048 },
+        quick_suggestions: { temperature: 0.8, max_tokens: 1024 },
+        response_analysis: { temperature: 0.5, max_tokens: 4096 },
       }
     };
   }

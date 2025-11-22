@@ -21,6 +21,8 @@ interface AIUsageStats {
 interface AdminSettings {
   apiKeys: Record<string, { key: string; rotated?: string | null }>;
   models: Record<string, string>;
+  baseUrls: Record<string, string>;
+  parameters: Record<string, Record<string, any>>;
 }
 
 export default function AdminDashboard() {

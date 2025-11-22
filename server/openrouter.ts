@@ -10,7 +10,7 @@ let settingsRefreshTime = 0;
 const SETTINGS_CACHE_MS = 5000; // Refresh every 5 seconds
 
 // Get API key and model for a specific function
-async function getAIConfig(func: AIFunction): Promise<{ apiKey: string; model: string; provider: string }> {
+async function getAIConfig(func: AIFunction): Promise<{ apiKey: string; model: string; provider: string; baseUrl: string; parameters: Record<string, any> }> {
   // Lazy-load storage module to avoid circular dependency
   const { storage } = await import("./storage");
   
@@ -24,17 +24,26 @@ async function getAIConfig(func: AIFunction): Promise<{ apiKey: string; model: s
 
     const apiKey = cachedSettings.apiKeys?.[func]?.key || process.env.MISTRAL_API_KEY || "";
     const model = cachedSettings.models?.[func] || getDefaultModel(func);
+    const baseUrl = cachedSettings.baseUrls?.[func] || getDefaultBaseUrl(model);
+    const parameters = cachedSettings.parameters?.[func] || {};
     
     // Detect provider from model name or API key
     const provider = detectProvider(model, apiKey);
     
-    return { apiKey, model, provider };
+    return { apiKey, model, provider, baseUrl, parameters };
   } catch (error) {
     console.warn("Failed to get admin settings, falling back to env vars:", error);
     const apiKey = process.env.MISTRAL_API_KEY || "";
     const model = getDefaultModel(func);
-    return { apiKey, model, provider: detectProvider(model, apiKey) };
+    return { apiKey, model, provider: detectProvider(model, apiKey), baseUrl: getDefaultBaseUrl(model), parameters: {} };
   }
+}
+
+function getDefaultBaseUrl(model: string): string {
+  if (model.includes("mistral")) return "https://api.mistral.ai/v1";
+  if (model.includes("claude")) return "https://api.anthropic.com/v1";
+  if (model.includes("gemini")) return "https://generativelanguage.googleapis.com/v1beta";
+  return "https://api.openai.com/v1";
 }
 
 function getDefaultModel(func: AIFunction): string {
@@ -64,19 +73,19 @@ async function callAI(
   func: AIFunction,
   responseFormat?: { type: "json_object" }
 ): Promise<string> {
-  const { apiKey, model, provider } = await getAIConfig(func);
+  const { apiKey, model, provider, baseUrl, parameters } = await getAIConfig(func);
 
   if (!apiKey) {
     throw new Error(`API key not configured for ${func}`);
   }
 
   if (provider === "openai") {
-    return callOpenAI(messages, apiKey, model, responseFormat);
+    return callOpenAI(messages, apiKey, model, baseUrl, parameters, responseFormat);
   } else if (provider === "mistral") {
-    return callMistral(messages, apiKey, model, responseFormat);
+    return callMistral(messages, apiKey, model, baseUrl, parameters, responseFormat);
   } else {
     // Fallback to OpenAI format for unknown providers
-    return callOpenAI(messages, apiKey, model, responseFormat);
+    return callOpenAI(messages, apiKey, model, baseUrl, parameters, responseFormat);
   }
 }
 
@@ -85,10 +94,10 @@ async function callOpenAI(
   messages: ChatMessage[],
   apiKey: string,
   model: string,
+  baseUrl: string,
+  parameters: Record<string, any>,
   responseFormat?: { type: "json_object" }
 ): Promise<string> {
-  const baseUrl = "https://api.openai.com/v1";
-  
   const response = await fetch(`${baseUrl}/chat/completions`, {
     method: "POST",
     headers: {
@@ -98,6 +107,7 @@ async function callOpenAI(
     body: JSON.stringify({
       model,
       messages,
+      ...parameters,
       ...(responseFormat && { response_format: responseFormat }),
     }),
   });
@@ -142,13 +152,15 @@ async function callMistral(
   messages: ChatMessage[],
   apiKey: string,
   model: string,
+  baseUrl: string,
+  parameters: Record<string, any>,
   responseFormat?: { type: "json_object" }
 ): Promise<string> {
   if (!apiKey) {
     throw new Error("Mistral API key not configured");
   }
 
-  const response = await fetch("https://api.mistral.ai/v1/chat/completions", {
+  const response = await fetch(`${baseUrl}/chat/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -157,6 +169,7 @@ async function callMistral(
     body: JSON.stringify({
       model,
       messages,
+      ...parameters,
       ...(responseFormat && { response_format: responseFormat }),
     }),
   });
