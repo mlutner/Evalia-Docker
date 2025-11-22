@@ -47,9 +47,32 @@ export const questionSchema = z.object({
   required: z.boolean().optional(),
   ratingScale: z.number().optional(), // 5 or 10 for rating questions
   skipCondition: skipConditionSchema, // show this question only if condition is met
+  scoringCategory: z.string().optional(), // for scoring surveys - the category this question belongs to
 });
 
 export type Question = z.infer<typeof questionSchema>;
+
+// Scoring configuration schema
+export const scoringRuleSchema = z.object({
+  category: z.string(),
+  label: z.string(),
+  minScore: z.number(),
+  maxScore: z.number(),
+  interpretation: z.string(),
+});
+
+export const surveyScoreConfigSchema = z.object({
+  enabled: z.boolean(),
+  categories: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+  })),
+  scoreRanges: z.array(scoringRuleSchema),
+  resultsSummary: z.string().optional(), // Optional summary to display with results
+}).optional();
+
+export type ScoringRule = z.infer<typeof scoringRuleSchema>;
+export type SurveyScoreConfig = z.infer<typeof surveyScoreConfigSchema>;
 
 // Surveys table
 export const surveys = pgTable("surveys", {
@@ -68,6 +91,7 @@ export const surveys = pgTable("surveys", {
   webhookUrl: text("webhook_url"),
   status: varchar("status").default("Active"),
   publishedAt: timestamp("published_at"),
+  scoreConfig: jsonb("score_config").$type<SurveyScoreConfig>(), // Scoring configuration for assessment surveys
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -114,3 +138,65 @@ export const surveyResponses = pgTable("survey_responses", {
 });
 
 export type SurveyResponse = typeof surveyResponses.$inferSelect;
+
+// Helper to calculate scores from responses
+export function calculateSurveyScores(
+  questions: Question[],
+  answers: Record<string, string | string[]>,
+  scoreConfig: SurveyScoreConfig | undefined
+) {
+  if (!scoreConfig?.enabled) return null;
+
+  const scores: Record<string, number> = {};
+  
+  // Initialize scores for each category
+  scoreConfig.categories.forEach(cat => {
+    scores[cat.id] = 0;
+  });
+
+  // Calculate scores based on answers
+  questions.forEach(q => {
+    if (q.scoringCategory && answers[q.id]) {
+      const answer = answers[q.id];
+      // For rating questions, the answer is typically the number as a string
+      if (q.type === "rating" || q.type === "nps") {
+        const value = parseInt(Array.isArray(answer) ? answer[0] : answer, 10);
+        if (!isNaN(value)) {
+          scores[q.scoringCategory] = (scores[q.scoringCategory] || 0) + value;
+        }
+      }
+    }
+  });
+
+  // Map scores to interpretations
+  const results: Array<{
+    categoryId: string;
+    categoryName: string;
+    score: number;
+    maxScore: number;
+    interpretation: string;
+  }> = [];
+
+  scoreConfig.categories.forEach(cat => {
+    const categoryScore = scores[cat.id] || 0;
+    const matchingRule = scoreConfig.scoreRanges.find(
+      rule => rule.category === cat.id && 
+      categoryScore >= rule.minScore && 
+      categoryScore <= rule.maxScore
+    );
+    
+    const maxScore = scoreConfig.scoreRanges
+      .filter(rule => rule.category === cat.id)
+      .reduce((max, rule) => Math.max(max, rule.maxScore), 0);
+
+    results.push({
+      categoryId: cat.id,
+      categoryName: cat.name,
+      score: categoryScore,
+      maxScore,
+      interpretation: matchingRule?.interpretation || "No interpretation available",
+    });
+  });
+
+  return results;
+}
