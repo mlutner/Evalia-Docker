@@ -1,77 +1,44 @@
 import OpenAI from "openai";
-import type { ChatCompletionMessageParam, ChatCompletionCreateParams } from "openai/resources/chat";
-
-import { MODEL_POOLS, EvaliaUseCase } from "./modelConfig";
+import type { ChatCompletionMessageParam } from "openai/resources/chat";
+import { AI_MODEL, OPENROUTER_BASE_URL, OPENROUTER_HEADERS } from "./modelConfig";
 
 export const openRouterClient = new OpenAI({
   apiKey: process.env.OPENROUTER_API_KEY!,
-  baseURL: "https://openrouter.ai/api/v1",
+  baseURL: OPENROUTER_BASE_URL,
 });
 
-// Optional but nice: so Evalia shows up in OpenRouter dashboards
-const OPENROUTER_HEADERS = {
-  "HTTP-Referer": "https://evalia.app",
-  "X-Title": "Evalia",
-};
-
-interface CallOptions extends Partial<ChatCompletionCreateParams> {
-  useCase: EvaliaUseCase;
-}
-
 /**
- * Try models for a given use case in order, falling back on error/rate-limit.
+ * Simple call to OpenRouter with a single model
  */
-export async function callEvaliaModelWithFallback(
+export async function callOpenRouterModel(
   messages: ChatCompletionMessageParam[],
-  { useCase, ...opts }: CallOptions,
+  options?: {
+    temperature?: number;
+    max_tokens?: number;
+  }
 ) {
-  const pool = MODEL_POOLS[useCase];
+  try {
+    const completion = await openRouterClient.chat.completions.create(
+      {
+        model: AI_MODEL,
+        messages,
+        temperature: options?.temperature ?? 0.7,
+        max_tokens: options?.max_tokens ?? 2048,
+      },
+      { headers: OPENROUTER_HEADERS }
+    );
 
-  if (!pool || pool.length === 0) {
-    throw new Error(`No models configured for use case: ${useCase}`);
-  }
-
-  let lastError: unknown;
-
-  for (const model of pool) {
-    try {
-      const completion = await openRouterClient.chat.completions.create(
-        {
-          model,
-          messages,
-          temperature: opts.temperature ?? 0.4,
-          ...opts,
-        },
-        { headers: OPENROUTER_HEADERS },
-      );
-
-      return {
-        modelUsed: model,
-        completion,
-        text: completion.choices[0]?.message?.content ?? "",
-      };
-    } catch (err: any) {
-      lastError = err;
-
-      const status = err?.status ?? err?.response?.status;
-      const isRateOrCapacity =
-        status === 429 ||
-        status === 503 ||
-        /rate limit|capacity|free tier/i.test(String(err?.message ?? ""));
-
-      console.warn(`Model ${model} failed (${status ?? "no-status"}).`, err?.message ?? err);
-
-      // If it's a transient / capacity error, try next model.
-      // If it's something else (bad request, auth), rethrow immediately.
-      if (!isRateOrCapacity) {
-        throw err;
-      }
+    const text = completion.choices[0]?.message?.content ?? "";
+    if (!text) {
+      throw new Error("No response from AI model");
     }
-  }
 
-  throw new Error(
-    `All models failed for use case "${useCase}". Last error: ${String(
-      (lastError as any)?.message ?? lastError,
-    )}`,
-  );
+    return {
+      text,
+      model: AI_MODEL,
+    };
+  } catch (error: any) {
+    console.error(`OpenRouter API error:`, error.message);
+    throw error;
+  }
 }

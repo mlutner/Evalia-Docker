@@ -1006,8 +1006,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Prompt cannot be empty" });
       }
 
-      // Use the new model pool system with intelligent fallback
-      const { callEvaliaModelWithFallback } = await import("../src/ai/openRouterClient");
+      const { callOpenRouterModel } = await import("../src/ai/openRouterClient");
       
       const enhancedUserPrompt = `Improve this survey prompt to make it more comprehensive and specific:
 
@@ -1015,16 +1014,13 @@ ${prompt}
 
 Return ONLY the improved prompt text, nothing else.`;
 
-      const result = await callEvaliaModelWithFallback(
+      const result = await callOpenRouterModel(
         [{ role: "user", content: enhancedUserPrompt }],
         {
-          useCase: "quickRewrite",
           temperature: 0.7,
           max_tokens: 1024,
         }
       );
-
-      console.log(`Enhance prompt used model: ${result.modelUsed}`);
       
       res.json({
         success: true,
