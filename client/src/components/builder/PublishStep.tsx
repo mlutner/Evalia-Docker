@@ -91,6 +91,23 @@ export default function PublishStep({
     handleSaveScoring,
   } = useScoring(scoreConfig);
 
+  const STANDARD_PRIVACY_STATEMENT = "Your responses are confidential and will be kept strictly anonymous. All data will be handled according to applicable privacy regulations.";
+
+  // Auto-populate estimated time based on question count
+  useEffect(() => {
+    if (questions && questions.length > 0 && !estimatedMinutes) {
+      const calculatedTime = Math.ceil(questions.length * 1.5);
+      onEstimatedMinutesChange?.(calculatedTime);
+    }
+  }, [questions?.length]);
+
+  // Auto-populate privacy statement on first render
+  useEffect(() => {
+    if (!privacyStatement || privacyStatement.trim() === "") {
+      onPrivacyStatementChange?.(STANDARD_PRIVACY_STATEMENT);
+    }
+  }, []);
+
   useEffect(() => {
     const fetchIllustrations = async () => {
       try {
