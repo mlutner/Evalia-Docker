@@ -26,10 +26,10 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10 flex flex-col">
       <Header />
-      <main className="container mx-auto px-4 py-12 md:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <main className="flex-1 container mx-auto px-4 py-8 flex items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
           {/* Left Side Content */}
           <div className="space-y-8">
             {/* Headline */}
