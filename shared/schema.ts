@@ -61,6 +61,11 @@ export const scoringRuleSchema = z.object({
   interpretation: z.string(),
 });
 
+export const feedbackTemplateSchema = z.object({
+  level: z.enum(["low", "mid", "high"]),
+  template: z.string(),
+});
+
 export const surveyScoreConfigSchema = z.object({
   enabled: z.boolean(),
   categories: z.array(z.object({
@@ -68,7 +73,8 @@ export const surveyScoreConfigSchema = z.object({
     name: z.string(),
   })),
   scoreRanges: z.array(scoringRuleSchema),
-  resultsSummary: z.string().optional(), // Optional summary to display with results
+  resultsSummary: z.string().optional(),
+  feedbackTemplates: z.array(feedbackTemplateSchema).optional(), // Customizable feedback for low/mid/high performance
 }).optional();
 
 export type ScoringRule = z.infer<typeof scoringRuleSchema>;

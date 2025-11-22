@@ -126,12 +126,18 @@ export default function SurveyResults({
             const getRecommendation = () => {
               if (!rangeInfo) return null;
               
+              const config = survey.scoreConfig;
+              const feedbackTemplates = config?.feedbackTemplates || [];
+              
               if (rangeInfo.isHighPerformance) {
-                return `You demonstrate strong ${result.categoryName.toLowerCase()}. Continue to leverage your strengths and consider mentoring others in this area.`;
+                const template = feedbackTemplates.find(f => f.level === "high")?.template;
+                return template || `You demonstrate strong ${result.categoryName.toLowerCase()}. Continue to leverage your strengths and consider mentoring others in this area.`;
               } else if (rangeInfo.isLowPerformance) {
-                return `Focus on developing your ${result.categoryName.toLowerCase()}. Consider seeking feedback, practicing key skills, and exploring resources to strengthen this competency.`;
+                const template = feedbackTemplates.find(f => f.level === "low")?.template;
+                return template || `Focus on developing your ${result.categoryName.toLowerCase()}. Consider seeking feedback, practicing key skills, and exploring resources to strengthen this competency.`;
               } else {
-                return `You're making progress in ${result.categoryName.toLowerCase()}. Build on your foundation by seeking targeted development opportunities and feedback from peers.`;
+                const template = feedbackTemplates.find(f => f.level === "mid")?.template;
+                return template || `You're making progress in ${result.categoryName.toLowerCase()}. Build on your foundation by seeking targeted development opportunities and feedback from peers.`;
               }
             };
 
@@ -171,11 +177,11 @@ export default function SurveyResults({
                     />
                   </div>
 
-                  {/* Progress Bar - Color coded by position in range */}
+                  {/* Progress Bar - Color coded by score position on full scale */}
                   <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${progressColor}`}
-                      style={{ width: `${Math.min((rangeInfo?.positionInRange || 0) * 100, 100)}%` }}
+                      style={{ width: `${Math.min((result.score / result.maxScore) * 100, 100)}%` }}
                       data-testid={`progress-${result.categoryId}`}
                     />
                   </div>
