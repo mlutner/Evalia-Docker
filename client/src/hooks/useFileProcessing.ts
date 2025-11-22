@@ -7,6 +7,7 @@ interface FileProcessingResult {
   title: string;
   questions: Question[];
   parsedText: string;
+  scoreConfig?: any;
 }
 
 export function useFileProcessing() {

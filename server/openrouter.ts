@@ -256,7 +256,7 @@ VALIDATION CHECKLIST:
     const parsed = JSON.parse(response);
     
     // Validate that multiple choice questions have adequate options
-    const questions = (parsed.questions || []).map((q: any) => {
+    let questions = (parsed.questions || []).map((q: any) => {
       if ((q.type === 'multiple_choice' || q.type === 'checkbox') && (!q.options || q.options.length < 2)) {
         console.warn(`Question "${q.question}" has insufficient options, adding defaults`);
         q.options = q.options || ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
@@ -271,7 +271,7 @@ VALIDATION CHECKLIST:
       // Apply suggested category mappings to questions if available
       if (scoreConfig?.suggestedQuestionCategoryMap) {
         const categoryMap = scoreConfig.suggestedQuestionCategoryMap;
-        questions = questions.map(q => ({
+        questions = questions.map((q: any) => ({
           ...q,
           scoringCategory: categoryMap[q.id],
         }));
