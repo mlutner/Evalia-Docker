@@ -14,10 +14,26 @@ const MODELS = {
   OCR: "mistral-ocr-2505", // Mistral OCR native model - specialized for document OCR
 };
 
+// Mistral pricing (per 1M tokens, in USD)
+const MISTRAL_PRICING = {
+  "pixtral-large-latest": { input: 2.0, output: 6.0 },
+  "mistral-ocr-2505": { input: 0.5, output: 1.5 },
+};
+
 interface ChatMessage {
   role: "system" | "user" | "assistant";
   content: string;
 }
+
+export interface TokenUsageData {
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+  model: string;
+}
+
+// Global token tracking for this session
+export let lastTokenUsage: TokenUsageData | null = null;
 
 async function callMistral(
   messages: ChatMessage[],
@@ -47,7 +63,31 @@ async function callMistral(
   }
 
   const data = await response.json();
+  
+  // Capture token usage
+  const usage = data.usage;
+  if (usage) {
+    lastTokenUsage = {
+      inputTokens: usage.prompt_tokens || 0,
+      outputTokens: usage.completion_tokens || 0,
+      totalTokens: usage.total_tokens || 0,
+      model,
+    };
+  }
+  
   return data.choices[0]?.message?.content || "";
+}
+
+// Calculate estimated cost
+export function calculateTokenCost(usage: TokenUsageData): string {
+  const pricing = MISTRAL_PRICING[usage.model as keyof typeof MISTRAL_PRICING];
+  if (!pricing) return "0.00";
+  
+  const inputCost = (usage.inputTokens / 1_000_000) * pricing.input;
+  const outputCost = (usage.outputTokens / 1_000_000) * pricing.output;
+  const totalCost = inputCost + outputCost;
+  
+  return totalCost.toFixed(6);
 }
 
 /**

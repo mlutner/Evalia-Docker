@@ -22,8 +22,23 @@ export const users = pgTable("users", {
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   resendApiKey: varchar("resend_api_key"),
+  isMasterAdmin: boolean("is_master_admin").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// AI Usage tracking table
+export const aiUsageLog = pgTable("ai_usage_log", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id),
+  surveyId: varchar("survey_id").references(() => surveys.id),
+  operationType: varchar("operation_type").notNull(), // "survey_generation", "pdf_parsing", "scoring", "text_generation", "survey_refinement"
+  model: varchar("model").notNull(),
+  inputTokens: integer("input_tokens").notNull(),
+  outputTokens: integer("output_tokens").notNull(),
+  totalTokens: integer("total_tokens").notNull(),
+  estimatedCost: varchar("estimated_cost").notNull(), // Stored as string for precision
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export type UpsertUser = typeof users.$inferInsert;
