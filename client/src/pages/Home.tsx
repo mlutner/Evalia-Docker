@@ -66,7 +66,7 @@ export default function Home() {
             </div>
 
             {/* Trust Statement */}
-            <p className="text-xl text-muted-foreground pt-4">
+            <p className="text-muted-foreground pt-4 text-[25px]">
               Trusted by trainers, facilitators, HR teams, and L&D professionals.
             </p>
           </div>
