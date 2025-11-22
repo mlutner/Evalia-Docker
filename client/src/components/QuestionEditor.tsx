@@ -148,6 +148,21 @@ export default function QuestionEditor({
                 </Label>
               </div>
             </div>
+
+            <div>
+              <Label htmlFor={`scoring-category-${question.id}`}>Scoring Category (optional)</Label>
+              <Input
+                id={`scoring-category-${question.id}`}
+                value={question.scoringCategory || ""}
+                onChange={(e) => updateField("scoringCategory", e.target.value || undefined)}
+                placeholder="e.g., Autocratic, Democratic"
+                className="mt-1"
+                data-testid="input-scoring-category"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Assign this question to a scoring category for assessment results
+              </p>
+            </div>
           </div>
 
           <Button

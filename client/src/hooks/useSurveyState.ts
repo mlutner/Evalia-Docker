@@ -20,6 +20,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
   const [thankYouMessage, setThankYouMessage] = useState("");
   const [illustrationUrl, setIllustrationUrl] = useState("");
   const [currentQuestions, setCurrentQuestions] = useState<Question[]>([]);
+  const [scoreConfig, setScoreConfig] = useState<any>(undefined);
 
   // Wizard state
   const [currentWizardStep, setCurrentWizardStep] = useState(1);

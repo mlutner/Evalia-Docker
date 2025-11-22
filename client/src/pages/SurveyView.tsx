@@ -6,10 +6,12 @@ import leadershipIllustration from "@assets/Heading_1763750607423.png";
 import logoImage from "@assets/Untitled design (3)_1763764996441.png";
 import SurveyLayout from "@/components/SurveyLayout";
 import SurveyWelcome from "@/pages/SurveyWelcome";
+import SurveyResults from "@/components/SurveyResults";
 import "@/components/styles/survey-welcome.css";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import QuestionCard from "@/components/QuestionCard";
 import { Check, Loader2, AlertCircle, FileQuestion } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { Question } from "@/components/QuestionCard";
 import type { Survey } from "@shared/schema";
 
@@ -180,6 +182,18 @@ export default function SurveyView() {
   }
 
   if (isCompleted) {
+    // Show scoring results if enabled
+    if (survey.scoreConfig?.enabled) {
+      return (
+        <SurveyResults
+          survey={survey}
+          answers={answers}
+          thankYouMessage={survey.thankYouMessage || "Thank you for completing this assessment!"}
+        />
+      );
+    }
+
+    // Show standard thank you page
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-background">
         <div className="text-center max-w-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
