@@ -450,16 +450,16 @@ export default function PublishStep({
             <div className="flex items-center justify-between mb-3">
               <p className="text-sm font-medium text-muted-foreground">Choose from images</p>
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2">
               {illustrations.map((url) => (
                 <div
                   key={url}
                   onClick={() => onIllustrationChange?.(url)}
-                  className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all flex items-center justify-center bg-muted/30 min-h-40 ${
+                  className={`relative cursor-pointer rounded-md overflow-hidden border-2 transition-all flex items-center justify-center bg-muted/30 h-24 ${
                     illustrationUrl === url ? "border-primary" : "border-border hover:border-muted-foreground/50"
                   }`}
                 >
-                  <img src={url} alt="Survey illustration" className="w-full h-full object-contain p-2" />
+                  <img src={url} alt="Survey illustration" className="max-w-full max-h-full object-contain p-1" />
                   {illustrationUrl === url && (
                     <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
                       <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
