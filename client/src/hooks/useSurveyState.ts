@@ -39,6 +39,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       thankYouMessage?: string;
       illustrationUrl?: string;
       questions: Question[];
+      scoreConfig?: any;
     }) => {
       return apiRequest("POST", "/api/surveys", data);
     },
@@ -73,6 +74,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       thankYouMessage?: string;
       illustrationUrl?: string;
       questions: Question[];
+      scoreConfig?: any;
     }) => {
       return apiRequest("PUT", `/api/surveys/${surveyId}`, data);
     },
@@ -102,6 +104,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       thankYouMessage?: string;
       illustrationUrl?: string;
       questions: Question[];
+      scoreConfig?: any;
     }) => {
       if (isEditMode) {
         return apiRequest("PUT", `/api/surveys/${surveyId}`, data);
@@ -256,6 +259,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       thankYouMessage: thankYouMessage || undefined,
       illustrationUrl: illustrationUrl || undefined,
       questions: currentQuestions,
+      scoreConfig: scoreConfig || undefined,
     };
 
     if (isEditMode) {
@@ -279,6 +283,8 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
     setIllustrationUrl,
     currentQuestions,
     setCurrentQuestions,
+    scoreConfig,
+    setScoreConfig,
     currentWizardStep,
     setCurrentWizardStep,
     hasLoadedSurvey,

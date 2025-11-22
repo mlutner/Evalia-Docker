@@ -44,10 +44,8 @@ export default function SurveyView() {
 
   const allQuestions = survey?.questions || [];
   
-  // Apply randomization if enabled
-  const questions = survey?.randomizeQuestions 
-    ? [...allQuestions].sort(() => Math.random() - 0.5)
-    : allQuestions;
+  // Apply randomization if enabled (for future feature)
+  const questions = allQuestions;
   
   const currentQuestion = currentStep >= 0 ? questions[currentStep] : null;
 
@@ -55,10 +53,10 @@ export default function SurveyView() {
   const getVisibleQuestions = () => {
     return questions.filter(q => {
       if (!q.skipCondition) return true;
-      const conditionQuestion = questions.find(qu => qu.id === q.skipCondition.questionId);
+      const conditionQuestion = questions.find(qu => qu.id === q.skipCondition?.questionId);
       if (!conditionQuestion) return true;
       const answer = answers[conditionQuestion.id];
-      return answer === q.skipCondition.answer;
+      return answer === q.skipCondition?.answer;
     });
   };
 

@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import WizardSteps from "@/components/WizardSteps";
 import QuestionsStep from "@/components/builder/QuestionsStep";
 import PublishStep from "@/components/builder/PublishStep";
+import ScoringConfigStep from "@/components/builder/ScoringConfigStep";
 import TemplateCard from "@/components/TemplateCard";
 import TemplatePreviewModal from "@/components/TemplatePreviewModal";
 import SurveyPreviewDialog from "@/components/SurveyPreviewDialog";
@@ -28,6 +29,7 @@ const WIZARD_STEPS = [
   { number: 1, title: "Start", description: "Choose how to create your survey: select a template, generate with AI, or upload a document" },
   { number: 2, title: "Questions", description: "Review and refine your questions. Use AI chat to make adjustments or edit directly" },
   { number: 3, title: "Review", description: "Add survey details, welcome message, and thank you message. Then publish to start collecting responses" },
+  { number: 4, title: "Scoring (Optional)", description: "Enable assessment scoring to show respondents their results with interpretations" },
 ];
 
 function formatTimeAgo(date: Date): string {

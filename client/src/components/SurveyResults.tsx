@@ -19,7 +19,7 @@ export default function SurveyResults({
   const scores = calculateSurveyScores(
     survey.questions,
     answers,
-    survey.scoreConfig
+    survey.scoreConfig || undefined
   );
 
   if (!scores) {
