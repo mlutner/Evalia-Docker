@@ -71,11 +71,11 @@ export default function Home() {
 
           {/* Right Side - Image */}
           <div className="flex items-center justify-center">
-            <div className="relative w-full">
+            <div className="relative w-full max-h-screen">
               <img
                 src={surveyImage}
                 alt="Survey illustration"
-                className="w-full h-auto object-contain scale-125"
+                className="w-full h-full object-contain"
               />
             </div>
           </div>
