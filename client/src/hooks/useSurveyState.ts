@@ -224,6 +224,8 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
         return;
       }
       setCurrentWizardStep(3);
+    } else if (currentWizardStep === 3) {
+      setCurrentWizardStep(4);
     }
   };
 
