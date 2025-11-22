@@ -33,21 +33,21 @@ export default function Home() {
           {/* Left Side Content */}
           <div className="space-y-6">
             {/* Headline */}
-            <div className="space-y-6">
-              <h1 className="font-bold leading-tight text-[82px]" style={{color: '#071A32'}}>
+            <div className="space-y-4">
+              <h1 className="font-bold text-[82px]" style={{color: '#071A32', lineHeight: '1.1'}}>
                 Collect training feedback that actually improves training
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed max-w-lg">
+              <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
                 Evalia gives trainers ready-made templates, AI-powered question creation, and instant reporting – so you can design better sessions and measure what matters.
               </p>
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-5 pt-2">
               <Button
                 size="lg"
                 onClick={() => setLocation("/login")}
-                className="hover:bg-yellow-400 text-black font-semibold pt-[15px] pb-[15px] pl-[45px] pr-[45px] text-[19px] bg-[#abdd3a]"
+                className="hover:bg-yellow-400 text-black font-semibold pt-[18px] pb-[18px] pl-[48px] pr-[48px] text-xl bg-[#abdd3a] h-auto rounded-lg"
                 data-testid="button-get-started"
               >
                 Get started
@@ -56,7 +56,7 @@ export default function Home() {
                 size="lg"
                 variant="ghost"
                 onClick={() => setLocation("/login")}
-                className="px-8 py-6 text-base font-semibold"
+                className="px-10 py-[18px] text-lg font-semibold"
                 data-testid="button-browse-templates"
               >
                 Browse templates
