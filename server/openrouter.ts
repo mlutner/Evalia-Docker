@@ -210,8 +210,15 @@ export async function suggestScoringConfig(
 
 INSTRUCTIONS:
 1. Analyze the survey questions to identify 2-3 key competency/skill categories
-2. For each category, suggest score ranges with interpretations
+2. For each category, suggest score ranges with DISTINCT PERFORMANCE LEVEL LABELS
 3. Suggest which questions contribute to which categories
+
+CRITICAL: For each category, create 3 score ranges with DIFFERENT labels that reflect performance progression:
+- LOWEST range (e.g., 0-5): Use labels like "Needs Development", "Poor", "Beginner", "Low"
+- MIDDLE range (e.g., 6-10): Use labels like "Developing", "Moderate", "Satisfactory", "Fair"
+- HIGHEST range (e.g., 11-15): Use labels like "Excellent", "Strong", "Advanced", "High"
+
+IMPORTANT: Do NOT reuse the same label for different ranges. Each range must have a unique, descriptive label that matches its performance level.
 
 Return ONLY valid JSON with this exact structure:
 {
@@ -220,9 +227,9 @@ Return ONLY valid JSON with this exact structure:
     { "id": "cat2", "name": "Another Category" }
   ],
   "scoreRanges": [
-    { "category": "cat1", "label": "Level 1", "minScore": 0, "maxScore": 5, "interpretation": "Beginner level..." },
-    { "category": "cat1", "label": "Level 2", "minScore": 6, "maxScore": 10, "interpretation": "Intermediate level..." },
-    { "category": "cat1", "label": "Level 3", "minScore": 11, "maxScore": 15, "interpretation": "Advanced level..." }
+    { "category": "cat1", "label": "Needs Development", "minScore": 0, "maxScore": 5, "interpretation": "Beginner level..." },
+    { "category": "cat1", "label": "Developing", "minScore": 6, "maxScore": 10, "interpretation": "Intermediate level..." },
+    { "category": "cat1", "label": "Excellent", "minScore": 11, "maxScore": 15, "interpretation": "Advanced level..." }
   ],
   "suggestedQuestionCategoryMap": {
     "q1": "cat1",
@@ -251,10 +258,27 @@ Make interpretations clear and practical - they'll be shown to respondents after
   try {
     const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
     const parsed = JSON.parse(response);
+    
+    // Post-process to ensure score ranges have distinct labels and interpretations
+    const processedRanges = (parsed.scoreRanges || []).map((range: any, index: number) => {
+      // Count ranges for this category
+      const rangesForCategory = (parsed.scoreRanges || []).filter((r: any) => r.category === range.category);
+      const positionInCategory = rangesForCategory.findIndex((r: any) => r === range);
+      
+      // If labels are duplicated, apply default progression
+      const existingLabelsForCategory = rangesForCategory.slice(0, positionInCategory).map((r: any) => r.label);
+      if (existingLabelsForCategory.includes(range.label)) {
+        const defaultLabels = ["Needs Development", "Developing", "Excellent", "Outstanding"];
+        range.label = defaultLabels[positionInCategory] || `Level ${positionInCategory + 1}`;
+      }
+      
+      return range;
+    });
+    
     return {
       enabled: true,
       categories: parsed.categories || [],
-      scoreRanges: parsed.scoreRanges || [],
+      scoreRanges: processedRanges,
       suggestedQuestionCategoryMap: parsed.suggestedQuestionCategoryMap,
     };
   } catch (error) {
