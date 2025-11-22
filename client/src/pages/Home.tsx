@@ -47,7 +47,7 @@ export default function Home() {
               <Button
                 size="lg"
                 onClick={() => setLocation("/login")}
-                className="hover:bg-yellow-400 text-black font-semibold pt-[18px] pb-[18px] pl-[48px] pr-[48px] text-xl bg-[#abdd3a] h-auto rounded-lg"
+                className="hover:bg-yellow-400 font-semibold pt-[18px] pb-[18px] pl-[48px] pr-[48px] text-xl h-auto rounded-lg bg-[#022643] text-[#ccff03]"
                 data-testid="button-get-started"
               >
                 Get started
