@@ -417,6 +417,9 @@ export default function Builder() {
         description={surveyState.currentSurveyDescription}
         welcomeMessage={surveyState.welcomeMessage}
         illustration={existingSurvey?.illustrationUrl || "/attached_assets/1_1763757398561.png"}
+        estimatedMinutes={surveyState.estimatedMinutes}
+        privacyStatement={surveyState.privacyStatement}
+        dataUsageStatement={surveyState.dataUsageStatement}
         open={showPreview}
         onOpenChange={setShowPreview}
       />

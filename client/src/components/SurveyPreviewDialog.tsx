@@ -17,6 +17,9 @@ interface SurveyPreviewDialogProps {
   description?: string;
   welcomeMessage?: string;
   illustration?: string;
+  estimatedMinutes?: number;
+  privacyStatement?: string;
+  dataUsageStatement?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -27,6 +30,9 @@ export default function SurveyPreviewDialog({
   description,
   welcomeMessage,
   illustration,
+  estimatedMinutes,
+  privacyStatement,
+  dataUsageStatement,
   open,
   onOpenChange,
 }: SurveyPreviewDialogProps) {
@@ -93,6 +99,10 @@ export default function SurveyPreviewDialog({
                   illustration={illustration}
                   welcomeMessage={welcomeMessage}
                   onStart={() => handleNext()}
+                  estimatedMinutes={estimatedMinutes}
+                  questionCount={questions.length}
+                  privacyStatement={privacyStatement}
+                  dataUsageStatement={dataUsageStatement}
                 />
               ) : (
                 <>
