@@ -365,7 +365,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         illustrationUrl: getRandomIllustration(),
       };
       const survey = await storage.createSurvey(surveyData, userId);
-      res.status(201).json(survey);
+      const responseCount = await storage.getResponseCount(survey.id);
+      const questionCount = survey.questions?.length || 0;
+      res.status(201).json({
+        ...survey,
+        responseCount,
+        questionCount,
+      });
     } catch (error: any) {
       console.error("Create survey error:", error);
       res.status(500).json({ error: "Failed to create survey" });
@@ -391,7 +397,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       const survey = await storage.updateSurvey(id, surveyUpdates);
-      res.json(survey);
+      const responseCount = await storage.getResponseCount(survey?.id || id);
+      const questionCount = survey?.questions?.length || 0;
+      res.json({
+        ...survey,
+        responseCount,
+        questionCount,
+      });
     } catch (error: any) {
       console.error("Update survey error:", error);
       res.status(500).json({ error: "Failed to update survey" });
@@ -473,6 +485,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const response = await storage.createResponse(id, answers);
       res.status(201).json(response);
+      
+      // Invalidate cache on client side by sending cache-control headers
+      res.set('Cache-Control', 'no-cache');
     } catch (error: any) {
       console.error("Create response error:", error);
       res.status(500).json({ error: "Failed to submit response" });

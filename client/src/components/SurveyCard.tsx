@@ -210,11 +210,11 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
         <div className="flex gap-6 text-sm">
           <div>
             <p className="text-muted-foreground">Questions</p>
-            <p className="font-semibold text-lg" data-testid="text-question-count">{survey.questionCount}</p>
+            <p className="font-semibold text-lg" data-testid="text-question-count">{survey.questionCount || 0}</p>
           </div>
           <div>
             <p className="text-muted-foreground">Responses</p>
-            <p className="font-semibold text-lg" data-testid="text-response-count">{survey.responseCount}</p>
+            <p className="font-semibold text-lg" data-testid="text-response-count">{survey.responseCount ?? 0}</p>
           </div>
         </div>
         
