@@ -115,9 +115,9 @@ export default function SurveyView() {
   };
 
   const handleBack = () => {
-    // If on welcome screen, go back to dashboard
+    // If on welcome screen, exit the survey completely
     if (currentStep === -1) {
-      window.location.href = '/';
+      setShowExitWarning(true);
       return;
     }
     // Show warning if user has answered any questions and is leaving the question flow
@@ -139,13 +139,23 @@ export default function SurveyView() {
     if (Object.keys(answers).length > 0) {
       setShowExitWarning(true);
     } else {
-      window.location.href = '/';
+      // Exit without accessing dashboard - attempt to close or go back
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.close();
+      }
     }
   };
 
   const confirmExit = () => {
     setShowExitWarning(false);
-    window.location.href = '/';
+    // Exit without accessing dashboard - attempt to close or go back
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      window.close();
+    }
   };
 
   const handleSubmit = () => {
