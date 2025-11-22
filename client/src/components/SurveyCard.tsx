@@ -5,11 +5,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { MoreVertical, Eye, BarChart3, Download, Share2, Check, Copy, Edit3, Users, CheckCircle, Pause, Lock, Download as DownloadIcon } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useState, useRef } from "react";
-import * as QRCodeModule from "qrcode.react";
+import { useState, useRef, lazy, Suspense } from "react";
 import type { Question } from "@shared/schema";
 
-const QRCode = QRCodeModule.default || QRCodeModule as any;
+// Lazy load QRCode to avoid ESM issues
+const QRCode = lazy(() => import("qrcode.react").then(mod => ({ default: mod.default })));
 
 export interface Survey {
   id: string;
@@ -268,13 +268,15 @@ export default function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport
             <div className="flex flex-col items-center space-y-3">
               <div className="p-4 bg-white rounded-lg border">
                 <div ref={qrRef}>
-                  <QRCode
-                    value={shareUrl}
-                    size={200}
-                    level="H"
-                    includeMargin={true}
-                    data-testid="qr-code"
-                  />
+                  <Suspense fallback={<div className="w-[200px] h-[200px] bg-muted rounded animate-pulse" />}>
+                    <QRCode
+                      value={shareUrl}
+                      size={200}
+                      level="H"
+                      includeMargin={true}
+                      data-testid="qr-code"
+                    />
+                  </Suspense>
                 </div>
               </div>
               <p className="text-xs text-muted-foreground text-center">
