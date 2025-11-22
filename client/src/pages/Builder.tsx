@@ -25,9 +25,9 @@ import { useFileProcessing } from "@/hooks/useFileProcessing";
 import { useAIChat } from "@/hooks/useAIChat";
 
 const WIZARD_STEPS = [
-  { number: 1, title: "Start", description: "Create your survey" },
-  { number: 2, title: "Questions", description: "Build your survey" },
-  { number: 3, title: "Review", description: "Finalize & share" },
+  { number: 1, title: "Start", description: "Choose how to create your survey: select a template, generate with AI, or upload a document" },
+  { number: 2, title: "Questions", description: "Review and refine your questions. Use AI chat to make adjustments or edit directly" },
+  { number: 3, title: "Review", description: "Add survey details, welcome message, and thank you message. Then publish to start collecting responses" },
 ];
 
 function formatTimeAgo(date: Date): string {
@@ -283,8 +283,8 @@ export default function Builder() {
             <div className="max-w-5xl mx-auto">
               {/* Tab Header */}
               <div className="mb-8">
-                <h2 className="text-2xl font-semibold mb-1">Choose your creation method</h2>
-                <p className="text-muted-foreground">Pick the option that works best for you</p>
+                <h2 className="text-2xl font-semibold mb-1">Step 1: Choose your creation method</h2>
+                <p className="text-muted-foreground">Pick the option that works best for you. You can edit questions in the next step regardless of which method you choose.</p>
               </div>
 
               <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "templates" | "ai" | "upload")} className="w-full">
@@ -367,7 +367,7 @@ export default function Builder() {
                   <div>
                     <h3 className="text-lg font-semibold mb-2">Professional Training Templates</h3>
                     <p className="text-muted-foreground mb-6">
-                      Start with proven survey frameworks designed for trainers.
+                      Start with proven survey frameworks designed for trainers. Browse templates below, preview them to see all questions, and click "Use Template" to get started. Once selected, you can customize the title and edit any questions in Step 2.
                     </p>
                   </div>
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -410,7 +410,7 @@ export default function Builder() {
                     <div>
                       <h3 className="text-lg font-semibold mb-2">Generate with AI</h3>
                       <p className="text-muted-foreground mb-4">
-                        Describe your survey needs and let AI create custom questions for you.
+                        Describe what your survey is about and what you want to measure. AI will generate custom questions tailored to your needs. Be specific about the training topic, learning objectives, or feedback you're seeking. Example: "I need a survey to assess employee understanding of our new compliance policy and willingness to apply it on the job."
                       </p>
                     </div>
                     
@@ -478,9 +478,9 @@ export default function Builder() {
                     {/* File Upload Section */}
                     <div className="space-y-4">
                       <div>
-                        <h3 className="text-lg font-semibold mb-2">Upload Document</h3>
+                        <h3 className="text-lg font-semibold mb-2">Upload Document or Paste Text</h3>
                         <p className="text-muted-foreground mb-4">
-                          Upload a PDF, DOCX, or TXT document and AI will extract survey questions from it.
+                          Upload a PDF, DOCX, or TXT document (or paste text) and AI will analyze the content and automatically generate survey questions. Works great for training materials, course content, or any document you want to turn into an assessment.
                         </p>
                       </div>
                       <div>
