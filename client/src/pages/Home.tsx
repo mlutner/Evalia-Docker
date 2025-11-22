@@ -92,35 +92,35 @@ export default function Home() {
       {/* Features Section */}
       <section className="container mx-auto px-6 py-20 max-w-7xl">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Feature 1 - Teal */}
-          <div className="space-y-4 p-6 rounded-lg bg-teal-50 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800/50">
-            <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-teal-500/20 dark:bg-teal-500/30">
-              <Sparkles className="w-6 h-6 text-teal-600 dark:text-teal-400" />
+          {/* Feature 1 */}
+          <div className="space-y-4 p-6 rounded-lg bg-card border border-border dark:bg-slate-800/50 dark:border-slate-700">
+            <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-blue-900 dark:bg-blue-900">
+              <Sparkles className="w-6 h-6 text-lime-400 dark:text-lime-400" />
             </div>
-            <h3 className="text-xl font-semibold text-teal-900 dark:text-teal-100">AI-Powered Creation</h3>
-            <p className="text-teal-700 dark:text-teal-200">
+            <h3 className="text-xl font-semibold text-foreground dark:text-white">AI-Powered Creation</h3>
+            <p className="text-muted-foreground dark:text-slate-300">
               Generate survey questions instantly with AI. Upload documents, paste text, or describe your training topic.
             </p>
           </div>
 
-          {/* Feature 2 - Lime */}
-          <div className="space-y-4 p-6 rounded-lg bg-lime-50 dark:bg-lime-950/30 border border-lime-300 dark:border-lime-800/50">
-            <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-lime-400/30 dark:bg-lime-500/30">
-              <BarChart3 className="w-6 h-6 text-lime-700 dark:text-lime-300" />
+          {/* Feature 2 */}
+          <div className="space-y-4 p-6 rounded-lg bg-card border border-border dark:bg-slate-800/50 dark:border-slate-700">
+            <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-blue-900 dark:bg-blue-900">
+              <BarChart3 className="w-6 h-6 text-lime-400 dark:text-lime-400" />
             </div>
-            <h3 className="text-xl font-semibold text-lime-900 dark:text-lime-100">Instant Analytics</h3>
-            <p className="text-lime-700 dark:text-lime-200">
+            <h3 className="text-xl font-semibold text-foreground dark:text-white">Instant Analytics</h3>
+            <p className="text-muted-foreground dark:text-slate-300">
               Get real-time insights on survey responses with beautiful visualizations and detailed reports.
             </p>
           </div>
 
-          {/* Feature 3 - Teal */}
-          <div className="space-y-4 p-6 rounded-lg bg-teal-50 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800/50">
-            <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-teal-500/20 dark:bg-teal-500/30">
-              <Zap className="w-6 h-6 text-teal-600 dark:text-teal-400" />
+          {/* Feature 3 */}
+          <div className="space-y-4 p-6 rounded-lg bg-card border border-border dark:bg-slate-800/50 dark:border-slate-700">
+            <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-blue-900 dark:bg-blue-900">
+              <Zap className="w-6 h-6 text-lime-400 dark:text-lime-400" />
             </div>
-            <h3 className="text-xl font-semibold text-teal-900 dark:text-teal-100">Fast & Simple</h3>
-            <p className="text-teal-700 dark:text-teal-200">
+            <h3 className="text-xl font-semibold text-foreground dark:text-white">Fast & Simple</h3>
+            <p className="text-muted-foreground dark:text-slate-300">
               Create, publish, and share surveys in minutes. No training needed. Mobile-friendly for all respondents.
             </p>
           </div>
