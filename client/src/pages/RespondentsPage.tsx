@@ -217,10 +217,13 @@ export default function RespondentsPage() {
     },
   });
 
+  const completedCount = respondents.filter(r => r.submitted).length;
+  const completionRate = respondents.length > 0 ? Math.round((completedCount / respondents.length) * 100) : 0;
+
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h1 className="text-3xl font-bold" data-testid="heading-respondents">Respondent Tracking</h1>
             <p className="text-muted-foreground mt-2">Manage survey invitations and track who's submitted responses</p>
@@ -229,6 +232,38 @@ export default function RespondentsPage() {
             Back to Survey
           </Button>
         </div>
+
+        {respondents.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Invited</CardTitle>
+                <Users className="w-4 h-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{respondents.length}</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Completed</CardTitle>
+                <Check className="w-4 h-4 text-green-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-green-600">{completedCount}</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
+                <Clock className="w-4 h-4 text-blue-600" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-blue-600">{completionRate}%</div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Privacy Notice */}
         <Card className="border-blue-200 bg-blue-50 dark:bg-blue-950">

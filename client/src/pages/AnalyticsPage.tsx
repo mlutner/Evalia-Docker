@@ -160,14 +160,49 @@ export default function AnalyticsPage() {
         <Header />
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-md mx-auto text-center">
+            <AlertTriangle className="w-16 h-16 text-yellow-600 mx-auto mb-4 opacity-50" />
             <h1 className="text-2xl font-semibold mb-2">Analytics Not Available</h1>
             <p className="text-muted-foreground mb-6">
-              Unable to load analytics for this survey.
+              {error ? "Unable to load analytics for this survey." : "No data available at this time."}
             </p>
             <Button onClick={() => setLocation("/dashboard")}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Dashboard
             </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Check if survey has no responses
+  if (data.responses.length === 0) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <Button variant="outline" onClick={() => setLocation("/dashboard")}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+            </div>
+          </div>
+          <div className="max-w-2xl mx-auto text-center py-20">
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <FileText className="w-10 h-10 text-primary" />
+            </div>
+            <h1 className="text-2xl font-semibold mb-2">No Responses Yet</h1>
+            <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+              Your survey "{data.survey.title}" hasn't received any responses yet. Share it with respondents to start collecting data.
+            </p>
+            <div className="flex gap-3 justify-center">
+              <Button onClick={() => setLocation("/dashboard")}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Dashboard
+              </Button>
+            </div>
           </div>
         </div>
       </div>

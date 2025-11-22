@@ -20,6 +20,7 @@ export default function Dashboard() {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "most-responses" | "alphabetical">("newest");
   const { toast } = useToast();
 
   const { data: surveys = [], isLoading } = useQuery<SurveyWithCounts[]>({
@@ -32,9 +33,9 @@ export default function Dashboard() {
     [surveys]
   );
 
-  // Filter surveys based on search and tags (memoized)
+  // Filter and sort surveys (memoized)
   const filteredSurveys = useMemo(() => {
-    return surveys.filter(survey => {
+    let filtered = surveys.filter(survey => {
       const matchesSearch = searchTerm === "" || 
         survey.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         survey.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -45,7 +46,25 @@ export default function Dashboard() {
       
       return matchesSearch && matchesTags;
     });
-  }, [surveys, searchTerm, selectedTags]);
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "newest":
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case "oldest":
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        case "most-responses":
+          return b.responseCount - a.responseCount;
+        case "alphabetical":
+          return a.title.localeCompare(b.title);
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
+  }, [surveys, searchTerm, selectedTags, sortBy]);
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -227,22 +246,38 @@ export default function Dashboard() {
             </TabsList>
 
             <TabsContent value="all" className="space-y-6">
-              <SurveyFilters
-                searchTerm={searchTerm}
-                onSearchChange={setSearchTerm}
-                allTags={allTags}
-                selectedTags={selectedTags}
-                onTagToggle={(tag) => setSelectedTags(prev => 
-                  prev.includes(tag) 
-                    ? prev.filter(t => t !== tag)
-                    : [...prev, tag]
-                )}
-                testIdPrefix="surveys"
-              />
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">
-                  Showing {filteredSurveys.length} of {surveys.length} {surveys.length === 1 ? 'survey' : 'surveys'}
-                </p>
+              <div className="space-y-4">
+                <SurveyFilters
+                  searchTerm={searchTerm}
+                  onSearchChange={setSearchTerm}
+                  allTags={allTags}
+                  selectedTags={selectedTags}
+                  onTagToggle={(tag) => setSelectedTags(prev => 
+                    prev.includes(tag) 
+                      ? prev.filter(t => t !== tag)
+                      : [...prev, tag]
+                  )}
+                  testIdPrefix="surveys"
+                />
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <p className="text-sm text-muted-foreground">
+                    Showing {filteredSurveys.length} of {surveys.length} {surveys.length === 1 ? 'survey' : 'surveys'}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">Sort:</span>
+                    <select 
+                      value={sortBy} 
+                      onChange={(e) => setSortBy(e.target.value as any)}
+                      className="text-xs px-2 py-1 border rounded-md bg-background"
+                      data-testid="select-sort"
+                    >
+                      <option value="newest">Newest First</option>
+                      <option value="oldest">Oldest First</option>
+                      <option value="most-responses">Most Responses</option>
+                      <option value="alphabetical">A-Z</option>
+                    </select>
+                  </div>
+                </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredSurveys.map((survey, index) => (
@@ -283,22 +318,24 @@ export default function Dashboard() {
             </TabsContent>
 
             <TabsContent value="recent" className="space-y-6">
-              <SurveyFilters
-                searchTerm={searchTerm}
-                onSearchChange={setSearchTerm}
-                allTags={allTags}
-                selectedTags={selectedTags}
-                onTagToggle={(tag) => setSelectedTags(prev => 
-                  prev.includes(tag) 
-                    ? prev.filter(t => t !== tag)
-                    : [...prev, tag]
-                )}
-                testIdPrefix="surveys-recent"
-              />
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">
-                  Your {recentSurveys.length} most recent {recentSurveys.length === 1 ? 'survey' : 'surveys'}
-                </p>
+              <div className="space-y-4">
+                <SurveyFilters
+                  searchTerm={searchTerm}
+                  onSearchChange={setSearchTerm}
+                  allTags={allTags}
+                  selectedTags={selectedTags}
+                  onTagToggle={(tag) => setSelectedTags(prev => 
+                    prev.includes(tag) 
+                      ? prev.filter(t => t !== tag)
+                      : [...prev, tag]
+                  )}
+                  testIdPrefix="surveys-recent"
+                />
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-muted-foreground">
+                    Your {recentSurveys.length} most recent {recentSurveys.length === 1 ? 'survey' : 'surveys'}
+                  </p>
+                </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {recentSurveys.map((survey, index) => (
