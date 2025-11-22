@@ -996,6 +996,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Enhance prompt with AI
+  app.post("/api/enhance-prompt", isAuthenticated, async (req: any, res) => {
+    try {
+      const { prompt } = req.body;
+      
+      if (!prompt || typeof prompt !== "string" || prompt.trim().length === 0) {
+        return res.status(400).json({ error: "Prompt cannot be empty" });
+      }
+
+      const systemPrompt = `You are an expert survey design assistant. Your task is to enhance and improve a survey creation prompt to make it more detailed and effective.
+
+INSTRUCTIONS:
+- Take the user's survey description and make it more comprehensive
+- Add specific details about question count, format, and assessment approach if not mentioned
+- Suggest appropriate scoring/assessment if it's an evaluation survey
+- Keep the enhanced prompt concise but thorough
+- Maintain the user's original intent and topic
+- Return only the enhanced prompt text, no explanations
+
+GUIDELINES FOR ENHANCEMENT:
+- If no question count is specified, suggest an appropriate number based on the topic
+- If assessment is implied, recommend scoring categories
+- Suggest question types that fit the survey topic
+- Add any missing context that would help generate better questions`;
+
+      const enhancedPrompt = await generateSurveyText(systemPrompt, prompt, "quick_suggestions");
+      
+      res.json({
+        success: true,
+        enhancedPrompt: enhancedPrompt.trim(),
+      });
+    } catch (error: any) {
+      console.error("Enhance prompt error:", error);
+      res.status(500).json({ error: "Failed to enhance prompt" });
+    }
+  });
+
   // Test all AI APIs (admin only)
   app.post("/api/admin/test-ai", isAuthenticated, isMasterAdmin, async (req: any, res) => {
     try {
