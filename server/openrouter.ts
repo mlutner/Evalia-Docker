@@ -210,7 +210,8 @@ export async function refineSurvey(
     thankYouMessage?: string | null;
   },
   userMessage: string,
-  conversationHistory: ChatMessage[] = []
+  conversationHistory: ChatMessage[] = [],
+  fileData?: { name: string; type: string; base64: string }
 ): Promise<{ questions?: Question[]; message: string }> {
   const systemPrompt = `You are an AI assistant helping refine training surveys. You have full context about the survey.
 

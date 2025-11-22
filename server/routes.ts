@@ -200,7 +200,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI chat for survey refinements (protected)
   app.post("/api/chat", isAuthenticated, async (req, res) => {
     try {
-      const { message, survey, history } = req.body;
+      const { message, survey, history, fileData } = req.body;
 
       if (!message || typeof message !== "string") {
         return res.status(400).json({ error: "Message is required" });
@@ -214,7 +214,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Survey questions are required" });
       }
 
-      const result = await refineSurvey(survey, message, history || []);
+      const result = await refineSurvey(survey, message, history || [], fileData);
 
       res.json(result);
     } catch (error: any) {

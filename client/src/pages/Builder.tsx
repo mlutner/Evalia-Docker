@@ -594,6 +594,16 @@ export default function Builder() {
           />
         )}
 
+        {/* Step 4: Scoring (Optional) - Configure assessment scoring */}
+        {surveyState.currentWizardStep === 4 && (
+          <ScoringConfigStep
+            questions={surveyState.currentQuestions}
+            scoreConfig={surveyState.scoreConfig}
+            onScoreConfigChange={surveyState.setScoreConfig}
+            onUpdateQuestion={surveyState.handleUpdateQuestion}
+          />
+        )}
+
         {/* Wizard Navigation */}
         <div className="mt-8 flex justify-between items-center">
           <div>
@@ -622,7 +632,7 @@ export default function Builder() {
               </Button>
             )}
 
-            {surveyState.currentWizardStep < 3 ? (
+            {surveyState.currentWizardStep < 4 ? (
               <Button 
                 size="lg" 
                 onClick={surveyState.handleNextStep}
