@@ -142,19 +142,6 @@ export default function ScoringConfigStep({
         <p className="text-muted-foreground text-lg">
           Enable scoring to automatically calculate results based on question categories
         </p>
-        <Button
-          onClick={handleAutoGenerateScoring}
-          disabled={isAutoGenerating || questions.length === 0}
-          className="mt-4"
-          variant="outline"
-          data-testid="button-auto-generate-scoring"
-        >
-          <Sparkles className="w-4 h-4 mr-2" />
-          {isAutoGenerating ? "Generating..." : "AI Auto-Generate Scoring"}
-        </Button>
-        <p className="text-xs text-muted-foreground mt-2">
-          Let AI analyze your questions and create scoring categories automatically
-        </p>
       </div>
 
       {/* Enable Scoring Toggle */}
@@ -185,6 +172,32 @@ export default function ScoringConfigStep({
               {isEnabled ? "Scoring Enabled" : "Scoring Disabled"}
             </Label>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Auto-Generate Scoring */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Auto-Generate Scoring</CardTitle>
+          <CardDescription>
+            Let AI analyze your questions and automatically create scoring categories, ranges, and interpretations
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button
+            onClick={handleAutoGenerateScoring}
+            disabled={isAutoGenerating || questions.length === 0}
+            className="w-full"
+            variant="outline"
+            size="lg"
+            data-testid="button-auto-generate-scoring"
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            {isAutoGenerating ? "Generating..." : "AI Auto-Generate Scoring"}
+          </Button>
+          <p className="text-xs text-muted-foreground mt-3 text-center">
+            This will automatically enable scoring and set up categories based on your survey questions
+          </p>
         </CardContent>
       </Card>
 
