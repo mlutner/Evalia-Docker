@@ -176,16 +176,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Generate survey from text prompt (protected)
+  // Generate survey from text prompt or file (protected)
   app.post("/api/generate-survey", isAuthenticated, async (req, res) => {
     try {
-      const { prompt } = req.body;
+      const { prompt, fileData } = req.body;
 
-      if (!prompt || typeof prompt !== "string") {
-        return res.status(400).json({ error: "Prompt is required" });
+      if (!prompt && !fileData) {
+        return res.status(400).json({ error: "Prompt or file is required" });
       }
 
-      const survey = await generateSurveyFromText(prompt);
+      let contentToProcess = prompt || "";
+
+      // Process file if provided
+      if (fileData && fileData.base64) {
+        try {
+          const buffer = Buffer.from(fileData.base64, "base64");
+          const fileType = fileData.type;
+
+          if (fileType === "application/pdf") {
+            contentToProcess = await parsePDFWithVision(buffer, fileData.name);
+          } else if (
+            fileType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+            fileType === "application/msword"
+          ) {
+            const result = await mammoth.extractRawText({ buffer });
+            contentToProcess = result.value;
+          } else if (fileType === "text/plain") {
+            contentToProcess = buffer.toString("utf-8");
+          } else if (fileType.startsWith("image/")) {
+            // For images, add context about the image to the prompt
+            contentToProcess = prompt
+              ? `${prompt}\n\n[Image file: ${fileData.name}]`
+              : `Analyze the content in the image "${fileData.name}" and generate survey questions based on what it contains.`;
+          } else {
+            return res.status(400).json({ error: "Unsupported file type for survey generation" });
+          }
+
+          // If user also provided a prompt, combine them
+          if (prompt && prompt.trim()) {
+            contentToProcess = `${prompt}\n\nFile content:\n${contentToProcess}`;
+          }
+        } catch (fileError: any) {
+          console.error("File processing error:", fileError);
+          return res.status(400).json({ error: "Failed to process file" });
+        }
+      }
+
+      const survey = await generateSurveyFromText(contentToProcess);
 
       res.json({
         title: survey.title,

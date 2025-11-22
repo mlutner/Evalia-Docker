@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRoute, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, ArrowRight, Save, FileUp, Layers, Sparkles, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Save, FileUp, Layers, Sparkles, Loader2, Upload, X } from "lucide-react";
 import Header from "@/components/Header";
 import WizardSteps from "@/components/WizardSteps";
 import QuestionsStep from "@/components/builder/QuestionsStep";
@@ -61,12 +61,14 @@ export default function Builder() {
   const [activeTab, setActiveTab] = useState<"templates" | "ai" | "upload">("templates");
   const [viewMode, setViewMode] = useState<"chat" | "edit">("chat");
   const [prompt, setPrompt] = useState("");
+  const [selectedFileForAI, setSelectedFileForAI] = useState<{ name: string; type: string; base64: string } | null>(null);
   const [previewTemplate, setPreviewTemplate] = useState<SurveyTemplate | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [trainerName, setTrainerName] = useState("");
   const [trainingDate, setTrainingDate] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
+  const aiFileInputRef = useRef<HTMLInputElement>(null);
 
   // Load existing survey if in edit mode
   const { data: existingSurvey, isLoading: isLoadingSurvey } = useQuery<Survey>({
@@ -121,7 +123,7 @@ export default function Builder() {
   };
 
   const handleGenerateFromPrompt = async () => {
-    if (!prompt.trim()) return;
+    if (!prompt.trim() && !selectedFileForAI) return;
     fileProcessing.handleGenerateFromPrompt(
       prompt,
       (result, questionCount) => {
@@ -131,15 +133,46 @@ export default function Builder() {
           {
             id: "1",
             role: "assistant",
-            content: `I've created a ${questionCount}-question survey based on your description. You can edit the questions directly, preview the survey, or ask me to make changes!`,
+            content: `I've created a ${questionCount}-question survey based on your${selectedFileForAI ? ` ${selectedFileForAI.name}` : ' description'}. You can edit the questions directly, preview the survey, or ask me to make changes!`,
           },
         ]);
         setPrompt("");
+        setSelectedFileForAI(null);
+        if (aiFileInputRef.current) {
+          aiFileInputRef.current.value = '';
+        }
       },
       () => {
         surveyState.setCurrentWizardStep(2);
-      }
+      },
+      selectedFileForAI || undefined
     );
+  };
+
+  const handleFileSelectForAI = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const supportedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'text/plain', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (!supportedTypes.includes(file.type)) {
+      toast({
+        title: "Unsupported file type",
+        description: "Please upload an image, PDF, TXT, or DOCX file.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = (event.target?.result as string).split(',')[1];
+      setSelectedFileForAI({
+        name: file.name,
+        type: file.type,
+        base64,
+      });
+    };
+    reader.readAsDataURL(file);
   };
 
   const handlePasteText = async () => {
@@ -424,7 +457,7 @@ export default function Builder() {
                       <div>
                         <p className="font-medium text-lg mb-1">AI is creating your survey...</p>
                         <p className="text-sm text-muted-foreground">
-                          This may take 10-20 seconds. We're analyzing your description and crafting thoughtful questions.
+                          This may take 10-20 seconds. We're analyzing your input and crafting thoughtful questions.
                         </p>
                       </div>
                     </div>
@@ -432,7 +465,7 @@ export default function Builder() {
                     <div className="space-y-6">
                       <div>
                         <label className="text-sm font-medium mb-2 block">
-                          Describe your survey
+                          Describe your survey (or upload a file)
                         </label>
                         <Textarea
                           value={prompt}
@@ -442,16 +475,55 @@ export default function Builder() {
                           data-testid="input-survey-prompt"
                         />
                       </div>
-                      <Button
-                        size="lg"
-                        onClick={handleGenerateFromPrompt}
-                        disabled={!prompt.trim() || fileProcessing.isProcessing}
-                        className="w-full"
-                        data-testid="button-generate"
-                      >
-                        <Sparkles className="w-5 h-5 mr-2" />
-                        Generate Survey with AI
-                      </Button>
+
+                      {selectedFileForAI && (
+                        <div className="p-3 bg-muted rounded-lg flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground truncate">{selectedFileForAI.name}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            onClick={() => setSelectedFileForAI(null)}
+                            data-testid="button-remove-ai-file"
+                          >
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      )}
+
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          onClick={() => aiFileInputRef.current?.click()}
+                          disabled={fileProcessing.isProcessing}
+                          className="flex-1"
+                          data-testid="button-upload-ai-file"
+                          title="Upload file (image, PDF, or document)"
+                        >
+                          <Upload className="w-4 h-4 mr-2" />
+                          Attach File
+                        </Button>
+                        <Button
+                          size="lg"
+                          onClick={handleGenerateFromPrompt}
+                          disabled={(!prompt.trim() && !selectedFileForAI) || fileProcessing.isProcessing}
+                          className="flex-1"
+                          data-testid="button-generate"
+                        >
+                          <Sparkles className="w-5 h-5 mr-2" />
+                          Generate Survey
+                        </Button>
+                      </div>
+                      <input
+                        ref={aiFileInputRef}
+                        type="file"
+                        accept="image/*,.pdf,.txt,.docx"
+                        onChange={handleFileSelectForAI}
+                        className="hidden"
+                        data-testid="input-ai-file-upload"
+                      />
                     </div>
                   )}
 

@@ -62,10 +62,11 @@ export function useFileProcessing() {
   const handleGenerateFromPrompt = async (
     prompt: string,
     onSuccess: (result: FileProcessingResult, questionCount: number) => void,
-    onAutoAdvance: () => void
+    onAutoAdvance: () => void,
+    fileData?: { name: string; type: string; base64: string }
   ) => {
-    if (!prompt.trim()) return;
-    console.log("Generating survey from prompt:", prompt);
+    if (!prompt.trim() && !fileData) return;
+    console.log("Generating survey from prompt:", prompt, fileData ? `with file: ${fileData.name}` : "");
     setIsProcessing(true);
 
     try {
@@ -74,7 +75,7 @@ export function useFileProcessing() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, fileData }),
       });
 
       if (!response.ok) {
@@ -94,7 +95,7 @@ export function useFileProcessing() {
         title: "AI generation failed",
         description:
           error.message ||
-          "Failed to generate survey. Please try again with a different description.",
+          "Failed to generate survey. Please try again.",
         variant: "destructive",
       });
     } finally {
