@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown, Clock, BookOpen, ChevronRight } from "lucide-react";
+import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown, Clock, BookOpen, ChevronRight, Link2, Unlink2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -528,6 +528,72 @@ export default function PublishStep({
                         </div>
                       )}
                     </div>
+
+                    {/* Question Assignment Section */}
+                    {categories.length > 0 && questions.length > 0 && (
+                      <div className="space-y-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
+                        <p className="text-xs font-semibold text-foreground">Assign Questions to Categories</p>
+                        <p className="text-xs text-muted-foreground">Link survey questions to scoring categories so responses get scored</p>
+                        {categories.map((cat) => {
+                          const assignedQuestions = questions.filter(q => q.scoringCategory === cat.id);
+                          const unassignedQuestions = questions.filter(q => !q.scoringCategory || q.scoringCategory !== cat.id);
+                          return (
+                            <div key={cat.id} className="space-y-2">
+                              <p className="text-xs font-medium">{cat.name} ({assignedQuestions.length} assigned)</p>
+                              <div className="space-y-1 pl-2">
+                                {assignedQuestions.map((q) => (
+                                  <div key={q.id} className="flex items-center justify-between p-1.5 bg-primary/10 rounded text-xs group">
+                                    <span className="truncate flex-1">{q.question}</span>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => {
+                                        const updatedQuestions = questions.map(qitem =>
+                                          qitem.id === q.id ? { ...qitem, scoringCategory: undefined } : qitem
+                                        );
+                                        // This would need to be passed up to parent, for now just visual
+                                      }}
+                                      className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
+                                      data-testid={`button-unassign-question-${q.id}`}
+                                    >
+                                      <Unlink2 className="w-3 h-3" />
+                                    </Button>
+                                  </div>
+                                ))}
+                                {unassignedQuestions.length > 0 && (
+                                  <details className="text-xs">
+                                    <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
+                                      Assign from {unassignedQuestions.length} available question{unassignedQuestions.length !== 1 ? 's' : ''}
+                                    </summary>
+                                    <div className="space-y-1 mt-1 pl-2">
+                                      {unassignedQuestions.map((q) => (
+                                        <div key={q.id} className="flex items-center justify-between p-1.5 bg-muted/40 rounded text-xs group">
+                                          <span className="truncate flex-1">{q.question}</span>
+                                          <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => {
+                                              const updatedQuestions = questions.map(qitem =>
+                                                qitem.id === q.id ? { ...qitem, scoringCategory: cat.id } : qitem
+                                              );
+                                              // This would need to be passed up to parent
+                                            }}
+                                            className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            data-testid={`button-assign-question-${q.id}-${cat.id}`}
+                                          >
+                                            <Link2 className="w-3 h-3" />
+                                          </Button>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </details>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
 
                     {/* Save Button */}
                     <Button

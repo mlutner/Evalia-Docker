@@ -130,6 +130,11 @@ export function useScoring(initialConfig?: SurveyScoreConfig) {
       resultsSummary: resultsSummary || undefined,
     };
     onScoreConfigChange?.(config);
+    
+    toast({
+      title: "Configuration saved",
+      description: "Your scoring configuration has been saved successfully.",
+    });
   };
 
   return {
