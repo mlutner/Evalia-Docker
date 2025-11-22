@@ -47,7 +47,6 @@ export default function Dashboard() {
       return matchesSearch && matchesTags;
     });
 
-    // Apply sorting
     filtered.sort((a, b) => {
       switch (sortBy) {
         case "newest":
@@ -64,7 +63,7 @@ export default function Dashboard() {
     });
 
     return filtered;
-  }, [surveys, searchTerm, selectedTags, sortBy]);
+  }, [surveys, searchTerm, selectedTags, sortBy]);  // Keeping inline to avoid import issues
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {

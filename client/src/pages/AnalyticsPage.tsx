@@ -7,8 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, Users, FileText, Calendar, Download, Loader2, Trash2, AlertTriangle, TrendingUp, ChevronDown, Zap, X } from "lucide-react";
+import { ResponseDetailModal } from "@/components/ResponseDetailModal";
+import { ArrowLeft, Users, FileText, Calendar, Download, Loader2, Trash2, AlertTriangle, TrendingUp, ChevronDown, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo } from "react";
 import type { Survey, SurveyResponse } from "@shared/schema";
@@ -432,52 +432,12 @@ export default function AnalyticsPage() {
             </Card>
 
             {/* Response Detail Modal */}
-            <Dialog open={!!selectedResponse} onOpenChange={(open) => !open && setSelectedResponse(null)}>
-              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" data-testid="dialog-response-detail">
-                <DialogHeader>
-                  <DialogTitle>Response Details</DialogTitle>
-                  <DialogDescription>
-                    Submitted on {selectedResponse && new Date(selectedResponse.completedAt).toLocaleString()}
-                  </DialogDescription>
-                </DialogHeader>
-                
-                {selectedResponse && (
-                  <div className="space-y-6 mt-4">
-                    {survey.questions.map((question, index) => {
-                      const answer = selectedResponse.answers[question.id];
-                      const hasAnswer = answer !== undefined && answer !== null;
-                      
-                      return (
-                        <div key={question.id} className="pb-6 border-b last:border-b-0" data-testid={`response-question-${question.id}`}>
-                          <div className="mb-3">
-                            <h3 className="font-semibold text-sm">Q{index + 1}: {question.question}</h3>
-                            {question.description && (
-                              <p className="text-xs text-muted-foreground mt-1">{question.description}</p>
-                            )}
-                          </div>
-                          
-                          <div className="pl-4 border-l-2 border-primary/30">
-                            {!hasAnswer ? (
-                              <p className="text-sm text-muted-foreground italic">No response provided</p>
-                            ) : Array.isArray(answer) ? (
-                              <div className="space-y-2">
-                                {answer.map((item, i) => (
-                                  <div key={i} className="bg-muted/50 p-2 rounded text-sm">
-                                    {item}
-                                  </div>
-                                ))}
-                              </div>
-                            ) : (
-                              <p className="text-sm whitespace-pre-wrap">{answer}</p>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </DialogContent>
-            </Dialog>
+            <ResponseDetailModal
+              response={selectedResponse}
+              survey={survey}
+              open={!!selectedResponse}
+              onOpenChange={(open) => !open && setSelectedResponse(null)}
+            />
             <h2 className="text-2xl font-semibold mb-4">Question Breakdown</h2>
             <div className="space-y-3">
               {survey.questions.map((question, index) => {
