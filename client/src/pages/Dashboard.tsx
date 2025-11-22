@@ -81,7 +81,42 @@ export default function Dashboard() {
   };
 
   const handleExport = (id: string) => {
-    console.log("Export survey:", id);
+    const surveyTitle = surveys.find(s => s.id === id)?.title || "survey";
+    const link = document.createElement('a');
+    link.href = `/api/surveys/${id}/responses/export?format=csv`;
+    link.download = `${surveyTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_responses.csv`;
+    link.click();
+    toast({
+      title: "Export started",
+      description: "Your survey responses are being downloaded as CSV",
+    });
+  };
+
+  const handleDuplicate = (id: string) => {
+    const surveyToDuplicate = surveys.find(s => s.id === id);
+    if (!surveyToDuplicate) return;
+    
+    const duplicateMutation = useMutation({
+      mutationFn: async () => {
+        return apiRequest("POST", `/api/surveys/${id}/duplicate`);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["/api/surveys"] });
+        toast({
+          title: "Survey duplicated",
+          description: `"${surveyToDuplicate.title} (Copy)" has been created`,
+        });
+      },
+      onError: (error: any) => {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to duplicate survey",
+          variant: "destructive",
+        });
+      },
+    });
+    
+    duplicateMutation.mutate();
   };
 
   const isExpired = (survey: Survey) => false; // Placeholder - expiresAt not in schema
