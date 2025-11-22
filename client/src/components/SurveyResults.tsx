@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TrendingUp } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { TrendingUp, LogOut } from "lucide-react";
 import type { SurveyScoreConfig } from "@shared/schema";
 import { calculateSurveyScores } from "@shared/schema";
 import type { Question, Survey } from "@shared/schema";
@@ -9,18 +10,40 @@ interface SurveyResultsProps {
   survey: Survey;
   answers: Record<string, string | string[]>;
   thankYouMessage: string;
+  onExit?: () => void;
 }
 
 export default function SurveyResults({
   survey,
   answers,
   thankYouMessage,
+  onExit,
 }: SurveyResultsProps) {
   const scores = calculateSurveyScores(
     survey.questions,
     answers,
     survey.scoreConfig || undefined
   );
+
+  // Find interpretations for each score
+  const getInterpretation = (categoryId: string, score: number): string | null => {
+    const config = survey.scoreConfig;
+    if (!config?.scoreRanges) return null;
+    
+    const range = config.scoreRanges.find(
+      (r: any) => r.category === categoryId && score >= r.minScore && score <= r.maxScore
+    );
+    return range?.interpretation || null;
+  };
+
+  // Handle exit - either call onExit prop or reload
+  const handleExit = () => {
+    if (onExit) {
+      onExit();
+    } else {
+      window.location.href = "/";
+    }
+  };
 
   if (!scores) {
     return (
@@ -40,11 +63,11 @@ export default function SurveyResults({
           </p>
           <Button
             size="lg"
-            onClick={() => window.location.reload()}
-            data-testid="button-submit-another"
+            onClick={handleExit}
+            data-testid="button-exit"
             className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 shadow-lg hover:shadow-xl transition-all w-full sm:w-auto mx-4"
           >
-            Submit Another Response
+            Exit
           </Button>
         </div>
       </div>
@@ -67,7 +90,7 @@ export default function SurveyResults({
         </div>
 
         {/* Score Cards */}
-        <div className="space-y-4 mb-8">
+        <div className="space-y-6 mb-8">
           {scores.map((result) => {
             const percentage = (result.score / result.maxScore) * 100;
             const progressColor =
@@ -79,19 +102,42 @@ export default function SurveyResults({
                     ? "bg-yellow-500"
                     : "bg-red-500";
 
+            // Get the interpretation from score ranges
+            const interpretation = getInterpretation(result.categoryId, result.score) || result.interpretation;
+
             return (
               <Card key={result.categoryId} data-testid={`card-score-${result.categoryId}`}>
-                <CardHeader className="pb-3">
+                <CardHeader className="pb-4">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg">{result.categoryName}</CardTitle>
-                    <span className="text-2xl font-bold text-primary" data-testid={`text-score-${result.categoryId}`}>
-                      {result.score}/{result.maxScore}
-                    </span>
+                    <div className="text-right">
+                      <span className="text-3xl font-bold text-primary" data-testid={`text-score-${result.categoryId}`}>
+                        {result.score}
+                      </span>
+                      <span className="text-sm text-muted-foreground ml-2">/ {result.maxScore}</span>
+                    </div>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-4">
+                  {/* Slider Visualization */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>0</span>
+                      <span className="font-semibold">{result.score}</span>
+                      <span>{result.maxScore}</span>
+                    </div>
+                    <Slider
+                      value={[result.score]}
+                      min={0}
+                      max={result.maxScore}
+                      disabled
+                      className="w-full"
+                      data-testid={`slider-score-${result.categoryId}`}
+                    />
+                  </div>
+
                   {/* Progress Bar */}
-                  <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${progressColor}`}
                       style={{ width: `${Math.min(percentage, 100)}%` }}
@@ -100,9 +146,11 @@ export default function SurveyResults({
                   </div>
 
                   {/* Interpretation */}
-                  <p className="text-sm text-muted-foreground" data-testid={`text-interpretation-${result.categoryId}`}>
-                    {result.interpretation}
-                  </p>
+                  {interpretation && (
+                    <p className="text-sm text-muted-foreground italic" data-testid={`text-interpretation-${result.categoryId}`}>
+                      {interpretation}
+                    </p>
+                  )}
                 </CardContent>
               </Card>
             );
@@ -118,15 +166,25 @@ export default function SurveyResults({
           </CardContent>
         </Card>
 
-        {/* Action Button */}
-        <div className="mt-8 flex justify-center">
+        {/* Action Buttons */}
+        <div className="mt-8 flex justify-center gap-3">
           <Button
+            variant="outline"
             size="lg"
             onClick={() => window.location.reload()}
             data-testid="button-submit-another-results"
-            className="text-base px-8 py-6 shadow-lg hover:shadow-xl transition-all"
+            className="text-base px-8 py-6"
           >
             Submit Another Response
+          </Button>
+          <Button
+            size="lg"
+            onClick={handleExit}
+            data-testid="button-exit-results"
+            className="text-base px-8 py-6 shadow-lg hover:shadow-xl transition-all"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Exit
           </Button>
         </div>
       </div>
