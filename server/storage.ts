@@ -39,11 +39,13 @@ export class MemStorage implements IStorage {
   private users: Map<string, User>;
   private surveys: Map<string, Survey>;
   private responses: Map<string, SurveyResponse>;
+  private respondents: Map<string, SurveyRespondent>;
 
   constructor() {
     this.users = new Map();
     this.surveys = new Map();
     this.responses = new Map();
+    this.respondents = new Map();
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -89,6 +91,14 @@ export class MemStorage implements IStorage {
       welcomeMessage: insertSurvey.welcomeMessage ?? null,
       thankYouMessage: insertSurvey.thankYouMessage ?? null,
       illustrationUrl: insertSurvey.illustrationUrl ?? null,
+      trainerName: insertSurvey.trainerName ?? null,
+      trainingDate: insertSurvey.trainingDate ?? null,
+      tags: insertSurvey.tags ?? [],
+      isAnonymous: insertSurvey.isAnonymous ?? false,
+      webhookUrl: insertSurvey.webhookUrl ?? null,
+      status: insertSurvey.status ?? "Active",
+      publishedAt: insertSurvey.publishedAt ?? null,
+      scoreConfig: insertSurvey.scoreConfig ?? undefined,
       createdAt: now,
       updatedAt: now,
     };
@@ -107,7 +117,20 @@ export class MemStorage implements IStorage {
 
     const updatedSurvey: Survey = {
       ...survey,
-      ...updates,
+      title: updates.title ?? survey.title,
+      description: updates.description ?? survey.description,
+      questions: updates.questions ?? survey.questions,
+      welcomeMessage: updates.welcomeMessage ?? survey.welcomeMessage,
+      thankYouMessage: updates.thankYouMessage ?? survey.thankYouMessage,
+      illustrationUrl: updates.illustrationUrl ?? survey.illustrationUrl,
+      trainerName: updates.trainerName ?? survey.trainerName,
+      trainingDate: updates.trainingDate ?? survey.trainingDate,
+      tags: updates.tags ?? survey.tags,
+      isAnonymous: updates.isAnonymous ?? survey.isAnonymous,
+      webhookUrl: updates.webhookUrl ?? survey.webhookUrl,
+      status: updates.status ?? survey.status,
+      publishedAt: updates.publishedAt ?? survey.publishedAt,
+      scoreConfig: updates.scoreConfig ?? survey.scoreConfig,
       updatedAt: new Date(),
     };
     this.surveys.set(id, updatedSurvey);
@@ -200,27 +223,34 @@ export class MemStorage implements IStorage {
       invitedAt: new Date(),
       submittedAt: null,
     };
+    this.respondents.set(id, surveyRespondent);
     return surveyRespondent;
   }
 
   async getRespondent(token: string): Promise<SurveyRespondent | undefined> {
-    return undefined;
+    return Array.from(this.respondents.values()).find(r => r.respondentToken === token);
   }
 
   async getRespondentsByEmail(surveyId: string, email: string): Promise<SurveyRespondent[]> {
-    return [];
+    return Array.from(this.respondents.values()).filter(r => r.surveyId === surveyId && r.email === email);
   }
 
   async getAllRespondents(surveyId: string): Promise<SurveyRespondent[]> {
-    return [];
+    return Array.from(this.respondents.values())
+      .filter(r => r.surveyId === surveyId)
+      .sort((a, b) => b.invitedAt.getTime() - a.invitedAt.getTime());
   }
 
   async markRespondentAsSubmitted(respondentId: string): Promise<boolean> {
-    return false;
+    const respondent = this.respondents.get(respondentId);
+    if (!respondent) return false;
+    respondent.submittedAt = new Date();
+    this.respondents.set(respondentId, respondent);
+    return true;
   }
 
   async deleteRespondent(id: string): Promise<boolean> {
-    return false;
+    return this.respondents.delete(id);
   }
 }
 
