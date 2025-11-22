@@ -30,12 +30,6 @@ export default function SurveyResults({
     const config = survey.scoreConfig;
     if (!config?.scoreRanges) return null;
     
-    const range = config.scoreRanges.find(
-      (r: any) => r.category === categoryId && score >= r.minScore && score <= r.maxScore
-    );
-    
-    if (!range) return null;
-    
     // Calculate position on FULL SCALE (0 to maxScore)
     const percentageOfMax = (score / maxScore) * 100;
     
@@ -51,11 +45,36 @@ export default function SurveyResults({
       performanceLevel = "mid";
     }
     
+    // Try to find exact matching range
+    const range = config.scoreRanges.find(
+      (r: any) => r.category === categoryId && score >= r.minScore && score <= r.maxScore
+    );
+    
+    if (range) {
+      return {
+        interpretation: range.interpretation,
+        label: range.label,
+        minScore: range.minScore,
+        maxScore: range.maxScore,
+        percentageOfMax,
+        performanceLevel,
+        progressColor,
+      };
+    }
+    
+    // Fallback: if no exact range found, create synthetic range based on performance level
+    const fallbackLabel = performanceLevel === "high" ? "Excellent" : performanceLevel === "mid" ? "On track" : "Needs development";
+    const fallbackInterpretation = performanceLevel === "high" 
+      ? "You demonstrate strong performance in this area." 
+      : performanceLevel === "mid"
+      ? "You're making good progress in this area."
+      : "There is room for improvement in this area.";
+    
     return {
-      interpretation: range.interpretation,
-      label: range.label,
-      minScore: range.minScore,
-      maxScore: range.maxScore,
+      interpretation: fallbackInterpretation,
+      label: fallbackLabel,
+      minScore: 0,
+      maxScore: maxScore,
       percentageOfMax,
       performanceLevel,
       progressColor,
