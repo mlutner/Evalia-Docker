@@ -16,18 +16,18 @@ Evalia follows Typeform's pioneering one-question-at-a-time philosophy while ada
 
 The design system uses carefully selected colors to create visual distinction with a "calm productivity" vibe:
 
-- **Soft Amber (#F4C264)**: Warm, mature, welcoming - used for templates and primary call-to-action areas
+- **Accent Amber (#F5DFA1)**: Warm, gentle, welcoming - used for templates and primary call-to-action areas
 - **Cyan (#22D3EE)**: Innovative, AI-powered - used for AI-generated content and smart features
 - **Warm Amber (#D97706)**: Active, energetic - used for uploads, file processing, and secondary actions
 - **Navy (#071A32)**: Deep, authoritative - used for text and critical information
 
 **Survey Creation Methods Use Color Language:**
-- **Templates**: Soft Amber accent - warm welcome, establishes structure and professionalism
+- **Templates**: Accent Amber accent - warm welcome, establishes structure and professionalism
 - **AI Generation**: Cyan accent - communicates intelligence, innovation, and AI-powered capability
 - **Upload/Paste**: Warm Amber accent - signals action, active processing, file handling
 
 **Design Principles:**
-- Soft Amber pairs beautifully with Cyan on the color wheel
+- Accent Amber pairs beautifully with Cyan on the color wheel
 - Warms up the palette without overwhelming
 - Perfect for callouts, highlights, and onboarding experiences
 - Creates wellness + coaching interface feeling (ideal for trainer platform)
