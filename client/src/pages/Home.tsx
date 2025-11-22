@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Sparkles, BarChart3, Zap } from "lucide-react";
 import evaliaLogo from "@assets/Heading (300 x 50 px) (1000 x 250 px) (2)_1762359727994.png";
 
-import ChatGPT_Image_Nov_21__2025__06_18_52_PM from "@assets/ChatGPT Image Nov 21, 2025, 06_18_52 PM.png";
+import ChatGPT_Image_Nov_22__2025__09_36_23_AM from "@assets/ChatGPT Image Nov 22, 2025, 09_36_23 AM_1763832999353.png";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -82,7 +82,7 @@ export default function Home() {
           <div className="hidden lg:flex items-center justify-center h-full">
             <div className="relative w-full max-w-2xl">
               <img
-                src={ChatGPT_Image_Nov_21__2025__06_18_52_PM}
+                src={ChatGPT_Image_Nov_22__2025__09_36_23_AM}
                 alt="Survey illustration"
                 className="w-full h-auto object-contain dark:opacity-90"
               />
