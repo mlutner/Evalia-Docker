@@ -633,6 +633,20 @@ export class DbStorage implements IStorage {
   }
 
   async getAdminAISettings(): Promise<AdminAISettings> {
+    // Always reload from database to ensure fresh settings
+    try {
+      const result = await db.select().from(adminAISettings).limit(1);
+      if (result[0]) {
+        this.adminAISettings = {
+          apiKeys: result[0].apiKeys as any,
+          models: result[0].models as any,
+          baseUrls: result[0].baseUrls as any,
+          parameters: result[0].parameters as any,
+        };
+      }
+    } catch (error) {
+      console.warn("Could not refresh admin settings from DB, using cached version");
+    }
     return this.adminAISettings;
   }
 
