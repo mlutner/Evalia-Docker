@@ -8,6 +8,8 @@ import surveyImage from "@assets/ChatGPT Image Nov 21, 2025, 05_34_39 PM_1763775
 
 import ChatGPT_Image_Nov_21__2025__05_52_04_PM from "@assets/ChatGPT Image Nov 21, 2025, 05_52_04 PM.png";
 
+import ChatGPT_Image_Nov_21__2025__06_18_52_PM from "@assets/ChatGPT Image Nov 21, 2025, 06_18_52 PM.png";
+
 export default function Home() {
   const [, setLocation] = useLocation();
   const { user, isLoading } = useAuth();
@@ -74,7 +76,7 @@ export default function Home() {
           <div className="flex items-center justify-start h-full min-h-screen -ml-20">
             <div className="relative w-full max-w-2xl scale-150">
               <img
-                src={ChatGPT_Image_Nov_21__2025__05_52_04_PM}
+                src={ChatGPT_Image_Nov_21__2025__06_18_52_PM}
                 alt="Survey illustration"
                 className="w-full h-auto object-contain pt-[60px] pb-[60px] mt-[0px] mb-[0px] ml-[0px] mr-[0px] pl-[65px] pr-[65px]"
               />
