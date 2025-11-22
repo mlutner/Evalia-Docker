@@ -500,10 +500,10 @@ export default function PublishStep({
           </div>
 
           {illustrationUrl && (
-            <div className="mt-6 rounded-lg overflow-hidden border bg-muted/30 flex flex-col">
+            <div className="mt-6 rounded-lg overflow-hidden border bg-muted/30">
               <p className="text-xs font-medium text-muted-foreground px-3 pt-3">Selected illustration</p>
-              <div className="flex items-center justify-center min-h-64 p-4">
-                <img src={illustrationUrl} alt="Selected illustration" className="w-full h-full object-contain" />
+              <div className="flex items-center justify-center h-32 p-2">
+                <img src={illustrationUrl} alt="Selected illustration" className="max-w-full max-h-full object-contain" />
               </div>
               <div className="p-2">
                 <Button
