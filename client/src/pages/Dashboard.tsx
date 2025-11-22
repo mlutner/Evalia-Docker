@@ -1,17 +1,18 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import SurveyCard from "@/components/SurveyCard";
+import { SurveyFilters } from "@/components/SurveyFilters";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Plus, FileText, BarChart3, Calendar, Clock, Users } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { Survey } from "@shared/schema";
+import type { ReactNode } from "react";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
@@ -25,21 +26,26 @@ export default function Dashboard() {
     queryKey: ["/api/surveys"],
   });
 
-  // Get all available tags across surveys
-  const allTags = Array.from(new Set(surveys.flatMap(s => s.tags || [])));
+  // Get all available tags across surveys (memoized)
+  const allTags = useMemo(
+    () => Array.from(new Set(surveys.flatMap(s => s.tags || []))),
+    [surveys]
+  );
 
-  // Filter surveys based on search and tags
-  const filteredSurveys = surveys.filter(survey => {
-    const matchesSearch = searchTerm === "" || 
-      survey.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      survey.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      survey.trainerName?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesTags = selectedTags.length === 0 || 
-      selectedTags.some(tag => survey.tags?.includes(tag));
-    
-    return matchesSearch && matchesTags;
-  });
+  // Filter surveys based on search and tags (memoized)
+  const filteredSurveys = useMemo(() => {
+    return surveys.filter(survey => {
+      const matchesSearch = searchTerm === "" || 
+        survey.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        survey.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        survey.trainerName?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesTags = selectedTags.length === 0 || 
+        selectedTags.some(tag => survey.tags?.includes(tag));
+      
+      return matchesSearch && matchesTags;
+    });
+  }, [surveys, searchTerm, selectedTags]);
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -78,16 +84,6 @@ export default function Dashboard() {
     console.log("Export survey:", id);
   };
 
-  const getStatusBadge = (survey: Survey) => {
-    if (survey.status === "Active") {
-      return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200" data-testid={`badge-status-active-${survey.id}`}>Active</Badge>;
-    } else if (survey.status === "Paused") {
-      return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200" data-testid={`badge-status-paused-${survey.id}`}>Paused</Badge>;
-    } else {
-      return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200" data-testid={`badge-status-closed-${survey.id}`}>Closed</Badge>;
-    }
-  };
-
   const isExpired = (survey: Survey) => survey.expiresAt && new Date(survey.expiresAt) < new Date();
 
   const handleDelete = (id: string) => {
@@ -100,10 +96,13 @@ export default function Dashboard() {
     }
   };
 
-  // Sort surveys by creation date for "Recent" tab
-  const recentSurveys = [...filteredSurveys].sort((a, b) => 
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  ).slice(0, 6);
+  // Sort surveys by creation date for "Recent" tab (memoized)
+  const recentSurveys = useMemo(
+    () => [...filteredSurveys].sort((a, b) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    ).slice(0, 6),
+    [filteredSurveys]
+  );
 
   const surveyToDelete = surveys.find(s => s.id === deleteConfirm);
 
@@ -193,39 +192,18 @@ export default function Dashboard() {
             </TabsList>
 
             <TabsContent value="all" className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Input
-                    placeholder="Search surveys by title, description, trainer..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="flex-1"
-                    data-testid="input-search-surveys"
-                  />
-                </div>
-                {allTags.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {allTags.map(tag => (
-                      <button
-                        key={tag}
-                        onClick={() => setSelectedTags(prev => 
-                          prev.includes(tag) 
-                            ? prev.filter(t => t !== tag)
-                            : [...prev, tag]
-                        )}
-                        className={`px-3 py-1 rounded-full text-sm transition-all ${
-                          selectedTags.includes(tag)
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                        }`}
-                        data-testid={`button-filter-tag-${tag}`}
-                      >
-                        {tag}
-                      </button>
-                    ))}
-                  </div>
+              <SurveyFilters
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+                allTags={allTags}
+                selectedTags={selectedTags}
+                onTagToggle={(tag) => setSelectedTags(prev => 
+                  prev.includes(tag) 
+                    ? prev.filter(t => t !== tag)
+                    : [...prev, tag]
                 )}
-              </div>
+                testIdPrefix="surveys"
+              />
               <div className="flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
                   Showing {filteredSurveys.length} of {surveys.length} {surveys.length === 1 ? 'survey' : 'surveys'}
@@ -284,39 +262,18 @@ export default function Dashboard() {
             </TabsContent>
 
             <TabsContent value="recent" className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Input
-                    placeholder="Search surveys by title, description, trainer..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="flex-1"
-                    data-testid="input-search-surveys-recent"
-                  />
-                </div>
-                {allTags.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {allTags.map(tag => (
-                      <button
-                        key={tag}
-                        onClick={() => setSelectedTags(prev => 
-                          prev.includes(tag) 
-                            ? prev.filter(t => t !== tag)
-                            : [...prev, tag]
-                        )}
-                        className={`px-3 py-1 rounded-full text-sm transition-all ${
-                          selectedTags.includes(tag)
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                        }`}
-                        data-testid={`button-filter-tag-recent-${tag}`}
-                      >
-                        {tag}
-                      </button>
-                    ))}
-                  </div>
+              <SurveyFilters
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+                allTags={allTags}
+                selectedTags={selectedTags}
+                onTagToggle={(tag) => setSelectedTags(prev => 
+                  prev.includes(tag) 
+                    ? prev.filter(t => t !== tag)
+                    : [...prev, tag]
                 )}
-              </div>
+                testIdPrefix="surveys-recent"
+              />
               <div className="flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
                   Your {recentSurveys.length} most recent {recentSurveys.length === 1 ? 'survey' : 'surveys'}

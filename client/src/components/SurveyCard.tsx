@@ -71,7 +71,7 @@ interface SurveyCardProps {
   index?: number;
 }
 
-export default function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport, onDelete, onManageRespondents, index = 0 }: SurveyCardProps) {
+const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport, onDelete, onManageRespondents, index = 0 }: SurveyCardProps) {
   const [copied, setCopied] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   
@@ -321,4 +321,6 @@ export default function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport
       </Dialog>
     </Card>
   );
-}
+};
+
+export default memo(SurveyCardComponent);
