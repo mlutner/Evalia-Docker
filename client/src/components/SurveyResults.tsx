@@ -238,7 +238,7 @@ export default function SurveyResults({
                   <div className="space-y-3">
                     {rangeInfo?.interpretation && (
                       <p className="text-sm text-foreground font-medium" data-testid={`text-interpretation-${result.categoryId}`}>
-                        {rangeInfo.interpretation}
+                        {rangeInfo.interpretation.replace(/^Score range:\s*[\d\-]+\.\s*/, "")}
                       </p>
                     )}
                     {recommendation && (
