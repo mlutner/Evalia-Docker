@@ -51,12 +51,13 @@ interface SurveyCardProps {
   onAnalyze: () => void;
   onExport: () => void;
   onDelete: () => void;
+  onDuplicate?: () => void;
   onManageRespondents?: () => void;
   onShare?: () => void;
   index?: number;
 }
 
-const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport, onDelete, onManageRespondents, index = 0 }: SurveyCardProps) {
+const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport, onDelete, onDuplicate, onManageRespondents, index = 0 }: SurveyCardProps) {
   const [copied, setCopied] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   
@@ -169,6 +170,12 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
               <Download className="w-4 h-4 mr-2" />
               Export Data
             </DropdownMenuItem>
+            {onDuplicate && (
+              <DropdownMenuItem onClick={onDuplicate} data-testid="menu-duplicate">
+                <Copy className="w-4 h-4 mr-2" />
+                Duplicate Survey
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem onClick={onDelete} className="text-destructive" data-testid="menu-delete">
               Delete
             </DropdownMenuItem>
@@ -201,6 +208,11 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
             <p className="font-semibold text-lg" data-testid="text-response-count">{survey.responseCount ?? 0}</p>
           </div>
         </div>
+        {survey.questionCount > 0 && (
+          <div className="text-xs text-muted-foreground pt-1">
+            Response rate: <span className="font-medium">{survey.questionCount > 0 ? Math.round((survey.responseCount / Math.max(1, survey.questionCount)) * 100) : 0}%</span>
+          </div>
+        )}
         
         {/* Feature Indicators */}
         <div className="flex flex-wrap gap-2 pt-2">
