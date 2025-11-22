@@ -585,27 +585,9 @@ export default function Builder() {
                       />
                     </div>
                   )}
-
-                  {surveyState.currentQuestions.length > 0 && (
-                    <div className="mt-10 bg-muted/40 border border-border/50 rounded-xl p-6 md:p-8">
-                      <label className="text-sm font-semibold mb-3 block text-foreground">
-                        Survey Title <span className="text-destructive">*</span>
-                      </label>
-                      <Input
-                        value={surveyState.currentSurveyTitle}
-                        onChange={(e) => surveyState.setCurrentSurveyTitle(e.target.value)}
-                        placeholder="Enter a title for your survey..."
-                        className="text-base"
-                        data-testid="input-survey-title-ai"
-                      />
-                      <p className="text-xs text-muted-foreground mt-2">
-                        AI has suggested a title based on your description. Feel free to customize it.
-                      </p>
-                    </div>
-                  )}
                 </TabsContent>
 
-                <TabsContent value="ai" className="space-y-10 pt-8">
+                <TabsContent value="upload" className="space-y-10 pt-8">
                   {/* File Upload Section */}
                   <div className="space-y-4 bg-gradient-to-br from-yellow-100/30 via-yellow-50/15 to-background rounded-xl p-6 md:p-8 border-2 border-yellow-200/60" style={{borderLeft: '4px solid rgb(245, 223, 161)'}}>
                     <div>
@@ -668,24 +650,6 @@ export default function Builder() {
                       Process Text & Generate Survey
                     </Button>
                   </div>
-
-                  {surveyState.currentQuestions.length > 0 && (
-                    <div className="mt-10 bg-muted/40 border border-border/50 rounded-xl p-6 md:p-8">
-                      <label className="text-sm font-semibold mb-3 block text-foreground">
-                        Survey Title <span className="text-destructive">*</span>
-                      </label>
-                      <Input
-                        value={surveyState.currentSurveyTitle}
-                        onChange={(e) => surveyState.setCurrentSurveyTitle(e.target.value)}
-                        placeholder="Enter a title for your survey..."
-                        className="text-base"
-                        data-testid="input-survey-title-upload"
-                      />
-                      <p className="text-xs text-muted-foreground mt-2">
-                        AI has suggested a title based on your document. Feel free to customize it.
-                      </p>
-                    </div>
-                  )}
                 </TabsContent>
               </Tabs>
 
