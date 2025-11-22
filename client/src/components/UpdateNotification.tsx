@@ -1,6 +1,6 @@
-import { AlertCircle, RefreshCw } from "lucide-react";
+import { RefreshCw, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface UpdateNotificationProps {
   visible: boolean;
@@ -16,35 +16,48 @@ export default function UpdateNotification({
   if (!visible) return null;
 
   return (
-    <div className="fixed top-4 left-4 right-4 z-50 max-w-md mx-auto" data-testid="notification-update">
-      <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
-        <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-        <AlertTitle className="text-blue-900 dark:text-blue-100">
-          Update Available
-        </AlertTitle>
-        <AlertDescription className="text-blue-800 dark:text-blue-200 mb-4">
-          A new version of Evalia is available. Reload to get the latest features and improvements.
-        </AlertDescription>
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            onClick={onReload}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-            data-testid="button-reload-app"
-          >
-            <RefreshCw className="w-3 h-3 mr-1" />
-            Reload Now
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={onDismiss}
-            data-testid="button-dismiss-update"
-          >
-            Dismiss
-          </Button>
-        </div>
-      </Alert>
+    <div className="fixed bottom-4 right-4 z-40 max-w-sm" data-testid="notification-update">
+      <Card className="border-blue-200 bg-blue-50 dark:bg-blue-950/50 dark:border-blue-800 shadow-lg">
+        <CardContent className="p-3 space-y-2">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                Update Available
+              </p>
+              <p className="text-xs text-blue-800 dark:text-blue-200 mt-0.5">
+                New version ready. Reload to get the latest features.
+              </p>
+            </div>
+            <button
+              onClick={onDismiss}
+              className="flex-shrink-0 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+              data-testid="button-close-update"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="flex gap-2 pt-1">
+            <Button
+              size="sm"
+              onClick={onReload}
+              className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-7 px-2"
+              data-testid="button-reload-app"
+            >
+              <RefreshCw className="w-3 h-3 mr-1" />
+              Reload
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={onDismiss}
+              className="text-xs h-7 px-2 text-blue-700 hover:bg-blue-100 dark:text-blue-300 dark:hover:bg-blue-900/50"
+              data-testid="button-dismiss-update"
+            >
+              Later
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
