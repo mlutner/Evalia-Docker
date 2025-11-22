@@ -339,6 +339,45 @@ export class DbStorage implements IStorage {
   // Simple response count cache with 30-second TTL
   private responseCountCache = new Map<string, { count: number; timestamp: number }>();
   private readonly CACHE_TTL = 30000; // 30 seconds
+  private adminAISettings: AdminAISettings;
+
+  constructor() {
+    // Initialize admin settings from env vars
+    this.adminAISettings = {
+      apiKeys: {
+        survey_generation: { key: process.env.API_KEY_SURVEY_GENERATION || "", rotated: null },
+        survey_refinement: { key: process.env.API_KEY_SURVEY_REFINEMENT || "", rotated: null },
+        document_parsing: { key: process.env.API_KEY_DOCUMENT_PARSING || "", rotated: null },
+        response_scoring: { key: process.env.API_KEY_RESPONSE_SCORING || "", rotated: null },
+        quick_suggestions: { key: process.env.API_KEY_QUICK_SUGGESTIONS || "", rotated: null },
+        response_analysis: { key: process.env.API_KEY_RESPONSE_ANALYSIS || "", rotated: null },
+      },
+      models: {
+        survey_generation: process.env.MODEL_SURVEY_GENERATION || "gpt-4o",
+        survey_refinement: process.env.MODEL_SURVEY_REFINEMENT || "gpt-4o",
+        document_parsing: process.env.MODEL_DOCUMENT_PARSING || "gpt-4-vision",
+        response_scoring: process.env.MODEL_RESPONSE_SCORING || "gpt-3.5-turbo",
+        quick_suggestions: process.env.MODEL_QUICK_SUGGESTIONS || "gpt-3.5-turbo",
+        response_analysis: process.env.MODEL_RESPONSE_ANALYSIS || "gpt-4o",
+      },
+      baseUrls: {
+        survey_generation: "https://api.openai.com/v1",
+        survey_refinement: "https://api.openai.com/v1",
+        document_parsing: "https://api.openai.com/v1",
+        response_scoring: "https://api.openai.com/v1",
+        quick_suggestions: "https://api.openai.com/v1",
+        response_analysis: "https://api.openai.com/v1",
+      },
+      parameters: {
+        survey_generation: { temperature: 0.7, max_tokens: 4096 },
+        survey_refinement: { temperature: 0.7, max_tokens: 4096 },
+        document_parsing: { temperature: 0.0, max_tokens: 8192 },
+        response_scoring: { temperature: 0.0, max_tokens: 2048 },
+        quick_suggestions: { temperature: 0.8, max_tokens: 1024 },
+        response_analysis: { temperature: 0.5, max_tokens: 4096 },
+      }
+    };
+  }
 
   private getResponseCountCached(surveyId: string): { count: number; timestamp: number } | undefined {
     const cached = this.responseCountCache.get(surveyId);
