@@ -77,7 +77,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
     switch (survey.status) {
       case "Active":
         return {
-          badge: <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 gap-1" data-testid={`badge-status-${survey.id}`}>
+          badge: <Badge variant="outline" className="bg-cyan-50 text-cyan-700 border-cyan-200 gap-1" data-testid={`badge-status-${survey.id}`}>
             <CheckCircle className="w-3 h-3" />
             Live
           </Badge>,
@@ -118,11 +118,11 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
 
 
   return (
-    <Card className="hover-elevate transition-all flex flex-col" data-testid={`survey-card-${survey.id}`}>
+    <Card className="card-hover hover-elevate shadow-sm transition-all flex flex-col" data-testid={`survey-card-${survey.id}`}>
       <CardHeader className="flex flex-col space-y-3 pb-4">
         <div className="flex flex-row items-start justify-between space-y-0">
           <div className="flex-1">
-            <h3 className="font-semibold text-lg line-clamp-2">{survey.title}</h3>
+            <h3 className="font-semibold text-lg line-clamp-2 leading-tight">{survey.title}</h3>
             {survey.description && (
               <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{survey.description}</p>
             )}
@@ -220,7 +220,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
 
         {/* No Respondents Notice */}
         {(survey.respondentCount === undefined || survey.respondentCount === 0) && survey.responseCount === 0 && (
-          <div className="text-xs text-muted-foreground italic p-2 bg-muted/30 rounded">
+          <div className="text-xs text-muted-foreground italic p-3 bg-gradient-to-r from-primary/5 via-primary/3 to-background rounded border border-primary/10">
             Share survey or invite respondents to start collecting responses
           </div>
         )}

@@ -507,4 +507,100 @@ body {
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
   }
+
+  /* Card hover elevation with smooth transition */
+  .card-hover {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .card-hover:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  /* Button scale on press */
+  button:active:not(:disabled),
+  [role="button"]:active:not([aria-disabled="true"]) {
+    transform: scale(0.98);
+  }
+
+  /* Smooth dropdown animation */
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Form field focus glow */
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none;
+    ring: 2px;
+    ring-offset: 2px;
+    ring-color: hsl(var(--primary) / 0.5);
+  }
+
+  /* Disabled state styling */
+  input:disabled,
+  textarea:disabled,
+  select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Error box styling */
+  .error-box {
+    background-color: rgb(254 242 242);
+    border-color: rgb(252 165 165);
+    color: rgb(127 29 29);
+  }
+
+  .dark .error-box {
+    background-color: rgb(126 34 34);
+    border-color: rgb(153 27 27);
+    color: rgb(254 226 226);
+  }
+
+  /* Loading skeleton animation */
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  .skeleton-shimmer {
+    animation: shimmer 2s infinite;
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.2) 0%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0.2) 100%
+    );
+    background-size: 1000px 100%;
+  }
+
+  /* Dark mode subtle background */
+  .dark body {
+    background: linear-gradient(135deg, #1a1a1a 0%, #222222 100%);
+  }
+
+  /* Lighter borders in light mode cards */
+  .card-border-subtle {
+    border-color: hsl(var(--border) / 0.6);
+  }
+
+  /* Left accent bar for sections */
+  .section-accent-left {
+    border-left: 4px solid hsl(var(--primary));
+    padding-left: 1rem;
+  }
 }
