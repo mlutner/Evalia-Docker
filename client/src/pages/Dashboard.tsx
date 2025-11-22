@@ -252,6 +252,7 @@ export default function Dashboard() {
                         trainerName: survey.trainerName,
                         trainingDate: survey.trainingDate?.toString(),
                         tags: survey.tags,
+                        questions: survey.questions,
                       }}
                       onEdit={() => handleEdit(survey.id)}
                       onView={() => handleView(survey.id)}
@@ -342,6 +343,7 @@ export default function Dashboard() {
                         trainerName: survey.trainerName,
                         trainingDate: survey.trainingDate?.toString(),
                         tags: survey.tags,
+                        questions: survey.questions,
                       }}
                       onEdit={() => handleEdit(survey.id)}
                       onView={() => handleView(survey.id)}

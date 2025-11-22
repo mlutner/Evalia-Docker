@@ -6,6 +6,7 @@ import { MoreVertical, Eye, BarChart3, Download, Share2, Check, Copy, Edit3, Use
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
+import type { Question } from "@shared/schema";
 
 export interface Survey {
   id: string;
@@ -19,6 +20,43 @@ export interface Survey {
   trainerName?: string;
   trainingDate?: string;
   tags?: string[];
+  questions?: Question[];
+}
+
+// Generate a brief summary from survey questions
+function generateSurveySummary(questions?: Question[]): string {
+  if (!questions || questions.length === 0) return "";
+  
+  // Extract key themes from questions
+  const questionTexts = questions.map(q => q.question.toLowerCase());
+  const themes: string[] = [];
+  
+  if (questionTexts.some(q => q.includes("confident") || q.includes("familiar"))) {
+    themes.push("Confidence");
+  }
+  if (questionTexts.some(q => q.includes("satisf") || q.includes("meet"))) {
+    themes.push("Satisfaction");
+  }
+  if (questionTexts.some(q => q.includes("apply") || q.includes("use") || q.includes("change"))) {
+    themes.push("Application");
+  }
+  if (questionTexts.some(q => q.includes("knowledge") || q.includes("understand") || q.includes("explain"))) {
+    themes.push("Knowledge");
+  }
+  if (questionTexts.some(q => q.includes("quality") || q.includes("impact") || q.includes("improvement"))) {
+    themes.push("Impact");
+  }
+  if (questionTexts.some(q => q.includes("motiv") || q.includes("barrier") || q.includes("challenge"))) {
+    themes.push("Motivation");
+  }
+  if (questionTexts.some(q => q.includes("feedback") || q.includes("improve") || q.includes("change"))) {
+    themes.push("Feedback");
+  }
+  
+  if (themes.length === 0) return "";
+  
+  // Take first 2-3 themes for conciseness
+  return `Covers: ${themes.slice(0, 3).join(", ")}`;
 }
 
 interface SurveyCardProps {
@@ -100,6 +138,9 @@ export default function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport
             <h3 className="font-semibold text-lg line-clamp-2">{survey.title}</h3>
             {survey.description && (
               <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{survey.description}</p>
+            )}
+            {!survey.description && survey.questions && (
+              <p className="text-sm text-muted-foreground mt-2">{generateSurveySummary(survey.questions)}</p>
             )}
             <div className="flex flex-col gap-1 mt-2">
               {survey.trainerName && (
