@@ -587,6 +587,12 @@ export class DbStorage implements IStorage {
     if (settings.models) {
       this.adminAISettings.models = { ...this.adminAISettings.models, ...settings.models };
     }
+    if (settings.baseUrls) {
+      this.adminAISettings.baseUrls = { ...this.adminAISettings.baseUrls, ...settings.baseUrls };
+    }
+    if (settings.parameters) {
+      this.adminAISettings.parameters = { ...this.adminAISettings.parameters, ...settings.parameters };
+    }
     return this.adminAISettings;
   }
 }
