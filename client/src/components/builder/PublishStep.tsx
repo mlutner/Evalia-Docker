@@ -12,6 +12,7 @@ interface PublishStepProps {
   illustrationUrl?: string;
   trainerName?: string;
   trainingDate?: string;
+  tags?: string[];
   generatingField: string | null;
   onTitleChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
@@ -19,6 +20,7 @@ interface PublishStepProps {
   onThankYouChange: (value: string) => void;
   onTrainerNameChange?: (value: string) => void;
   onTrainingDateChange?: (value: string) => void;
+  onTagsChange?: (tags: string[]) => void;
   onIllustrationChange?: (url: string) => void;
   onGenerateText: (fieldType: "description" | "welcomeMessage" | "thankYouMessage") => void;
 }
@@ -31,6 +33,7 @@ export default function PublishStep({
   illustrationUrl,
   trainerName,
   trainingDate,
+  tags,
   generatingField,
   onTitleChange,
   onDescriptionChange,
@@ -38,9 +41,12 @@ export default function PublishStep({
   onThankYouChange,
   onTrainerNameChange,
   onTrainingDateChange,
+  onTagsChange,
   onIllustrationChange,
   onGenerateText,
 }: PublishStepProps) {
+  const [tagInput, setTagInput] = useState("");
+  const currentTags = tags || [];
   const [illustrations, setIllustrations] = useState<string[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
 
@@ -134,6 +140,63 @@ export default function PublishStep({
               data-testid="input-training-date"
             />
           </div>
+        </div>
+
+        <div>
+          <label className="text-sm font-medium mb-2 block">
+            Tags <span className="text-muted-foreground">(optional - add categories for sorting)</span>
+          </label>
+          <div className="flex gap-2 mb-2">
+            <Input
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (tagInput.trim() && !currentTags.includes(tagInput.trim())) {
+                    onTagsChange?.([...currentTags, tagInput.trim()]);
+                    setTagInput("");
+                  }
+                }
+              }}
+              placeholder="e.g., Compliance, Safety, Onboarding"
+              data-testid="input-tag"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                if (tagInput.trim() && !currentTags.includes(tagInput.trim())) {
+                  onTagsChange?.([...currentTags, tagInput.trim()]);
+                  setTagInput("");
+                }
+              }}
+              data-testid="button-add-tag"
+              className="px-3"
+            >
+              Add
+            </Button>
+          </div>
+          {currentTags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {currentTags.map((tag) => (
+                <div
+                  key={tag}
+                  className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
+                  data-testid={`tag-${tag}`}
+                >
+                  {tag}
+                  <button
+                    onClick={() => onTagsChange?.(currentTags.filter(t => t !== tag))}
+                    className="text-primary/60 hover:text-primary"
+                    data-testid={`button-remove-tag-${tag}`}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div>

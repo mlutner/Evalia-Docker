@@ -63,6 +63,7 @@ export const surveys = pgTable("surveys", {
   illustrationUrl: text("illustration_url"),
   trainerName: text("trainer_name"),
   trainingDate: date("training_date"),
+  tags: jsonb("tags").default(sql`'[]'::jsonb`).$type<string[]>(),
   isAnonymous: boolean("is_anonymous").default(false),
   webhookUrl: text("webhook_url"),
   status: varchar("status").default("Active"),

@@ -16,10 +16,28 @@ export default function Dashboard() {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<"all" | "recent">("all");
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const { toast } = useToast();
 
   const { data: surveys = [], isLoading } = useQuery<Survey[]>({
     queryKey: ["/api/surveys"],
+  });
+
+  // Get all available tags across surveys
+  const allTags = Array.from(new Set(surveys.flatMap(s => s.tags || [])));
+
+  // Filter surveys based on search and tags
+  const filteredSurveys = surveys.filter(survey => {
+    const matchesSearch = searchTerm === "" || 
+      survey.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      survey.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      survey.trainerName?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesTags = selectedTags.length === 0 || 
+      selectedTags.some(tag => survey.tags?.includes(tag));
+    
+    return matchesSearch && matchesTags;
   });
 
   const deleteMutation = useMutation({
@@ -82,7 +100,7 @@ export default function Dashboard() {
   };
 
   // Sort surveys by creation date for "Recent" tab
-  const recentSurveys = [...surveys].sort((a, b) => 
+  const recentSurveys = [...filteredSurveys].sort((a, b) => 
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   ).slice(0, 6);
 
@@ -174,13 +192,46 @@ export default function Dashboard() {
             </TabsList>
 
             <TabsContent value="all" className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Input
+                    placeholder="Search surveys by title, description, trainer..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="flex-1"
+                    data-testid="input-search-surveys"
+                  />
+                </div>
+                {allTags.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {allTags.map(tag => (
+                      <button
+                        key={tag}
+                        onClick={() => setSelectedTags(prev => 
+                          prev.includes(tag) 
+                            ? prev.filter(t => t !== tag)
+                            : [...prev, tag]
+                        )}
+                        className={`px-3 py-1 rounded-full text-sm transition-all ${
+                          selectedTags.includes(tag)
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                        }`}
+                        data-testid={`button-filter-tag-${tag}`}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               <div className="flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
-                  Showing all {surveys.length} {surveys.length === 1 ? 'survey' : 'surveys'}
+                  Showing {filteredSurveys.length} of {surveys.length} {surveys.length === 1 ? 'survey' : 'surveys'}
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {surveys.map((survey, index) => (
+                {filteredSurveys.map((survey, index) => (
                   <div key={survey.id} className="relative">
                     {isExpired(survey) && (
                       <div className="absolute top-2 right-2 z-10">
@@ -227,6 +278,39 @@ export default function Dashboard() {
             </TabsContent>
 
             <TabsContent value="recent" className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Input
+                    placeholder="Search surveys by title, description, trainer..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="flex-1"
+                    data-testid="input-search-surveys-recent"
+                  />
+                </div>
+                {allTags.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {allTags.map(tag => (
+                      <button
+                        key={tag}
+                        onClick={() => setSelectedTags(prev => 
+                          prev.includes(tag) 
+                            ? prev.filter(t => t !== tag)
+                            : [...prev, tag]
+                        )}
+                        className={`px-3 py-1 rounded-full text-sm transition-all ${
+                          selectedTags.includes(tag)
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                        }`}
+                        data-testid={`button-filter-tag-recent-${tag}`}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               <div className="flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
                   Your {recentSurveys.length} most recent {recentSurveys.length === 1 ? 'survey' : 'surveys'}

@@ -63,6 +63,8 @@ export default function Builder() {
   const [showPreview, setShowPreview] = useState(false);
   const [trainerName, setTrainerName] = useState("");
   const [trainingDate, setTrainingDate] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
 
   // Load existing survey if in edit mode
   const { data: existingSurvey, isLoading: isLoadingSurvey } = useQuery<Survey>({
