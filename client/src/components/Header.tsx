@@ -25,7 +25,7 @@ export default function Header({ showActions = true }: HeaderProps) {
       <div className="container mx-auto flex h-20 items-center justify-between px-4">
         <button 
           onClick={() => setLocation("/")}
-          className="flex items-center -ml-2 hover:opacity-80 transition-opacity py-1"
+          className="flex items-center -ml-2 hover:opacity-80 transition-opacity py-3"
           data-testid="link-home"
         >
           <img src={logoUrl} alt="Evalia" className="h-16" />
