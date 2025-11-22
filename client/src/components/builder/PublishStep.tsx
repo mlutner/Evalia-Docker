@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2, Upload, X, Plus, Trash2 } from "lucide-react";
+import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -362,98 +362,133 @@ export default function PublishStep({
           )}
         </div>
 
-        {/* Scoring Configuration - Collapsible Section */}
-        <Collapsible defaultOpen={false} className="border rounded-lg">
-          <CollapsibleTrigger className="w-full">
-            <div className="p-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-medium">Optional: Scoring Configuration</h3>
-              </div>
-              <span className="text-xs text-muted-foreground">Configure results for respondents</span>
-            </div>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="border-t bg-muted/30 p-4 space-y-4">
-            <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
-              <div>
-                <p className="text-sm font-medium">Enable Scoring</p>
-                <p className="text-xs text-muted-foreground">Show respondents their results</p>
-              </div>
-              <Switch
-                checked={isEnabled}
-                onCheckedChange={(checked) => {
-                  setIsEnabled(checked);
-                  if (!checked) {
-                    handleSaveScoring();
-                  }
-                }}
-                data-testid="switch-enable-scoring"
-              />
-            </div>
+        {/* Scoring Configuration - Prominent Card Section */}
+        <Card className="bg-gradient-to-br from-primary/5 via-primary/3 to-background border-primary/30 shadow-sm">
+          <Collapsible defaultOpen={true} className="w-full">
+            <CollapsibleTrigger className="w-full">
+              <CardHeader className="pb-3 hover:bg-primary/5 transition-colors">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-3 flex-1">
+                    <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0 mt-1">
+                      <Award className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="text-left">
+                      <div className="flex items-center gap-2 mb-1">
+                        <CardTitle className="text-base">Assessment Scoring</CardTitle>
+                        <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary">Optional</span>
+                      </div>
+                      <CardDescription className="text-sm">
+                        Show respondents their results with personalized feedback and interpretations
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <ChevronDown className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-1 group-data-[state=open]:rotate-180 transition-transform" />
+                </div>
+              </CardHeader>
+            </CollapsibleTrigger>
 
-            {isEnabled && (
-              <>
-                <Button
-                  onClick={handleAutoGenerateScoring}
-                  disabled={isAutoGenerating || questions.length === 0}
-                  className="w-full"
-                  variant="outline"
-                  size="sm"
-                  data-testid="button-auto-generate-scoring"
-                >
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  {isAutoGenerating ? "Generating..." : "AI Auto-Generate Scoring"}
-                </Button>
-
-                <div className="flex gap-2">
-                  <Input
-                    value={newCategoryName}
-                    onChange={(e) => setNewCategoryName(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handleAddCategory();
+            <CollapsibleContent>
+              <CardContent className="space-y-4 border-t pt-4">
+                {/* Enable Toggle */}
+                <div className="flex items-center justify-between p-4 bg-background/60 rounded-lg border border-primary/20">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Enable Scoring</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Respondents will see their assessment results</p>
+                  </div>
+                  <Switch
+                    checked={isEnabled}
+                    onCheckedChange={(checked) => {
+                      setIsEnabled(checked);
+                      if (!checked) {
+                        handleSaveScoring();
                       }
                     }}
-                    placeholder="Add scoring category..."
-                    className="text-sm"
-                    data-testid="input-category-name"
+                    data-testid="switch-enable-scoring"
                   />
-                  <Button
-                    type="button"
-                    onClick={handleAddCategory}
-                    size="sm"
-                    data-testid="button-add-category"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </Button>
                 </div>
 
-                {categories.length > 0 && (
-                  <div className="space-y-2">
-                    {categories.map((cat) => (
-                      <div key={cat.id} className="flex items-center justify-between p-2 bg-background rounded border text-sm" data-testid={`category-${cat.id}`}>
-                        <span>{cat.name}</span>
-                        <Button variant="ghost" size="icon" onClick={() => handleRemoveCategory(cat.id)} className="h-6 w-6" data-testid={`button-remove-category-${cat.id}`}>
-                          <Trash2 className="w-3 h-3 text-destructive" />
-                        </Button>
+                {isEnabled && (
+                  <div className="space-y-4 pt-2">
+                    {/* AI Auto-Generate */}
+                    <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
+                      <p className="text-xs font-medium text-primary mb-2">Quick Setup</p>
+                      <Button
+                        onClick={handleAutoGenerateScoring}
+                        disabled={isAutoGenerating || questions.length === 0}
+                        className="w-full"
+                        variant="outline"
+                        size="sm"
+                        data-testid="button-auto-generate-scoring"
+                      >
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        {isAutoGenerating ? "Generating..." : "AI Auto-Generate Scoring"}
+                      </Button>
+                      <p className="text-xs text-muted-foreground mt-2 text-center">
+                        Let AI analyze your questions and create scoring automatically
+                      </p>
+                    </div>
+
+                    {/* Manual Categories */}
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-xs font-semibold text-foreground mb-2 block">Scoring Categories</label>
+                        <div className="flex gap-2">
+                          <Input
+                            value={newCategoryName}
+                            onChange={(e) => setNewCategoryName(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                handleAddCategory();
+                              }
+                            }}
+                            placeholder="e.g., Leadership Style, Engagement Level..."
+                            className="text-sm"
+                            data-testid="input-category-name"
+                          />
+                          <Button
+                            type="button"
+                            onClick={handleAddCategory}
+                            size="sm"
+                            className="flex-shrink-0"
+                            data-testid="button-add-category"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
-                    ))}
+
+                      {categories.length > 0 && (
+                        <div className="space-y-2 p-3 bg-muted/40 rounded-lg border">
+                          <p className="text-xs font-medium text-muted-foreground">Configured Categories</p>
+                          {categories.map((cat) => (
+                            <div key={cat.id} className="flex items-center justify-between p-2.5 bg-background rounded border text-sm hover:bg-muted/50 transition-colors group" data-testid={`category-${cat.id}`}>
+                              <span className="font-medium">{cat.name}</span>
+                              <Button variant="ghost" size="icon" onClick={() => handleRemoveCategory(cat.id)} className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity" data-testid={`button-remove-category-${cat.id}`}>
+                                <Trash2 className="w-3 h-3 text-destructive" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Save Button */}
+                    <Button
+                      onClick={handleSaveScoring}
+                      className="w-full"
+                      size="sm"
+                      data-testid="button-save-scoring"
+                    >
+                      <Award className="w-4 h-4 mr-2" />
+                      Save Scoring Configuration
+                    </Button>
                   </div>
                 )}
-
-                <Button
-                  onClick={handleSaveScoring}
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                  data-testid="button-save-scoring"
-                >
-                  Save Scoring Configuration
-                </Button>
-              </>
-            )}
-          </CollapsibleContent>
-        </Collapsible>
+              </CardContent>
+            </CollapsibleContent>
+          </Collapsible>
+        </Card>
 
         <div>
           <div className="flex items-center justify-between mb-2">
