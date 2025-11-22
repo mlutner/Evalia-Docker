@@ -77,7 +77,7 @@ export default function Home() {
               <img
                 src={ChatGPT_Image_Nov_21__2025__05_52_04_PM}
                 alt="Survey illustration"
-                className="w-full h-auto object-contain pl-[40px] pr-[40px] pt-[0px] pb-[0px] mt-[0px] mb-[0px]"
+                className="w-full h-auto object-contain pt-[0px] pb-[0px] mt-[0px] mb-[0px] ml-[0px] mr-[0px] pl-[60px] pr-[60px]"
               />
             </div>
           </div>
