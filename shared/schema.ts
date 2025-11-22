@@ -197,15 +197,20 @@ export function calculateSurveyScores(
             maxPossiblePoints = value; // Will be scaled
           }
         } else if (q.type === "multiple_choice") {
-          // Multiple choice: map option selection to a 1-5 scale based on number of options
-          const selectedOption = Array.isArray(answer) ? answer[0] : answer;
-          if (selectedOption && q.options) {
-            const optionIndex = q.options.indexOf(selectedOption);
+          // Multiple choice: try to extract numeric value first (for Likert scales)
+          const answerText = Array.isArray(answer) ? answer[0] : answer;
+          
+          // Try to extract leading number (e.g., "5 (Strongly Agree)" → 5)
+          const numMatch = answerText.match(/^(\d+)/);
+          if (numMatch) {
+            pointValue = parseInt(numMatch[1], 10);
+            maxPossiblePoints = 5; // Standard Likert scale
+          } else if (q.options) {
+            // Fallback: map option index to points
+            const optionIndex = q.options.indexOf(answerText);
             if (optionIndex >= 0) {
               const numOptions = q.options.length;
-              // Scale: 4-5 options → 1-5 points, 3 options → 1-3, etc.
               maxPossiblePoints = Math.min(numOptions, 5);
-              // Map option index to points: spread evenly across the scale
               pointValue = Math.ceil((optionIndex + 1) / numOptions * maxPossiblePoints);
             }
           }
