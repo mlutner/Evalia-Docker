@@ -21,10 +21,10 @@ import { useFileProcessing } from "@/hooks/useFileProcessing";
 import { useAIChat } from "@/hooks/useAIChat";
 
 const WIZARD_STEPS = [
-  { number: 1, title: "Start", description: "Choose how to create your survey: select a template, generate with AI, or upload a document" },
-  { number: 2, title: "Questions", description: "Review and refine your questions. Use AI chat to make adjustments or edit directly" },
-  { number: 3, title: "Review", description: "Add survey details, welcome message, and thank you message. Then publish to start collecting responses" },
-  { number: 4, title: "Scoring (Optional)", description: "Enable assessment scoring to show respondents their results with interpretations" },
+  { number: 1, title: "Start", description: "Select a template, generate with AI, or upload your content" },
+  { number: 2, title: "Questions", description: "Build your questions. Use AI to help you refine them" },
+  { number: 3, title: "Customize", description: "Add survey title, welcome message, and other details. Set up scoring if needed" },
+  { number: 4, title: "Scoring", description: "(Optional) Configure scoring to show respondents their results", isOptional: true },
 ];
 
 function formatTimeAgo(date: Date): string {

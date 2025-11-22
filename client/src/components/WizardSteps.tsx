@@ -6,6 +6,7 @@ interface WizardStepsProps {
     number: number;
     title: string;
     description: string;
+    isOptional?: boolean;
   }[];
 }
 
@@ -48,14 +49,21 @@ export default function WizardSteps({ currentStep, steps }: WizardStepsProps) {
                 )}
               </div>
               <div className="mt-3 text-center">
-                <div
-                  className={`text-base font-semibold transition-all ${
-                    currentStep === step.number
-                      ? "text-foreground"
-                      : "text-muted-foreground"
-                  }`}
-                >
-                  {step.title}
+                <div className="flex items-center justify-center gap-2">
+                  <div
+                    className={`text-base font-semibold transition-all ${
+                      currentStep === step.number
+                        ? "text-foreground"
+                        : "text-muted-foreground"
+                    }`}
+                  >
+                    {step.title}
+                  </div>
+                  {step.isOptional && (
+                    <span className="text-xs font-medium px-2 py-1 rounded-full bg-muted text-muted-foreground">
+                      Optional
+                    </span>
+                  )}
                 </div>
                 <div className={`text-xs mt-1 hidden sm:block ${
                   currentStep === step.number
