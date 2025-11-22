@@ -152,6 +152,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
         thankYouMessage: thankYouMessage || undefined,
         illustrationUrl: illustrationUrl || undefined,
         questions: currentQuestions,
+        scoreConfig: scoreConfig || undefined,
       };
 
       setIsAutoSaving(true);
@@ -171,6 +172,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
     thankYouMessage,
     illustrationUrl,
     currentWizardStep,
+    scoreConfig,
   ]);
 
   // Question handlers
