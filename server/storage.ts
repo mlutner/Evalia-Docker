@@ -353,7 +353,7 @@ export class DbStorage implements IStorage {
         response_analysis: { key: process.env.API_KEY_RESPONSE_ANALYSIS || "", rotated: null },
       },
       models: {
-        survey_generation: process.env.MODEL_SURVEY_GENERATION || "gpt-4o",
+        survey_generation: process.env.MODEL_SURVEY_GENERATION || "openrouter/auto",
         survey_refinement: process.env.MODEL_SURVEY_REFINEMENT || "gpt-4o",
         document_parsing: process.env.MODEL_DOCUMENT_PARSING || "gpt-4-vision",
         response_scoring: process.env.MODEL_RESPONSE_SCORING || "gpt-3.5-turbo",
@@ -361,7 +361,7 @@ export class DbStorage implements IStorage {
         response_analysis: process.env.MODEL_RESPONSE_ANALYSIS || "gpt-4o",
       },
       baseUrls: {
-        survey_generation: "https://api.openai.com/v1",
+        survey_generation: "https://openrouter.ai/api/v1",
         survey_refinement: "https://api.openai.com/v1",
         document_parsing: "https://api.openai.com/v1",
         response_scoring: "https://api.openai.com/v1",
