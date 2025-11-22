@@ -29,7 +29,7 @@ export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 
 // Question types
-export type QuestionType = "text" | "textarea" | "multiple_choice" | "checkbox" | "email" | "number" | "rating" | "nps" | "matrix" | "ranking" | "date";
+export type QuestionType = "text" | "textarea" | "multiple_choice" | "checkbox" | "email" | "number" | "rating" | "nps" | "matrix" | "ranking" | "date" | "section";
 
 export const skipConditionSchema = z.object({
   questionId: z.string(),
@@ -38,7 +38,7 @@ export const skipConditionSchema = z.object({
 
 export const questionSchema = z.object({
   id: z.string(),
-  type: z.enum(["text", "textarea", "multiple_choice", "checkbox", "email", "number", "rating", "nps", "matrix", "ranking", "date"]),
+  type: z.enum(["text", "textarea", "multiple_choice", "checkbox", "email", "number", "rating", "nps", "matrix", "ranking", "date", "section"]),
   question: z.string(),
   description: z.string().optional(),
   options: z.array(z.string()).optional(),
@@ -48,6 +48,7 @@ export const questionSchema = z.object({
   ratingScale: z.number().optional(), // 5 or 10 for rating questions
   skipCondition: skipConditionSchema, // show this question only if condition is met
   scoringCategory: z.string().optional(), // for scoring surveys - the category this question belongs to
+  sectionId: z.string().optional(), // section this question belongs to (for organizing questions into groups for scoring)
 });
 
 export type Question = z.infer<typeof questionSchema>;
