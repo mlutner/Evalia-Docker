@@ -719,25 +719,6 @@ export default function PublishStep({
                                                       </div>
                                                     </div>
 
-                                                    {/* Assigned Questions under this Range - Reference */}
-                                                    <div className="space-y-1">
-                                                      <p className="text-xs font-medium text-muted-foreground">Questions Contributing to This Score Range ({questionsInThisRange.length})</p>
-                                                      {questionsInThisRange.length > 0 ? (
-                                                        <div className="space-y-1 pl-2 border-l-2 border-primary/30">
-                                                          {questionsInThisRange.map((q) => (
-                                                            <div key={q.id} className="flex items-center justify-between p-1.5 bg-background/60 rounded text-xs hover:bg-background transition-colors">
-                                                              <span className="truncate flex-1">{q.question}</span>
-                                                              <div className="flex items-center gap-1 flex-shrink-0 ml-2">
-                                                                <span className="text-primary font-medium">{getMaxPointsForQuestion(q)}pt</span>
-                                                                <span className="text-muted-foreground text-xs">({getQuestionTypeLabel(q.type)})</span>
-                                                              </div>
-                                                            </div>
-                                                          ))}
-                                                        </div>
-                                                      ) : (
-                                                        <p className="text-xs text-muted-foreground italic pl-2">All questions assigned to this category will contribute to this range</p>
-                                                      )}
-                                                    </div>
 
                                                     {/* Remove Button */}
                                                     <Button
