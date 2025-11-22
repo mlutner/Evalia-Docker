@@ -942,8 +942,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: `Invalid function. Must be one of: ${validFunctions.join(", ")}` });
       }
 
-      if (!apiKey || typeof apiKey !== "string" || !apiKey.startsWith("sk-")) {
-        return res.status(400).json({ error: "Invalid API key format. Must start with 'sk-'" });
+      if (!apiKey || typeof apiKey !== "string" || apiKey.trim().length < 10) {
+        return res.status(400).json({ error: "Invalid API key. Must be a non-empty string (at least 10 characters)" });
       }
 
       await storage.updateAdminAISettings({
