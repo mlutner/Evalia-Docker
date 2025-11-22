@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import leadershipIllustration from "@assets/Heading_1763750607423.png";
 import logoImage from "@assets/Untitled design (3)_1763764996441.png";
 import SurveyLayout from "@/components/SurveyLayout";
@@ -39,6 +39,8 @@ export default function SurveyView() {
     },
     onSuccess: () => {
       setIsCompleted(true);
+      // Invalidate surveys cache so dashboard shows updated response count
+      queryClient.invalidateQueries({ queryKey: ["/api/surveys"] });
     },
   });
 
