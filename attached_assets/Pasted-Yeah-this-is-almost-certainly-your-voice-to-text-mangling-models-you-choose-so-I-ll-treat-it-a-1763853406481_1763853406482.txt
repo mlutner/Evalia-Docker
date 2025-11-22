@@ -1,0 +1,189 @@
+Yeah, this is almost certainly your voice-to-text mangling “models you choose” 😂 so I’ll treat it as:
+
+“How do I use OpenRouter with whatever model I want?”
+
+Big picture: OpenRouter is just a router in front of lots of providers.
+You hit one endpoint, pass a model ID (like openai/gpt-4o or moonshotai/kimi-k2:free), and it forwards the request, handles billing, and optionally does routing/fallbacks.
+
+1. Core idea in one sentence
+If you already use the OpenAI-style API, then to use OpenRouter with the model of your choice you basically:
+
+
+Change the base URL to https://openrouter.ai/api/v1
+
+
+Change the API key to your OPENROUTER_API_KEY
+
+
+Set the model field to something like "moonshotai/kimi-k2:free" instead of "gpt-4o".
+
+
+That’s it.
+
+2. Minimal examples
+a) Using the OpenAI SDK (JS/TS) but pointed at OpenRouter
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: process.env.OPENROUTER_API_KEY,
+  baseURL: "https://openrouter.ai/api/v1",
+});
+
+const completion = await client.chat.completions.create({
+  model: "moonshotai/kimi-k2:free", // or any other model id
+  messages: [
+    { role: "user", content: "Create 5 survey questions about leadership trust." },
+  ],
+});
+
+console.log(completion.choices[0].message.content);
+
+b) Plain fetch
+const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+    "Content-Type": "application/json",
+    // Optional (for their leaderboard / attribution):
+    "HTTP-Referer": "https://evalia.app",
+    "X-Title": "Evalia",
+  },
+  body: JSON.stringify({
+    model: "moonshotai/kimi-k2:free",
+    messages: [
+      { role: "user", content: "Rewrite this survey question for clarity: ..." }
+    ],
+    stream: false,
+  }),
+});
+
+const json = await response.json();
+console.log(json.choices[0].message.content);
+
+Same pattern in Python, etc.
+
+3. How “choosing a model” actually works
+Model IDs
+Models are in the form:
+provider/model-name[:variant]
+
+Examples:
+
+
+openai/gpt-4o-mini
+
+
+mistralai/mistral-nemo
+
+
+deepseek/deepseek-r1-distill-qwen-32b
+
+
+moonshotai/kimi-k2:free
+
+
+You just plug that string into the model parameter.
+You can list or browse models on OpenRouter and pick based on:
+
+
+price / 1M tokens
+
+
+speed
+
+
+context window
+
+
+capabilities (reasoning, vision, etc.)
+
+
+
+4. Using multiple models in one app
+If “mottled shoes” was “multiple models”, here’s how that works.
+You don’t do anything special in OpenRouter; you just call different models from your code:
+// For cheap generation (drafting survey questions)
+const cheapModel = "google/gemini-2.0-flash-001";
+
+// For higher-quality reasoning (scoring + insights)
+const strongModel = "deepseek/deepseek-r1-distill-qwen-32b";
+
+async function generateSurveyFromOutline(outline: string) {
+  return callOpenRouter(cheapModel, [
+    { role: "user", content: `Create a 15-question survey from this outline:\n\n${outline}` }
+  ]);
+}
+
+async function analyzeResponses(responsesJson: string) {
+  return callOpenRouter(strongModel, [
+    { role: "user", content: `Analyze these survey results and summarize themes:\n\n${responsesJson}` }
+  ]);
+}
+
+Where callOpenRouter wraps the fetch / SDK code.
+
+5. Letting OpenRouter choose the model (auto-router)
+If you don’t want to choose a specific model, they have an auto-router “model” (check their docs for the current ID, e.g. openrouter/auto OpenRouter+1).
+Then you’d do:
+const completion = await client.chat.completions.create({
+  model: "openrouter/auto",
+  messages: [...],
+});
+
+And optionally set preferences like:
+"provider": {
+  "allow_fallbacks": true,
+  "order": ["OpenAI", "Anthropic", "Mistral"]
+}
+
+That’s more advanced; for now, just picking specific models is simpler.
+
+6. How you’d wire this into Evalia specifically
+Given what Evalia is doing:
+
+
+Survey generation from outline/PDF
+Use a cheaper but capable model (e.g. google/gemini-2.0-flash-001 or moonshotai/kimi-k2:free) to keep costs low.
+
+
+Question rewrite / refinement in the editor
+Same model or even smaller ones; latency matters more than ultimate IQ here.
+
+
+Scoring logic + insights summaries
+Use a slightly stronger model when the user hits “Analyze” or “Generate insights”.
+
+
+Implementation-wise, you just:
+
+
+Add OPENROUTER_API_KEY to your server env.
+
+
+Create a single openRouterClient in your backend.
+
+
+For each “AI feature” in Evalia, decide which model string to call.
+
+
+
+7. Concrete next step for you
+If you show me:
+
+
+the current code you’re using to call OpenAI / Anthropic / whatever (just the client + one call),
+
+
+I can rewrite it line-by-line to:
+
+
+swap in OpenRouter
+
+
+pick a default model (say kimi-k2:free for generation)
+
+
+set you up for multiple models (cheap vs high-IQ path)
+
+
+But at the conceptual level: “using OpenRouter with a model you choose” = same OpenAI-style request, different base URL, different API key, and a provider/model string.
