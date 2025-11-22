@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown } from "lucide-react";
+import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown, Clock, BookOpen } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -23,6 +23,9 @@ interface PublishStepProps {
   generatingField: string | null;
   questions?: Question[];
   scoreConfig?: SurveyScoreConfig;
+  estimatedMinutes?: number;
+  privacyStatement?: string;
+  dataUsageStatement?: string;
   onTitleChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
   onWelcomeChange: (value: string) => void;
@@ -33,6 +36,9 @@ interface PublishStepProps {
   onIllustrationChange?: (url: string) => void;
   onGenerateText: (fieldType: "description" | "welcomeMessage" | "thankYouMessage") => void;
   onScoreConfigChange?: (config: SurveyScoreConfig) => void;
+  onEstimatedMinutesChange?: (minutes: number | undefined) => void;
+  onPrivacyStatementChange?: (statement: string) => void;
+  onDataUsageStatementChange?: (statement: string) => void;
 }
 
 export default function PublishStep({
@@ -47,6 +53,9 @@ export default function PublishStep({
   generatingField,
   questions = [],
   scoreConfig,
+  estimatedMinutes,
+  privacyStatement,
+  dataUsageStatement,
   onTitleChange,
   onDescriptionChange,
   onWelcomeChange,
@@ -57,6 +66,9 @@ export default function PublishStep({
   onIllustrationChange,
   onGenerateText,
   onScoreConfigChange,
+  onEstimatedMinutesChange,
+  onPrivacyStatementChange,
+  onDataUsageStatementChange,
 }: PublishStepProps) {
   const { toast } = useToast();
   const [tagInput, setTagInput] = useState("");
@@ -432,6 +444,55 @@ export default function PublishStep({
             </CollapsibleContent>
           </Collapsible>
         </Card>
+
+        {/* Survey Metadata Section */}
+        <div className="bg-muted/30 rounded-lg p-4 space-y-3 border border-muted/50">
+          <h3 className="text-sm font-semibold">Survey Information</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-medium mb-1.5 block">Estimated Time (optional)</label>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  min="1"
+                  max="120"
+                  value={estimatedMinutes || ""}
+                  onChange={(e) => onEstimatedMinutesChange?.(e.target.value ? parseInt(e.target.value) : undefined)}
+                  placeholder="e.g., 5"
+                  className="text-sm"
+                  data-testid="input-estimated-minutes"
+                />
+                <span className="text-xs text-muted-foreground">min</span>
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-medium mb-1.5 block">Total Questions</label>
+              <div className="flex items-center gap-2 px-3 py-2 bg-background rounded-md border border-input">
+                <span className="text-sm font-medium">{questions.length || 0}</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label className="text-xs font-medium mb-1.5 block">Privacy Statement (optional)</label>
+            <Input
+              value={privacyStatement || ""}
+              onChange={(e) => onPrivacyStatementChange?.(e.target.value)}
+              placeholder="e.g., Your responses are confidential"
+              className="text-sm"
+              data-testid="input-privacy-statement"
+            />
+          </div>
+          <div>
+            <label className="text-xs font-medium mb-1.5 block">Data Usage (optional)</label>
+            <Input
+              value={dataUsageStatement || ""}
+              onChange={(e) => onDataUsageStatementChange?.(e.target.value)}
+              placeholder="e.g., Results will improve our training"
+              className="text-sm"
+              data-testid="input-data-usage-statement"
+            />
+          </div>
+        </div>
 
         <div>
           <div className="flex items-center justify-between mb-2">

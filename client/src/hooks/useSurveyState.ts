@@ -21,6 +21,9 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
   const [illustrationUrl, setIllustrationUrl] = useState("");
   const [currentQuestions, setCurrentQuestions] = useState<Question[]>([]);
   const [scoreConfig, setScoreConfig] = useState<any>(undefined);
+  const [estimatedMinutes, setEstimatedMinutes] = useState<number | undefined>(undefined);
+  const [privacyStatement, setPrivacyStatement] = useState("");
+  const [dataUsageStatement, setDataUsageStatement] = useState("");
 
   // Wizard state
   const [currentWizardStep, setCurrentWizardStep] = useState(1);
@@ -40,6 +43,9 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       illustrationUrl?: string;
       questions: Question[];
       scoreConfig?: any;
+      estimatedMinutes?: number;
+      privacyStatement?: string;
+      dataUsageStatement?: string;
     }) => {
       return apiRequest("POST", "/api/surveys", data);
     },
@@ -75,6 +81,9 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       illustrationUrl?: string;
       questions: Question[];
       scoreConfig?: any;
+      estimatedMinutes?: number;
+      privacyStatement?: string;
+      dataUsageStatement?: string;
     }) => {
       return apiRequest("PUT", `/api/surveys/${surveyId}`, data);
     },
@@ -105,6 +114,9 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       illustrationUrl?: string;
       questions: Question[];
       scoreConfig?: any;
+      estimatedMinutes?: number;
+      privacyStatement?: string;
+      dataUsageStatement?: string;
     }) => {
       if (isEditMode) {
         return apiRequest("PUT", `/api/surveys/${surveyId}`, data);
@@ -153,6 +165,9 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
         illustrationUrl: illustrationUrl || undefined,
         questions: currentQuestions,
         scoreConfig: scoreConfig || undefined,
+        estimatedMinutes: estimatedMinutes || undefined,
+        privacyStatement: privacyStatement || undefined,
+        dataUsageStatement: dataUsageStatement || undefined,
       };
 
       setIsAutoSaving(true);
@@ -173,6 +188,9 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
     illustrationUrl,
     currentWizardStep,
     scoreConfig,
+    estimatedMinutes,
+    privacyStatement,
+    dataUsageStatement,
   ]);
 
   // Question handlers
@@ -264,6 +282,9 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       illustrationUrl: illustrationUrl || undefined,
       questions: currentQuestions,
       scoreConfig: scoreConfig || undefined,
+      estimatedMinutes: estimatedMinutes || undefined,
+      privacyStatement: privacyStatement || undefined,
+      dataUsageStatement: dataUsageStatement || undefined,
     };
 
     if (isEditMode) {
@@ -289,6 +310,12 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
     setCurrentQuestions,
     scoreConfig,
     setScoreConfig,
+    estimatedMinutes,
+    setEstimatedMinutes,
+    privacyStatement,
+    setPrivacyStatement,
+    dataUsageStatement,
+    setDataUsageStatement,
     currentWizardStep,
     setCurrentWizardStep,
     hasLoadedSurvey,

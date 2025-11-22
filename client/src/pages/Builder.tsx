@@ -74,6 +74,9 @@ export default function Builder() {
       surveyState.setThankYouMessage(existingSurvey.thankYouMessage || "");
       surveyState.setIllustrationUrl(existingSurvey.illustrationUrl || "");
       surveyState.setCurrentQuestions(existingSurvey.questions);
+      surveyState.setEstimatedMinutes(existingSurvey.estimatedMinutes);
+      surveyState.setPrivacyStatement(existingSurvey.privacyStatement || "");
+      surveyState.setDataUsageStatement(existingSurvey.dataUsageStatement || "");
       surveyState.setCurrentWizardStep(2);
       aiChat.setMessages([
         {
@@ -317,6 +320,9 @@ export default function Builder() {
             generatingField={aiChat.generatingField}
             questions={surveyState.currentQuestions}
             scoreConfig={surveyState.scoreConfig}
+            estimatedMinutes={surveyState.estimatedMinutes}
+            privacyStatement={surveyState.privacyStatement}
+            dataUsageStatement={surveyState.dataUsageStatement}
             onTitleChange={surveyState.setCurrentSurveyTitle}
             onDescriptionChange={surveyState.setCurrentSurveyDescription}
             onWelcomeChange={surveyState.setWelcomeMessage}
@@ -324,6 +330,9 @@ export default function Builder() {
             onIllustrationChange={surveyState.setIllustrationUrl}
             onGenerateText={handleGenerateText}
             onScoreConfigChange={surveyState.setScoreConfig}
+            onEstimatedMinutesChange={surveyState.setEstimatedMinutes}
+            onPrivacyStatementChange={surveyState.setPrivacyStatement}
+            onDataUsageStatementChange={surveyState.setDataUsageStatement}
           />
         )}
 
