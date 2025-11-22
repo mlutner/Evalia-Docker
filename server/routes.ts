@@ -1064,19 +1064,24 @@ GUIDELINES FOR ENHANCEMENT:
       }
 
       const data = await response.json();
+      console.log("OpenRouter response:", JSON.stringify(data).substring(0, 200));
+      
       const enhancedPrompt = data.choices?.[0]?.message?.content;
 
       if (!enhancedPrompt) {
+        console.error("No enhanced prompt in response. Full data:", JSON.stringify(data).substring(0, 500));
         return res.status(500).json({ error: "No response from AI" });
       }
 
-      res.json({
+      const result = {
         success: true,
         enhancedPrompt: enhancedPrompt.trim(),
-      });
+      };
+      console.log("Sending enhanced prompt response, length:", result.enhancedPrompt.length);
+      res.json(result);
     } catch (error: any) {
-      console.error("Enhance prompt error:", error);
-      res.status(500).json({ error: "Failed to enhance prompt" });
+      console.error("Enhance prompt error:", error.message);
+      res.status(500).json({ error: "Failed to enhance prompt: " + error.message });
     }
   });
 
