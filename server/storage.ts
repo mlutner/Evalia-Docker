@@ -664,23 +664,18 @@ export class DbStorage implements IStorage {
       this.adminAISettings.parameters = { ...this.adminAISettings.parameters, ...settings.parameters };
     }
     
-    // Persist to database - make sure this completes before returning
+    // Persist to database - use DELETE then INSERT for reliability
     try {
+      // First delete existing record if it exists
+      await db.delete(adminAISettings).where(eq(adminAISettings.id, 'admin'));
+      
+      // Then insert the new settings
       await db.insert(adminAISettings).values({
         id: 'admin',
         apiKeys: this.adminAISettings.apiKeys,
         models: this.adminAISettings.models,
         baseUrls: this.adminAISettings.baseUrls,
         parameters: this.adminAISettings.parameters,
-      }).onConflictDoUpdate({
-        target: adminAISettings.id,
-        set: {
-          apiKeys: this.adminAISettings.apiKeys,
-          models: this.adminAISettings.models,
-          baseUrls: this.adminAISettings.baseUrls,
-          parameters: this.adminAISettings.parameters,
-          updatedAt: new Date(),
-        }
       });
       console.log("✓ Admin settings persisted to database");
     } catch (error) {
