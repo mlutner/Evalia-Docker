@@ -107,7 +107,7 @@ export default function Dashboard() {
   const surveyToDelete = surveys.find(s => s.id === deleteConfirm);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background dark:bg-slate-950">
       <Header />
       
       {/* Delete Confirmation Dialog */}
