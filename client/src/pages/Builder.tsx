@@ -364,7 +364,7 @@ export default function Builder() {
                 </div>
 
                 <TabsContent value="templates" className="space-y-10 pt-8">
-                  <div className="bg-gradient-to-br from-primary/8 via-primary/4 to-background rounded-xl p-6 md:p-8 border border-primary/20">
+                  <div className="bg-gradient-to-br from-blue-500/15 via-blue-500/8 to-background rounded-xl p-6 md:p-8 border-2 border-blue-400/40" style={{borderLeft: '4px solid rgb(59, 130, 246)'}}>
                     <h3 className="text-lg font-semibold mb-3">Professional Training Templates</h3>
                     <p className="text-muted-foreground leading-relaxed">
                       Start with proven survey frameworks designed for trainers. Browse templates below, preview them to see all questions, and click "Use Template" to get started. Once selected, you can customize the title and edit any questions in Step 2.
@@ -406,7 +406,7 @@ export default function Builder() {
                 </TabsContent>
 
                 <TabsContent value="ai" className="space-y-10 pt-8">
-                  <div className="bg-gradient-to-br from-primary/8 via-primary/4 to-background rounded-xl p-6 md:p-8 border border-primary/20">
+                  <div className="bg-gradient-to-br from-cyan-500/15 via-cyan-500/8 to-background rounded-xl p-6 md:p-8 border-2 border-cyan-400/40" style={{borderLeft: '4px solid rgb(34, 211, 238)'}}>
                     <h3 className="text-lg font-semibold mb-3">Generate with AI</h3>
                     <p className="text-muted-foreground leading-relaxed">
                       Describe what your survey is about and what you want to measure. AI will generate custom questions tailored to your needs. Be specific about the training topic, learning objectives, or feedback you're seeking. Example: "I need a survey to assess employee understanding of our new compliance policy and willingness to apply it on the job."
@@ -473,7 +473,7 @@ export default function Builder() {
 
                 <TabsContent value="upload" className="space-y-10 pt-8">
                   {/* File Upload Section */}
-                  <div className="space-y-4 bg-gradient-to-br from-primary/8 via-primary/4 to-background rounded-xl p-6 md:p-8 border border-primary/20">
+                  <div className="space-y-4 bg-gradient-to-br from-amber-400/15 via-amber-400/8 to-background rounded-xl p-6 md:p-8 border-2 border-amber-400/40" style={{borderLeft: '4px solid rgb(217, 119, 6)'}}>
                     <div>
                       <h3 className="text-lg font-semibold mb-3">Upload Document or Paste Text</h3>
                       <p className="text-muted-foreground leading-relaxed">

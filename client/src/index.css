@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --evalia-teal: #2BB4A0;
+  --evalia-lime: #CCFF00;
+  --evalia-navy: #071A32;
+}
+
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",

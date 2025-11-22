@@ -12,6 +12,26 @@ Evalia follows Typeform's pioneering one-question-at-a-time philosophy while ada
 3. **Responsive Elegance**: Seamless experience from mobile to desktop
 4. **Purposeful Motion**: Transitions guide attention without distraction
 
+## Evalia Color Palette
+
+The design system uses three core brand colors to create visual distinction and hierarchy:
+
+- **Primary Blue (#3B82F6)**: Professional, trustworthy, used for primary actions and templates
+- **Teal/Cyan (#22D3EE)**: Innovative, AI-powered, used for AI-generated content and smart features
+- **Amber/Lime (#D97706)**: Active, energetic, used for uploads and file processing
+- **Navy (#071A32)**: Deep, authoritative, used for text and critical information
+
+**Survey Creation Methods Use Color Language:**
+- **Templates**: Blue accent - establishes professionalism and structure
+- **AI Generation**: Cyan accent - communicates intelligence and innovation
+- **Upload/Paste**: Amber accent - signals action and file processing
+
+Each method features:
+- Gradient background (15% opacity, fading to background)
+- Colored left border accent (4px solid)
+- Matching colored border for visual cohesion
+- Consistent typography and spacing
+
 ## Typography
 
 **Font Family**: Inter (Google Fonts)
