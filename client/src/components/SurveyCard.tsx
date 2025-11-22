@@ -1,6 +1,8 @@
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Eye, BarChart3, Download, Share2, Check, Copy, Edit3, Users } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { MoreVertical, Eye, BarChart3, Download, Share2, Check, Copy, Edit3, Users, CheckCircle, Pause, Lock } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
@@ -11,6 +13,7 @@ export interface Survey {
   createdAt: string;
   responseCount: number;
   questionCount: number;
+  status?: "Active" | "Paused" | "Closed";
 }
 
 interface SurveyCardProps {
@@ -31,6 +34,39 @@ export default function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport
   
   const shareUrl = `${window.location.origin}/survey/${survey.id}`;
   
+  const getStatusDisplay = () => {
+    switch (survey.status) {
+      case "Active":
+        return {
+          badge: <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 gap-1" data-testid={`badge-status-${survey.id}`}>
+            <CheckCircle className="w-3 h-3" />
+            Active
+          </Badge>,
+          tooltip: "Survey is live and accepting responses"
+        };
+      case "Paused":
+        return {
+          badge: <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 gap-1" data-testid={`badge-status-${survey.id}`}>
+            <Pause className="w-3 h-3" />
+            Paused
+          </Badge>,
+          tooltip: "Survey is paused. Respondents cannot submit new responses."
+        };
+      case "Closed":
+        return {
+          badge: <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 gap-1" data-testid={`badge-status-${survey.id}`}>
+            <Lock className="w-3 h-3" />
+            Closed
+          </Badge>,
+          tooltip: "Survey is closed. No new responses are accepted. View analytics anytime."
+        };
+      default:
+        return { badge: null, tooltip: "" };
+    }
+  };
+
+  const statusDisplay = getStatusDisplay();
+  
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(shareUrl);
@@ -43,13 +79,14 @@ export default function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport
 
   return (
     <Card className="hover-elevate transition-all flex flex-col" data-testid={`survey-card-${survey.id}`}>
-      <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4">
-        <div className="flex-1">
-          <h3 className="font-semibold text-lg line-clamp-2">{survey.title}</h3>
-          <p className="text-sm text-muted-foreground mt-1">
-            Created {new Date(survey.createdAt).toLocaleDateString()}
-          </p>
-        </div>
+      <CardHeader className="flex flex-col space-y-3 pb-4">
+        <div className="flex flex-row items-start justify-between space-y-0">
+          <div className="flex-1">
+            <h3 className="font-semibold text-lg line-clamp-2">{survey.title}</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Created {new Date(survey.createdAt).toLocaleDateString()}
+            </p>
+          </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" data-testid="button-menu">
@@ -80,6 +117,17 @@ export default function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        </div>
+        {statusDisplay.badge && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              {statusDisplay.badge}
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="max-w-xs">
+              {statusDisplay.tooltip}
+            </TooltipContent>
+          </Tooltip>
+        )}
       </CardHeader>
 
       <CardContent className="flex-1">
