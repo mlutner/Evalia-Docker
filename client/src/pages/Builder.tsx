@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRoute, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, ArrowRight, Save, FileUp, Layers, Sparkles, Loader2, Upload, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Save, FileUp, Layers, Sparkles, Loader2, Upload, X, Wand2, HelpCircle } from "lucide-react";
 import Header from "@/components/Header";
 import WizardSteps from "@/components/WizardSteps";
 import QuestionsStep from "@/components/builder/QuestionsStep";
@@ -15,6 +15,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { surveyTemplates } from "@shared/templates";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -68,7 +71,18 @@ export default function Builder() {
   const [trainingDate, setTrainingDate] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
+  const [includeScoringToggle, setIncludeScoringToggle] = useState(true);
+  const [showPromptSuggestions, setShowPromptSuggestions] = useState(false);
   const aiFileInputRef = useRef<HTMLInputElement>(null);
+
+  const promptSuggestions = [
+    "✨ Add scoring instructions: Include a note that you want scoring/results for assessment",
+    "📊 Specify number of questions: e.g., 'Create a 15-question survey'",
+    "👥 Define target audience: e.g., 'for new employees' or 'for managers'",
+    "🎯 Add learning objectives: e.g., 'to measure understanding of topic X'",
+    "📚 Specify question types: e.g., 'mix of Likert scales and open-ended questions'",
+    "🏆 Define success criteria: e.g., 'to identify skill gaps or measure competency'",
+  ];
 
   // Load existing survey if in edit mode
   const { data: existingSurvey, isLoading: isLoadingSurvey } = useQuery<Survey>({
@@ -480,15 +494,42 @@ export default function Builder() {
                   ) : (
                     <div className="space-y-6">
                       <div>
-                        <label className="text-sm font-medium mb-2 block">
-                          Describe your survey (or upload a file)
-                        </label>
+                        <div className="flex items-center justify-between mb-3">
+                          <label className="text-sm font-medium">
+                            Describe your survey (or upload a file)
+                          </label>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowPromptSuggestions(true)}
+                            className="text-xs h-7"
+                            data-testid="button-enhance-prompt"
+                          >
+                            <Wand2 className="w-3 h-3 mr-1" />
+                            Enhance
+                          </Button>
+                        </div>
                         <Textarea
                           value={prompt}
                           onChange={(e) => setPrompt(e.target.value)}
                           placeholder="Example: I need a survey to gather feedback on our recent training workshop about leadership skills. Include questions about content quality, trainer effectiveness, and practical application."
                           className="min-h-[150px] text-base"
                           data-testid="input-survey-prompt"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between p-4 bg-muted/40 rounded-lg border border-border/50">
+                        <div className="flex items-center gap-3">
+                          <div>
+                            <p className="text-sm font-medium">Include Scoring Configuration</p>
+                            <p className="text-xs text-muted-foreground">AI will auto-generate assessment scoring</p>
+                          </div>
+                        </div>
+                        <Switch
+                          checked={includeScoringToggle}
+                          onCheckedChange={setIncludeScoringToggle}
+                          data-testid="toggle-include-scoring"
                         />
                       </div>
 
@@ -561,6 +602,43 @@ export default function Builder() {
                     </div>
                   )}
                 </TabsContent>
+              </Tabs>
+            </div>
+          </div>
+        )}
+
+        {/* Prompt Suggestions Dialog */}
+        <Dialog open={showPromptSuggestions} onOpenChange={setShowPromptSuggestions}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Enhance Your Prompt</DialogTitle>
+              <DialogDescription>
+                Click any suggestion to add it to your prompt for better results
+              </DialogDescription>
+            </DialogHeader>
+            <ScrollArea className="h-64">
+              <div className="space-y-2 pr-4">
+                {promptSuggestions.map((suggestion, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    className="w-full justify-start text-left h-auto py-3 px-4 whitespace-normal text-sm"
+                    onClick={() => {
+                      const enhancedPrompt = prompt.trim() 
+                        ? `${prompt}\n\n${suggestion.replace(/^[✨📊👥🎯📚🏆]\s/, '')}`
+                        : suggestion.replace(/^[✨📊👥🎯📚🏆]\s/, '');
+                      setPrompt(enhancedPrompt);
+                      setShowPromptSuggestions(false);
+                    }}
+                    data-testid={`button-suggestion-${index}`}
+                  >
+                    {suggestion}
+                  </Button>
+                ))}
+              </div>
+            </ScrollArea>
+          </DialogContent>
+        </Dialog>
 
                 <TabsContent value="upload" className="space-y-10 pt-8">
                   {/* File Upload Section */}
