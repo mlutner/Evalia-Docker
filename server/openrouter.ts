@@ -1,4 +1,5 @@
 import type { Question } from "@shared/schema";
+import mammoth from "mammoth";
 
 // Use Mistral API key
 const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;

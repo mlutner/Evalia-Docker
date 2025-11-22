@@ -672,7 +672,6 @@ export default function Builder() {
             questions={surveyState.currentQuestions}
             scoreConfig={surveyState.scoreConfig}
             onScoreConfigChange={surveyState.setScoreConfig}
-            onUpdateQuestion={surveyState.handleUpdateQuestion}
           />
         )}
 

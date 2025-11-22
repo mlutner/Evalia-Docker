@@ -434,18 +434,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ error: `Survey is ${survey.status}. No new responses are being accepted.` });
       }
 
-      // Check expiration date
-      if (survey.expiresAt && new Date(survey.expiresAt) < new Date()) {
-        return res.status(403).json({ error: "Survey has expired and is no longer accepting responses." });
-      }
-
-      // Check response limit
-      if (survey.maxResponses) {
-        const count = await storage.getResponseCount(id);
-        if (count >= survey.maxResponses) {
-          return res.status(403).json({ error: "Survey has reached its maximum number of responses." });
-        }
-      }
 
       // Validate answers exist
       if (!answers || typeof answers !== "object") {
