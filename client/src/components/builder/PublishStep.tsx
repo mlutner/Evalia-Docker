@@ -455,11 +455,11 @@ export default function PublishStep({
                 <div
                   key={url}
                   onClick={() => onIllustrationChange?.(url)}
-                  className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
+                  className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all flex items-center justify-center bg-muted/30 min-h-40 ${
                     illustrationUrl === url ? "border-primary" : "border-border hover:border-muted-foreground/50"
                   }`}
                 >
-                  <img src={url} alt="Survey illustration" className="w-full h-24 object-cover" />
+                  <img src={url} alt="Survey illustration" className="w-full h-full object-contain p-2" />
                   {illustrationUrl === url && (
                     <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
                       <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
@@ -500,9 +500,11 @@ export default function PublishStep({
           </div>
 
           {illustrationUrl && (
-            <div className="mt-6 rounded-lg overflow-hidden border">
+            <div className="mt-6 rounded-lg overflow-hidden border bg-muted/30 flex flex-col">
               <p className="text-xs font-medium text-muted-foreground px-3 pt-3">Selected illustration</p>
-              <img src={illustrationUrl} alt="Selected illustration" className="w-full max-h-48 object-cover" />
+              <div className="flex items-center justify-center min-h-64 p-4">
+                <img src={illustrationUrl} alt="Selected illustration" className="w-full h-full object-contain" />
+              </div>
               <div className="p-2">
                 <Button
                   variant="ghost"
