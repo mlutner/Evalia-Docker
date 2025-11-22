@@ -6,23 +6,7 @@ import { MoreVertical, Eye, BarChart3, Download, Share2, Check, Copy, Edit3, Use
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState, memo } from "react";
-import type { Question } from "@shared/schema";
-
-export interface Survey {
-  id: string;
-  title: string;
-  description?: string;
-  createdAt: string;
-  responseCount: number;
-  questionCount: number;
-  status?: "Active" | "Paused" | "Closed";
-  publishedAt?: string | null;
-  trainerName?: string;
-  trainingDate?: string;
-  tags?: string[];
-  questions?: Question[];
-  scoreConfig?: { enabled?: boolean } | null;
-}
+import type { Question, SurveyWithCounts } from "@shared/schema";
 
 // Generate a brief summary from survey questions
 function generateSurveySummary(questions?: Question[]): string {
@@ -61,7 +45,7 @@ function generateSurveySummary(questions?: Question[]): string {
 }
 
 interface SurveyCardProps {
-  survey: Survey;
+  survey: SurveyWithCounts;
   onEdit: () => void;
   onView: () => void;
   onAnalyze: () => void;

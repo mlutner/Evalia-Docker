@@ -24,6 +24,8 @@ export default function Dashboard() {
 
   const { data: surveys = [], isLoading } = useQuery<SurveyWithCounts[]>({
     queryKey: ["/api/surveys"],
+    staleTime: 0, // Always refetch to get latest response counts
+    refetchInterval: 5000, // Refetch every 5 seconds for real-time updates
   });
 
   // Get all available tags across surveys (memoized)
