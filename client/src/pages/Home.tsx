@@ -1,21 +1,29 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Header from "@/components/Header";
 import { useAuth } from "@/hooks/useAuth";
 import { Sparkles, BarChart3, Zap } from "lucide-react";
+import evaliaLogo from "@assets/Heading (300 x 50 px) (1000 x 250 px) (2)_1762359727994.png";
 
 import ChatGPT_Image_Nov_21__2025__06_18_52_PM from "@assets/ChatGPT Image Nov 21, 2025, 06_18_52 PM.png";
 
 export default function Home() {
   const [, setLocation] = useLocation();
   const { user, isLoading } = useAuth();
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     if (!isLoading && user) {
       setLocation("/dashboard");
     }
   }, [user, isLoading, setLocation]);
+
+  const handleLogin = () => {
+    window.location.href = "/api/login";
+  };
 
   if (isLoading) {
     return (
@@ -46,7 +54,7 @@ export default function Home() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Button
-                onClick={() => setLocation("/login")}
+                onClick={() => setShowLoginModal(true)}
                 className="font-semibold text-lg md:text-xl py-6 md:py-7 px-8"
                 data-testid="button-get-started"
               >
@@ -54,7 +62,7 @@ export default function Home() {
               </Button>
               <Button
                 variant="outline"
-                onClick={() => setLocation("/login")}
+                onClick={() => setShowLoginModal(true)}
                 className="font-semibold text-lg md:text-xl py-5 md:py-6 px-8"
                 data-testid="button-browse-templates"
               >
@@ -131,13 +139,43 @@ export default function Home() {
         </div>
         <Button
           size="lg"
-          onClick={() => setLocation("/login")}
+          onClick={() => setShowLoginModal(true)}
           className="font-semibold text-lg"
           data-testid="button-final-cta"
         >
           Get started free
         </Button>
       </section>
+
+      {/* Login Modal */}
+      <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader className="space-y-4">
+            <div className="flex justify-center mb-2">
+              <img src={evaliaLogo} alt="Evalia" className="h-12" />
+            </div>
+            <DialogTitle>Get started with Evalia</DialogTitle>
+            <DialogDescription>
+              Sign in to create and manage your training surveys
+            </DialogDescription>
+          </DialogHeader>
+          <Card className="border-0 shadow-none">
+            <CardContent className="pt-6">
+              <Button
+                onClick={handleLogin}
+                className="w-full"
+                size="lg"
+                data-testid="button-modal-sign-in"
+              >
+                Sign in
+              </Button>
+              <p className="text-xs text-muted-foreground text-center mt-4">
+                You'll be able to choose Google, Email, or other sign-in options
+              </p>
+            </CardContent>
+          </Card>
+        </DialogContent>
+      </Dialog>
 
       {/* Footer */}
       <footer className="border-t border-border dark:border-slate-700 mt-20">

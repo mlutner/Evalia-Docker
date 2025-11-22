@@ -84,7 +84,7 @@ export default function Dashboard() {
     console.log("Export survey:", id);
   };
 
-  const isExpired = (survey: Survey) => survey.expiresAt && new Date(survey.expiresAt) < new Date();
+  const isExpired = (survey: Survey) => false; // Placeholder - expiresAt not in schema
 
   const handleDelete = (id: string) => {
     setDeleteConfirm(id);
