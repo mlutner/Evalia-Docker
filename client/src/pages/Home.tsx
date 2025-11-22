@@ -56,6 +56,7 @@ export default function Home() {
               <Button
                 size="lg"
                 onClick={() => setShowLoginModal(true)}
+                className="py-3"
                 data-testid="button-get-started"
               >
                 Get started free
@@ -64,6 +65,7 @@ export default function Home() {
                 size="lg"
                 variant="outline"
                 onClick={() => setShowLoginModal(true)}
+                className="py-3"
                 data-testid="button-browse-templates"
               >
                 Browse templates
@@ -140,6 +142,7 @@ export default function Home() {
         <Button
           size="lg"
           onClick={() => setShowLoginModal(true)}
+          className="py-3"
           data-testid="button-final-cta"
         >
           Get started free
@@ -162,7 +165,7 @@ export default function Home() {
             <CardContent className="pt-6">
               <Button
                 onClick={handleLogin}
-                className="w-full"
+                className="w-full py-3"
                 size="lg"
                 data-testid="button-modal-sign-in"
               >
