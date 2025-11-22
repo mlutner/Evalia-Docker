@@ -38,7 +38,7 @@ export default function Home() {
       <Header />
       
       {/* Hero Section */}
-      <main className="container mx-auto px-6 flex items-start justify-center -mt-12">
+      <main className="container mx-auto px-6 flex items-start justify-center -mt-14">
         <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-12 w-full max-w-7xl">
           {/* Left Side Content */}
           <div className="space-y-8">
