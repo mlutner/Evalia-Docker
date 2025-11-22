@@ -10,6 +10,7 @@ import { fromZodError } from "zod-validation-error";
 import multer from "multer";
 import mammoth from "mammoth";
 import { PDFParse } from "pdf-parse";
+import { emailService } from "./email";
 import "./types";
 
 // Pool of survey illustrations - rotated across surveys
@@ -672,14 +673,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!survey) return res.status(404).json({ error: "Survey not found" });
 
       const created = [];
+      let emailsSent = 0;
+      
       for (const respondent of respondents) {
         const r = await storage.createRespondent(id, respondent);
         const surveyUrl = `${process.env.APP_URL || "http://localhost:5000"}/survey/${id}?respondent=${r.respondentToken}`;
-        console.log(`[RESPONDENT INVITED] ${respondent.email} - Survey: ${survey.title} - Link: ${surveyUrl}`);
+        
+        // Try to send email
+        const emailSent = await emailService.sendSurveyInvitation(
+          respondent.email!,
+          respondent.name,
+          survey.title,
+          surveyUrl,
+          survey.trainerName || undefined
+        );
+        
+        if (emailSent) emailsSent++;
         created.push(r);
       }
 
-      res.json({ invited: created.length, respondents: created });
+      const message = emailsSent > 0 
+        ? `Invited ${created.length} respondent${created.length !== 1 ? 's' : ''} (${emailsSent} emails sent)`
+        : `Invited ${created.length} respondent${created.length !== 1 ? 's' : ''} (emails not configured)`;
+
+      res.json({ invited: created.length, emailsSent, respondents: created, message });
     } catch (error: any) {
       console.error("Invite respondents error:", error);
       res.status(500).json({ error: "Failed to invite respondents" });

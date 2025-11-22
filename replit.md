@@ -1,122 +1,168 @@
-# Evalia - AI-Powered Survey Builder
+# Evalia - Survey Builder Project
 
-## Overview
-Evalia is a web application for trainers to create and manage AI-assisted surveys with a Typeform-inspired conversational interface. It allows users to generate survey questions by uploading documents (PDF, DOCX, TXT) or providing text prompts. The platform prioritizes a minimal user experience, featuring one-question-at-a-time presentation, smooth transitions, and mobile-responsive design. The project aims to streamline survey creation and enhance user engagement.
+## Project Overview
+Evalia is an AI-powered survey builder for trainers to create, manage, and analyze surveys with a Typeform-inspired conversational interface. Features AI-assisted generation from documents, one-question-at-a-time UI, comprehensive analytics, and respondent tracking.
+
+## Current Status (Nov 22, 2025)
+- ✅ Core survey builder with AI assistance
+- ✅ Response analytics with visual breakdown
+- ✅ Respondent tracking system
+- ✅ Response detail modal (click responses to view all answers)
+- ✅ Email invitation infrastructure in place
+- ⏳ Email sending: Configured to use Resend (awaiting API key setup)
+
+## Recent Accomplishments
+1. **Response Detail Modal** - Users can now click any response to view all answers in a modal
+2. **Respondent Storage Fix** - Implemented full respondent persistence in MemStorage
+3. **Email Service Infrastructure** - Added Resend email integration to invitation flow
+4. **Code Refactoring** - Extracted ResponseDetailModal component, improved code reusability
+
+## Architecture
+
+### Data Layer
+- **Storage**: Abstracted storage interface with MemStorage (dev) and DbStorage (production via Drizzle)
+- **Database**: PostgreSQL with Drizzle ORM
+- **Schema**: Located in `shared/schema.ts` with proper Zod validation
+
+### Backend
+- **Framework**: Express.js
+- **Authentication**: Replit Auth (Google + Email/Password)
+- **Email**: Resend service for transactional emails
+- **Document Parsing**: OpenRouter Vision API (PDF), Mammoth (DOCX), native TXT
+- **AI Integration**: OpenRouter for survey generation and refinement
+
+### Frontend
+- **Routing**: Wouter
+- **UI Components**: shadcn components with Tailwind CSS
+- **State Management**: TanStack Query (React Query)
+- **Forms**: React Hook Form with Zod validation
+- **Styling**: Dark mode support, consistent design system
+
+## Key Routes
+
+### Survey Management
+- `POST /api/surveys` - Create survey
+- `GET /api/surveys` - List all surveys
+- `GET /api/surveys/:id` - Get single survey
+- `PATCH /api/surveys/:id` - Update survey
+- `DELETE /api/surveys/:id` - Delete survey
+
+### Responses
+- `POST /api/surveys/:id/responses` - Submit survey response
+- `GET /api/surveys/:id/responses` - Get analytics/responses
+- `DELETE /api/surveys/:id/responses/:responseId` - Delete response
+- `POST /api/surveys/:id/responses/bulk-delete` - Bulk delete
+
+### Respondents (Phase 4)
+- `POST /api/surveys/:id/invite` - Invite respondents
+- `GET /api/surveys/:id/respondents` - Get all respondents
+- `DELETE /api/surveys/:id/respondents/:respondentId` - Remove respondent
+
+## Email Integration (NEEDS SETUP)
+
+### Current State
+The email service is configured to use **Resend** for sending survey invitations. The infrastructure is in place:
+- Email module: `server/email.ts` (ResendEmailService class)
+- Route integration: `server/routes.ts` line 661-692
+- Frontend UI: `client/src/pages/RespondentsPage.tsx` (invite dialog)
+
+### What You Need To Do
+1. **Get Resend API Key**:
+   - Visit https://resend.com
+   - Sign up for free account
+   - Get your API key from dashboard
+
+2. **Add to Environment**:
+   - Set `RESEND_API_KEY` environment variable in Replit
+   - Go to Secrets tab → Add secret `RESEND_API_KEY` → Paste your key
+
+3. **Test It**:
+   - Create a survey
+   - Go to Respondents tab
+   - Import/paste email addresses
+   - Click "Invite Respondents"
+   - Check that emails are sent (logs will show "✓ [RESEND] Invitation email sent to...")
+
+### How It Works
+1. User imports respondents (CSV, PDF, or paste)
+2. User clicks "Invite Respondents"
+3. Backend creates respondent records with unique tokens
+4. Backend generates personalized survey URLs with token
+5. Resend API sends branded invitation email
+6. Respondent clicks email link → Opens survey with unique token
+7. On completion → Marked as "Completed" in respondent tracking
+
+## Known Issues
+
+### LSP Type Errors (Non-Critical)
+- 8 errors in `server/storage.ts` related to Drizzle type inference on survey creation/update
+- These don't affect functionality - app runs fine
+- Root cause: Drizzle's strict typing on optional fields with array/object types
+- Will be fixed when refactoring storage layer
+
+### 5 Errors in `client/src/pages/RespondentsPage.tsx`
+- Related to type inference in useMutation hooks
+- App works correctly despite these warnings
+
+## Next Priority Features
+1. **Chart Visualizations** - Use Recharts for response analytics (component already installed)
+2. **Response Filtering/Sorting** - Add UI controls for date range, completion status
+3. **Email Reminders** - Send follow-up emails to non-completed respondents
+4. **Duplicate Detection UI** - Surface the existing `detectDuplicates()` function
+
+## File Structure
+```
+client/src/
+├── pages/
+│   ├── Dashboard.tsx          # Survey list with filtering
+│   ├── Builder.tsx            # Survey creation/editing with AI chat
+│   ├── SurveyView.tsx         # Public survey response form
+│   ├── AnalyticsPage.tsx      # Response analytics dashboard
+│   ├── RespondentsPage.tsx    # Respondent management
+│   └── ...other pages
+├── components/
+│   ├── ResponseDetailModal.tsx # Modal for viewing individual responses
+│   ├── builder/               # Builder-specific components
+│   ├── ui/                    # shadcn components
+│   └── ...other components
+└── hooks/
+    ├── useSurveyFiltering.ts  # Filtering/sorting logic
+    ├── useSurveyState.ts      # Survey state management
+    └── ...other hooks
+
+server/
+├── routes.ts                  # All API endpoints
+├── storage.ts                 # Data persistence (MemStorage/DbStorage)
+├── email.ts                   # Email service (Resend)
+├── db.ts                      # Drizzle database connection
+├── replitAuth.ts              # Replit authentication
+└── ...other backend files
+
+shared/
+├── schema.ts                  # Zod schemas + Drizzle tables
+└── templates.ts               # Survey templates
+```
+
+## Development Notes
+- Always follow the `shared/schema.ts` pattern: insert schema + insert type + select type
+- Use `useMutation` with TanStack Query for all state-changing operations
+- Cache invalidation: `queryClient.invalidateQueries({ queryKey: ['/api/...'] })`
+- Components should be in `client/src/components` with subdirectories for logical grouping
+- Keep routes thin - business logic in storage layer
 
 ## User Preferences
-Preferred communication style: Simple, everyday language.
+- Prefers working code over perfect code
+- Interested in high-impact improvements (features users notice)
+- Values security and proper architectural patterns
+- Wants comprehensive features but pragmatic implementation
 
-## System Architecture
+## Integrations
+- **Replit Auth**: Email/Password + Google OAuth
+- **Resend**: Email service (NEEDS SETUP - see Email Integration section above)
+- **OpenRouter**: AI for survey generation
+- **PostgreSQL/Drizzle**: Production database
 
-### Frontend Architecture
-**Technology Stack:**
-- **Framework**: React 18 with Vite
-- **Routing**: Wouter
-- **State Management**: TanStack Query (React Query)
-- **UI Components**: Shadcn/ui (built on Radix UI)
-- **Styling**: TailwindCSS with custom design tokens
-
-**Design Philosophy:**
-The frontend employs a "conversational minimalism" approach, characterized by:
-- One-question-at-a-time presentation for respondents.
-- Progressive disclosure of information.
-- Generous whitespace, focused content cards, and smooth fade/slide transitions.
-- Inter font family for typography.
-- Mobile-first responsive design.
-
-**Key Frontend Features:**
-- **Login Page**: Split-screen design with professional imagery and branding.
-- **Dashboard**: Organized survey management with Drafts and Published sections, share, preview, and analytics options.
-- **Builder**: 3-step wizard flow with enhanced UI/UX for intuitive survey creation:
-  - **Step 1 (START)**: Choose creation method via visually distinct action cards
-    - Template card: Blue theme for familiar starting points
-    - AI card: Primary theme with emphasis (featured option)
-    - Upload card: Green theme for document processing
-    - Cards auto-hide after selection or when questions exist to reduce clutter
-    - Larger icons (w-10 h-10) and containers (w-20 h-20) for better visibility
-  - **Step 2 (QUESTIONS)**: Build and refine questions with dual-mode interface
-    - Prominent tab-style toggle at top for switching between AI Chat and Edit Questions
-    - AI Chat mode: Interactive chat panel with loading states and progress feedback
-    - Edit Questions mode: Manual editor with empty state handling and add question CTA
-    - Questions persist regardless of creation method (template/AI/upload)
-  - **Step 3 (PUBLISH)**: Set survey metadata (title, description, welcome, thank you) with AI suggestions
-  - **Enhanced Visual Design**:
-    - Larger wizard step indicators (w-12 h-12) with animated states
-    - Increased tab content spacing (pt-8) for better breathing room
-    - Smooth transitions and loading states throughout the flow
-    - Clear empty states with actionable CTAs
-- **Survey View**: Sequential question flow with progress tracking for public access.
-- **Analytics Dashboard**: Comprehensive data visualization for survey responses (creator-only).
-- **Chat Panel**: AI assistant for refining surveys via natural language.
-- **Template System**: Pre-built survey templates.
-- **Protected Routes**: Authentication-gated access for Dashboard, Builder, and Analytics.
-
-### Backend Architecture
-**Technology Stack:**
-- **Runtime**: Node.js with Express.js
-- **Database ORM**: Drizzle ORM for PostgreSQL
-- **Session Management**: Express session with connect-pg-simple
-- **Build System**: ESBuild for production, TSX for development
-
-**Implemented Features:**
-- Express server with JSON parsing and session management.
-- **Username/Password Authentication**: Secure session-based authentication with bcrypt hashing.
-- **Protected API Routes**: CRUD operations for surveys, document parsing, and AI integrations (all require authentication).
-- **Public API Routes**: For fetching survey data and submitting responses.
-- **Analytics API Routes**: With ownership verification to ensure only creators can view their survey analytics.
-- File upload handling with Multer.
-- PostgreSQL for user and survey management.
-- OpenRouter AI service integration for survey generation and chat.
-- Request logging middleware for diagnostics.
-
-**Security Notes:**
-- Secure password storage using bcrypt.
-- Session regeneration on authentication to prevent fixation attacks.
-- httpOnly and secure (in production) session cookies.
-- 7-day session TTL with PostgreSQL persistence.
-- Minimum 8-character password policy.
-- All sensitive routes protected by `isAuthenticated` middleware.
-- Survey ownership verification for analytics access.
-
-### Database Design
-**ORM Configuration:**
-- Drizzle ORM with PostgreSQL dialect.
-- Schema defined in `/shared/schema.ts` with Zod validation.
-
-**Implemented Schema:**
-- **Sessions Table**: PostgreSQL-backed session storage.
-- **Users Table**: User accounts with UUID primary keys, username, hashed password, and timestamps.
-- **Surveys Table**: Survey storage with UUID primary key, `userId` (foreign key to users), title, description, JSONB for questions, and timestamps.
-- **Survey Responses Table**: Response collection with UUID primary key, `surveyId` (foreign key to surveys), JSONB for answer data, and a `completedAt` timestamp.
-
-## Static Assets Configuration
-
-**Important Template Note**: Survey illustrations are served via Express static middleware at `/attached_assets`. This is configured in `server/routes.ts`:
-```typescript
-// Serve static assets from attached_assets directory
-const assetsPath = path.resolve(import.meta.dirname, "..", "attached_assets");
-app.use("/attached_assets", express.static(assetsPath));
-```
-This must be registered in the `registerRoutes()` function before other routes. All survey illustration URLs should use `/attached_assets/` paths.
-
-## External Dependencies
-
-**AI Services:**
-- **OpenRouter API**: Integrated for survey generation, document text extraction (using Mistral Small 3.1), and chat-based refinements. Configured via `OPENROUTER_API_KEY` or `OPENAI_API_KEY`.
-
-**Document Processing:**
-- **pdf-parse**: Server-side PDF text extraction.
-- **Mammoth**: DOCX document parsing.
-- **Multer**: File upload handling.
-
-**Database:**
-- **PostgreSQL**: Primary data store, accessed via Neon serverless driver. Requires `DATABASE_URL`.
-
-**UI Component Libraries:**
-- **Radix UI**: Headless accessible components for core UI.
-- **Lucide React**: Icon library.
-- **Embla Carousel**: Touch-friendly carousel functionality.
-- **date-fns**: Date manipulation utility.
-
-**Third-Party Services:**
-- Google Fonts API for Inter font family.
+---
+**Last Updated**: Nov 22, 2025
+**Current Phase**: Respondent email integration
+**Blocking**: Waiting for user Resend API key
