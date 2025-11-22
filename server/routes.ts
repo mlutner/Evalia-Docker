@@ -332,6 +332,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         surveys.map(async (survey) => {
           const responseCount = await storage.getResponseCount(survey.id);
           const questionCount = survey.questions?.length || 0;
+          console.log(`Survey ${survey.id} has ${responseCount} responses and ${questionCount} questions`);
           return {
             ...survey,
             responseCount,
@@ -340,6 +341,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         })
       );
       
+      console.log('Returning surveys with counts:', surveysWithCounts.map(s => ({ id: s.id, responseCount: s.responseCount })));
       res.json(surveysWithCounts);
     } catch (error: any) {
       console.error("Get surveys error:", error);
@@ -484,10 +486,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const response = await storage.createResponse(id, answers);
+      console.log(`Response created for survey ${id}:`, response);
       res.status(201).json(response);
-      
-      // Invalidate cache on client side by sending cache-control headers
-      res.set('Cache-Control', 'no-cache');
     } catch (error: any) {
       console.error("Create response error:", error);
       res.status(500).json({ error: "Failed to submit response" });
