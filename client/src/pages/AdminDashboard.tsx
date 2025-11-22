@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { BarChart3, DollarSign, Zap, TrendingUp, Key, Copy, AlertCircle } from "lucide-react";
+import { BarChart3, DollarSign, Zap, TrendingUp, Key, Copy, AlertCircle, ArrowLeft } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -27,6 +28,7 @@ interface AdminSettings {
 
 export default function AdminDashboard() {
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   const [showKeyDialog, setShowKeyDialog] = useState<string | null>(null);
   const [showModelDialog, setShowModelDialog] = useState<string | null>(null);
   const [newApiKey, setNewApiKey] = useState("");
@@ -152,9 +154,21 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-background p-6 md:p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
-          <p className="text-muted-foreground">Monitor platform-wide AI usage and manage API keys</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
+            <p className="text-muted-foreground">Monitor platform-wide AI usage and manage API keys</p>
+          </div>
+          <Button 
+            onClick={() => navigate("/")} 
+            variant="outline" 
+            size="sm"
+            className="gap-2"
+            data-testid="button-back-to-dashboard"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Dashboard
+          </Button>
         </div>
 
         {/* Stats Grid */}
