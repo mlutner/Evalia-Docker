@@ -1,4 +1,4 @@
-import { type User, type UpsertUser, type Survey, type InsertSurvey, users, surveys, surveyResponses, surveyRespondents, type SurveyResponse, type SurveyRespondent, type InsertSurveyRespondent, aiUsageLog, type AIUsageRecord } from "@shared/schema";
+import { type User, type UpsertUser, type Survey, type InsertSurvey, users, surveys, surveyResponses, surveyRespondents, type SurveyResponse, type SurveyRespondent, type InsertSurveyRespondent, aiUsageLog, type AIUsageRecord, adminAISettings } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
 import { eq, sql, gte } from "drizzle-orm";
@@ -342,7 +342,7 @@ export class DbStorage implements IStorage {
   private adminAISettings: AdminAISettings;
 
   constructor() {
-    // Initialize admin settings from env vars
+    // Initialize admin settings from env vars (will be overridden by DB on first call)
     this.adminAISettings = {
       apiKeys: {
         survey_generation: { key: process.env.API_KEY_SURVEY_GENERATION || "", rotated: null },
@@ -377,6 +377,23 @@ export class DbStorage implements IStorage {
         response_analysis: { temperature: 0.5, max_tokens: 4096 },
       }
     };
+    this.initializeAdminSettings();
+  }
+
+  private async initializeAdminSettings() {
+    try {
+      const result = await db.select().from(adminAISettings).limit(1);
+      if (result[0]) {
+        this.adminAISettings = {
+          apiKeys: result[0].apiKeys as any,
+          models: result[0].models as any,
+          baseUrls: result[0].baseUrls as any,
+          parameters: result[0].parameters as any,
+        };
+      }
+    } catch (error) {
+      console.warn("Could not load admin settings from DB, using defaults");
+    }
   }
 
   private getResponseCountCached(surveyId: string): { count: number; timestamp: number } | undefined {
@@ -632,6 +649,29 @@ export class DbStorage implements IStorage {
     if (settings.parameters) {
       this.adminAISettings.parameters = { ...this.adminAISettings.parameters, ...settings.parameters };
     }
+    
+    // Persist to database
+    try {
+      await db.insert(adminAISettings).values({
+        id: 'admin',
+        apiKeys: this.adminAISettings.apiKeys,
+        models: this.adminAISettings.models,
+        baseUrls: this.adminAISettings.baseUrls,
+        parameters: this.adminAISettings.parameters,
+      }).onConflictDoUpdate({
+        target: adminAISettings.id,
+        set: {
+          apiKeys: this.adminAISettings.apiKeys,
+          models: this.adminAISettings.models,
+          baseUrls: this.adminAISettings.baseUrls,
+          parameters: this.adminAISettings.parameters,
+          updatedAt: new Date(),
+        }
+      });
+    } catch (error) {
+      console.error("Failed to save admin settings to DB:", error);
+    }
+    
     return this.adminAISettings;
   }
 }

@@ -41,6 +41,16 @@ export const aiUsageLog = pgTable("ai_usage_log", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// Admin AI Settings table (persists configuration across restarts)
+export const adminAISettings = pgTable("admin_ai_settings", {
+  id: varchar("id").primaryKey().default(sql`'admin'`), // Single row
+  apiKeys: jsonb("api_keys").notNull(), // { [function]: { key: string, rotated: string|null } }
+  models: jsonb("models").notNull(), // { [function]: string }
+  baseUrls: jsonb("base_urls").notNull(), // { [function]: string }
+  parameters: jsonb("parameters").notNull(), // { [function]: { temperature, max_tokens, etc } }
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 
