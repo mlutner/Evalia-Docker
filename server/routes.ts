@@ -1038,7 +1038,7 @@ GUIDELINES FOR ENHANCEMENT:
           "X-Title": "Evalia Survey Builder",
         },
         body: JSON.stringify({
-          model: "mistral/mistral-7b-instruct",
+          model: "mistralai/mistral-7b-instruct",
           messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: prompt },
