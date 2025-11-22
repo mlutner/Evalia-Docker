@@ -72,7 +72,7 @@ export default function Home() {
           </div>
 
           {/* Right Side - Image */}
-          <div className="flex items-center justify-center h-full min-h-screen">
+          <div className="flex items-center justify-start h-full min-h-screen -ml-20">
             <div className="relative w-full max-w-2xl scale-150">
               <img
                 src={ChatGPT_Image_Nov_21__2025__05_52_04_PM}
