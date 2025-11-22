@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface SurveyFiltersProps {
   searchTerm: string;
@@ -18,7 +19,23 @@ export function SurveyFilters({
   onTagToggle,
   testIdPrefix = "surveys",
 }: SurveyFiltersProps) {
+  const [localSearch, setLocalSearch] = useState(searchTerm);
   const hasActiveFilters = searchTerm || selectedTags.length > 0;
+
+  // Debounce search input - 400ms delay for better performance
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (localSearch !== searchTerm) {
+        onSearchChange(localSearch);
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [localSearch, searchTerm, onSearchChange]);
+
+  // Update local state when prop changes
+  useEffect(() => {
+    setLocalSearch(searchTerm);
+  }, [searchTerm]);
 
   return (
     <div className="space-y-4 p-4 rounded-lg bg-card border border-border dark:border-slate-700">
@@ -26,16 +43,16 @@ export function SurveyFilters({
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1 relative">
           <Input
-            placeholder="Search surveys..."
-            value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Search surveys... (updates in 400ms)"
+            value={localSearch}
+            onChange={(e) => setLocalSearch(e.target.value)}
             className="flex-1"
             data-testid={`input-search-${testIdPrefix}`}
           />
-          {searchTerm && (
+          {localSearch && (
             <button
-              onClick={() => onSearchChange("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              onClick={() => setLocalSearch("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               data-testid={`button-clear-search-${testIdPrefix}`}
             >
               <X className="w-4 h-4" />

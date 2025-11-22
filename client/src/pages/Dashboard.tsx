@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import Header from "@/components/Header";
@@ -22,6 +22,18 @@ export default function Dashboard() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "most-responses" | "alphabetical">("newest");
   const { toast } = useToast();
+
+  // Keyboard shortcut: Cmd+N or Ctrl+N for new survey
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
+        e.preventDefault();
+        setLocation("/builder");
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [setLocation]);
 
   const { data: surveys = [], isLoading } = useQuery<SurveyWithCounts[]>({
     queryKey: ["/api/surveys"],
@@ -78,9 +90,10 @@ export default function Dashboard() {
       setDeleteConfirm(null);
     },
     onError: (error: any) => {
+      const errorMsg = error?.message || error?.error?.message || "Failed to delete survey. Please try again.";
       toast({
-        title: "Error",
-        description: error.message || "Failed to delete survey",
+        title: "Error deleting survey",
+        description: errorMsg,
         variant: "destructive",
       });
     },
@@ -126,9 +139,10 @@ export default function Dashboard() {
         });
       },
       onError: (error: any) => {
+        const errorMsg = error?.message || error?.error?.message || "Failed to duplicate survey. Please try again.";
         toast({
-          title: "Error",
-          description: error.message || "Failed to duplicate survey",
+          title: "Error duplicating survey",
+          description: errorMsg,
           variant: "destructive",
         });
       },
@@ -193,7 +207,7 @@ export default function Dashboard() {
             <p className="text-sm md:text-base text-muted-foreground">
               {surveys.length === 0 
                 ? "Create, manage, and analyze your training surveys"
-                : `${surveys.length} ${surveys.length === 1 ? 'survey' : 'surveys'} created`
+                : `${surveys.length} ${surveys.length === 1 ? 'survey' : 'surveys'} created • ${surveys.filter(s => s.publishedAt).length} live • ${surveys.reduce((sum, s) => sum + (s.responseCount || 0), 0)} total responses`
               }
             </p>
           </div>
