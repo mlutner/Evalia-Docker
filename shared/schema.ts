@@ -299,21 +299,26 @@ export function calculateSurveyScores(
 
   scoreConfig.categories.forEach(cat => {
     const categoryScore = scores[cat.id] || 0;
+    const maxScore = scoreConfig.scoreRanges
+      .filter(rule => rule.category === cat.id)
+      .reduce((max, rule) => Math.max(max, rule.maxScore), 0);
+    
+    // Normalize score and maxScore to 0-100 scale for consistent display
+    const normalizedMaxScore = 100;
+    const normalizedScore = maxScore > 0 ? Math.round((categoryScore / maxScore) * normalizedMaxScore) : 0;
+    
+    // Find matching rule using the original (non-normalized) score for interpretation
     const matchingRule = scoreConfig.scoreRanges.find(
       rule => rule.category === cat.id && 
       categoryScore >= rule.minScore && 
       categoryScore <= rule.maxScore
     );
-    
-    const maxScore = scoreConfig.scoreRanges
-      .filter(rule => rule.category === cat.id)
-      .reduce((max, rule) => Math.max(max, rule.maxScore), 0);
 
     results.push({
       categoryId: cat.id,
       categoryName: cat.name,
-      score: categoryScore,
-      maxScore,
+      score: normalizedScore,
+      maxScore: normalizedMaxScore,
       interpretation: matchingRule?.interpretation || "No interpretation available",
     });
   });
