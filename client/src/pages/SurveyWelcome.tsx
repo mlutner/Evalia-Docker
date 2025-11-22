@@ -54,14 +54,14 @@ export default function SurveyWelcome({
         )}
         <SurveyWelcomeTemplate
           title="Training Check-in"
-          description={survey.description}
+          description={survey.description ?? undefined}
           illustration={illustration}
-          welcomeMessage={survey.welcomeMessage}
+          welcomeMessage={survey.welcomeMessage ?? undefined}
           onStart={onStart}
-          estimatedMinutes={survey.estimatedMinutes}
+          estimatedMinutes={survey.estimatedMinutes ?? undefined}
           questionCount={survey.questions?.length || 0}
-          privacyStatement={survey.privacyStatement}
-          dataUsageStatement={survey.dataUsageStatement}
+          privacyStatement={survey.privacyStatement ?? undefined}
+          dataUsageStatement={survey.dataUsageStatement ?? undefined}
         />
       </main>
     </div>
