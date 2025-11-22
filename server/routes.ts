@@ -1034,6 +1034,8 @@ GUIDELINES FOR ENHANCEMENT:
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${apiKey}`,
+          "HTTP-Referer": "https://evalia.replit.dev",
+          "X-Title": "Evalia Survey Builder",
         },
         body: JSON.stringify({
           model: "mistral-7b-instruct",
