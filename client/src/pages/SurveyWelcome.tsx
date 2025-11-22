@@ -58,6 +58,10 @@ export default function SurveyWelcome({
           illustration={illustration}
           welcomeMessage={survey.welcomeMessage}
           onStart={onStart}
+          estimatedMinutes={survey.estimatedMinutes}
+          questionCount={survey.questions?.length || 0}
+          privacyStatement={survey.privacyStatement}
+          dataUsageStatement={survey.dataUsageStatement}
         />
       </main>
     </div>
