@@ -602,43 +602,6 @@ export default function Builder() {
                     </div>
                   )}
                 </TabsContent>
-              </Tabs>
-            </div>
-          </div>
-        )}
-
-        {/* Prompt Suggestions Dialog */}
-        <Dialog open={showPromptSuggestions} onOpenChange={setShowPromptSuggestions}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Enhance Your Prompt</DialogTitle>
-              <DialogDescription>
-                Click any suggestion to add it to your prompt for better results
-              </DialogDescription>
-            </DialogHeader>
-            <ScrollArea className="h-64">
-              <div className="space-y-2 pr-4">
-                {promptSuggestions.map((suggestion, index) => (
-                  <Button
-                    key={index}
-                    variant="outline"
-                    className="w-full justify-start text-left h-auto py-3 px-4 whitespace-normal text-sm"
-                    onClick={() => {
-                      const enhancedPrompt = prompt.trim() 
-                        ? `${prompt}\n\n${suggestion.replace(/^[✨📊👥🎯📚🏆]\s/, '')}`
-                        : suggestion.replace(/^[✨📊👥🎯📚🏆]\s/, '');
-                      setPrompt(enhancedPrompt);
-                      setShowPromptSuggestions(false);
-                    }}
-                    data-testid={`button-suggestion-${index}`}
-                  >
-                    {suggestion}
-                  </Button>
-                ))}
-              </div>
-            </ScrollArea>
-          </DialogContent>
-        </Dialog>
 
                 <TabsContent value="upload" className="space-y-10 pt-8">
                   {/* File Upload Section */}
@@ -723,6 +686,39 @@ export default function Builder() {
                   )}
                 </TabsContent>
               </Tabs>
+
+              {/* Prompt Suggestions Dialog */}
+              <Dialog open={showPromptSuggestions} onOpenChange={setShowPromptSuggestions}>
+                <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>Enhance Your Prompt</DialogTitle>
+                    <DialogDescription>
+                      Click any suggestion to add it to your prompt for better results
+                    </DialogDescription>
+                  </DialogHeader>
+                  <ScrollArea className="h-64">
+                    <div className="space-y-2 pr-4">
+                      {promptSuggestions.map((suggestion, index) => (
+                        <Button
+                          key={index}
+                          variant="outline"
+                          className="w-full justify-start text-left h-auto py-3 px-4 whitespace-normal text-sm"
+                          onClick={() => {
+                            const enhancedPrompt = prompt.trim() 
+                              ? `${prompt}\n\n${suggestion.replace(/^[✨📊👥🎯📚🏆]\s/, '')}`
+                              : suggestion.replace(/^[✨📊👥🎯📚🏆]\s/, '');
+                            setPrompt(enhancedPrompt);
+                            setShowPromptSuggestions(false);
+                          }}
+                          data-testid={`button-suggestion-${index}`}
+                        >
+                          {suggestion}
+                        </Button>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         )}
