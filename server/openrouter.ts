@@ -195,13 +195,14 @@ export async function suggestScoringConfig(
   questions: Question[]
 ): Promise<any | null> {
   // Only suggest scoring for assessment/evaluation surveys
-  const assessmentKeywords = ['assess', 'evaluate', 'score', 'skill', 'competency', 'leadership', 'performance', 'capability', 'proficiency'];
+  const assessmentKeywords = ['assess', 'evaluate', 'score', 'skill', 'competency', 'leadership', 'performance', 'capability', 'proficiency', 'mental health', 'mental', 'health', 'wellbeing', 'wellness', 'engagement', 'satisfaction', 'understanding', 'knowledge', 'learning', 'training', 'effectiveness', 'awareness', 'readiness'];
   const isAssessmentSurvey = assessmentKeywords.some(keyword => 
     title.toLowerCase().includes(keyword) || 
     questions.some(q => q.question.toLowerCase().includes(keyword))
   );
 
   if (!isAssessmentSurvey) {
+    console.log("Survey not detected as assessment survey. Title:", title, "Keywords:", assessmentKeywords);
     return null; // Don't suggest scoring for non-assessment surveys
   }
 

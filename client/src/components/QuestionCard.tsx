@@ -58,6 +58,7 @@ function getQuestionTypeLabel(type: QuestionType) {
     matrix: "Matrix/Grid",
     ranking: "Ranking",
     date: "Date picker",
+    section: "Section divider",
   };
   return labels[type] || type;
 }
