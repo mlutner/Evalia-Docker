@@ -169,7 +169,7 @@ export default function SurveyView() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
         <div className="text-center">
           <Loader2 className="w-16 h-16 animate-spin text-primary mx-auto mb-6" />
-          <p className="text-muted-foreground text-lg">Loading survey...</p>
+          <p className="text-muted-foreground text-lg">Getting your survey ready...</p>
         </div>
       </div>
     );
@@ -184,7 +184,7 @@ export default function SurveyView() {
           </div>
           <h1 className="text-3xl font-semibold mb-3" data-testid="text-error-title">Survey Not Found</h1>
           <p className="text-muted-foreground text-lg" data-testid="text-error-message">
-            The survey you're looking for doesn't exist or has been removed.
+            This survey doesn't exist or may have been removed. Double-check the link and try again.
           </p>
         </div>
       </div>
@@ -214,13 +214,13 @@ export default function SurveyView() {
             <div className="absolute inset-0 w-24 h-24 mx-auto bg-primary/20 rounded-full animate-ping" style={{ animationDuration: '2s' }}></div>
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 px-4">
-            Thank you!
+            You're all set!
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-3 sm:mb-4 px-4" data-testid="text-thank-you-message">
-            {survey.thankYouMessage || "Your responses have been recorded successfully."}
+            {survey.thankYouMessage || "Your responses are on their way."}
           </p>
           <p className="text-base sm:text-lg text-muted-foreground/80 mb-8 sm:mb-10 px-4" data-testid="text-thank-you-subtitle">
-            We appreciate you taking the time to share your thoughts.
+            Thanks for taking the time to share your thoughts.
           </p>
           <Button 
             size="lg" 
@@ -228,7 +228,7 @@ export default function SurveyView() {
             data-testid="button-submit-another"
             className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 shadow-lg hover:shadow-xl transition-all w-full sm:w-auto mx-4"
           >
-            Submit Another Response
+            Take It Again
           </Button>
         </div>
       </div>
@@ -242,9 +242,9 @@ export default function SurveyView() {
           <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
             <FileQuestion className="w-8 h-8 text-muted-foreground" />
           </div>
-          <h1 className="text-3xl font-semibold mb-3" data-testid="text-no-questions-title">No Questions</h1>
+          <h1 className="text-3xl font-semibold mb-3" data-testid="text-no-questions-title">No Questions Yet</h1>
           <p className="text-muted-foreground text-lg" data-testid="text-no-questions-message">
-            This survey doesn't have any questions yet.
+            This survey is still getting built. Check back soon.
           </p>
         </div>
       </div>
