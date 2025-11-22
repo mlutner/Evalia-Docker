@@ -290,19 +290,20 @@ export default function Builder() {
               <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "templates" | "ai" | "upload")} className="w-full">
                 {/* Custom Tab Button Group */}
                 <div className="grid grid-cols-3 gap-4 mb-12 px-1">
+                  {/* Templates - Soft Amber */}
                   <button
                     onClick={() => setActiveTab("templates")}
                     data-testid="tab-templates"
                     className={`p-6 rounded-lg border-2 transition-all ${
                       activeTab === "templates"
-                        ? "border-primary bg-primary/5"
-                        : "border-muted hover:border-muted-foreground/50 bg-background hover:bg-muted/50"
+                        ? "border-yellow-200 bg-yellow-100/20"
+                        : "border-muted hover:border-yellow-200/50 bg-background hover:bg-yellow-50/30"
                     }`}
                   >
                     <div className="flex flex-col items-center text-center gap-3">
                       <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
                         activeTab === "templates"
-                          ? "bg-primary text-primary-foreground"
+                          ? "bg-yellow-200 text-yellow-900"
                           : "bg-muted text-muted-foreground"
                       }`}>
                         <Layers className="w-6 h-6" />
@@ -314,19 +315,20 @@ export default function Builder() {
                     </div>
                   </button>
 
+                  {/* AI - Cyan */}
                   <button
                     onClick={() => setActiveTab("ai")}
                     data-testid="tab-ai"
                     className={`p-6 rounded-lg border-2 transition-all ${
                       activeTab === "ai"
-                        ? "border-primary bg-primary/5"
-                        : "border-muted hover:border-muted-foreground/50 bg-background hover:bg-muted/50"
+                        ? "border-cyan-300 bg-cyan-100/20"
+                        : "border-muted hover:border-cyan-300/50 bg-background hover:bg-cyan-50/30"
                     }`}
                   >
                     <div className="flex flex-col items-center text-center gap-3">
                       <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
                         activeTab === "ai"
-                          ? "bg-primary text-primary-foreground"
+                          ? "bg-cyan-300 text-cyan-900"
                           : "bg-muted text-muted-foreground"
                       }`}>
                         <Sparkles className="w-6 h-6" />
@@ -338,19 +340,20 @@ export default function Builder() {
                     </div>
                   </button>
 
+                  {/* Upload - Warm Amber */}
                   <button
                     onClick={() => setActiveTab("upload")}
                     data-testid="tab-upload"
                     className={`p-6 rounded-lg border-2 transition-all ${
                       activeTab === "upload"
-                        ? "border-primary bg-primary/5"
-                        : "border-muted hover:border-muted-foreground/50 bg-background hover:bg-muted/50"
+                        ? "border-amber-300 bg-amber-100/20"
+                        : "border-muted hover:border-amber-300/50 bg-background hover:bg-amber-50/30"
                     }`}
                   >
                     <div className="flex flex-col items-center text-center gap-3">
                       <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
                         activeTab === "upload"
-                          ? "bg-primary text-primary-foreground"
+                          ? "bg-amber-300 text-amber-900"
                           : "bg-muted text-muted-foreground"
                       }`}>
                         <FileUp className="w-6 h-6" />

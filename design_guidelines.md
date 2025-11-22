@@ -22,21 +22,37 @@ The design system uses carefully selected colors to create visual distinction wi
 - **Navy (#071A32)**: Deep, authoritative - used for text and critical information
 
 **Survey Creation Methods Use Color Language:**
-- **Templates**: Accent Amber accent - warm welcome, establishes structure and professionalism
-- **AI Generation**: Cyan accent - communicates intelligence, innovation, and AI-powered capability
-- **Upload/Paste**: Warm Amber accent - signals action, active processing, file handling
+Each method has its **own color** for clear visual distinction and guidance:
+- **Templates**: Soft Amber (#F5DFA1) - warm welcome, establishes structure and professionalism
+- **AI Generation**: Cyan (#22D3EE) - communicates intelligence, innovation, and AI-powered capability
+- **Upload/Paste**: Warm Amber (#D97706) - signals action, active processing, file handling
+
+**Color System Application:**
+1. **Tab Buttons** - Preview the color of that method:
+   - Templates tab uses soft amber background and border
+   - AI tab uses cyan background and border
+   - Upload tab uses warm amber background and border
+   - Active icon circles use solid color; inactive circles use gray
+
+2. **Content Cards** - Match the tab color with:
+   - Gradient background (20-25% opacity)
+   - 4px colored left border accent
+   - Matching colored border (2px)
+   - Consistent typography and spacing
+
+3. **Accent Color Uses** (#F5DFA1 in Templates section):
+   - Primary call-to-action buttons (Use Template, Generate, Process)
+   - "Recommended" badges
+   - Highlight boxes for important information
+   - New feature indicators
+   - Featured template badges
 
 **Design Principles:**
-- Accent Amber pairs beautifully with Cyan on the color wheel
-- Warms up the palette without overwhelming
-- Perfect for callouts, highlights, and onboarding experiences
+- Each method's color creates a visual "preview" of what users will experience
+- Tab colors guide users before they select
+- Colors communicate function: warmth (templates), innovation (AI), energy (upload)
+- Accent color highlights important actions without overwhelming the interface
 - Creates wellness + coaching interface feeling (ideal for trainer platform)
-
-Each method features:
-- Gradient background (20-25% opacity, fading to background)
-- Colored left border accent (4px solid)
-- Matching colored border for visual cohesion
-- Consistent typography and spacing
 
 ## Typography
 
