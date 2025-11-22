@@ -54,6 +54,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user email settings (protected)
+  app.get("/api/user/email-settings", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user) return res.status(404).json({ error: "User not found" });
+      
+      res.json({
+        hasResendApiKey: !!user.resendApiKey,
+      });
+    } catch (error) {
+      console.error("Error fetching email settings:", error);
+      res.status(500).json({ error: "Failed to fetch email settings" });
+    }
+  });
+
+  // Update user email settings (protected)
+  app.patch("/api/user/email-settings", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { resendApiKey } = req.body;
+
+      if (!resendApiKey || typeof resendApiKey !== "string") {
+        return res.status(400).json({ error: "Invalid API key" });
+      }
+
+      if (!resendApiKey.startsWith("re_")) {
+        return res.status(400).json({ error: "API key must start with 're_'" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) return res.status(404).json({ error: "User not found" });
+
+      const updated = await storage.updateUser(userId, { resendApiKey });
+      if (!updated) return res.status(500).json({ error: "Failed to update settings" });
+
+      res.json({
+        success: true,
+        hasResendApiKey: true,
+      });
+    } catch (error) {
+      console.error("Error updating email settings:", error);
+      res.status(500).json({ error: "Failed to update email settings" });
+    }
+  });
+
   // Legacy user endpoint (for compatibility)
   app.get("/api/user", isAuthenticated, async (req: any, res) => {
     try {

@@ -2,18 +2,18 @@
 // Uses Resend (recommended) or SendGrid when API keys are configured
 
 export interface EmailService {
-  sendSurveyInvitation(email: string, name: string | undefined, surveyTitle: string, respondentUrl: string, trainerName?: string): Promise<boolean>;
-  sendSurveyReminder(email: string, surveyTitle: string, respondentUrl: string): Promise<boolean>;
+  sendSurveyInvitation(email: string, name: string | undefined, surveyTitle: string, respondentUrl: string, trainerName?: string, apiKey?: string): Promise<boolean>;
+  sendSurveyReminder(email: string, surveyTitle: string, respondentUrl: string, apiKey?: string): Promise<boolean>;
 }
 
 export class MockEmailService implements EmailService {
-  async sendSurveyInvitation(email: string, name: string | undefined, surveyTitle: string, respondentUrl: string): Promise<boolean> {
+  async sendSurveyInvitation(email: string, name: string | undefined, surveyTitle: string, respondentUrl: string, _trainerName?: string, _apiKey?: string): Promise<boolean> {
     console.log(`[EMAIL INVITED] ${email} ${name ? `(${name})` : ''} for survey: ${surveyTitle}`);
     console.log(`[RESPONDENT LINK] ${respondentUrl}`);
     return false;
   }
 
-  async sendSurveyReminder(email: string, surveyTitle: string, respondentUrl: string): Promise<boolean> {
+  async sendSurveyReminder(email: string, surveyTitle: string, respondentUrl: string, _apiKey?: string): Promise<boolean> {
     console.log(`[EMAIL REMINDER] ${email} for survey: ${surveyTitle}`);
     console.log(`[RESPONDENT LINK] ${respondentUrl}`);
     return false;
@@ -28,8 +28,9 @@ export class ResendEmailService implements EmailService {
     this.apiKey = process.env.RESEND_API_KEY || "";
   }
 
-  async sendSurveyInvitation(email: string, name: string | undefined, surveyTitle: string, respondentUrl: string, trainerName?: string): Promise<boolean> {
-    if (!this.apiKey) {
+  async sendSurveyInvitation(email: string, name: string | undefined, surveyTitle: string, respondentUrl: string, trainerName?: string, userApiKey?: string): Promise<boolean> {
+    const apiKeyToUse = userApiKey || this.apiKey;
+    if (!apiKeyToUse) {
       console.warn("RESEND_API_KEY not configured. Email invitation not sent.");
       return false;
     }

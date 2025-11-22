@@ -7,6 +7,7 @@ export interface IStorage {
   // User operations (Replit Auth compatible)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+  updateUser(id: string, updates: Partial<User>): Promise<User | undefined>;
   
   // Survey operations
   getSurvey(id: string): Promise<Survey | undefined>;
@@ -62,12 +63,27 @@ export class MemStorage implements IStorage {
       firstName: userData.firstName || null,
       lastName: userData.lastName || null,
       profileImageUrl: userData.profileImageUrl || null,
+      resendApiKey: userData.resendApiKey || null,
       createdAt: existingUser?.createdAt || now,
       updatedAt: now,
     };
     
     this.users.set(user.id, user);
     return user;
+  }
+
+  async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
+    
+    const updated: User = {
+      ...user,
+      ...updates,
+      updatedAt: new Date(),
+    };
+    
+    this.users.set(id, updated);
+    return updated;
   }
 
   async getSurvey(id: string): Promise<Survey | undefined> {
