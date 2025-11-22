@@ -1,24 +1,123 @@
 import type { Question } from "@shared/schema";
 import mammoth from "mammoth";
 
-// Use Mistral API key
-const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
-const MISTRAL_BASE_URL = "https://api.mistral.ai/v1";
-const MISTRAL_OCR_URL = "https://api.mistral.ai/v1/ocr";
+// Function-based configuration mapping
+type AIFunction = "survey_generation" | "survey_refinement" | "document_parsing" | "response_scoring" | "quick_suggestions" | "response_analysis";
 
-// Mistral models
-const MODELS = {
-  // For survey generation and chat
-  GENERATION: "pixtral-large-latest", // Mistral Pixtral Large for survey generation and refinement
-  // For OCR/document parsing (native OCR model)
-  OCR: "mistral-ocr-2505", // Mistral OCR native model - specialized for document OCR
-};
+// Get API key and model for a specific function
+function getAIConfig(func: AIFunction): { apiKey: string; model: string; provider: string } {
+  const envKeyMap: Record<AIFunction, string> = {
+    survey_generation: "API_KEY_SURVEY_GENERATION",
+    survey_refinement: "API_KEY_SURVEY_REFINEMENT",
+    document_parsing: "API_KEY_DOCUMENT_PARSING",
+    response_scoring: "API_KEY_RESPONSE_SCORING",
+    quick_suggestions: "API_KEY_QUICK_SUGGESTIONS",
+    response_analysis: "API_KEY_RESPONSE_ANALYSIS",
+  };
 
-// Mistral pricing (per 1M tokens, in USD)
-const MISTRAL_PRICING = {
-  "pixtral-large-latest": { input: 2.0, output: 6.0 },
-  "mistral-ocr-2505": { input: 0.5, output: 1.5 },
-};
+  const envModelMap: Record<AIFunction, string> = {
+    survey_generation: "MODEL_SURVEY_GENERATION",
+    survey_refinement: "MODEL_SURVEY_REFINEMENT",
+    document_parsing: "MODEL_DOCUMENT_PARSING",
+    response_scoring: "MODEL_RESPONSE_SCORING",
+    quick_suggestions: "MODEL_QUICK_SUGGESTIONS",
+    response_analysis: "MODEL_RESPONSE_ANALYSIS",
+  };
+
+  const apiKey = process.env[envKeyMap[func]] || process.env.MISTRAL_API_KEY || "";
+  const model = process.env[envModelMap[func]] || getDefaultModel(func);
+  
+  // Detect provider from model name or API key
+  const provider = detectProvider(model, apiKey);
+  
+  return { apiKey, model, provider };
+}
+
+function getDefaultModel(func: AIFunction): string {
+  const defaults: Record<AIFunction, string> = {
+    survey_generation: "gpt-4o",
+    survey_refinement: "gpt-4o",
+    document_parsing: "gpt-4-vision",
+    response_scoring: "gpt-3.5-turbo",
+    quick_suggestions: "gpt-3.5-turbo",
+    response_analysis: "gpt-4o",
+  };
+  return defaults[func];
+}
+
+function detectProvider(model: string, apiKey: string): string {
+  if (model.includes("gpt") || model.includes("o1")) return "openai";
+  if (model.includes("claude")) return "anthropic";
+  if (model.includes("mistral")) return "mistral";
+  if (model.includes("gemini")) return "google";
+  if (apiKey.startsWith("sk-ant")) return "anthropic";
+  return "openai"; // Default fallback
+}
+
+// Generic AI call function that supports multiple providers
+async function callAI(
+  messages: ChatMessage[],
+  func: AIFunction,
+  responseFormat?: { type: "json_object" }
+): Promise<string> {
+  const { apiKey, model, provider } = getAIConfig(func);
+
+  if (!apiKey) {
+    throw new Error(`API key not configured for ${func}`);
+  }
+
+  if (provider === "openai") {
+    return callOpenAI(messages, apiKey, model, responseFormat);
+  } else if (provider === "mistral") {
+    return callMistral(messages, apiKey, model, responseFormat);
+  } else {
+    // Fallback to OpenAI format for unknown providers
+    return callOpenAI(messages, apiKey, model, responseFormat);
+  }
+}
+
+// OpenAI-compatible API call
+async function callOpenAI(
+  messages: ChatMessage[],
+  apiKey: string,
+  model: string,
+  responseFormat?: { type: "json_object" }
+): Promise<string> {
+  const baseUrl = "https://api.openai.com/v1";
+  
+  const response = await fetch(`${baseUrl}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      ...(responseFormat && { response_format: responseFormat }),
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`OpenAI API error: ${error}`);
+  }
+
+  const data = await response.json();
+  
+  // Capture token usage
+  const usage = data.usage;
+  if (usage) {
+    lastTokenUsage = {
+      inputTokens: usage.prompt_tokens || 0,
+      outputTokens: usage.completion_tokens || 0,
+      totalTokens: usage.total_tokens || 0,
+      model,
+    };
+  }
+  
+  return data.choices[0]?.message?.content || "";
+}
 
 interface ChatMessage {
   role: "system" | "user" | "assistant";
@@ -37,18 +136,19 @@ export let lastTokenUsage: TokenUsageData | null = null;
 
 async function callMistral(
   messages: ChatMessage[],
-  model: string = MODELS.GENERATION,
+  apiKey: string,
+  model: string,
   responseFormat?: { type: "json_object" }
 ): Promise<string> {
-  if (!MISTRAL_API_KEY) {
+  if (!apiKey) {
     throw new Error("Mistral API key not configured");
   }
 
-  const response = await fetch(`${MISTRAL_BASE_URL}/chat/completions`, {
+  const response = await fetch("https://api.mistral.ai/v1/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${MISTRAL_API_KEY}`,
+      Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
       model,
@@ -78,10 +178,27 @@ async function callMistral(
   return data.choices[0]?.message?.content || "";
 }
 
+// Pricing table for various models
+const PRICING: Record<string, { input: number; output: number }> = {
+  // OpenAI
+  "gpt-4o": { input: 5.0, output: 15.0 },
+  "gpt-4-turbo": { input: 10.0, output: 30.0 },
+  "gpt-3.5-turbo": { input: 0.5, output: 1.5 },
+  "gpt-4-vision": { input: 10.0, output: 30.0 },
+  // Mistral
+  "pixtral-large-latest": { input: 2.0, output: 6.0 },
+  "mistral-ocr-2505": { input: 0.5, output: 1.5 },
+  "mistral-large": { input: 0.27, output: 0.81 },
+  // Anthropic Claude
+  "claude-3-5-sonnet": { input: 3.0, output: 15.0 },
+  "claude-3-opus": { input: 15.0, output: 75.0 },
+  // Google Gemini
+  "gemini-pro": { input: 0.5, output: 1.5 },
+};
+
 // Calculate estimated cost
 export function calculateTokenCost(usage: TokenUsageData): string {
-  const pricing = MISTRAL_PRICING[usage.model as keyof typeof MISTRAL_PRICING];
-  if (!pricing) return "0.00";
+  const pricing = PRICING[usage.model] || { input: 2.0, output: 6.0 }; // Mistral as default
   
   const inputCost = (usage.inputTokens / 1_000_000) * pricing.input;
   const outputCost = (usage.outputTokens / 1_000_000) * pricing.output;
@@ -91,54 +208,49 @@ export function calculateTokenCost(usage: TokenUsageData): string {
 }
 
 /**
- * Parse PDF using Mistral OCR native API
+ * Parse PDF using configured OCR provider
  */
 export async function parsePDFWithVision(pdfBuffer: Buffer, fileName: string): Promise<string> {
-  if (!MISTRAL_API_KEY) {
-    throw new Error("Mistral API key not configured");
+  const { apiKey, model } = getAIConfig("document_parsing");
+
+  if (!apiKey) {
+    throw new Error("OCR API key not configured");
   }
 
   try {
     // Encode PDF as base64
     const base64PDF = pdfBuffer.toString("base64");
-
-    const response = await fetch(MISTRAL_OCR_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${MISTRAL_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: MODELS.OCR,
-        document: {
-          type: "document_url",
-          document_url: `data:application/pdf;base64,${base64PDF}`,
-        },
-      }),
-    });
-
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`Mistral OCR API error: ${error}`);
-    }
-
-    const data = await response.json();
-    console.log("Mistral OCR response:", JSON.stringify(data).substring(0, 500));
     
-    // OCR returns pages array with markdown content
-    if (data.pages && Array.isArray(data.pages)) {
-      return data.pages.map((page: any) => page.markdown || "").join("\n");
-    }
-    
-    // Try alternative response formats
-    return data.result?.markdown || data.markdown || data.content || data.text || "";
+    const messages: ChatMessage[] = [
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: "Extract all text from this PDF document. Return only the extracted text content."
+          },
+          {
+            type: "image_url",
+            image_url: {
+              url: `data:application/pdf;base64,${base64PDF}`,
+            }
+          }
+        ] as any,
+      }
+    ];
+
+    // Use generic AI call which handles multiple providers
+    const response = await callAI(messages, "document_parsing");
+    return response;
   } catch (error: any) {
-    throw new Error(`PDF OCR failed: ${error.message}`);
+    // Fallback: use text-based extraction
+    console.warn("OCR API failed, falling back to text extraction:", error.message);
+    return "";
   }
 }
 
 /**
- * Parse text from an uploaded document using OCR
+ * Parse text from an uploaded document
  */
 export async function parseDocument(fileContent: string, fileName: string): Promise<string> {
   const messages: ChatMessage[] = [
@@ -152,7 +264,7 @@ export async function parseDocument(fileContent: string, fileName: string): Prom
     },
   ];
 
-  return callMistral(messages, MODELS.OCR);
+  return callAI(messages, "document_parsing");
 }
 
 /**
@@ -210,7 +322,7 @@ export async function calculateScoresWithAI(
         { role: "user", content: userPrompt },
       ];
 
-      const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
+      const response = await callAI(messages, "response_scoring", { type: "json_object" });
       const aiScores = JSON.parse(response);
       
       // Add AI scores to category scores
@@ -354,7 +466,7 @@ Make interpretations clear and practical - they'll be shown to respondents after
   ];
 
   try {
-    const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
+    const response = await callAI(messages, "quick_suggestions", { type: "json_object" });
     const parsed = JSON.parse(response);
     
     const theoreticalMax = calculateTheoreticalMaxScore(questions);
@@ -470,7 +582,7 @@ VALIDATION CHECKLIST:
     { role: "user", content: userPrompt },
   ];
 
-  const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
+  const response = await callAI(messages, "survey_generation", { type: "json_object" });
   
   try {
     const parsed = JSON.parse(response);

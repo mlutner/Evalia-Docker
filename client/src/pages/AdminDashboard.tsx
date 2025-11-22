@@ -396,7 +396,7 @@ export default function AdminDashboard() {
           <AlertDialogFooter>
             <AlertDialogCancel data-testid="button-cancel-rotate">Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => updateApiKeyMutation.mutate({ provider: showKeyDialog || "mistral_generation", apiKey: newApiKey })}
+              onClick={() => updateApiKeyMutation.mutate({ provider: showKeyDialog || "survey_generation", apiKey: newApiKey })}
               disabled={!newApiKey || updateApiKeyMutation.isPending}
               data-testid="button-confirm-rotate"
             >
@@ -430,7 +430,7 @@ export default function AdminDashboard() {
           <AlertDialogFooter>
             <AlertDialogCancel data-testid="button-cancel-model">Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => updateModelMutation.mutate({ provider: showModelDialog || "mistral_generation", model: newModel })}
+              onClick={() => updateModelMutation.mutate({ provider: showModelDialog || "survey_generation", model: newModel })}
               disabled={!newModel || updateModelMutation.isPending}
               data-testid="button-confirm-model"
             >
