@@ -59,16 +59,16 @@ export default function SurveyWelcomeTemplate({
 
       {/* Quick Info Badges */}
       {(estimatedMinutes || questionCount) && (
-        <div className="flex justify-center gap-4 mb-[24px]" data-testid="quick-info-badges">
+        <div className="flex justify-center gap-2 mb-[16px]" data-testid="quick-info-badges">
           {estimatedMinutes && (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-full text-sm" data-testid="badge-estimated-time">
-              <Clock className="w-4 h-4 text-muted-foreground" />
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-muted rounded-full text-xs" data-testid="badge-estimated-time">
+              <Clock className="w-3 h-3 text-muted-foreground" />
               <span className="font-medium text-foreground">~{estimatedMinutes} min</span>
             </div>
           )}
           {questionCount && (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-full text-sm" data-testid="badge-question-count">
-              <BookOpen className="w-4 h-4 text-muted-foreground" />
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-muted rounded-full text-xs" data-testid="badge-question-count">
+              <BookOpen className="w-3 h-3 text-muted-foreground" />
               <span className="font-medium text-foreground">{questionCount} questions</span>
             </div>
           )}
@@ -130,7 +130,7 @@ export default function SurveyWelcomeTemplate({
       {/* Privacy & Data Modal */}
       {(privacyStatement || dataUsageStatement) && (
         <Dialog open={isPrivacyModalOpen} onOpenChange={setIsPrivacyModalOpen}>
-          <DialogContent className="max-w-md fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" data-testid="privacy-data-modal">
+          <DialogContent className="max-w-md" data-testid="privacy-data-modal">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Shield className="w-4 h-4" />
