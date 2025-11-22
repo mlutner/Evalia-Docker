@@ -152,7 +152,9 @@ export const surveyResponses = pgTable("survey_responses", {
   answers: jsonb("answers").notNull().$type<Record<string, string | string[]>>(),
   startedAt: timestamp("started_at").notNull().defaultNow(),
   completedAt: timestamp("completed_at").notNull().defaultNow(),
-});
+}, (table) => [
+  index("idx_survey_responses_survey_id").on(table.surveyId),
+]);
 
 export type SurveyResponse = typeof surveyResponses.$inferSelect;
 

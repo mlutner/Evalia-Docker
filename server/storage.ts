@@ -271,6 +271,23 @@ export class MemStorage implements IStorage {
 }
 
 export class DbStorage implements IStorage {
+  // Simple response count cache with 30-second TTL
+  private responseCountCache = new Map<string, { count: number; timestamp: number }>();
+  private readonly CACHE_TTL = 30000; // 30 seconds
+
+  private getResponseCountCached(surveyId: string): { count: number; timestamp: number } | undefined {
+    const cached = this.responseCountCache.get(surveyId);
+    if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
+      return cached;
+    }
+    this.responseCountCache.delete(surveyId);
+    return undefined;
+  }
+
+  private setResponseCountCache(surveyId: string, count: number): void {
+    this.responseCountCache.set(surveyId, { count, timestamp: Date.now() });
+  }
+
   async getUser(id: string): Promise<User | undefined> {
     const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
     return result[0];
@@ -379,10 +396,21 @@ export class DbStorage implements IStorage {
   }
 
   async getResponseCount(surveyId: string): Promise<number> {
+    // Check cache first
+    const cached = this.getResponseCountCached(surveyId);
+    if (cached) {
+      return cached.count;
+    }
+
+    // Query database if not cached
     const result = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(surveyResponses)
       .where(eq(surveyResponses.surveyId, surveyId));
-    return result[0]?.count ?? 0;
+    const count = result[0]?.count ?? 0;
+    
+    // Cache the result
+    this.setResponseCountCache(surveyId, count);
+    return count;
   }
 
   async deleteResponse(id: string): Promise<boolean> {

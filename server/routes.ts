@@ -516,7 +516,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "Survey not found" });
       }
 
-      res.json(survey);
+      // Calculate response and question counts
+      const responseCount = await storage.getResponseCount(id);
+      const questionCount = survey.questions?.length || 0;
+
+      res.json({
+        ...survey,
+        responseCount,
+        questionCount,
+      });
     } catch (error: any) {
       console.error("Get survey error:", error);
       res.status(500).json({ error: "Failed to fetch survey" });
