@@ -1007,9 +1007,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const settings = await storage.getAdminAISettings();
       const apiKey = settings.apiKeys.survey_generation?.key;
-      const model = settings.models.survey_generation;
-      const baseUrl = settings.baseUrls.survey_generation;
-      const parameters = settings.parameters.survey_generation;
 
       if (!apiKey) {
         return res.status(500).json({ error: "AI enhancement not configured by admin" });
@@ -1031,26 +1028,27 @@ GUIDELINES FOR ENHANCEMENT:
 - Suggest question types that fit the survey topic
 - Add any missing context that would help generate better questions`;
 
-      const response = await fetch(`${baseUrl}/chat/completions`, {
+      // Use OpenRouter with Mistral small model
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model,
+          model: "mistral-7b-instruct",
           messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: prompt },
           ],
-          temperature: parameters?.temperature || 0.8,
-          max_tokens: parameters?.max_tokens || 1024,
+          temperature: 0.7,
+          max_tokens: 1024,
         }),
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("AI API error:", errorText);
+        console.error("OpenRouter API error:", errorText);
         return res.status(500).json({ error: "Failed to enhance prompt with AI" });
       }
 
