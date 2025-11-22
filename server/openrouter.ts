@@ -602,7 +602,14 @@ VALIDATION CHECKLIST:
   const response = await callAI(messages, "survey_generation", { type: "json_object" });
   
   try {
-    const parsed = JSON.parse(response);
+    // Extract JSON from response (in case there's extra text)
+    let jsonStr = response.trim();
+    const jsonMatch = jsonStr.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      jsonStr = jsonMatch[0];
+    }
+    
+    const parsed = JSON.parse(jsonStr);
     
     // Validate that multiple choice questions have adequate options
     let questions = (parsed.questions || []).map((q: any) => {
@@ -636,6 +643,7 @@ VALIDATION CHECKLIST:
     };
   } catch (error) {
     console.error("Failed to parse survey generation response:", error);
+    console.error("Raw response (first 500 chars):", response.substring(0, 500));
     throw new Error("Failed to generate survey questions");
   }
 }
