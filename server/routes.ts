@@ -917,8 +917,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/settings", isAuthenticated, isMasterAdmin, async (req: any, res) => {
     try {
       const apiKeys = {
-        mistral: { key: process.env.MISTRAL_API_KEY || "", rotated: null },
-        openai: { key: process.env.OPENAI_API_KEY || "", rotated: null },
+        mistral_generation: { key: process.env.MISTRAL_API_KEY || "", rotated: null },
+        openai_generation: { key: process.env.OPENAI_API_KEY || "", rotated: null },
+        mistral_ocr: { key: process.env.MISTRAL_OCR_API_KEY || process.env.MISTRAL_API_KEY || "", rotated: null },
+        openai_ocr: { key: process.env.OPENAI_OCR_API_KEY || process.env.OPENAI_API_KEY || "", rotated: null },
       };
       res.json({ apiKeys });
     } catch (error: any) {
@@ -932,8 +934,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { provider, apiKey } = req.body;
 
-      if (!provider || !["mistral", "openai"].includes(provider)) {
-        return res.status(400).json({ error: "Invalid provider. Must be 'mistral' or 'openai'" });
+      const validProviders = [
+        "mistral_generation",
+        "openai_generation",
+        "mistral_ocr",
+        "openai_ocr",
+      ];
+
+      if (!provider || !validProviders.includes(provider)) {
+        return res.status(400).json({ error: `Invalid provider. Must be one of: ${validProviders.join(", ")}` });
       }
 
       if (!apiKey || typeof apiKey !== "string" || !apiKey.startsWith("sk-")) {

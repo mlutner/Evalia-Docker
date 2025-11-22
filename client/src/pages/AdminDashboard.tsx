@@ -70,9 +70,34 @@ export default function AdminDashboard() {
     return key.substring(0, 8) + "..." + key.substring(key.length - 4);
   };
 
-  const providers = [
-    { id: "mistral", name: "Mistral AI", icon: "⚡" },
-    { id: "openai", name: "OpenAI (Fallback)", icon: "🔮" },
+  const providerLabels: Record<string, string> = {
+    mistral_generation: "Mistral AI Generation",
+    openai_generation: "OpenAI Generation",
+    mistral_ocr: "Mistral OCR",
+    openai_ocr: "OpenAI OCR",
+  };
+
+  const apiKeyCategories = [
+    {
+      id: "ai_generation",
+      name: "AI Survey Generation",
+      icon: "⚡",
+      description: "Used for survey creation, refinement & text generation",
+      providers: [
+        { id: "mistral_generation", provider: "Mistral", model: "pixtral-large-latest" },
+        { id: "openai_generation", provider: "OpenAI", model: "gpt-4o or similar" },
+      ],
+    },
+    {
+      id: "ocr",
+      name: "OCR / Document Parsing",
+      icon: "📄",
+      description: "Used for parsing PDFs and documents",
+      providers: [
+        { id: "mistral_ocr", provider: "Mistral", model: "mistral-ocr-2505" },
+        { id: "openai_ocr", provider: "OpenAI", model: "gpt-4-vision" },
+      ],
+    },
   ];
 
   return (
@@ -193,44 +218,54 @@ export default function AdminDashboard() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Key className="w-4 h-4" />
-                API Keys
+                API Keys by Task
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {providers.map((provider) => (
-                <div key={provider.id}>
-                  <label className="text-sm font-medium flex items-center gap-2">
-                    <span>{provider.icon}</span>
-                    {provider.name}
-                  </label>
-                  <div className="mt-2 p-3 bg-muted rounded-lg flex items-center justify-between" data-testid={`display-key-${provider.id}`}>
-                    <code className="text-xs text-muted-foreground font-mono">
-                      {maskApiKey(settings?.apiKeys?.[provider.id]?.key || "")}
-                    </code>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => copyToClipboard(settings?.apiKeys?.[provider.id]?.key || "")}
-                      disabled={!settings?.apiKeys?.[provider.id]?.key}
-                      data-testid={`button-copy-key-${provider.id}`}
-                    >
-                      {copiedKey ? "Copied!" : <Copy className="w-4 h-4" />}
-                    </Button>
+            <CardContent className="space-y-6">
+              {apiKeyCategories.map((category) => (
+                <div key={category.id} className="space-y-2 pb-4 border-b last:border-b-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">{category.icon}</span>
+                    <div>
+                      <p className="text-sm font-medium">{category.name}</p>
+                      <p className="text-xs text-muted-foreground">{category.description}</p>
+                    </div>
                   </div>
-                  <Button
-                    onClick={() => setShowKeyDialog(provider.id)}
-                    variant="outline"
-                    size="sm"
-                    className="w-full mt-2"
-                    data-testid={`button-rotate-key-${provider.id}`}
-                  >
-                    Update Key
-                  </Button>
+                  {category.providers.map((providerInfo) => (
+                    <div key={providerInfo.id} className="ml-6 space-y-2">
+                      <div className="text-xs text-muted-foreground">
+                        {providerInfo.provider}: <span className="font-mono">{providerInfo.model}</span>
+                      </div>
+                      <div className="p-2 bg-muted rounded flex items-center justify-between" data-testid={`display-key-${providerInfo.id}`}>
+                        <code className="text-xs text-muted-foreground font-mono">
+                          {maskApiKey(settings?.apiKeys?.[providerInfo.id]?.key || "")}
+                        </code>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => copyToClipboard(settings?.apiKeys?.[providerInfo.id]?.key || "")}
+                          disabled={!settings?.apiKeys?.[providerInfo.id]?.key}
+                          data-testid={`button-copy-key-${providerInfo.id}`}
+                        >
+                          {copiedKey ? "Copied!" : <Copy className="w-4 h-4" />}
+                        </Button>
+                      </div>
+                      <Button
+                        onClick={() => setShowKeyDialog(providerInfo.id)}
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        data-testid={`button-rotate-key-${providerInfo.id}`}
+                      >
+                        Update Key
+                      </Button>
+                    </div>
+                  ))}
                 </div>
               ))}
 
-              <p className="text-xs text-muted-foreground pt-2 border-t">
-                Manage API keys for all LLM providers. The system uses Mistral by default with OpenAI as fallback.
+              <p className="text-xs text-muted-foreground">
+                Separate API keys for each task type allow independent provider testing and rate limit management.
               </p>
             </CardContent>
           </Card>
@@ -265,26 +300,27 @@ export default function AdminDashboard() {
       <AlertDialog open={!!showKeyDialog} onOpenChange={(open) => !open && setShowKeyDialog(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              Update {providers.find(p => p.id === showKeyDialog)?.name} API Key
-            </AlertDialogTitle>
+            <AlertDialogTitle>Update API Key</AlertDialogTitle>
             <AlertDialogDescription>
-              Enter your new API key. This will replace the current key immediately.
+              Enter your new API key for {showKeyDialog ? providerLabels[showKeyDialog] : "API"}. This will replace the current key immediately.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <div>
+          <div className="space-y-3">
             <Input
               type="password"
-              placeholder={showKeyDialog === "mistral" ? "sk-..." : "sk-..."}
+              placeholder="sk-..."
               value={newApiKey}
               onChange={(e) => setNewApiKey(e.target.value)}
               data-testid="input-new-api-key"
             />
+            <p className="text-xs text-muted-foreground">
+              The system will use this key for all {showKeyDialog?.includes("ocr") ? "document parsing" : "survey generation"} operations.
+            </p>
           </div>
           <AlertDialogFooter>
             <AlertDialogCancel data-testid="button-cancel-rotate">Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => updateApiKeyMutation.mutate({ provider: showKeyDialog || "mistral", apiKey: newApiKey })}
+              onClick={() => updateApiKeyMutation.mutate({ provider: showKeyDialog || "mistral_generation", apiKey: newApiKey })}
               disabled={!newApiKey || updateApiKeyMutation.isPending}
               data-testid="button-confirm-rotate"
             >
