@@ -291,10 +291,10 @@ export class DbStorage implements IStorage {
   }
 
   async getResponseCount(surveyId: string): Promise<number> {
-    const result = await db.select({ count: sql<number>`count(*)` })
+    const result = await db.select({ count: sql<number>`cast(count(*) as integer)` })
       .from(surveyResponses)
       .where(eq(surveyResponses.surveyId, surveyId));
-    return Number(result[0]?.count || 0);
+    return result[0]?.count ?? 0;
   }
 
   async deleteResponse(id: string): Promise<boolean> {
