@@ -23,12 +23,14 @@ export function useAIChat() {
       welcomeMessage?: string;
       thankYouMessage?: string;
     },
-    conversationHistory: Message[] = []
+    conversationHistory: Message[] = [],
+    fileData?: { name: string; type: string; base64: string }
   ): Promise<ChatResult | null> => {
     const newMessage: Message = {
       id: Date.now().toString(),
       role: "user",
       content: message,
+      fileData,
     };
     const updatedMessages = [...messages, newMessage];
     setMessages(updatedMessages);
@@ -43,9 +45,11 @@ export function useAIChat() {
         body: JSON.stringify({
           message,
           survey,
+          fileData,
           history: updatedMessages.map((m) => ({
             role: m.role,
             content: m.content,
+            fileData: m.fileData,
           })),
         }),
       });

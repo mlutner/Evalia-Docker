@@ -165,7 +165,7 @@ export default function Builder() {
   };
 
   // Handle chat messages with question updates
-  const handleSendMessage = async (message: string) => {
+  const handleSendMessage = async (message: string, fileData?: { name: string; type: string; base64: string }) => {
     const result = await aiChat.handleSendMessage(
       message,
       {
@@ -175,7 +175,8 @@ export default function Builder() {
         welcomeMessage: surveyState.welcomeMessage,
         thankYouMessage: surveyState.thankYouMessage,
       },
-      aiChat.messages
+      aiChat.messages,
+      fileData
     );
 
     if (result && result.questions) {
