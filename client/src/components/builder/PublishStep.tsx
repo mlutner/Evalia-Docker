@@ -4,7 +4,8 @@ import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown, Clock, BookOpen, ChevronRight, Link2, Unlink2, FileText, BarChart3 } from "lucide-react";
+import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown, Clock, BookOpen, ChevronRight, Link2, Unlink2, FileText, BarChart3, GripVertical, ArrowRight } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -124,90 +125,73 @@ export default function PublishStep({
     }
   };
 
-  // Draggable Question Component (for both assigned and unassigned)
-  const DraggableQuestion = ({ question, showDragHandle = true }: { question: Question; showDragHandle?: boolean }) => {
-    const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+  // Question Card with Move to Section Option
+  const QuestionCard = ({ question, currentCategoryId, isAssigned = false }: { question: Question; currentCategoryId?: string; isAssigned?: boolean }) => {
+    const { attributes, listeners, setNodeRef } = useDraggable({
       id: question.id,
     });
+    const [showMoveMenu, setShowMoveMenu] = useState(false);
+
+    const handleMoveToCategory = (targetCatId: string) => {
+      const updated = questions.map(q =>
+        q.id === question.id ? { ...q, scoringCategory: targetCatId } : q
+      );
+      onQuestionsChange?.(updated);
+      setShowMoveMenu(false);
+    };
+
+    const handleMoveToUnassigned = () => {
+      const updated = questions.map(q =>
+        q.id === question.id ? { ...q, scoringCategory: undefined } : q
+      );
+      onQuestionsChange?.(updated);
+      setShowMoveMenu(false);
+    };
+
+    const otherCategories = categories.filter(cat => cat.id !== currentCategoryId);
+
     return (
       <div
-        ref={setNodeRef}
-        {...attributes}
-        {...listeners}
-        className={`p-2 bg-background rounded border cursor-grab active:cursor-grabbing text-xs group hover:bg-muted/50 transition-all ${
-          isDragging ? "opacity-50 shadow-lg ring-2 ring-primary" : ""
-        }`}
-        data-testid={`draggable-question-${question.id}`}
+        className="p-3 bg-background rounded border text-xs group hover:bg-muted/40 transition-colors"
+        data-testid={`question-card-${question.id}`}
       >
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1 flex-1 min-w-0">
-            {showDragHandle && <div className="text-muted-foreground text-xs opacity-60">⋮⋮</div>}
-            <div className="flex-1 min-w-0">
-              <span className="truncate font-medium block">{question.question}</span>
-              <span className="text-xs text-muted-foreground">{getQuestionTypeLabel(question.type)} • {getMaxPointsForQuestion(question)}pt</span>
-            </div>
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <p className="truncate font-medium text-sm">{question.question}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{getQuestionTypeLabel(question.type)} • {getMaxPointsForQuestion(question)}pt</p>
           </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Unassigned Questions Drop Zone
-  const UnassignedQuestionsZone = ({ questions: allQuestions }: { questions: Question[] }) => {
-    const unassignedQuestions = allQuestions.filter(q => !q.scoringCategory);
-    const { setNodeRef, isOver } = useDroppable({ id: "unassigned" });
-    return (
-      <div
-        ref={setNodeRef}
-        className={`p-3 rounded-lg border-2 border-dashed transition-colors ${
-          isOver ? "bg-destructive/10 border-destructive" : "bg-muted/20 border-muted"
-        }`}
-        data-testid="zone-unassigned-questions"
-      >
-        <p className="text-xs font-semibold mb-2">Unassigned ({unassignedQuestions.length})</p>
-        <div className="space-y-1">
-          {unassignedQuestions.length > 0 ? (
-            unassignedQuestions.map(q => <DraggableQuestion key={q.id} question={q} />)
-          ) : (
-            <p className="text-xs text-muted-foreground italic">All questions assigned!</p>
+          
+          {isAssigned && (
+            <div className="flex gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Select open={showMoveMenu} onOpenChange={setShowMoveMenu}>
+                <SelectTrigger className="h-6 w-24 text-xs px-2" data-testid={`button-move-question-${question.id}`}>
+                  <ArrowRight className="w-3 h-3 mr-1" />
+                  <span>Move</span>
+                </SelectTrigger>
+                <SelectContent align="end">
+                  {otherCategories.length > 0 && (
+                    <>
+                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Move to Category</div>
+                      {otherCategories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id} onClick={() => handleMoveToCategory(cat.id)}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                      <div className="my-1 h-px bg-muted" />
+                    </>
+                  )}
+                  <SelectItem value="unassigned" onClick={handleMoveToUnassigned}>
+                    Unassigned
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           )}
         </div>
       </div>
     );
   };
 
-  // Category Drop Zone
-  const CategoryDropZone = ({
-    category,
-    assignedQuestions,
-  }: {
-    category: { id: string; name: string };
-    assignedQuestions: Question[];
-  }) => {
-    const { setNodeRef, isOver } = useDroppable({ id: category.id });
-    return (
-      <div
-        ref={setNodeRef}
-        className={`p-3 rounded-lg border-2 transition-colors ${
-          isOver
-            ? "bg-primary/20 border-primary shadow-md"
-            : "bg-muted/10 border-muted"
-        }`}
-        data-testid={`zone-category-${category.id}`}
-      >
-        <p className="text-xs font-semibold mb-2">
-          {category.name} ({assignedQuestions.length})
-        </p>
-        <div className="space-y-1">
-          {assignedQuestions.length > 0 ? (
-            assignedQuestions.map(q => <DraggableQuestion key={q.id} question={q} />)
-          ) : (
-            <p className="text-xs text-muted-foreground italic">Drop questions here</p>
-          )}
-        </div>
-      </div>
-    );
-  };
 
   const STANDARD_PRIVACY_STATEMENT = "Your responses are confidential and will be kept strictly anonymous. All data will be handled according to applicable privacy regulations.";
 
@@ -625,13 +609,13 @@ export default function PublishStep({
                                     {assignedQuestions.length > 0 && (
                                       <div className="bg-background rounded border p-3 space-y-2">
                                         <div className="flex items-center justify-between">
-                                          <h5 className="text-xs font-semibold text-foreground">Assigned Questions</h5>
+                                          <h5 className="text-xs font-semibold text-foreground">Assigned Questions in {cat.name}</h5>
                                           <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">{assignedQuestions.length}</span>
                                         </div>
-                                        <p className="text-xs text-muted-foreground">Drag questions to move them to another category or unassigned</p>
-                                        <div className="space-y-1">
+                                        <p className="text-xs text-muted-foreground">Hover to see move options</p>
+                                        <div className="space-y-1.5">
                                           {assignedQuestions.map((q) => (
-                                            <DraggableQuestion key={q.id} question={q} showDragHandle={true} />
+                                            <QuestionCard key={q.id} question={q} currentCategoryId={cat.id} isAssigned={true} />
                                           ))}
                                         </div>
                                       </div>
@@ -779,8 +763,28 @@ export default function PublishStep({
 
                                     {/* Unassigned Questions Drop Zone */}
                                     {unassignedScorableQuestions.length > 0 && (
-                                      <div className="pt-2">
-                                        <CategoryDropZone category={cat} assignedQuestions={assignedQuestions} />
+                                      <div className="pt-2 space-y-2">
+                                        <p className="text-xs font-semibold text-foreground">Assign Scorable Questions</p>
+                                        <div className="border-2 border-dashed rounded-lg p-3 bg-muted/5 space-y-1.5">
+                                          {unassignedScorableQuestions.map((q) => (
+                                            <div key={q.id} className="flex items-start justify-between p-2 bg-background rounded border hover:bg-muted/40 transition-colors text-xs">
+                                              <div className="flex-1 min-w-0">
+                                                <p className="truncate font-medium">{q.question}</p>
+                                                <p className="text-xs text-muted-foreground mt-0.5">{getQuestionTypeLabel(q.type)} • {getMaxPointsForQuestion(q)}pt</p>
+                                              </div>
+                                              <Button
+                                                size="sm"
+                                                variant="outline"
+                                                className="h-6 text-xs ml-2 flex-shrink-0"
+                                                onClick={() => handleQuestionDragEnd({ active: { id: q.id }, over: { id: cat.id } } as any)}
+                                                data-testid={`button-assign-${q.id}-to-${cat.id}`}
+                                              >
+                                                <Plus className="w-3 h-3 mr-1" />
+                                                Assign
+                                              </Button>
+                                            </div>
+                                          ))}
+                                        </div>
                                       </div>
                                     )}
                                   </div>
@@ -791,8 +795,48 @@ export default function PublishStep({
                         </div>
 
                         {/* Unassigned Scorable Questions Pool */}
-                        {scorableQuestions.length > 0 && (
-                          <UnassignedQuestionsZone questions={scorableQuestions} />
+                        {scorableQuestions.filter(q => !q.scoringCategory).length > 0 && (
+                          <div className="border-2 border-dashed rounded-lg p-4 bg-muted/5 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <h5 className="text-sm font-semibold flex items-center gap-2">
+                                <FileText className="w-4 h-4" />
+                                Unassigned Questions
+                              </h5>
+                              <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded">
+                                {scorableQuestions.filter(q => !q.scoringCategory).length}
+                              </span>
+                            </div>
+                            <p className="text-xs text-muted-foreground">Click a category above to assign questions</p>
+                            <div className="space-y-1.5">
+                              {scorableQuestions.filter(q => !q.scoringCategory).map((q) => (
+                                <div key={q.id} className="flex items-start justify-between p-2 bg-background rounded border hover:bg-muted/40 transition-colors text-xs">
+                                  <div className="flex-1 min-w-0">
+                                    <p className="truncate font-medium">{q.question}</p>
+                                    <p className="text-xs text-muted-foreground mt-0.5">{getQuestionTypeLabel(q.type)} • {getMaxPointsForQuestion(q)}pt</p>
+                                  </div>
+                                  <Select>
+                                    <SelectTrigger className="h-6 w-28 text-xs px-2 ml-2 flex-shrink-0" data-testid={`button-assign-unassigned-${q.id}`}>
+                                      <Plus className="w-3 h-3 mr-1" />
+                                      <span>Assign to</span>
+                                    </SelectTrigger>
+                                    <SelectContent align="end">
+                                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Choose Category</div>
+                                      {categories.map((cat) => (
+                                        <SelectItem key={cat.id} value={cat.id} onClick={() => {
+                                          const updated = questions.map(quest =>
+                                            quest.id === q.id ? { ...quest, scoringCategory: cat.id } : quest
+                                          );
+                                          onQuestionsChange?.(updated);
+                                        }}>
+                                          {cat.name}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         )}
                       </DndContext>
                     )}
