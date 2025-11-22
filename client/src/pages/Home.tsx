@@ -6,6 +6,8 @@ import { useAuth } from "@/hooks/useAuth";
 
 import surveyImage from "@assets/ChatGPT Image Nov 21, 2025, 05_34_39 PM_1763775306037.png";
 
+import ChatGPT_Image_Nov_21__2025__05_52_04_PM from "@assets/ChatGPT Image Nov 21, 2025, 05_52_04 PM.png";
+
 export default function Home() {
   const [, setLocation] = useLocation();
   const { user, isLoading } = useAuth();
@@ -73,7 +75,7 @@ export default function Home() {
           <div className="flex items-center justify-center h-full min-h-screen">
             <div className="relative w-full max-w-2xl scale-150">
               <img
-                src={surveyImage}
+                src={ChatGPT_Image_Nov_21__2025__05_52_04_PM}
                 alt="Survey illustration"
                 className="w-full h-auto object-contain"
               />
