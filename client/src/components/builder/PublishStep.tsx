@@ -369,8 +369,8 @@ export default function PublishStep({
               <CardHeader className="pb-3 hover:bg-primary/5 transition-colors">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3 flex-1">
-                    <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0 mt-1">
-                      <Award className="w-5 h-5 text-primary" />
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 mt-1" style={{ backgroundColor: '#071a32' }}>
+                      <Award className="w-5 h-5" style={{ color: '#ccff00' }} />
                     </div>
                     <div className="text-left">
                       <div className="flex items-center gap-2 mb-1">
