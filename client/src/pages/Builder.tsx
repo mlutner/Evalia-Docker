@@ -71,7 +71,7 @@ export default function Builder() {
   const [trainingDate, setTrainingDate] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
-  const [includeScoringToggle, setIncludeScoringToggle] = useState(true);
+  const [includeScoringToggle, setIncludeScoringToggle] = useState(false);
   const [showPromptSuggestions, setShowPromptSuggestions] = useState(false);
   const aiFileInputRef = useRef<HTMLInputElement>(null);
 
