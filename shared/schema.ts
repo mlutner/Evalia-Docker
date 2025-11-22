@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, jsonb, boolean, timestamp, integer, index } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, jsonb, boolean, timestamp, integer, index, date } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -61,6 +61,8 @@ export const surveys = pgTable("surveys", {
   welcomeMessage: text("welcome_message"),
   thankYouMessage: text("thank_you_message"),
   illustrationUrl: text("illustration_url"),
+  trainerName: text("trainer_name"),
+  trainingDate: date("training_date"),
   isAnonymous: boolean("is_anonymous").default(false),
   webhookUrl: text("webhook_url"),
   status: varchar("status").default("Active"),

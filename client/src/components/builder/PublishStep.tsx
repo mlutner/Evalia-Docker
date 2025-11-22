@@ -10,11 +10,15 @@ interface PublishStepProps {
   welcomeMessage: string;
   thankYouMessage: string;
   illustrationUrl?: string;
+  trainerName?: string;
+  trainingDate?: string;
   generatingField: string | null;
   onTitleChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
   onWelcomeChange: (value: string) => void;
   onThankYouChange: (value: string) => void;
+  onTrainerNameChange?: (value: string) => void;
+  onTrainingDateChange?: (value: string) => void;
   onIllustrationChange?: (url: string) => void;
   onGenerateText: (fieldType: "description" | "welcomeMessage" | "thankYouMessage") => void;
 }
@@ -25,11 +29,15 @@ export default function PublishStep({
   welcomeMessage,
   thankYouMessage,
   illustrationUrl,
+  trainerName,
+  trainingDate,
   generatingField,
   onTitleChange,
   onDescriptionChange,
   onWelcomeChange,
   onThankYouChange,
+  onTrainerNameChange,
+  onTrainingDateChange,
   onIllustrationChange,
   onGenerateText,
 }: PublishStepProps) {
@@ -101,6 +109,31 @@ export default function PublishStep({
               Title is required to publish your survey
             </p>
           )}
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm font-medium mb-2 block">
+              Trainer Name <span className="text-muted-foreground">(optional)</span>
+            </label>
+            <Input
+              value={trainerName || ""}
+              onChange={(e) => onTrainerNameChange?.(e.target.value)}
+              placeholder="e.g., Sarah Johnson"
+              data-testid="input-trainer-name"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium mb-2 block">
+              Training Date <span className="text-muted-foreground">(optional)</span>
+            </label>
+            <Input
+              type="date"
+              value={trainingDate || ""}
+              onChange={(e) => onTrainingDateChange?.(e.target.value)}
+              data-testid="input-training-date"
+            />
+          </div>
         </div>
 
         <div>

@@ -61,6 +61,8 @@ export default function Builder() {
   const [prompt, setPrompt] = useState("");
   const [previewTemplate, setPreviewTemplate] = useState<SurveyTemplate | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [trainerName, setTrainerName] = useState("");
+  const [trainingDate, setTrainingDate] = useState("");
 
   // Load existing survey if in edit mode
   const { data: existingSurvey, isLoading: isLoadingSurvey } = useQuery<Survey>({
