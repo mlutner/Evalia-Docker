@@ -36,13 +36,28 @@ export default function SurveyResults({
     
     if (!range) return null;
     
+    // Calculate position within range (0 = min, 1 = max)
+    const rangeSize = range.maxScore - range.minScore;
+    const positionInRange = (score - range.minScore) / rangeSize;
+    
+    // Determine color based on position: red (low), orange (mid), green (high)
+    let progressColor = "bg-red-500";
+    if (positionInRange > 0.66) {
+      progressColor = "bg-green-500";
+    } else if (positionInRange > 0.33) {
+      progressColor = "bg-amber-500";
+    }
+    
     return {
       interpretation: range.interpretation,
       label: range.label,
       minScore: range.minScore,
       maxScore: range.maxScore,
-      isHighPerformance: score >= range.maxScore - (range.maxScore - range.minScore) * 0.2,
-      isLowPerformance: score <= range.minScore + (range.maxScore - range.minScore) * 0.2,
+      isHighPerformance: positionInRange >= 0.8,
+      isLowPerformance: positionInRange <= 0.2,
+      isMidPerformance: positionInRange > 0.2 && positionInRange < 0.8,
+      positionInRange,
+      progressColor,
     };
   };
 
@@ -102,23 +117,25 @@ export default function SurveyResults({
         {/* Score Cards */}
         <div className="space-y-6 mb-8">
           {scores.map((result) => {
-            const percentage = (result.score / result.maxScore) * 100;
             const rangeInfo = getScoreRangeInfo(result.categoryId, result.score);
-            
-            const progressColor =
-              percentage >= 80
-                ? "bg-green-500"
-                : percentage >= 60
-                  ? "bg-blue-500"
-                  : percentage >= 40
-                    ? "bg-yellow-500"
-                    : "bg-red-500";
+            const progressColor = rangeInfo?.progressColor || "bg-blue-500";
 
-            const rangeLabel = rangeInfo?.label || (
-              percentage >= 80 ? "Excellent" : 
-              percentage >= 60 ? "Strong" : 
-              percentage >= 40 ? "Developing" : "Early Stage"
-            );
+            const rangeLabel = rangeInfo?.label || "Assessment";
+
+            // Generate contextual recommendations based on performance level
+            const getRecommendation = () => {
+              if (!rangeInfo) return null;
+              
+              if (rangeInfo.isHighPerformance) {
+                return `You demonstrate strong ${result.categoryName.toLowerCase()}. Continue to leverage your strengths and consider mentoring others in this area.`;
+              } else if (rangeInfo.isLowPerformance) {
+                return `Focus on developing your ${result.categoryName.toLowerCase()}. Consider seeking feedback, practicing key skills, and exploring resources to strengthen this competency.`;
+              } else {
+                return `You're making progress in ${result.categoryName.toLowerCase()}. Build on your foundation by seeking targeted development opportunities and feedback from peers.`;
+              }
+            };
+
+            const recommendation = getRecommendation();
 
             return (
               <Card key={result.categoryId} data-testid={`card-score-${result.categoryId}`}>
@@ -154,27 +171,36 @@ export default function SurveyResults({
                     />
                   </div>
 
-                  {/* Progress Bar */}
-                  <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                  {/* Progress Bar - Color coded by position in range */}
+                  <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${progressColor}`}
-                      style={{ width: `${Math.min(percentage, 100)}%` }}
+                      style={{ width: `${Math.min((rangeInfo?.positionInRange || 0) * 100, 100)}%` }}
                       data-testid={`progress-${result.categoryId}`}
                     />
                   </div>
 
-                  {/* Interpretation and Range Context */}
-                  <div className="space-y-2">
+                  {/* Interpretation and Recommendations */}
+                  <div className="space-y-3">
                     {rangeInfo?.interpretation && (
-                      <p className="text-sm text-foreground" data-testid={`text-interpretation-${result.categoryId}`}>
+                      <p className="text-sm text-foreground font-medium" data-testid={`text-interpretation-${result.categoryId}`}>
                         {rangeInfo.interpretation}
                       </p>
+                    )}
+                    {recommendation && (
+                      <div className="bg-muted/50 rounded-md p-3">
+                        <p className="text-sm text-foreground" data-testid={`text-recommendation-${result.categoryId}`}>
+                          <span className="font-semibold">Recommendation: </span>
+                          {recommendation}
+                        </p>
+                      </div>
                     )}
                     {rangeInfo && (
                       <p className="text-xs text-muted-foreground">
                         Range: {rangeInfo.minScore} - {rangeInfo.maxScore}
-                        {rangeInfo.isHighPerformance && " • Strong performance in this area"}
-                        {rangeInfo.isLowPerformance && " • Consider development opportunities"}
+                        {rangeInfo.isHighPerformance && " • Excellent"}
+                        {rangeInfo.isMidPerformance && " • On track"}
+                        {rangeInfo.isLowPerformance && " • Needs development"}
                       </p>
                     )}
                   </div>
