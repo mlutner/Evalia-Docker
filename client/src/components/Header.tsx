@@ -1,6 +1,6 @@
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { queryClient } from "@/lib/queryClient";
 import type { User } from "@shared/schema";
@@ -39,6 +39,18 @@ export default function Header({ showActions = true }: HeaderProps) {
           )}
           {typedUser && (
             <>
+              {typedUser.isMasterAdmin && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setLocation("/admin")}
+                  data-testid="button-admin"
+                  className="px-2 sm:px-3"
+                >
+                  <span className="hidden sm:inline">Admin</span>
+                  <span className="sm:hidden">⚡</span>
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="sm"
