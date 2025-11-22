@@ -6,8 +6,10 @@ import { MoreVertical, Eye, BarChart3, Download, Share2, Check, Copy, Edit3, Use
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState, useRef } from "react";
-import QRCode from "qrcode.react";
+import * as QRCodeModule from "qrcode.react";
 import type { Question } from "@shared/schema";
+
+const QRCode = QRCodeModule.default || QRCodeModule as any;
 
 export interface Survey {
   id: string;
