@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -39,6 +41,7 @@ interface PublishStepProps {
   onEstimatedMinutesChange?: (minutes: number | undefined) => void;
   onPrivacyStatementChange?: (statement: string) => void;
   onDataUsageStatementChange?: (statement: string) => void;
+  onQuestionsChange?: (questions: Question[]) => void;
 }
 
 export default function PublishStep({
@@ -69,12 +72,14 @@ export default function PublishStep({
   onEstimatedMinutesChange,
   onPrivacyStatementChange,
   onDataUsageStatementChange,
+  onQuestionsChange,
 }: PublishStepProps) {
   const { toast } = useToast();
   const [tagInput, setTagInput] = useState("");
   const currentTags = tags || [];
   const [illustrations, setIllustrations] = useState<string[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
+
   const {
     isEnabled,
     setIsEnabled,
@@ -96,6 +101,107 @@ export default function PublishStep({
     handleAutoGenerateScoring,
     handleSaveScoring,
   } = useScoring(scoreConfig);
+
+  // Drag and drop handler for question assignment
+  const handleQuestionDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+
+    const questionId = active.id as string;
+    const categoryId = over.id as string;
+    
+    if (categoryId === "unassigned") {
+      const updated = questions.map(q =>
+        q.id === questionId ? { ...q, scoringCategory: undefined } : q
+      );
+      onQuestionsChange?.(updated);
+    } else {
+      const updated = questions.map(q =>
+        q.id === questionId ? { ...q, scoringCategory: categoryId } : q
+      );
+      onQuestionsChange?.(updated);
+    }
+  };
+
+  // Draggable Question Component
+  const DraggableQuestion = ({ question }: { question: Question }) => {
+    const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+      id: question.id,
+    });
+    return (
+      <div
+        ref={setNodeRef}
+        {...attributes}
+        {...listeners}
+        className={`p-2 bg-background rounded border cursor-grab active:cursor-grabbing text-xs group hover:bg-muted/50 transition-all ${
+          isDragging ? "opacity-50 shadow-lg" : ""
+        }`}
+        data-testid={`draggable-question-${question.id}`}
+      >
+        <div className="flex items-center justify-between gap-2">
+          <span className="truncate flex-1 font-medium">{question.question}</span>
+          <Trash2 className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100" />
+        </div>
+      </div>
+    );
+  };
+
+  // Unassigned Questions Drop Zone
+  const UnassignedQuestionsZone = ({ questions: allQuestions }: { questions: Question[] }) => {
+    const unassignedQuestions = allQuestions.filter(q => !q.scoringCategory);
+    const { setNodeRef, isOver } = useDroppable({ id: "unassigned" });
+    return (
+      <div
+        ref={setNodeRef}
+        className={`p-3 rounded-lg border-2 border-dashed transition-colors ${
+          isOver ? "bg-destructive/10 border-destructive" : "bg-muted/20 border-muted"
+        }`}
+        data-testid="zone-unassigned-questions"
+      >
+        <p className="text-xs font-semibold mb-2">Unassigned ({unassignedQuestions.length})</p>
+        <div className="space-y-1">
+          {unassignedQuestions.length > 0 ? (
+            unassignedQuestions.map(q => <DraggableQuestion key={q.id} question={q} />)
+          ) : (
+            <p className="text-xs text-muted-foreground italic">All questions assigned!</p>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // Category Drop Zone
+  const CategoryDropZone = ({
+    category,
+    assignedQuestions,
+  }: {
+    category: { id: string; name: string };
+    assignedQuestions: Question[];
+  }) => {
+    const { setNodeRef, isOver } = useDroppable({ id: category.id });
+    return (
+      <div
+        ref={setNodeRef}
+        className={`p-3 rounded-lg border-2 transition-colors ${
+          isOver
+            ? "bg-primary/20 border-primary shadow-md"
+            : "bg-muted/10 border-muted"
+        }`}
+        data-testid={`zone-category-${category.id}`}
+      >
+        <p className="text-xs font-semibold mb-2">
+          {category.name} ({assignedQuestions.length})
+        </p>
+        <div className="space-y-1">
+          {assignedQuestions.length > 0 ? (
+            assignedQuestions.map(q => <DraggableQuestion key={q.id} question={q} />)
+          ) : (
+            <p className="text-xs text-muted-foreground italic">Drop questions here</p>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   const STANDARD_PRIVACY_STATEMENT = "Your responses are confidential and will be kept strictly anonymous. All data will be handled according to applicable privacy regulations.";
 
@@ -529,70 +635,27 @@ export default function PublishStep({
                       )}
                     </div>
 
-                    {/* Question Assignment Section */}
+                    {/* Question Assignment Section with Drag & Drop */}
                     {categories.length > 0 && questions.length > 0 && (
-                      <div className="space-y-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
-                        <p className="text-xs font-semibold text-foreground">Assign Questions to Categories</p>
-                        <p className="text-xs text-muted-foreground">Link survey questions to scoring categories so responses get scored</p>
-                        {categories.map((cat) => {
-                          const assignedQuestions = questions.filter(q => q.scoringCategory === cat.id);
-                          const unassignedQuestions = questions.filter(q => !q.scoringCategory || q.scoringCategory !== cat.id);
-                          return (
-                            <div key={cat.id} className="space-y-2">
-                              <p className="text-xs font-medium">{cat.name} ({assignedQuestions.length} assigned)</p>
-                              <div className="space-y-1 pl-2">
-                                {assignedQuestions.map((q) => (
-                                  <div key={q.id} className="flex items-center justify-between p-1.5 bg-primary/10 rounded text-xs group">
-                                    <span className="truncate flex-1">{q.question}</span>
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      onClick={() => {
-                                        const updatedQuestions = questions.map(qitem =>
-                                          qitem.id === q.id ? { ...qitem, scoringCategory: undefined } : qitem
-                                        );
-                                        // This would need to be passed up to parent, for now just visual
-                                      }}
-                                      className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
-                                      data-testid={`button-unassign-question-${q.id}`}
-                                    >
-                                      <Unlink2 className="w-3 h-3" />
-                                    </Button>
-                                  </div>
-                                ))}
-                                {unassignedQuestions.length > 0 && (
-                                  <details className="text-xs">
-                                    <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
-                                      Assign from {unassignedQuestions.length} available question{unassignedQuestions.length !== 1 ? 's' : ''}
-                                    </summary>
-                                    <div className="space-y-1 mt-1 pl-2">
-                                      {unassignedQuestions.map((q) => (
-                                        <div key={q.id} className="flex items-center justify-between p-1.5 bg-muted/40 rounded text-xs group">
-                                          <span className="truncate flex-1">{q.question}</span>
-                                          <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => {
-                                              const updatedQuestions = questions.map(qitem =>
-                                                qitem.id === q.id ? { ...qitem, scoringCategory: cat.id } : qitem
-                                              );
-                                              // This would need to be passed up to parent
-                                            }}
-                                            className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
-                                            data-testid={`button-assign-question-${q.id}-${cat.id}`}
-                                          >
-                                            <Link2 className="w-3 h-3" />
-                                          </Button>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </details>
-                                )}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
+                      <DndContext onDragEnd={handleQuestionDragEnd}>
+                        <div className="space-y-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
+                          <p className="text-xs font-semibold text-foreground">Assign Questions to Categories</p>
+                          <p className="text-xs text-muted-foreground">Drag questions into categories to assign them for scoring</p>
+                          
+                          {/* Unassigned Questions */}
+                          <UnassignedQuestionsZone questions={questions} />
+                          
+                          {/* Category Drop Zones */}
+                          <div className="space-y-2">
+                            {categories.map((cat) => {
+                              const assignedQuestions = questions.filter(q => q.scoringCategory === cat.id);
+                              return (
+                                <CategoryDropZone key={cat.id} category={cat} assignedQuestions={assignedQuestions} />
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </DndContext>
                     )}
 
                     {/* Save Button */}

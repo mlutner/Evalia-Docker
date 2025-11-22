@@ -333,6 +333,7 @@ export default function Builder() {
             onEstimatedMinutesChange={surveyState.setEstimatedMinutes}
             onPrivacyStatementChange={surveyState.setPrivacyStatement}
             onDataUsageStatementChange={surveyState.setDataUsageStatement}
+            onQuestionsChange={surveyState.setCurrentQuestions}
           />
         )}
 
