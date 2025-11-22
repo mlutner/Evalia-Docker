@@ -167,9 +167,6 @@ export default function SurveyWelcomeTemplate({
           Begin Survey
         </button>
       </footer>
-      <p className="survey-footnote text-center" data-testid="text-helper">
-        Confidential and anonymous
-      </p>
     </>
   );
 }
