@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import type { Question, SurveyScoreConfig } from "@shared/schema";
+import type { Question, SurveyScoreConfig, ScoringRule } from "@shared/schema";
 
 export function useScoring(initialConfig?: SurveyScoreConfig) {
   const { toast } = useToast();
@@ -10,6 +10,7 @@ export function useScoring(initialConfig?: SurveyScoreConfig) {
   const [resultsSummary, setResultsSummary] = useState(initialConfig?.resultsSummary || "");
   const [newCategoryName, setNewCategoryName] = useState("");
   const [isAutoGenerating, setIsAutoGenerating] = useState(false);
+  const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
 
   // Watch for changes to initialConfig and update form state
   useEffect(() => {
@@ -35,6 +36,39 @@ export function useScoring(initialConfig?: SurveyScoreConfig) {
   const handleRemoveCategory = (catId: string) => {
     setCategories(categories.filter((c) => c.id !== catId));
     setScoreRanges(scoreRanges.filter((r) => r.category !== catId));
+  };
+
+  const toggleExpandCategory = (catId: string) => {
+    setExpandedCategories(prev => 
+      prev.includes(catId) 
+        ? prev.filter(id => id !== catId)
+        : [...prev, catId]
+    );
+  };
+
+  const getCategoryRanges = (categoryId: string) => {
+    return scoreRanges.filter(r => r.category === categoryId);
+  };
+
+  const handleAddScoreRange = (categoryId: string) => {
+    const newRange: ScoringRule = {
+      category: categoryId,
+      label: "",
+      minScore: 0,
+      maxScore: 20,
+      interpretation: "",
+    };
+    setScoreRanges([...scoreRanges, newRange]);
+  };
+
+  const handleUpdateScoreRange = (index: number, field: keyof ScoringRule, value: string | number) => {
+    const updated = [...scoreRanges];
+    updated[index] = { ...updated[index], [field]: value };
+    setScoreRanges(updated);
+  };
+
+  const handleRemoveScoreRange = (index: number) => {
+    setScoreRanges(scoreRanges.filter((_, i) => i !== index));
   };
 
   const handleAutoGenerateScoring = async (questions: Question[]) => {
@@ -99,8 +133,14 @@ export function useScoring(initialConfig?: SurveyScoreConfig) {
     newCategoryName,
     setNewCategoryName,
     isAutoGenerating,
+    expandedCategories,
     handleAddCategory,
     handleRemoveCategory,
+    toggleExpandCategory,
+    getCategoryRanges,
+    handleAddScoreRange,
+    handleUpdateScoreRange,
+    handleRemoveScoreRange,
     handleAutoGenerateScoring,
     handleSaveScoring,
   };
