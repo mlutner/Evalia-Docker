@@ -124,8 +124,8 @@ export default function PublishStep({
     }
   };
 
-  // Draggable Question Component
-  const DraggableQuestion = ({ question }: { question: Question }) => {
+  // Draggable Question Component (for both assigned and unassigned)
+  const DraggableQuestion = ({ question, showDragHandle = true }: { question: Question; showDragHandle?: boolean }) => {
     const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
       id: question.id,
     });
@@ -135,13 +135,18 @@ export default function PublishStep({
         {...attributes}
         {...listeners}
         className={`p-2 bg-background rounded border cursor-grab active:cursor-grabbing text-xs group hover:bg-muted/50 transition-all ${
-          isDragging ? "opacity-50 shadow-lg" : ""
+          isDragging ? "opacity-50 shadow-lg ring-2 ring-primary" : ""
         }`}
         data-testid={`draggable-question-${question.id}`}
       >
         <div className="flex items-center justify-between gap-2">
-          <span className="truncate flex-1 font-medium">{question.question}</span>
-          <Trash2 className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100" />
+          <div className="flex items-center gap-1 flex-1 min-w-0">
+            {showDragHandle && <div className="text-muted-foreground text-xs opacity-60">⋮⋮</div>}
+            <div className="flex-1 min-w-0">
+              <span className="truncate font-medium block">{question.question}</span>
+              <span className="text-xs text-muted-foreground">{getQuestionTypeLabel(question.type)} • {getMaxPointsForQuestion(question)}pt</span>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -616,6 +621,22 @@ export default function PublishStep({
 
                                 {isExpanded && (
                                   <div className="border-t bg-muted/10 p-4 space-y-3">
+                                    {/* Assigned Questions Summary (Quick View) */}
+                                    {assignedQuestions.length > 0 && (
+                                      <div className="bg-background rounded border p-3 space-y-2">
+                                        <div className="flex items-center justify-between">
+                                          <h5 className="text-xs font-semibold text-foreground">Assigned Questions</h5>
+                                          <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">{assignedQuestions.length}</span>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">Drag questions to move them to another category or unassigned</p>
+                                        <div className="space-y-1">
+                                          {assignedQuestions.map((q) => (
+                                            <DraggableQuestion key={q.id} question={q} showDragHandle={true} />
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+
                                     {/* Score Ranges with Nested Questions */}
                                     <div className="space-y-2">
                                       <div className="flex items-center justify-between mb-2">
@@ -714,9 +735,9 @@ export default function PublishStep({
                                                       </div>
                                                     </div>
 
-                                                    {/* Assigned Questions under this Range */}
+                                                    {/* Assigned Questions under this Range - Reference */}
                                                     <div className="space-y-1">
-                                                      <p className="text-xs font-medium text-muted-foreground">Contributing Questions ({questionsInThisRange.length})</p>
+                                                      <p className="text-xs font-medium text-muted-foreground">Questions Contributing to This Score Range ({questionsInThisRange.length})</p>
                                                       {questionsInThisRange.length > 0 ? (
                                                         <div className="space-y-1 pl-2 border-l-2 border-primary/30">
                                                           {questionsInThisRange.map((q) => (
@@ -730,7 +751,7 @@ export default function PublishStep({
                                                           ))}
                                                         </div>
                                                       ) : (
-                                                        <p className="text-xs text-muted-foreground italic pl-2">No questions assigned yet</p>
+                                                        <p className="text-xs text-muted-foreground italic pl-2">All questions assigned to this category will contribute to this range</p>
                                                       )}
                                                     </div>
 
