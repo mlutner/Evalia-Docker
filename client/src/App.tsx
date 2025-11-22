@@ -43,26 +43,12 @@ function ProtectedRoute({ component: Component }: { component: () => JSX.Element
 }
 
 function Router() {
-  const { user, isLoading } = useAuth();
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-muted-foreground">Loading...</div>
-      </div>
-    );
-  }
-
   return (
     <Switch>
       {/* Public routes */}
       <Route path="/login" component={Login} />
       <Route path="/survey/:id" component={SurveyView} />
-      
-      {/* Home page - show for unauthenticated users */}
-      <Route path="/">
-        {() => (user ? <ProtectedRoute component={Dashboard} /> : <Home />)}
-      </Route>
+      <Route path="/" component={Home} />
 
       {/* Protected routes */}
       <Route path="/account">
