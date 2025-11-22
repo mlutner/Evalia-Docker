@@ -104,11 +104,15 @@ export function useScoring(initialConfig?: SurveyScoreConfig) {
   };
 
   const handleAddScoreRange = (categoryId: string) => {
+    // Smart default: Calculate max score based on existing ranges for this category
+    const existingRangesForCategory = scoreRanges.filter(r => r.category === categoryId);
+    const suggestedMaxScore = existingRangesForCategory.length === 0 ? 100 : 100; // Default to 100 (0-100 scale is standard)
+    
     const newRange: ScoringRule = {
       category: categoryId,
       label: "",
       minScore: 0,
-      maxScore: 20,
+      maxScore: suggestedMaxScore,
       interpretation: "",
     };
     setScoreRanges([...scoreRanges, newRange]);

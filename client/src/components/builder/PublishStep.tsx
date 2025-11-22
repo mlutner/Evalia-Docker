@@ -675,6 +675,8 @@ export default function PublishStep({
                                             const isRangeExpanded = expandedRanges.includes(rangeId);
                                             // Questions that would map to this range (for visualization)
                                             const questionsInThisRange = assignedQuestions;
+                                            // Get category max score from all ranges
+                                            const categoryMaxScore = getCategoryRanges(cat.id).reduce((max, r) => Math.max(max, r.maxScore), 100);
                                             
                                             return (
                                               <div key={actualIdx} className="bg-background rounded border overflow-hidden">
@@ -694,7 +696,7 @@ export default function PublishStep({
                                                       <p className="text-xs text-muted-foreground truncate mt-0.5">{range.interpretation || "No interpretation yet"}</p>
                                                     </div>
                                                   </div>
-                                                  <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">{questionsInThisRange.length} Q</span>
+                                                  <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">of {categoryMaxScore}</span>
                                                 </button>
 
                                                 {/* Range Details & Assigned Questions */}
@@ -715,7 +717,7 @@ export default function PublishStep({
 
                                                     {/* Score Range Inputs */}
                                                     <div className="space-y-1">
-                                                      <label className="text-xs font-medium text-muted-foreground">Score Range</label>
+                                                      <label className="text-xs font-medium text-muted-foreground">Score Range (Best practice: 0-100 scale)</label>
                                                       <div className="grid grid-cols-3 gap-2">
                                                         <div>
                                                           <Input
@@ -728,7 +730,7 @@ export default function PublishStep({
                                                         </div>
                                                         <div>
                                                           <Input
-                                                            placeholder="Min"
+                                                            placeholder="Min (e.g. 0)"
                                                             type="number"
                                                             value={range.minScore}
                                                             onChange={(e) => handleUpdateScoreRange(actualIdx, 'minScore', parseInt(e.target.value) || 0)}
@@ -738,7 +740,7 @@ export default function PublishStep({
                                                         </div>
                                                         <div>
                                                           <Input
-                                                            placeholder="Max"
+                                                            placeholder="Max (e.g. 100)"
                                                             type="number"
                                                             value={range.maxScore}
                                                             onChange={(e) => handleUpdateScoreRange(actualIdx, 'maxScore', parseInt(e.target.value) || 0)}
