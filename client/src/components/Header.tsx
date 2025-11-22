@@ -22,13 +22,13 @@ export default function Header({ showActions = true }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background/95 dark:bg-slate-900/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:supports-[backdrop-filter]:bg-slate-900/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+      <div className="container mx-auto flex h-20 items-center justify-between px-4">
         <button 
           onClick={() => setLocation("/")}
-          className="flex items-center gap-2 hover-elevate rounded-lg p-1 -ml-1 py-3"
+          className="flex items-center -ml-2 hover:opacity-80 transition-opacity"
           data-testid="link-home"
         >
-          <img src={logoUrl} alt="Evalia" className="h-[46px]" />
+          <img src={logoUrl} alt="Evalia" className="h-14" />
         </button>
         
         <div className="flex items-center gap-2 sm:gap-3">
