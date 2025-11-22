@@ -23,9 +23,15 @@ export default function Dashboard() {
   const { toast } = useToast();
 
   const { data: surveys = [], isLoading } = useQuery<SurveyWithCounts[]>({
-    queryKey: ["/api/surveys"],
+    queryKey: ["/api/surveys", "with-counts"],
     staleTime: 0, // Always refetch to get latest response counts
     refetchInterval: 5000, // Refetch every 5 seconds for real-time updates
+    networkMode: "always", // Force fetch even if cache exists
+    select: (data) => {
+      // Debug: Log what we're receiving
+      console.log("Surveys data received:", data);
+      return data;
+    }
   });
 
   // Get all available tags across surveys (memoized)
