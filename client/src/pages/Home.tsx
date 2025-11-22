@@ -46,18 +46,16 @@ export default function Home() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Button
-                size="lg"
                 onClick={() => setLocation("/login")}
-                className="font-semibold text-base md:text-lg"
+                className="font-semibold text-lg md:text-xl py-6 md:py-7 px-8"
                 data-testid="button-get-started"
               >
                 Get started free
               </Button>
               <Button
-                size="lg"
                 variant="outline"
                 onClick={() => setLocation("/login")}
-                className="font-semibold text-base md:text-lg"
+                className="font-semibold text-lg md:text-xl py-5 md:py-6 px-8"
                 data-testid="button-browse-templates"
               >
                 Browse templates
