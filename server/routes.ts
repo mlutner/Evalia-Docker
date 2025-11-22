@@ -950,13 +950,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         apiKeys: { [provider]: { key: apiKey, rotated: new Date().toISOString() } }
       });
 
+      console.log(`✓ API key updated for ${provider}`);
       res.json({
         success: true,
-        message: `${provider} API key updated successfully. New settings are now active.`,
+        message: `${provider} API key updated successfully. Settings have been saved and are now active.`,
       });
     } catch (error: any) {
-      console.error("Update API key error:", error);
-      res.status(500).json({ error: "Failed to update API key" });
+      console.error("❌ Update API key error:", error.message);
+      res.status(500).json({ error: error.message || "Failed to update API key. Please try again." });
     }
   });
 

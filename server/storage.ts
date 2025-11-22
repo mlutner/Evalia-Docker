@@ -650,7 +650,7 @@ export class DbStorage implements IStorage {
       this.adminAISettings.parameters = { ...this.adminAISettings.parameters, ...settings.parameters };
     }
     
-    // Persist to database
+    // Persist to database - make sure this completes before returning
     try {
       await db.insert(adminAISettings).values({
         id: 'admin',
@@ -668,8 +668,10 @@ export class DbStorage implements IStorage {
           updatedAt: new Date(),
         }
       });
+      console.log("✓ Admin settings persisted to database");
     } catch (error) {
-      console.error("Failed to save admin settings to DB:", error);
+      console.error("⚠️ Failed to save admin settings to DB:", error);
+      throw new Error(`Failed to persist settings: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
     
     return this.adminAISettings;
