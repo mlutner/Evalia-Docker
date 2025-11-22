@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import { useAuth } from "@/hooks/useAuth";
 
+import ChatGPT_Image_Nov_21__2025__05_24_08_PM from "@assets/ChatGPT Image Nov 21, 2025, 05_24_08 PM.png";
+
 export default function Home() {
   const [, setLocation] = useLocation();
   const { user, isLoading } = useAuth();
@@ -71,7 +73,7 @@ export default function Home() {
           <div className="flex items-center justify-center">
             <div className="relative w-full max-w-2xl">
               <img
-                src="/attached_assets/Heading_1763750607423.png"
+                src={ChatGPT_Image_Nov_21__2025__05_24_08_PM}
                 alt="Survey illustration"
                 className="w-full h-auto object-contain"
               />
