@@ -195,6 +195,7 @@ export default function Dashboard() {
                         responseCount: 0,
                         questionCount: survey.questions.length,
                         status: survey.status,
+                        publishedAt: survey.publishedAt?.toString(),
                       }}
                       onEdit={() => handleEdit(survey.id)}
                       onView={() => handleView(survey.id)}
@@ -247,6 +248,7 @@ export default function Dashboard() {
                         responseCount: 0,
                         questionCount: survey.questions.length,
                         status: survey.status,
+                        publishedAt: survey.publishedAt?.toString(),
                       }}
                       onEdit={() => handleEdit(survey.id)}
                       onView={() => handleView(survey.id)}

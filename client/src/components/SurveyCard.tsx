@@ -14,6 +14,7 @@ export interface Survey {
   responseCount: number;
   questionCount: number;
   status?: "Active" | "Paused" | "Closed";
+  publishedAt?: string | null;
 }
 
 interface SurveyCardProps {
@@ -35,12 +36,22 @@ export default function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport
   const shareUrl = `${window.location.origin}/survey/${survey.id}`;
   
   const getStatusDisplay = () => {
+    // If not published yet, show Draft status
+    if (!survey.publishedAt) {
+      return {
+        badge: <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200 gap-1" data-testid={`badge-status-${survey.id}`}>
+          Edit Survey
+        </Badge>,
+        tooltip: "Survey is in draft. Complete and publish to start collecting responses."
+      };
+    }
+
     switch (survey.status) {
       case "Active":
         return {
           badge: <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 gap-1" data-testid={`badge-status-${survey.id}`}>
             <CheckCircle className="w-3 h-3" />
-            Active
+            Live
           </Badge>,
           tooltip: "Survey is live and accepting responses"
         };
