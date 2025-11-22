@@ -2,7 +2,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { MoreVertical, Eye, BarChart3, Download, Share2, Check, Copy, Edit3, Users, CheckCircle, Pause, Lock, Download as DownloadIcon } from "lucide-react";
+import { MoreVertical, Eye, BarChart3, Download, Share2, Check, Copy, Edit3, Users, CheckCircle, Pause, Lock, Download as DownloadIcon, Gauge, FileText as FileIcon } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState, memo } from "react";
@@ -21,6 +21,7 @@ export interface Survey {
   trainingDate?: string;
   tags?: string[];
   questions?: Question[];
+  scoreConfig?: { enabled?: boolean } | null;
 }
 
 // Generate a brief summary from survey questions
@@ -216,6 +217,38 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
             <p className="font-semibold text-lg" data-testid="text-response-count">{survey.responseCount}</p>
           </div>
         </div>
+        
+        {/* Feature Indicators */}
+        <div className="flex flex-wrap gap-2 pt-2">
+          {survey.scoreConfig?.enabled && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 gap-1 text-xs cursor-help" data-testid={`badge-scoring-${survey.id}`}>
+                  <Gauge className="w-3 h-3" />
+                  Scoring
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="max-w-xs text-xs">
+                This survey has scoring enabled
+              </TooltipContent>
+            </Tooltip>
+          )}
+          
+          {survey.responseCount > 0 && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 gap-1 text-xs cursor-help" data-testid={`badge-results-${survey.id}`}>
+                  <FileIcon className="w-3 h-3" />
+                  {survey.responseCount} Results
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="max-w-xs text-xs">
+                {survey.responseCount} response{survey.responseCount === 1 ? '' : 's'} collected
+              </TooltipContent>
+            </Tooltip>
+          )}
+        </div>
+        
         {survey.tags && survey.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 pt-2">
             {survey.tags.map((tag) => (

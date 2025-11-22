@@ -223,7 +223,7 @@ export default function Dashboard() {
                         title: survey.title,
                         description: survey.description,
                         createdAt: survey.createdAt.toString(),
-                        responseCount: 0,
+                        responseCount: survey.responseCount || 0,
                         questionCount: survey.questions.length,
                         status: survey.status,
                         publishedAt: survey.publishedAt?.toString(),
@@ -231,6 +231,7 @@ export default function Dashboard() {
                         trainingDate: survey.trainingDate?.toString(),
                         tags: survey.tags,
                         questions: survey.questions,
+                        scoreConfig: survey.scoreConfig,
                       }}
                       onEdit={() => handleEdit(survey.id)}
                       onView={() => handleView(survey.id)}
@@ -293,7 +294,7 @@ export default function Dashboard() {
                         title: survey.title,
                         description: survey.description,
                         createdAt: survey.createdAt.toString(),
-                        responseCount: 0,
+                        responseCount: survey.responseCount || 0,
                         questionCount: survey.questions.length,
                         status: survey.status,
                         publishedAt: survey.publishedAt?.toString(),
@@ -301,6 +302,7 @@ export default function Dashboard() {
                         trainingDate: survey.trainingDate?.toString(),
                         tags: survey.tags,
                         questions: survey.questions,
+                        scoreConfig: survey.scoreConfig,
                       }}
                       onEdit={() => handleEdit(survey.id)}
                       onView={() => handleView(survey.id)}
