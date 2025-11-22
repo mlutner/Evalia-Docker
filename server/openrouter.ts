@@ -116,6 +116,76 @@ export async function parseDocument(fileContent: string, fileName: string): Prom
 }
 
 /**
+ * Calculate scores using AI for intelligent answer analysis
+ */
+export async function calculateScoresWithAI(
+  questions: Question[],
+  answers: Record<string, string | string[]>,
+  scoreConfig: any
+): Promise<Record<string, number>> {
+  if (!scoreConfig?.enabled || !scoreConfig.categories) {
+    return {};
+  }
+
+  // First try simple numeric scoring for rating questions
+  const scores: Record<string, number> = {};
+  scoreConfig.categories.forEach((cat: any) => {
+    scores[cat.id] = 0;
+  });
+
+  // Score rating/nps questions by numeric value
+  questions.forEach(q => {
+    if (q.scoringCategory && answers[q.id]) {
+      const answer = answers[q.id];
+      if (q.type === "rating" || q.type === "nps" || q.type === "number") {
+        const value = parseInt(Array.isArray(answer) ? answer[0] : answer, 10);
+        if (!isNaN(value)) {
+          scores[q.scoringCategory] = (scores[q.scoringCategory] || 0) + value;
+        }
+      }
+    }
+  });
+
+  // For text/textarea answers, use AI to intelligently score
+  const textQuestionsToScore = questions.filter(q => 
+    (q.type === "text" || q.type === "textarea") && 
+    q.scoringCategory && 
+    answers[q.id]
+  );
+
+  if (textQuestionsToScore.length > 0) {
+    try {
+      const systemPrompt = `You are an expert assessment scorer. Score the following responses based on the assessment criteria. Return ONLY a JSON object with category IDs as keys and numeric scores as values.`;
+
+      const responseTexts = textQuestionsToScore.map(q => 
+        `Question: "${q.question}"\nCategory: ${scoreConfig.categories.find((c: any) => c.id === q.scoringCategory)?.name || q.scoringCategory}\nResponse: "${Array.isArray(answers[q.id]) ? answers[q.id].join(', ') : answers[q.id]}"`
+      ).join('\n\n');
+
+      const userPrompt = `Score these responses on a scale of 0-5 for each category:\n\n${responseTexts}\n\nReturn only valid JSON like: {"cat1": 4, "cat2": 3}`;
+
+      const messages: ChatMessage[] = [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ];
+
+      const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
+      const aiScores = JSON.parse(response);
+      
+      // Add AI scores to category scores
+      Object.entries(aiScores).forEach(([catId, score]: [string, any]) => {
+        if (typeof score === "number") {
+          scores[catId] = (scores[catId] || 0) + score;
+        }
+      });
+    } catch (error) {
+      console.warn("AI scoring failed, continuing with numeric scores:", error);
+    }
+  }
+
+  return scores;
+}
+
+/**
  * Suggest scoring configuration based on survey questions
  */
 export async function suggestScoringConfig(

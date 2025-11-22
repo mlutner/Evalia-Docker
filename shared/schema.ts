@@ -143,30 +143,36 @@ export type SurveyResponse = typeof surveyResponses.$inferSelect;
 export function calculateSurveyScores(
   questions: Question[],
   answers: Record<string, string | string[]>,
-  scoreConfig: SurveyScoreConfig | undefined
+  scoreConfig: SurveyScoreConfig | undefined,
+  preCalculatedScores?: Record<string, number>
 ) {
   if (!scoreConfig?.enabled) return null;
 
-  const scores: Record<string, number> = {};
+  let scores: Record<string, number> = {};
   
   // Initialize scores for each category
   scoreConfig.categories.forEach(cat => {
     scores[cat.id] = 0;
   });
 
-  // Calculate scores based on answers
-  questions.forEach(q => {
-    if (q.scoringCategory && answers[q.id]) {
-      const answer = answers[q.id];
-      // For rating questions, the answer is typically the number as a string
-      if (q.type === "rating" || q.type === "nps") {
-        const value = parseInt(Array.isArray(answer) ? answer[0] : answer, 10);
-        if (!isNaN(value)) {
-          scores[q.scoringCategory] = (scores[q.scoringCategory] || 0) + value;
+  // Use pre-calculated scores if provided (from AI scoring), otherwise calculate locally
+  if (preCalculatedScores) {
+    scores = { ...scores, ...preCalculatedScores };
+  } else {
+    // Calculate scores based on answers (local calculation for rating questions)
+    questions.forEach(q => {
+      if (q.scoringCategory && answers[q.id]) {
+        const answer = answers[q.id];
+        // For rating questions, the answer is typically the number as a string
+        if (q.type === "rating" || q.type === "nps" || q.type === "number") {
+          const value = parseInt(Array.isArray(answer) ? answer[0] : answer, 10);
+          if (!isNaN(value)) {
+            scores[q.scoringCategory] = (scores[q.scoringCategory] || 0) + value;
+          }
         }
       }
-    }
-  });
+    });
+  }
 
   // Map scores to interpretations
   const results: Array<{
