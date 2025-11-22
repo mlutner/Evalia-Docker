@@ -130,7 +130,7 @@ export default function SurveyWelcomeTemplate({
       {/* Privacy & Data Modal */}
       {(privacyStatement || dataUsageStatement) && (
         <Dialog open={isPrivacyModalOpen} onOpenChange={setIsPrivacyModalOpen}>
-          <DialogContent className="max-w-md" data-testid="privacy-data-modal">
+          <DialogContent className="max-w-md fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" data-testid="privacy-data-modal">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Shield className="w-4 h-4" />
