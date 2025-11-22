@@ -113,20 +113,6 @@ export default function SurveyWelcomeTemplate({
         )}
       </div>
 
-      {/* Privacy & Data Link */}
-      {(privacyStatement || dataUsageStatement) && (
-        <div className="text-center mb-[16px]">
-          <button
-            onClick={() => setIsPrivacyModalOpen(true)}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors underline cursor-pointer"
-            data-testid="button-privacy-link"
-            type="button"
-          >
-            Privacy & Data
-          </button>
-        </div>
-      )}
-
       {/* Privacy & Data Modal */}
       {(privacyStatement || dataUsageStatement) && (
         <Dialog open={isPrivacyModalOpen} onOpenChange={setIsPrivacyModalOpen}>
@@ -167,6 +153,20 @@ export default function SurveyWelcomeTemplate({
           Begin Survey
         </button>
       </footer>
+
+      {/* Privacy & Data Link */}
+      {(privacyStatement || dataUsageStatement) && (
+        <div className="text-center mt-[12px]">
+          <button
+            onClick={() => setIsPrivacyModalOpen(true)}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors underline cursor-pointer"
+            data-testid="button-privacy-link"
+            type="button"
+          >
+            Privacy & Data
+          </button>
+        </div>
+      )}
     </>
   );
 }
