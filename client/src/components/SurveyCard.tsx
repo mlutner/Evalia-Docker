@@ -208,9 +208,9 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
             <p className="font-semibold text-lg" data-testid="text-response-count">{survey.responseCount ?? 0}</p>
           </div>
         </div>
-        {survey.questionCount > 0 && (
+        {survey.respondentCount !== undefined && survey.respondentCount > 0 && (
           <div className="text-xs text-muted-foreground pt-1">
-            Response rate: <span className="font-medium">{survey.questionCount > 0 ? Math.round((survey.responseCount / Math.max(1, survey.questionCount)) * 100) : 0}%</span>
+            Response rate: <span className="font-medium">{survey.respondentCount > 0 ? Math.round((survey.responseCount / Math.max(1, survey.respondentCount)) * 100) : 0}%</span>
           </div>
         )}
         

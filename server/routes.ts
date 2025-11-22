@@ -374,21 +374,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.claims.sub;
       const surveys = await storage.getAllSurveys(userId);
       
-      // Calculate response count and question count for each survey
+      // Calculate response count, question count, and respondent metrics for each survey
       const surveysWithCounts = await Promise.all(
         surveys.map(async (survey) => {
           const responseCount = await storage.getResponseCount(survey.id);
           const questionCount = survey.questions?.length || 0;
-          console.log(`Survey ${survey.id} has ${responseCount} responses and ${questionCount} questions`);
+          const metrics = await storage.getRespondentMetrics(survey.id);
+          console.log(`Survey ${survey.id} has ${responseCount} responses, ${questionCount} questions, ${metrics.totalInvited} invited`);
           return {
             ...survey,
             responseCount,
             questionCount,
+            respondentCount: metrics.totalInvited,
           };
         })
       );
       
-      console.log('Returning surveys with counts:', surveysWithCounts.map(s => ({ id: s.id, responseCount: s.responseCount })));
+      console.log('Returning surveys with counts:', surveysWithCounts.map(s => ({ id: s.id, responseCount: s.responseCount, respondentCount: s.respondentCount })));
       res.json(surveysWithCounts);
     } catch (error: any) {
       console.error("Get surveys error:", error);
@@ -416,10 +418,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const survey = await storage.createSurvey(surveyData, userId);
       const responseCount = await storage.getResponseCount(survey.id);
       const questionCount = survey.questions?.length || 0;
+      const metrics = await storage.getRespondentMetrics(survey.id);
       res.status(201).json({
         ...survey,
         responseCount,
         questionCount,
+        respondentCount: metrics.totalInvited,
       });
     } catch (error: any) {
       console.error("Create survey error:", error);

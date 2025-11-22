@@ -472,6 +472,17 @@ export class DbStorage implements IStorage {
       .orderBy(sql`${surveyRespondents.invitedAt} DESC`);
   }
 
+  async getRespondentMetrics(surveyId: string): Promise<{ totalInvited: number; totalSubmitted: number }> {
+    const result = await db.select({
+      totalInvited: sql<number>`cast(count(*) as integer)`,
+      totalSubmitted: sql<number>`cast(count(*) FILTER (WHERE ${surveyRespondents.submittedAt} IS NOT NULL) as integer)`,
+    })
+      .from(surveyRespondents)
+      .where(eq(surveyRespondents.surveyId, surveyId));
+    
+    return result[0] || { totalInvited: 0, totalSubmitted: 0 };
+  }
+
   async markRespondentAsSubmitted(respondentId: string): Promise<boolean> {
     const result = await db.update(surveyRespondents)
       .set({ submittedAt: new Date() })
