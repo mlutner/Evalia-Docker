@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import type { Question, SurveyScoreConfig } from "@shared/schema";
 
@@ -10,6 +10,16 @@ export function useScoring(initialConfig?: SurveyScoreConfig) {
   const [resultsSummary, setResultsSummary] = useState(initialConfig?.resultsSummary || "");
   const [newCategoryName, setNewCategoryName] = useState("");
   const [isAutoGenerating, setIsAutoGenerating] = useState(false);
+
+  // Watch for changes to initialConfig and update form state
+  useEffect(() => {
+    if (initialConfig) {
+      setIsEnabled(initialConfig.enabled || false);
+      setCategories(initialConfig.categories || []);
+      setScoreRanges(initialConfig.scoreRanges || []);
+      setResultsSummary(initialConfig.resultsSummary || "");
+    }
+  }, [initialConfig]);
 
   const handleAddCategory = () => {
     if (newCategoryName.trim()) {
