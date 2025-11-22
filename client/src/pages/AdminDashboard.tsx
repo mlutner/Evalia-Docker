@@ -96,32 +96,52 @@ export default function AdminDashboard() {
     return key.substring(0, 8) + "..." + key.substring(key.length - 4);
   };
 
-  const providerLabels: Record<string, string> = {
-    mistral_generation: "Mistral AI Generation",
-    openai_generation: "OpenAI Generation",
-    mistral_ocr: "Mistral OCR",
-    openai_ocr: "OpenAI OCR",
+  const functionLabels: Record<string, string> = {
+    survey_generation: "Survey Generation",
+    survey_refinement: "Survey Refinement",
+    document_parsing: "Document Parsing",
+    response_scoring: "Response Scoring",
+    quick_suggestions: "Quick Text Generation",
+    response_analysis: "Response Analysis",
   };
 
-  const apiKeyCategories = [
+  const aiTiers = [
     {
-      id: "ai_generation",
-      name: "AI Survey Generation",
-      icon: "⚡",
-      description: "Used for survey creation, refinement & text generation",
-      providers: [
-        { id: "mistral_generation", provider: "Mistral", model: "pixtral-large-latest" },
-        { id: "openai_generation", provider: "OpenAI", model: "gpt-4o or similar" },
+      tier: "high_complexity",
+      name: "High-Complexity AI",
+      icon: "🧠",
+      description: "For complex reasoning tasks requiring advanced models",
+      functions: [
+        { id: "survey_generation", name: "Survey Generation", description: "Create surveys from prompts" },
+        { id: "survey_refinement", name: "Survey Refinement", description: "Improve existing surveys" },
       ],
     },
     {
-      id: "ocr",
-      name: "OCR / Document Parsing",
-      icon: "📄",
-      description: "Used for parsing PDFs and documents",
-      providers: [
-        { id: "mistral_ocr", provider: "Mistral", model: "mistral-ocr-2505" },
-        { id: "openai_ocr", provider: "OpenAI", model: "gpt-4-vision" },
+      tier: "vision",
+      name: "Vision/OCR AI",
+      icon: "👁️",
+      description: "For document parsing and image understanding",
+      functions: [
+        { id: "document_parsing", name: "Document Parsing", description: "Extract text from PDFs & images" },
+      ],
+    },
+    {
+      tier: "medium",
+      name: "Medium-Complexity AI",
+      icon: "⚙️",
+      description: "For moderate reasoning tasks",
+      functions: [
+        { id: "response_scoring", name: "Response Scoring", description: "Score survey responses" },
+        { id: "response_analysis", name: "Response Analysis", description: "Analyze response patterns" },
+      ],
+    },
+    {
+      tier: "fast_cheap",
+      name: "Fast/Low-Cost AI",
+      icon: "⚡",
+      description: "For quick tasks and UI enhancements",
+      functions: [
+        { id: "quick_suggestions", name: "Quick Text Generation", description: "Suggestions, hints, completions" },
       ],
     },
   ];
@@ -248,8 +268,8 @@ export default function AdminDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {apiKeyCategories.map((category) => (
-                <div key={category.id} className="space-y-2 pb-4 border-b last:border-b-0">
+              {aiTiers.map((category) => (
+                <div key={category.tier} className="space-y-2 pb-4 border-b last:border-b-0">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">{category.icon}</span>
                     <div>
@@ -257,28 +277,29 @@ export default function AdminDashboard() {
                       <p className="text-xs text-muted-foreground">{category.description}</p>
                     </div>
                   </div>
-                  {category.providers.map((providerInfo) => (
-                    <div key={providerInfo.id} className="ml-6 space-y-2 p-3 bg-muted/50 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs font-medium">{providerInfo.provider}</p>
+                  {category.functions.map((func) => (
+                    <div key={func.id} className="ml-6 space-y-2 p-3 bg-muted/50 rounded-lg">
+                      <div>
+                        <p className="text-xs font-medium">{func.name}</p>
+                        <p className="text-xs text-muted-foreground">{func.description}</p>
                       </div>
                       
                       {/* Model Configuration */}
                       <div className="space-y-1">
                         <label className="text-xs text-muted-foreground">Model:</label>
-                        <div className="p-2 bg-background rounded border border-input flex items-center justify-between" data-testid={`display-model-${providerInfo.id}`}>
+                        <div className="p-2 bg-background rounded border border-input flex items-center justify-between" data-testid={`display-model-${func.id}`}>
                           <code className="text-xs font-mono truncate">
-                            {settings?.models?.[providerInfo.id] || providerInfo.model}
+                            {settings?.models?.[func.id] || "Not configured"}
                           </code>
                           <Button
                             onClick={() => {
-                              setNewModel(settings?.models?.[providerInfo.id] || providerInfo.model);
-                              setShowModelDialog(providerInfo.id);
+                              setNewModel(settings?.models?.[func.id] || "");
+                              setShowModelDialog(func.id);
                             }}
                             variant="ghost"
                             size="sm"
                             className="h-6 px-2 text-xs"
-                            data-testid={`button-edit-model-${providerInfo.id}`}
+                            data-testid={`button-edit-model-${func.id}`}
                           >
                             Edit
                           </Button>
@@ -288,16 +309,16 @@ export default function AdminDashboard() {
                       {/* API Key Configuration */}
                       <div className="space-y-1">
                         <label className="text-xs text-muted-foreground">API Key:</label>
-                        <div className="p-2 bg-background rounded border border-input flex items-center justify-between" data-testid={`display-key-${providerInfo.id}`}>
+                        <div className="p-2 bg-background rounded border border-input flex items-center justify-between" data-testid={`display-key-${func.id}`}>
                           <code className="text-xs text-muted-foreground font-mono">
-                            {maskApiKey(settings?.apiKeys?.[providerInfo.id]?.key || "")}
+                            {maskApiKey(settings?.apiKeys?.[func.id]?.key || "")}
                           </code>
                           <Button
                             size="sm"
                             variant="ghost"
-                            onClick={() => copyToClipboard(settings?.apiKeys?.[providerInfo.id]?.key || "")}
-                            disabled={!settings?.apiKeys?.[providerInfo.id]?.key}
-                            data-testid={`button-copy-key-${providerInfo.id}`}
+                            onClick={() => copyToClipboard(settings?.apiKeys?.[func.id]?.key || "")}
+                            disabled={!settings?.apiKeys?.[func.id]?.key}
+                            data-testid={`button-copy-key-${func.id}`}
                             className="h-6 px-2"
                           >
                             {copiedKey ? "Copied!" : <Copy className="w-3 h-3" />}
@@ -306,11 +327,11 @@ export default function AdminDashboard() {
                       </div>
                       
                       <Button
-                        onClick={() => setShowKeyDialog(providerInfo.id)}
+                        onClick={() => setShowKeyDialog(func.id)}
                         variant="outline"
                         size="sm"
                         className="w-full text-xs"
-                        data-testid={`button-rotate-key-${providerInfo.id}`}
+                        data-testid={`button-rotate-key-${func.id}`}
                       >
                         Update Key
                       </Button>
@@ -357,7 +378,7 @@ export default function AdminDashboard() {
           <AlertDialogHeader>
             <AlertDialogTitle>Update API Key</AlertDialogTitle>
             <AlertDialogDescription>
-              Enter your new API key for {showKeyDialog ? providerLabels[showKeyDialog] : "API"}. This will replace the current key immediately.
+              Enter your new API key for {showKeyDialog ? functionLabels[showKeyDialog] : "task"}. This will replace the current key immediately.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="space-y-3">
@@ -391,7 +412,7 @@ export default function AdminDashboard() {
           <AlertDialogHeader>
             <AlertDialogTitle>Update Model</AlertDialogTitle>
             <AlertDialogDescription>
-              Enter the model name/ID for {showModelDialog ? providerLabels[showModelDialog] : "API"}. Examples: gpt-4o, claude-3-5-sonnet, mistral-large, etc.
+              Enter the model name/ID for {showModelDialog ? functionLabels[showModelDialog] : "task"}. Examples: gpt-4o, claude-3-5-sonnet, mistral-large, etc.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="space-y-3">

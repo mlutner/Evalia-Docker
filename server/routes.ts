@@ -917,16 +917,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/settings", isAuthenticated, isMasterAdmin, async (req: any, res) => {
     try {
       const apiKeys = {
-        mistral_generation: { key: process.env.MISTRAL_API_KEY || "", rotated: null },
-        openai_generation: { key: process.env.OPENAI_API_KEY || "", rotated: null },
-        mistral_ocr: { key: process.env.MISTRAL_OCR_API_KEY || process.env.MISTRAL_API_KEY || "", rotated: null },
-        openai_ocr: { key: process.env.OPENAI_OCR_API_KEY || process.env.OPENAI_API_KEY || "", rotated: null },
+        survey_generation: { key: process.env.API_KEY_SURVEY_GENERATION || "", rotated: null },
+        survey_refinement: { key: process.env.API_KEY_SURVEY_REFINEMENT || "", rotated: null },
+        document_parsing: { key: process.env.API_KEY_DOCUMENT_PARSING || "", rotated: null },
+        response_scoring: { key: process.env.API_KEY_RESPONSE_SCORING || "", rotated: null },
+        quick_suggestions: { key: process.env.API_KEY_QUICK_SUGGESTIONS || "", rotated: null },
+        response_analysis: { key: process.env.API_KEY_RESPONSE_ANALYSIS || "", rotated: null },
       };
       const models = {
-        mistral_generation: process.env.MODEL_MISTRAL_GENERATION || "pixtral-large-latest",
-        openai_generation: process.env.MODEL_OPENAI_GENERATION || "gpt-4o",
-        mistral_ocr: process.env.MODEL_MISTRAL_OCR || "mistral-ocr-2505",
-        openai_ocr: process.env.MODEL_OPENAI_OCR || "gpt-4-vision",
+        survey_generation: process.env.MODEL_SURVEY_GENERATION || "gpt-4o",
+        survey_refinement: process.env.MODEL_SURVEY_REFINEMENT || "gpt-4o",
+        document_parsing: process.env.MODEL_DOCUMENT_PARSING || "gpt-4-vision",
+        response_scoring: process.env.MODEL_RESPONSE_SCORING || "gpt-3.5-turbo",
+        quick_suggestions: process.env.MODEL_QUICK_SUGGESTIONS || "gpt-3.5-turbo",
+        response_analysis: process.env.MODEL_RESPONSE_ANALYSIS || "gpt-4o",
       };
       res.json({ apiKeys, models });
     } catch (error: any) {
@@ -940,15 +944,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { provider, apiKey } = req.body;
 
-      const validProviders = [
-        "mistral_generation",
-        "openai_generation",
-        "mistral_ocr",
-        "openai_ocr",
+      const validFunctions = [
+        "survey_generation",
+        "survey_refinement",
+        "document_parsing",
+        "response_scoring",
+        "quick_suggestions",
+        "response_analysis",
       ];
 
-      if (!provider || !validProviders.includes(provider)) {
-        return res.status(400).json({ error: `Invalid provider. Must be one of: ${validProviders.join(", ")}` });
+      if (!provider || !validFunctions.includes(provider)) {
+        return res.status(400).json({ error: `Invalid function. Must be one of: ${validFunctions.join(", ")}` });
       }
 
       if (!apiKey || typeof apiKey !== "string" || !apiKey.startsWith("sk-")) {
@@ -972,15 +978,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { provider, model } = req.body;
 
-      const validProviders = [
-        "mistral_generation",
-        "openai_generation",
-        "mistral_ocr",
-        "openai_ocr",
+      const validFunctions = [
+        "survey_generation",
+        "survey_refinement",
+        "document_parsing",
+        "response_scoring",
+        "quick_suggestions",
+        "response_analysis",
       ];
 
-      if (!provider || !validProviders.includes(provider)) {
-        return res.status(400).json({ error: `Invalid provider. Must be one of: ${validProviders.join(", ")}` });
+      if (!provider || !validFunctions.includes(provider)) {
+        return res.status(400).json({ error: `Invalid function. Must be one of: ${validFunctions.join(", ")}` });
       }
 
       if (!model || typeof model !== "string" || model.trim().length === 0) {
