@@ -8,6 +8,7 @@ import Step1Start from "@/components/builder/Step1Start";
 import QuestionsStep from "@/components/builder/QuestionsStep";
 import PublishStep from "@/components/builder/PublishStep";
 import ScoringConfigStep from "@/components/builder/ScoringConfigStep";
+import TemplatePreviewModal from "@/components/TemplatePreviewModal";
 import SurveyPreviewDialog from "@/components/SurveyPreviewDialog";
 import { Button } from "@/components/ui/button";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -54,6 +55,7 @@ export default function Builder() {
   // UI state
   const [viewMode, setViewMode] = useState<"chat" | "edit">("chat");
   const [showPreview, setShowPreview] = useState(false);
+  const [previewTemplate, setPreviewTemplate] = useState<SurveyTemplate | null>(null);
 
   // Load existing survey if in edit mode
   const { data: existingSurvey, isLoading: isLoadingSurvey } = useQuery<Survey>({
@@ -141,7 +143,6 @@ export default function Builder() {
     );
   };
 
-
   const handlePasteText = async (pastedText: string) => {
     fileProcessing.handlePasteText(
       pastedText,
@@ -158,12 +159,6 @@ export default function Builder() {
             content: `I've created a ${questionCount}-question survey from your text. ${result.scoreConfig ? 'I suggested a scoring configuration for Step 4. ' : ''}You can edit questions or ask me to make changes!`,
           },
         ]);
-      },
-      () => {
-        surveyState.setCurrentWizardStep(2);
-      }
-    );
-  };
       },
       () => {
         surveyState.setCurrentWizardStep(2);
