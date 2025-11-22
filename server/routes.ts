@@ -1015,21 +1015,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ error: "AI enhancement not configured by admin" });
       }
 
-      const systemPrompt = `You are an expert survey design assistant. Your task is to enhance and improve a survey creation prompt to make it more detailed and effective.
+      const enhancedUserPrompt = `Improve this survey prompt to make it more comprehensive and specific:
 
-INSTRUCTIONS:
-- Take the user's survey description and make it more comprehensive
-- Add specific details about question count, format, and assessment approach if not mentioned
-- Suggest appropriate scoring/assessment if it's an evaluation survey
-- Keep the enhanced prompt concise but thorough
-- Maintain the user's original intent and topic
-- Return only the enhanced prompt text, no explanations
+${prompt}
 
-GUIDELINES FOR ENHANCEMENT:
-- If no question count is specified, suggest an appropriate number based on the topic
-- If assessment is implied, recommend scoring categories
-- Suggest question types that fit the survey topic
-- Add any missing context that would help generate better questions`;
+Return ONLY the improved prompt text, nothing else.`;
 
       // Use OpenRouter's Auto Model Selection for intelligent, cost-optimized model routing
       // This automatically selects the best model for the prompt while optimizing costs
@@ -1044,15 +1034,13 @@ GUIDELINES FOR ENHANCEMENT:
         body: JSON.stringify({
           model: "openrouter/auto",
           messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: prompt },
+            { role: "user", content: enhancedUserPrompt },
           ],
           temperature: parameters?.temperature || 0.7,
           max_tokens: parameters?.max_tokens || 1024,
-          // Provider preferences for cost optimization
           provider: {
-            sort: "price", // Prioritize lowest cost
-            allow_fallbacks: true, // Allow fallback providers if primary unavailable
+            sort: "price",
+            allow_fallbacks: true,
           }
         }),
       });
@@ -1064,21 +1052,19 @@ GUIDELINES FOR ENHANCEMENT:
       }
 
       const data = await response.json();
-      console.log("OpenRouter response:", JSON.stringify(data).substring(0, 200));
+      console.log("OpenRouter response status: success, choices count:", data.choices?.length);
       
       const enhancedPrompt = data.choices?.[0]?.message?.content;
 
       if (!enhancedPrompt) {
-        console.error("No enhanced prompt in response. Full data:", JSON.stringify(data).substring(0, 500));
+        console.error("No enhanced prompt. Response:", JSON.stringify(data).substring(0, 300));
         return res.status(500).json({ error: "No response from AI" });
       }
 
-      const result = {
+      res.json({
         success: true,
         enhancedPrompt: enhancedPrompt.trim(),
-      };
-      console.log("Sending enhanced prompt response, length:", result.enhancedPrompt.length);
-      res.json(result);
+      });
     } catch (error: any) {
       console.error("Enhance prompt error:", error.message);
       res.status(500).json({ error: "Failed to enhance prompt: " + error.message });
