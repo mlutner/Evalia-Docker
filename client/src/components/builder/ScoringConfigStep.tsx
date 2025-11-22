@@ -27,6 +27,7 @@ export default function ScoringConfigStep({
   const [resultsSummary, setResultsSummary] = useState(scoreConfig?.resultsSummary || "");
   const [newCategoryName, setNewCategoryName] = useState("");
   const [isAutoGenerating, setIsAutoGenerating] = useState(false);
+  const [isGeneratingResultsSummary, setIsGeneratingResultsSummary] = useState(false);
 
   const handleAddCategory = () => {
     if (newCategoryName.trim()) {
@@ -119,6 +120,51 @@ export default function ScoringConfigStep({
       });
     } finally {
       setIsAutoGenerating(false);
+    }
+  };
+
+  const handleGenerateResultsSummary = async () => {
+    if (categories.length === 0 || scoreRanges.length === 0) {
+      toast({
+        title: "Missing configuration",
+        description: "Define categories and score ranges first before generating a summary.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGeneratingResultsSummary(true);
+    try {
+      const prompt = `Create a brief, professional results summary message that will be displayed to respondents after they complete an assessment with these scoring categories and ranges:\n\nCategories: ${categories.map(c => c.name).join(", ")}\n\nScore Ranges:\n${scoreRanges.map(r => `${r.label}: ${r.minScore}-${r.maxScore} - ${r.interpretation}`).join("\n")}\n\nWrite a welcoming and insightful message that helps respondents understand what they're about to see in their results.`;
+
+      const response = await fetch("/api/generate-text", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          prompt,
+          fieldType: "resultsSummary",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate summary");
+      }
+
+      const { text } = await response.json();
+      setResultsSummary(text);
+      
+      toast({
+        title: "Summary generated",
+        description: "AI has created a results summary for your assessment.",
+      });
+    } catch (error) {
+      toast({
+        title: "Generation failed",
+        description: "Could not generate results summary. You can write one manually.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingResultsSummary(false);
     }
   };
 
@@ -397,15 +443,32 @@ export default function ScoringConfigStep({
                 A message shown to respondents above their scores
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Textarea
-                value={resultsSummary}
-                onChange={(e) => setResultsSummary(e.target.value)}
-                placeholder="e.g., Your results show your dominant leadership style..."
-                className="resize-none"
-                rows={3}
-                data-testid="textarea-results-summary"
-              />
+            <CardContent className="space-y-3">
+              <div className="flex gap-2">
+                <Textarea
+                  value={resultsSummary}
+                  onChange={(e) => setResultsSummary(e.target.value)}
+                  placeholder="e.g., Your results show your dominant leadership style..."
+                  className="resize-none flex-1"
+                  rows={3}
+                  data-testid="textarea-results-summary"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleGenerateResultsSummary}
+                  disabled={isGeneratingResultsSummary || categories.length === 0}
+                  className="self-start"
+                  data-testid="button-generate-results-summary"
+                >
+                  <Sparkles className="w-4 h-4" />
+                </Button>
+              </div>
+              {isGeneratingResultsSummary && (
+                <p className="text-xs text-muted-foreground">
+                  Generating summary...
+                </p>
+              )}
             </CardContent>
           </Card>
 
