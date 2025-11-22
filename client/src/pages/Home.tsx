@@ -94,8 +94,8 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Feature 1 */}
           <div className="space-y-4 p-6 rounded-lg bg-card border border-border dark:bg-slate-800/50 dark:border-slate-700">
-            <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-blue-900 dark:bg-blue-900">
-              <Sparkles className="w-6 h-6 text-lime-400 dark:text-lime-400" />
+            <div className="flex items-center justify-center w-12 h-12 rounded-lg" style={{ backgroundColor: '#071a32' }}>
+              <Sparkles className="w-6 h-6" style={{ color: '#ccff00' }} />
             </div>
             <h3 className="text-xl font-semibold text-foreground dark:text-white">AI-Powered Creation</h3>
             <p className="text-muted-foreground dark:text-slate-300">
@@ -105,8 +105,8 @@ export default function Home() {
 
           {/* Feature 2 */}
           <div className="space-y-4 p-6 rounded-lg bg-card border border-border dark:bg-slate-800/50 dark:border-slate-700">
-            <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-blue-900 dark:bg-blue-900">
-              <BarChart3 className="w-6 h-6 text-lime-400 dark:text-lime-400" />
+            <div className="flex items-center justify-center w-12 h-12 rounded-lg" style={{ backgroundColor: '#071a32' }}>
+              <BarChart3 className="w-6 h-6" style={{ color: '#ccff00' }} />
             </div>
             <h3 className="text-xl font-semibold text-foreground dark:text-white">Instant Analytics</h3>
             <p className="text-muted-foreground dark:text-slate-300">
@@ -116,8 +116,8 @@ export default function Home() {
 
           {/* Feature 3 */}
           <div className="space-y-4 p-6 rounded-lg bg-card border border-border dark:bg-slate-800/50 dark:border-slate-700">
-            <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-blue-900 dark:bg-blue-900">
-              <Zap className="w-6 h-6 text-lime-400 dark:text-lime-400" />
+            <div className="flex items-center justify-center w-12 h-12 rounded-lg" style={{ backgroundColor: '#071a32' }}>
+              <Zap className="w-6 h-6" style={{ color: '#ccff00' }} />
             </div>
             <h3 className="text-xl font-semibold text-foreground dark:text-white">Fast & Simple</h3>
             <p className="text-muted-foreground dark:text-slate-300">
