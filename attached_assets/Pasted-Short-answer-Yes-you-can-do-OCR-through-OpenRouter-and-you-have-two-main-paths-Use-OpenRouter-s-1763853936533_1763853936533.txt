@@ -1,0 +1,77 @@
+Short answer:
+Yes, you can do OCR through OpenRouter, and you have two main paths:
+
+Use OpenRouter’s built-in PDF engines (including an OCR engine).
+
+Use a vision model (VLM) that’s been trained for OCR and ask it to “read” the page.
+
+For Evalia, option 1 + a bit of 2 is the sane combo.
+
+1. OpenRouter’s built-in PDF → text / OCR
+
+OpenRouter now has universal PDF support with a file-parser plugin and different engines:
+
+pdf-text – text-only extraction (no OCR), free, great for normal PDFs that already contain text.
+
+mistral-ocr – full OCR for scanned docs / images inside PDFs, ~$2 per 1,000 pages.
+
+For Evalia, that means:
+
+Most training decks / exported handouts → pdf-text (free).
+
+Old scanned worksheets / photos → mistral-ocr when needed.
+
+You don’t change models for this; you add a plugin config on the request.
+
+Example: PDF → text for survey generation (TypeScript with OpenAI SDK)
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: process.env.OPENROUTER_API_KEY!,
+  baseURL: "https://openrouter.ai/api/v1",
+});
+
+export async function generateSurveyFromPdf(pdfUrl: string) {
+  const completion = await client.chat.completions.create(
+    {
+      model: "moonshotai/kimi-k2:free", // or your surveyGeneration pool
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text:
+                "Read this training PDF and extract the key topics and learning " +
+                "objectives, then draft a 15-question post-training evaluation survey.",
+            },
+            {
+              type: "input_file",
+              file_url: pdfUrl, // public URL or presigned URL of the PDF
+            },
+          ],
+        },
+      ],
+      // 👇 PDF plugin – choose the extraction engine
+      plugins: [
+        {
+          id: "file-parser",
+          pdf: {
+            engine: "pdf-text", // or "mistral-ocr" for scanned docs
+          },
+        },
+      ],
+    },
+    {
+      headers: {
+        "HTTP-Referer": "https://evalia.app",
+        "X-Title": "Evalia",
+      },
+    },
+  );
+
+  return completion.choices[0]?.message?.content ?? "";
+}
+
+
+For most Evalia use, pdf-text will be enough and costs you nothing.
