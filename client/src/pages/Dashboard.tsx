@@ -118,8 +118,8 @@ export default function Dashboard() {
     link.download = `${surveyTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_responses.csv`;
     link.click();
     toast({
-      title: "Export started",
-      description: "Your survey responses are being downloaded as CSV",
+      title: "Download started",
+      description: "Your responses are on their way as CSV",
     });
   };
 
@@ -139,9 +139,9 @@ export default function Dashboard() {
         });
       },
       onError: (error: any) => {
-        const errorMsg = error?.message || error?.error?.message || "Failed to duplicate survey. Please try again.";
+        const errorMsg = error?.message || error?.error?.message || "Couldn't create a copy. Give it another shot.";
         toast({
-          title: "Error duplicating survey",
+          title: "Couldn't duplicate that",
           description: errorMsg,
           variant: "destructive",
         });
@@ -181,20 +181,20 @@ export default function Dashboard() {
       <AlertDialog open={!!deleteConfirm} onOpenChange={(open) => !open && setDeleteConfirm(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Survey</AlertDialogTitle>
+            <AlertDialogTitle>Remove "{surveyToDelete?.title}"?</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{surveyToDelete?.title}"? This action cannot be undone. All responses will be permanently removed.
+              This will permanently delete this survey and all its responses. You can't undo this.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel data-testid="button-cancel-delete">Cancel</AlertDialogCancel>
+            <AlertDialogCancel data-testid="button-cancel-delete">Keep It</AlertDialogCancel>
             <AlertDialogAction 
               onClick={confirmDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               disabled={deleteMutation.isPending}
               data-testid="button-confirm-delete"
             >
-              {deleteMutation.isPending ? "Deleting..." : "Delete"}
+              {deleteMutation.isPending ? "Removing..." : "Remove"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

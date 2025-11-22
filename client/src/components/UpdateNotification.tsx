@@ -22,10 +22,10 @@ export default function UpdateNotification({
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                Update Available
+                Refresh Available
               </p>
               <p className="text-xs text-blue-800 dark:text-blue-200 mt-0.5">
-                New version ready. Reload to get the latest features.
+                We've updated Evalia. Refresh to see what's new.
               </p>
             </div>
             <button

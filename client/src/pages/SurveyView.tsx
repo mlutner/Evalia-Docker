@@ -268,15 +268,15 @@ export default function SurveyView() {
         <AlertDialog open={showExitWarning} onOpenChange={setShowExitWarning}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Exit survey?</AlertDialogTitle>
+              <AlertDialogTitle>Leave without starting?</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to exit? You haven't started the survey yet.
+                You can always come back to this survey anytime.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel data-testid="button-cancel-exit">Keep Browsing</AlertDialogCancel>
+              <AlertDialogCancel data-testid="button-cancel-exit">Keep Going</AlertDialogCancel>
               <AlertDialogAction onClick={confirmExit} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" data-testid="button-confirm-exit">
-                Exit Survey
+                Leave
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -348,7 +348,7 @@ export default function SurveyView() {
             data-testid="button-next"
             style={{ opacity: (!canGoNext() || submitMutation.isPending) ? 0.6 : 1 }}
           >
-            {submitMutation.isPending ? 'Submitting...' : (currentStep === questions.length - 1 ? 'Submit' : 'Next')}
+            {submitMutation.isPending ? 'Sending...' : (currentStep === questions.length - 1 ? 'Send' : 'Next')}
           </button>
         </footer>
 
@@ -359,7 +359,7 @@ export default function SurveyView() {
             type="button"
             data-testid="button-exit-survey"
           >
-            Exit Survey
+            Leave survey
           </button>
         </p>
       </main>
@@ -367,15 +367,15 @@ export default function SurveyView() {
       <AlertDialog open={showExitWarning} onOpenChange={setShowExitWarning}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Exit survey?</AlertDialogTitle>
+            <AlertDialogTitle>Save your progress?</AlertDialogTitle>
             <AlertDialogDescription>
-              You have started answering this survey. Are you sure you want to exit? Your answers will not be saved.
+              Leaving now will discard your answers. You can always start fresh later.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel data-testid="button-cancel-exit">Keep Answering</AlertDialogCancel>
+            <AlertDialogCancel data-testid="button-cancel-exit">Keep Going</AlertDialogCancel>
             <AlertDialogAction onClick={confirmExit} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" data-testid="button-confirm-exit">
-              Exit Survey
+              Leave Anyway
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

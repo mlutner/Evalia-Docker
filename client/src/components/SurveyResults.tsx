@@ -79,12 +79,12 @@ export default function SurveyResults({
     }
     
     // Fallback: if no exact range found, create synthetic range based on performance level
-    const fallbackLabel = performanceLevel === "high" ? "Excellent" : performanceLevel === "mid" ? "On track" : "Needs development";
+    const fallbackLabel = performanceLevel === "high" ? "Excellent" : performanceLevel === "mid" ? "On Track" : "Developing";
     const fallbackInterpretation = performanceLevel === "high" 
-      ? "You demonstrate strong performance in this area." 
+      ? "You're showing strong performance here. Keep leveraging these strengths." 
       : performanceLevel === "mid"
-      ? "You're making good progress in this area."
-      : "There is room for improvement in this area.";
+      ? "You're making solid progress. Focus on building in this area."
+      : "Here's where you can grow. Let's develop this skill together.";
     
     return {
       interpretation: fallbackInterpretation,
@@ -116,7 +116,7 @@ export default function SurveyResults({
             <div className="absolute inset-0 w-24 h-24 mx-auto bg-primary/20 rounded-full animate-ping" style={{ animationDuration: '2s' }}></div>
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 px-4">
-            Thank you!
+            Assessment Complete
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-3 sm:mb-4 px-4">
             {thankYouMessage || "Your responses have been recorded successfully."}
@@ -127,7 +127,7 @@ export default function SurveyResults({
             data-testid="button-exit"
             className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 shadow-lg hover:shadow-xl transition-all w-full sm:w-auto mx-4"
           >
-            Exit
+            Close Assessment
           </Button>
         </div>
       </div>
@@ -140,7 +140,7 @@ export default function SurveyResults({
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold mb-2" data-testid="text-results-title">
-            Your Results
+            Here's What We Found
           </h1>
           {survey.scoreConfig?.resultsSummary && (
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
