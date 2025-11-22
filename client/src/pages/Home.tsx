@@ -34,10 +34,10 @@ export default function Home() {
           <div className="space-y-6">
             {/* Headline */}
             <div className="space-y-6">
-              <h1 className="text-6xl md:text-7xl font-bold leading-tight" style={{color: '#071A32'}}>
+              <h1 className="text-7xl md:text-8xl font-bold leading-tight" style={{color: '#071A32'}}>
                 Collect training feedback that actually improves training
               </h1>
-              <p className="text-lg text-muted-foreground leading-relaxed max-w-lg">
+              <p className="text-xl text-muted-foreground leading-relaxed max-w-lg">
                 Evalia gives trainers ready-made templates, AI-powered question creation, and instant reporting – so you can design better sessions and measure what matters.
               </p>
             </div>
@@ -64,14 +64,14 @@ export default function Home() {
             </div>
 
             {/* Trust Statement */}
-            <p className="text-lg text-muted-foreground pt-4">
+            <p className="text-xl text-muted-foreground pt-4">
               Trusted by trainers, facilitators, HR teams, and L&D professionals.
             </p>
           </div>
 
           {/* Right Side - Image */}
           <div className="flex items-center justify-center h-full min-h-screen">
-            <div className="relative w-full max-w-2xl scale-125">
+            <div className="relative w-full max-w-2xl scale-150">
               <img
                 src={surveyImage}
                 alt="Survey illustration"
