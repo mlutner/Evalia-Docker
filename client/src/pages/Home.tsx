@@ -31,13 +31,13 @@ export default function Home() {
       <main className="flex-1 container mx-auto px-6 flex items-center justify-center">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center w-full max-w-7xl">
           {/* Left Side Content */}
-          <div className="space-y-10">
+          <div className="space-y-6">
             {/* Headline */}
-            <div className="space-y-6">
-              <h1 className="text-7xl md:text-8xl font-bold leading-tight" style={{color: '#071A32'}}>
+            <div className="space-y-4">
+              <h1 className="text-5xl md:text-6xl font-bold leading-tight" style={{color: '#071A32'}}>
                 Collect training feedback that actually improves training
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed max-w-lg">
+              <p className="text-base text-muted-foreground leading-relaxed max-w-lg">
                 Evalia gives trainers ready-made templates, AI-powered question creation, and instant reporting – so you can design better sessions and measure what matters.
               </p>
             </div>
@@ -70,8 +70,8 @@ export default function Home() {
           </div>
 
           {/* Right Side - Image */}
-          <div className="flex items-center justify-center h-full min-h-96">
-            <div className="relative w-full">
+          <div className="flex items-center justify-center h-full min-h-screen">
+            <div className="relative w-full max-w-2xl scale-110">
               <img
                 src={surveyImage}
                 alt="Survey illustration"
