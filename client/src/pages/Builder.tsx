@@ -653,6 +653,7 @@ export default function Builder() {
             onAddQuestion={surveyState.handleAddQuestion}
             onReorderQuestions={surveyState.setCurrentQuestions}
             onPreview={handlePreviewSurvey}
+            onNext={surveyState.handleNextStep}
           />
         )}
 

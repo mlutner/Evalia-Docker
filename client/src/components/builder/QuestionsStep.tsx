@@ -33,6 +33,7 @@ interface QuestionsStepProps {
   onAddQuestion: () => void;
   onReorderQuestions: (questions: Question[]) => void;
   onPreview?: () => void;
+  onNext?: () => void;
 }
 
 export default function QuestionsStep({
@@ -45,6 +46,7 @@ export default function QuestionsStep({
   onAddQuestion,
   onReorderQuestions,
   onPreview,
+  onNext,
 }: QuestionsStepProps) {
   const [chatOpen, setChatOpen] = useState(true);
 
@@ -75,7 +77,16 @@ export default function QuestionsStep({
           <p className="font-medium text-lg">{questions.length} {questions.length === 1 ? 'question' : 'questions'} created</p>
           <p className="text-sm text-muted-foreground">Edit your questions and refine with AI</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {onNext && (
+            <Button
+              onClick={onNext}
+              data-testid="button-next-step-top"
+            >
+              Next
+              <ChevronRight className="w-4 h-4 ml-2" />
+            </Button>
+          )}
           {onPreview && questions.length > 0 && (
             <Button
               variant="outline"
