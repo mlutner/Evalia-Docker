@@ -696,4 +696,65 @@ body {
     bottom: 1rem;
     right: 1rem;
   }
+
+  /* PHASE II: MOTION LANGUAGE REFINEMENTS */
+  
+  /* Motion timing standards */
+  .motion-hover {
+    transition: all 150ms ease-out;
+  }
+
+  .motion-page {
+    animation: fadeIn 200ms ease-in-out;
+  }
+
+  .motion-modal {
+    animation: slideDown 250ms ease-out;
+  }
+
+  .motion-loading {
+    animation: spin 2s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Easing library */
+  .ease-out {
+    animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  .ease-in-out {
+    animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
+  }
+
+  .ease-in {
+    animation-timing-function: cubic-bezier(0.32, 0, 0.67, 0);
+  }
+
+  /* Hover states with standard timing */
+  button, [role="button"], a, input[type="checkbox"], input[type="radio"] {
+    transition: all 150ms ease-out;
+  }
+
+  /* Page transitions */
+  [role="main"] {
+    animation: fadeIn 200ms ease-in-out;
+  }
+
+  /* Dialog animations */
+  [role="alertdialog"], [role="dialog"] {
+    animation: slideDown 250ms ease-out;
+  }
+
+  /* Loading indicator animation */
+  .loading-spinner {
+    animation: spin 2s linear infinite;
+  }
 }

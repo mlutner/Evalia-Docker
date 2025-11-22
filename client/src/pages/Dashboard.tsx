@@ -84,15 +84,15 @@ export default function Dashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/surveys"] });
       toast({
-        title: "Survey deleted",
-        description: "The survey has been permanently removed.",
+        title: "Survey removed",
+        description: "Your survey has been permanently deleted.",
       });
       setDeleteConfirm(null);
     },
     onError: (error: any) => {
-      const errorMsg = error?.message || error?.error?.message || "Failed to delete survey. Please try again.";
+      const errorMsg = error?.message || error?.error?.message || "We couldn't remove that survey. Please try again.";
       toast({
-        title: "Error deleting survey",
+        title: "Couldn't remove survey",
         description: errorMsg,
         variant: "destructive",
       });
