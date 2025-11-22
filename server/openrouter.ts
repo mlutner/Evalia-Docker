@@ -157,9 +157,11 @@ export async function calculateScoresWithAI(
     try {
       const systemPrompt = `You are an expert assessment scorer. Score the following responses based on the assessment criteria. Return ONLY a JSON object with category IDs as keys and numeric scores as values.`;
 
-      const responseTexts = textQuestionsToScore.map(q => 
-        `Question: "${q.question}"\nCategory: ${scoreConfig.categories.find((c: any) => c.id === q.scoringCategory)?.name || q.scoringCategory}\nResponse: "${Array.isArray(answers[q.id]) ? answers[q.id].join(', ') : answers[q.id]}"`
-      ).join('\n\n');
+      const responseTexts = textQuestionsToScore.map((q: Question) => {
+        const answerValue = answers[q.id];
+        const answerText = Array.isArray(answerValue) ? answerValue.join(', ') : String(answerValue);
+        return `Question: "${q.question}"\nCategory: ${scoreConfig.categories.find((c: any) => c.id === q.scoringCategory)?.name || q.scoringCategory}\nResponse: "${answerText}"`;
+      }).join('\n\n');
 
       const userPrompt = `Score these responses on a scale of 0-5 for each category:\n\n${responseTexts}\n\nReturn only valid JSON like: {"cat1": 4, "cat2": 3}`;
 

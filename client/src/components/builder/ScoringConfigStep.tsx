@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Sparkles, AlertCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import type { SurveyScoreConfig, Question } from "@shared/schema";
 
 interface ScoringConfigStepProps {
@@ -19,11 +20,13 @@ export default function ScoringConfigStep({
   scoreConfig,
   onScoreConfigChange,
 }: ScoringConfigStepProps) {
+  const { toast } = useToast();
   const [isEnabled, setIsEnabled] = useState(scoreConfig?.enabled || false);
   const [categories, setCategories] = useState(scoreConfig?.categories || []);
   const [scoreRanges, setScoreRanges] = useState(scoreConfig?.scoreRanges || []);
   const [resultsSummary, setResultsSummary] = useState(scoreConfig?.resultsSummary || "");
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [isAutoGenerating, setIsAutoGenerating] = useState(false);
 
   const handleAddCategory = () => {
     if (newCategoryName.trim()) {
@@ -77,6 +80,48 @@ export default function ScoringConfigStep({
     onScoreConfigChange(config);
   };
 
+  const handleAutoGenerateScoring = async () => {
+    if (questions.length === 0) {
+      toast({
+        title: "No questions",
+        description: "Add questions first before generating scoring configuration",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsAutoGenerating(true);
+    try {
+      const response = await fetch("/api/generate-scoring-config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ questions }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate scoring config");
+      }
+
+      const { config } = await response.json();
+      setIsEnabled(true);
+      setCategories(config.categories || []);
+      setScoreRanges(config.scoreRanges || []);
+      
+      toast({
+        title: "Scoring configured",
+        description: "AI has automatically set up scoring categories and ranges based on your questions.",
+      });
+    } catch (error) {
+      toast({
+        title: "Auto-generation failed",
+        description: "Could not automatically generate scoring. You can configure it manually.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAutoGenerating(false);
+    }
+  };
+
   const categoriesByQuestion = questions.reduce(
     (acc, q) => {
       if (q.scoringCategory) {
@@ -96,6 +141,19 @@ export default function ScoringConfigStep({
         <h2 className="text-3xl font-semibold mb-3">Assessment Scoring (Optional)</h2>
         <p className="text-muted-foreground text-lg">
           Enable scoring to automatically calculate results based on question categories
+        </p>
+        <Button
+          onClick={handleAutoGenerateScoring}
+          disabled={isAutoGenerating || questions.length === 0}
+          className="mt-4"
+          variant="outline"
+          data-testid="button-auto-generate-scoring"
+        >
+          <Sparkles className="w-4 h-4 mr-2" />
+          {isAutoGenerating ? "Generating..." : "AI Auto-Generate Scoring"}
+        </Button>
+        <p className="text-xs text-muted-foreground mt-2">
+          Let AI analyze your questions and create scoring categories automatically
         </p>
       </div>
 

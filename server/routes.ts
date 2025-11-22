@@ -418,6 +418,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Auto-generate scoring configuration (protected)
+  app.post("/api/generate-scoring-config", isAuthenticated, async (req: any, res) => {
+    try {
+      const { questions } = req.body;
+      if (!questions || !Array.isArray(questions)) {
+        return res.status(400).json({ error: "Questions array required" });
+      }
+
+      const config = await generateScoringConfig(questions);
+      res.json({ config });
+    } catch (error: any) {
+      console.error("Generate scoring config error:", error);
+      res.status(500).json({ error: "Failed to generate scoring configuration" });
+    }
+  });
+
   // Submit survey response (public - no authentication required)
   app.post("/api/surveys/:id/responses", async (req, res) => {
     try {
