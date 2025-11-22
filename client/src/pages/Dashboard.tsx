@@ -201,9 +201,9 @@ export default function Dashboard() {
             size="lg" 
             onClick={() => setLocation("/builder")} 
             data-testid="button-new-survey"
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto bg-lime-400 hover:bg-lime-500 text-slate-900 border-0 font-semibold shadow-md hover:shadow-lg"
           >
-            <Plus className="w-5 h-5 mr-2" />
+            <Plus className="w-5 h-5" />
             New Survey
           </Button>
         </div>

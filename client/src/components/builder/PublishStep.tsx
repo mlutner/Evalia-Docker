@@ -341,9 +341,9 @@ export default function PublishStep({
           Add details and optional scoring configuration
         </p>
       </div>
-      <div className="space-y-6 bg-card border rounded-lg p-6">
-        <div>
-          <label className="text-sm font-medium mb-2 block">
+      <div className="form-field-group bg-card border rounded-lg p-8">
+        <div className="form-field-item">
+          <label className="text-sm heading-secondary mb-3 block">
             Survey Title <span className="text-destructive">*</span>
           </label>
           <Input
