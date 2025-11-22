@@ -364,7 +364,7 @@ export default function Builder() {
                 </div>
 
                 <TabsContent value="templates" className="space-y-10 pt-8">
-                  <div className="bg-gradient-to-br from-blue-500/15 via-blue-500/8 to-background rounded-xl p-6 md:p-8 border-2 border-blue-400/40" style={{borderLeft: '4px solid rgb(59, 130, 246)'}}>
+                  <div className="bg-gradient-to-br from-lime-400/20 via-lime-400/10 to-background rounded-xl p-6 md:p-8 border-2 border-lime-400/50" style={{borderLeft: '4px solid rgb(163, 230, 53)'}}>
                     <h3 className="text-lg font-semibold mb-3">Professional Training Templates</h3>
                     <p className="text-muted-foreground leading-relaxed">
                       Start with proven survey frameworks designed for trainers. Browse templates below, preview them to see all questions, and click "Use Template" to get started. Once selected, you can customize the title and edit any questions in Step 2.
