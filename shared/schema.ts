@@ -63,6 +63,7 @@ export const surveys = pgTable("surveys", {
   illustrationUrl: text("illustration_url"),
   isAnonymous: boolean("is_anonymous").default(false),
   webhookUrl: text("webhook_url"),
+  status: varchar("status").default("Active"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
