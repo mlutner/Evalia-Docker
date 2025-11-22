@@ -88,9 +88,9 @@ export default function SurveyPreviewDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] p-0 gap-0 bg-white" data-testid="dialog-survey-preview">
-        <div className="overflow-y-auto p-0" style={{ backgroundColor: '#f6f7f9' }}>
-          <div style={{ padding: '40px 16px' }} className="flex items-center justify-center min-h-[90vh]">
+      <DialogContent className="max-w-2xl max-h-[85vh] p-0 gap-0 bg-white flex flex-col cursor-grab active:cursor-grabbing" data-testid="dialog-survey-preview">
+        <div className="overflow-y-auto p-0 flex-1 flex items-center justify-center" style={{ backgroundColor: '#f6f7f9', minHeight: 0 }}>
+          <div style={{ padding: '20px 16px' }} className="flex items-center justify-center w-full">
             <div className="survey-card" style={{ maxWidth: '520px' }}>
               {isWelcome ? (
                 <SurveyWelcomeTemplate
