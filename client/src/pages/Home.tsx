@@ -41,7 +41,7 @@ export default function Home() {
               <h1 className="font-bold text-[81px]" style={{color: '#071A32', lineHeight: '1.0'}}>
                 Collect training feedback that actually improves training
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">Evalia gives trainers ready-made templates, 
+              <p className="text-xl text-muted-foreground leading-relaxed max-w-xl mr-8">Evalia gives trainers ready-made templates, 
               AI-powered question creation, and instant reporting – so you can design better sessions and measure what matters.</p>
             </div>
 
