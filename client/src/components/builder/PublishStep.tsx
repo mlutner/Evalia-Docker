@@ -79,6 +79,7 @@ export default function PublishStep({
   const currentTags = tags || [];
   const [illustrations, setIllustrations] = useState<string[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [expandedRanges, setExpandedRanges] = useState<string[]>([]);
 
   const {
     isEnabled,
@@ -230,6 +231,15 @@ export default function PublishStep({
       number: "Number",
     };
     return labels[type] || type;
+  };
+
+  // Toggle score range expansion
+  const toggleExpandRange = (rangeId: string) => {
+    setExpandedRanges(prev =>
+      prev.includes(rangeId) 
+        ? prev.filter(id => id !== rangeId)
+        : [...prev, rangeId]
+    );
   };
 
   // Auto-populate estimated time based on question count
@@ -605,11 +615,11 @@ export default function PublishStep({
                                 </button>
 
                                 {isExpanded && (
-                                  <div className="border-t bg-muted/10 p-4 space-y-4">
-                                    {/* Score Ranges Section */}
+                                  <div className="border-t bg-muted/10 p-4 space-y-3">
+                                    {/* Score Ranges with Nested Questions */}
                                     <div className="space-y-2">
-                                      <div className="flex items-center justify-between">
-                                        <h5 className="text-xs font-semibold">Score Ranges & Interpretations</h5>
+                                      <div className="flex items-center justify-between mb-2">
+                                        <h5 className="text-xs font-semibold">Score Ranges & Assigned Questions</h5>
                                         <Button
                                           variant="ghost"
                                           size="sm"
@@ -621,55 +631,122 @@ export default function PublishStep({
                                           Add Range
                                         </Button>
                                       </div>
+                                      
                                       {ranges.length > 0 ? (
                                         <div className="space-y-2">
-                                          {ranges.map((range, idx) => {
+                                          {ranges.map((range) => {
                                             const actualIdx = scoreRanges.indexOf(range);
+                                            const rangeId = `${cat.id}-${actualIdx}`;
+                                            const isRangeExpanded = expandedRanges.includes(rangeId);
+                                            // Questions that would map to this range (for visualization)
+                                            const questionsInThisRange = assignedQuestions;
+                                            
                                             return (
-                                              <div key={actualIdx} className="bg-background rounded border p-2.5 space-y-2">
-                                                <div className="grid grid-cols-4 gap-2">
-                                                  <Input
-                                                    placeholder="Label (e.g., Low)"
-                                                    value={range.label}
-                                                    onChange={(e) => handleUpdateScoreRange(actualIdx, 'label', e.target.value)}
-                                                    className="text-xs col-span-2"
-                                                    data-testid={`input-range-label-${actualIdx}`}
-                                                  />
-                                                  <Input
-                                                    placeholder="Min"
-                                                    type="number"
-                                                    value={range.minScore}
-                                                    onChange={(e) => handleUpdateScoreRange(actualIdx, 'minScore', parseInt(e.target.value) || 0)}
-                                                    className="text-xs"
-                                                    data-testid={`input-range-min-${actualIdx}`}
-                                                  />
-                                                  <Input
-                                                    placeholder="Max"
-                                                    type="number"
-                                                    value={range.maxScore}
-                                                    onChange={(e) => handleUpdateScoreRange(actualIdx, 'maxScore', parseInt(e.target.value) || 0)}
-                                                    className="text-xs"
-                                                    data-testid={`input-range-max-${actualIdx}`}
-                                                  />
-                                                </div>
-                                                <Textarea
-                                                  placeholder="What does this score range mean? (shown to respondents)"
-                                                  value={range.interpretation}
-                                                  onChange={(e) => handleUpdateScoreRange(actualIdx, 'interpretation', e.target.value)}
-                                                  className="text-xs resize-none"
-                                                  rows={2}
-                                                  data-testid={`textarea-range-interpretation-${actualIdx}`}
-                                                />
-                                                <Button
-                                                  variant="ghost"
-                                                  size="sm"
-                                                  onClick={() => handleRemoveScoreRange(actualIdx)}
-                                                  className="h-6 text-xs text-destructive w-full"
-                                                  data-testid={`button-remove-range-${actualIdx}`}
+                                              <div key={actualIdx} className="bg-background rounded border overflow-hidden">
+                                                {/* Range Header - Collapsible */}
+                                                <button
+                                                  onClick={() => toggleExpandRange(rangeId)}
+                                                  className="w-full flex items-center justify-between p-2.5 hover:bg-muted/40 transition-colors text-left"
+                                                  data-testid={`button-toggle-range-${actualIdx}`}
                                                 >
-                                                  <Trash2 className="w-3 h-3 mr-1" />
-                                                  Remove
-                                                </Button>
+                                                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                                                    <ChevronRight className={`w-4 h-4 text-muted-foreground flex-shrink-0 transition-transform ${isRangeExpanded ? 'rotate-90' : ''}`} />
+                                                    <div className="min-w-0">
+                                                      <div className="flex items-center gap-2 flex-wrap">
+                                                        <span className="font-medium text-sm">{range.label}</span>
+                                                        <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">{range.minScore}-{range.maxScore}</span>
+                                                      </div>
+                                                      <p className="text-xs text-muted-foreground truncate mt-0.5">{range.interpretation || "No interpretation yet"}</p>
+                                                    </div>
+                                                  </div>
+                                                  <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">{questionsInThisRange.length} Q</span>
+                                                </button>
+
+                                                {/* Range Details & Assigned Questions */}
+                                                {isRangeExpanded && (
+                                                  <div className="border-t bg-muted/20 p-3 space-y-3">
+                                                    {/* Interpretation Textarea */}
+                                                    <div className="space-y-1">
+                                                      <label className="text-xs font-medium text-muted-foreground">Interpretation (shown to respondents)</label>
+                                                      <Textarea
+                                                        placeholder="What does this score range mean?"
+                                                        value={range.interpretation}
+                                                        onChange={(e) => handleUpdateScoreRange(actualIdx, 'interpretation', e.target.value)}
+                                                        className="text-xs resize-none"
+                                                        rows={2}
+                                                        data-testid={`textarea-range-interpretation-${actualIdx}`}
+                                                      />
+                                                    </div>
+
+                                                    {/* Score Range Inputs */}
+                                                    <div className="space-y-1">
+                                                      <label className="text-xs font-medium text-muted-foreground">Score Range</label>
+                                                      <div className="grid grid-cols-3 gap-2">
+                                                        <div>
+                                                          <Input
+                                                            placeholder="Label"
+                                                            value={range.label}
+                                                            onChange={(e) => handleUpdateScoreRange(actualIdx, 'label', e.target.value)}
+                                                            className="text-xs"
+                                                            data-testid={`input-range-label-${actualIdx}`}
+                                                          />
+                                                        </div>
+                                                        <div>
+                                                          <Input
+                                                            placeholder="Min"
+                                                            type="number"
+                                                            value={range.minScore}
+                                                            onChange={(e) => handleUpdateScoreRange(actualIdx, 'minScore', parseInt(e.target.value) || 0)}
+                                                            className="text-xs"
+                                                            data-testid={`input-range-min-${actualIdx}`}
+                                                          />
+                                                        </div>
+                                                        <div>
+                                                          <Input
+                                                            placeholder="Max"
+                                                            type="number"
+                                                            value={range.maxScore}
+                                                            onChange={(e) => handleUpdateScoreRange(actualIdx, 'maxScore', parseInt(e.target.value) || 0)}
+                                                            className="text-xs"
+                                                            data-testid={`input-range-max-${actualIdx}`}
+                                                          />
+                                                        </div>
+                                                      </div>
+                                                    </div>
+
+                                                    {/* Assigned Questions under this Range */}
+                                                    <div className="space-y-1">
+                                                      <p className="text-xs font-medium text-muted-foreground">Contributing Questions ({questionsInThisRange.length})</p>
+                                                      {questionsInThisRange.length > 0 ? (
+                                                        <div className="space-y-1 pl-2 border-l-2 border-primary/30">
+                                                          {questionsInThisRange.map((q) => (
+                                                            <div key={q.id} className="flex items-center justify-between p-1.5 bg-background/60 rounded text-xs hover:bg-background transition-colors">
+                                                              <span className="truncate flex-1">{q.question}</span>
+                                                              <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+                                                                <span className="text-primary font-medium">{getMaxPointsForQuestion(q)}pt</span>
+                                                                <span className="text-muted-foreground text-xs">({getQuestionTypeLabel(q.type)})</span>
+                                                              </div>
+                                                            </div>
+                                                          ))}
+                                                        </div>
+                                                      ) : (
+                                                        <p className="text-xs text-muted-foreground italic pl-2">No questions assigned yet</p>
+                                                      )}
+                                                    </div>
+
+                                                    {/* Remove Button */}
+                                                    <Button
+                                                      variant="ghost"
+                                                      size="sm"
+                                                      onClick={() => handleRemoveScoreRange(actualIdx)}
+                                                      className="h-6 text-xs text-destructive w-full"
+                                                      data-testid={`button-remove-range-${actualIdx}`}
+                                                    >
+                                                      <Trash2 className="w-3 h-3 mr-1" />
+                                                      Remove Score Range
+                                                    </Button>
+                                                  </div>
+                                                )}
                                               </div>
                                             );
                                           })}
@@ -679,29 +756,12 @@ export default function PublishStep({
                                       )}
                                     </div>
 
-                                    {/* Question Assignment Section */}
-                                    <div className="space-y-2">
-                                      <h5 className="text-xs font-semibold">Assigned Scorable Questions</h5>
-                                      {assignedQuestions.length > 0 ? (
-                                        <div className="space-y-1">
-                                          {assignedQuestions.map((q) => (
-                                            <div key={q.id} className="flex items-center justify-between p-2 bg-background rounded border text-xs group hover:bg-muted/50 transition-colors">
-                                              <span className="truncate flex-1">{q.question}</span>
-                                              <div className="flex items-center gap-1 flex-shrink-0">
-                                                <span className="text-primary font-medium">{getMaxPointsForQuestion(q)}pt</span>
-                                                <span className="text-muted-foreground text-xs">({getQuestionTypeLabel(q.type)})</span>
-                                              </div>
-                                            </div>
-                                          ))}
-                                        </div>
-                                      ) : (
-                                        <p className="text-xs text-muted-foreground italic py-2">Drag scorable questions here</p>
-                                      )}
-
-                                      {unassignedScorableQuestions.length > 0 && (
+                                    {/* Unassigned Questions Drop Zone */}
+                                    {unassignedScorableQuestions.length > 0 && (
+                                      <div className="pt-2">
                                         <CategoryDropZone category={cat} assignedQuestions={assignedQuestions} />
-                                      )}
-                                    </div>
+                                      </div>
+                                    )}
                                   </div>
                                 )}
                               </div>
