@@ -1006,10 +1006,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const settings = await storage.getAdminAISettings();
-      const apiKey = settings.apiKeys.quick_suggestions?.key;
-      const model = settings.models.quick_suggestions;
-      const baseUrl = settings.baseUrls.quick_suggestions;
-      const parameters = settings.parameters.quick_suggestions;
+      const apiKey = settings.apiKeys.survey_generation?.key;
+      const model = settings.models.survey_generation;
+      const baseUrl = settings.baseUrls.survey_generation;
+      const parameters = settings.parameters.survey_generation;
 
       if (!apiKey) {
         return res.status(500).json({ error: "AI enhancement not configured by admin" });
