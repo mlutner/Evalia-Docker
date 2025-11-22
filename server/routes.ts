@@ -996,6 +996,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Test all AI APIs (admin only)
+  app.post("/api/admin/test-ai", isAuthenticated, isMasterAdmin, async (req: any, res) => {
+    try {
+      const settings = await storage.getAdminAISettings();
+      const testResults: Record<string, any> = {};
+      
+      const functions = [
+        "survey_generation",
+        "survey_refinement",
+        "document_parsing",
+        "response_scoring",
+        "quick_suggestions",
+        "response_analysis",
+      ];
+
+      for (const func of functions) {
+        const apiKey = settings.apiKeys[func]?.key;
+        const model = settings.models[func];
+        const baseUrl = settings.baseUrls[func];
+        
+        if (!apiKey) {
+          testResults[func] = { status: "MISSING_KEY", error: "API key not configured" };
+          continue;
+        }
+
+        try {
+          // Make a simple test call to each API
+          const response = await fetch(`${baseUrl}/chat/completions`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({
+              model,
+              messages: [{ role: "user", content: "Say 'ok'" }],
+              max_tokens: 10,
+            }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            testResults[func] = {
+              status: "SUCCESS",
+              model,
+              baseUrl,
+              response: data.choices?.[0]?.message?.content,
+            };
+          } else {
+            const errorText = await response.text();
+            testResults[func] = {
+              status: "FAILED",
+              statusCode: response.status,
+              model,
+              baseUrl,
+              error: errorText.substring(0, 200),
+            };
+          }
+        } catch (error: any) {
+          testResults[func] = {
+            status: "ERROR",
+            model,
+            baseUrl,
+            error: error.message,
+          };
+        }
+      }
+
+      res.json({
+        success: true,
+        timestamp: new Date().toISOString(),
+        results: testResults,
+      });
+    } catch (error: any) {
+      console.error("Test AI error:", error);
+      res.status(500).json({ error: "Failed to test AI APIs" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
