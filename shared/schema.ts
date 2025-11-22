@@ -159,40 +159,99 @@ export function calculateSurveyScores(
   if (preCalculatedScores) {
     scores = { ...scores, ...preCalculatedScores };
   } else {
-    // Calculate scores based on answers
+    // First pass: calculate raw scores and count questions per category
+    const rawScores: Record<string, number> = {};
+    const questionCounts: Record<string, number> = {};
+
+    scoreConfig.categories.forEach(cat => {
+      rawScores[cat.id] = 0;
+      questionCounts[cat.id] = 0;
+    });
+
+    // Calculate raw point values
     questions.forEach(q => {
       if (q.scoringCategory && answers[q.id]) {
         const answer = answers[q.id];
         let pointValue = 0;
+        let maxPossiblePoints = 0;
 
-        if (q.type === "rating" || q.type === "nps" || q.type === "number") {
-          // For numeric questions, parse the value directly
+        if (q.type === "rating") {
+          // Rating questions: use the selected rating value (typically 1-5)
           const value = parseInt(Array.isArray(answer) ? answer[0] : answer, 10);
           if (!isNaN(value)) {
             pointValue = value;
+            maxPossiblePoints = q.ratingScale || 5;
+          }
+        } else if (q.type === "nps") {
+          // NPS: use the value directly (0-10)
+          const value = parseInt(Array.isArray(answer) ? answer[0] : answer, 10);
+          if (!isNaN(value)) {
+            pointValue = value;
+            maxPossiblePoints = 10;
+          }
+        } else if (q.type === "number") {
+          // Number: use value directly
+          const value = parseInt(Array.isArray(answer) ? answer[0] : answer, 10);
+          if (!isNaN(value)) {
+            pointValue = value;
+            maxPossiblePoints = value; // Will be scaled
           }
         } else if (q.type === "multiple_choice") {
-          // For multiple choice, count selected options (1 point per option if counting, or use option index + 1)
+          // Multiple choice: map option selection to a 1-5 scale based on number of options
           const selectedOption = Array.isArray(answer) ? answer[0] : answer;
           if (selectedOption && q.options) {
             const optionIndex = q.options.indexOf(selectedOption);
             if (optionIndex >= 0) {
-              // Map option position to score: first option = 1, second = 2, etc.
-              pointValue = optionIndex + 1;
+              const numOptions = q.options.length;
+              // Scale: 4-5 options → 1-5 points, 3 options → 1-3, etc.
+              maxPossiblePoints = Math.min(numOptions, 5);
+              // Map option index to points: spread evenly across the scale
+              pointValue = Math.ceil((optionIndex + 1) / numOptions * maxPossiblePoints);
             }
           }
         } else if (q.type === "checkbox") {
-          // For checkboxes, count number of selected options
-          pointValue = Array.isArray(answer) ? answer.length : 1;
+          // Checkboxes: 1 point per selection up to 5
+          pointValue = Math.min(Array.isArray(answer) ? answer.length : 1, 5);
+          maxPossiblePoints = 5;
         } else if (q.type === "text" || q.type === "textarea") {
-          // For text questions, give 1 point if answered
+          // Text: 1 point if answered, up to 5
           pointValue = answer && (Array.isArray(answer) ? answer[0].length : answer.length) > 0 ? 1 : 0;
+          maxPossiblePoints = 1;
         }
 
         if (pointValue > 0) {
-          scores[q.scoringCategory] = (scores[q.scoringCategory] || 0) + pointValue;
+          rawScores[q.scoringCategory] = (rawScores[q.scoringCategory] || 0) + pointValue;
+        }
+        
+        if (q.scoringCategory) {
+          questionCounts[q.scoringCategory]++;
         }
       }
+    });
+
+    // Second pass: normalize scores to fit within configured max scores
+    scoreConfig.categories.forEach(cat => {
+      const catId = cat.id;
+      const rawScore = rawScores[catId] || 0;
+      const qCount = questionCounts[catId] || 1;
+      
+      // Get the configured max score for this category
+      const maxConfiguredScore = scoreConfig.scoreRanges
+        .filter(rule => rule.category === catId)
+        .reduce((max, rule) => Math.max(max, rule.maxScore), 20);
+
+      // Calculate the theoretical max raw score (5 points per question)
+      const theoreticalMaxRaw = qCount * 5;
+
+      // Normalize: (rawScore / theoreticalMaxRaw) * maxConfiguredScore
+      if (theoreticalMaxRaw > 0) {
+        scores[catId] = Math.round((rawScore / theoreticalMaxRaw) * maxConfiguredScore);
+      } else {
+        scores[catId] = 0;
+      }
+
+      // Ensure score never exceeds max
+      scores[catId] = Math.min(scores[catId], maxConfiguredScore);
     });
   }
 
