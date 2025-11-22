@@ -264,10 +264,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Generate survey text fields with AI (protected)
   app.post("/api/generate-text", isAuthenticated, async (req, res) => {
     try {
-      const { fieldType, surveyTitle, questions } = req.body;
+      const { fieldType, surveyTitle, questions, scoreConfig } = req.body;
 
-      if (!fieldType || !["description", "welcomeMessage", "thankYouMessage"].includes(fieldType)) {
-        return res.status(400).json({ error: "Valid fieldType is required (description, welcomeMessage, or thankYouMessage)" });
+      if (!fieldType || !["description", "welcomeMessage", "thankYouMessage", "resultsSummary"].includes(fieldType)) {
+        return res.status(400).json({ error: "Valid fieldType is required (description, welcomeMessage, thankYouMessage, or resultsSummary)" });
       }
 
       if (!surveyTitle || typeof surveyTitle !== "string") {
@@ -278,7 +278,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Survey questions are required" });
       }
 
-      const text = await generateSurveyText(fieldType, surveyTitle, questions);
+      const text = await generateSurveyText(fieldType, surveyTitle, questions, scoreConfig);
 
       res.json({ text });
     } catch (error: any) {

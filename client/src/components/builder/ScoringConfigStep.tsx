@@ -135,14 +135,14 @@ export default function ScoringConfigStep({
 
     setIsGeneratingResultsSummary(true);
     try {
-      const prompt = `Create a brief, professional results summary message that will be displayed to respondents after they complete an assessment with these scoring categories and ranges:\n\nCategories: ${categories.map(c => c.name).join(", ")}\n\nScore Ranges:\n${scoreRanges.map(r => `${r.label}: ${r.minScore}-${r.maxScore} - ${r.interpretation}`).join("\n")}\n\nWrite a welcoming and insightful message that helps respondents understand what they're about to see in their results.`;
-
       const response = await fetch("/api/generate-text", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          prompt,
           fieldType: "resultsSummary",
+          surveyTitle: "Assessment",
+          questions,
+          scoreConfig: { categories, scoreRanges },
         }),
       });
 

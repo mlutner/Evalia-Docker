@@ -472,12 +472,13 @@ ${JSON.stringify(survey.questions, null, 2)}`;
 }
 
 /**
- * Generate survey text fields (description, welcome message, thank you message)
+ * Generate survey text fields (description, welcome message, thank you message, results summary)
  */
 export async function generateSurveyText(
-  fieldType: "description" | "welcomeMessage" | "thankYouMessage",
+  fieldType: "description" | "welcomeMessage" | "thankYouMessage" | "resultsSummary",
   surveyTitle: string,
-  questions: Question[]
+  questions: Question[],
+  scoreConfig?: any
 ): Promise<string> {
   let systemPrompt = "";
   let userPrompt = "";
@@ -564,6 +565,32 @@ BEST PRACTICES:
 
 OUTPUT FORMAT: Plain text only, no special formatting.`;
       userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nWrite a 50-70 word thank you message for the completion screen. Specific, warm, and impact-focused. Reference the survey topic to make it authentic.`;
+      break;
+
+    case "resultsSummary":
+      systemPrompt = `You are an expert assessment copywriter specializing in professional development feedback.
+
+YOUR TASK: Write a brief, welcoming summary message that appears above assessment results. This sets expectations and explains what respondents are about to see.
+
+TONE: Warm, insightful, and forward-focused. Help respondents understand the value of their personalized results.
+
+REQUIREMENTS:
+- Length: 40-60 words (approximately 2-3 sentences)
+- Start with what they're about to discover
+- Reference the key assessment categories/dimensions
+- Create anticipation for insights without spoiling specifics
+- Encourage reflection and growth mindset
+- Avoid jargon or overly technical language
+
+BEST PRACTICES:
+- Use "you/your" language—make it personal
+- Focus on self-discovery and growth
+- Acknowledge assessment rigor while remaining accessible
+- End with an empowering sentiment
+
+OUTPUT FORMAT: Plain text only, no special formatting.`;
+      const categories = scoreConfig?.categories?.map((c: any) => c.name).join(", ") || "this assessment";
+      userPrompt = `Survey Title: ${surveyTitle}\n\nAssessment Categories: ${categories}\n\nWrite a 40-60 word results summary message. This appears before respondents see their personalized results. Make them feel excited to discover their insights.`;
       break;
   }
 
