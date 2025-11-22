@@ -198,6 +198,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
       </CardHeader>
 
       <CardContent className="flex-1 space-y-4">
+        {/* Stats Section */}
         <div className="flex gap-6 text-sm">
           <div>
             <p className="text-muted-foreground">Questions</p>
@@ -205,12 +206,22 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
           </div>
           <div>
             <p className="text-muted-foreground">Responses</p>
-            <p className="font-semibold text-lg" data-testid="text-response-count">{survey.responseCount ?? 0}</p>
+            <div className="flex items-center gap-2">
+              <p className="font-semibold text-lg" data-testid="text-response-count">{survey.responseCount ?? 0}</p>
+              {survey.respondentCount !== undefined && survey.respondentCount > 0 && (
+                <div className="text-xs text-muted-foreground">
+                  <span>/ {survey.respondentCount}</span>
+                  <span className="block font-medium">{Math.round((survey.responseCount / Math.max(1, survey.respondentCount)) * 100)}%</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-        {survey.respondentCount !== undefined && survey.respondentCount > 0 && (
-          <div className="text-xs text-muted-foreground pt-1">
-            Response rate: <span className="font-medium">{survey.respondentCount > 0 ? Math.round((survey.responseCount / Math.max(1, survey.respondentCount)) * 100) : 0}%</span>
+
+        {/* No Respondents Notice */}
+        {(survey.respondentCount === undefined || survey.respondentCount === 0) && survey.responseCount === 0 && (
+          <div className="text-xs text-muted-foreground italic p-2 bg-muted/30 rounded">
+            Share survey or invite respondents to start collecting responses
           </div>
         )}
         
@@ -226,20 +237,6 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
               </TooltipTrigger>
               <TooltipContent side="bottom" className="max-w-xs text-xs">
                 This survey has scoring enabled
-              </TooltipContent>
-            </Tooltip>
-          )}
-          
-          {survey.responseCount > 0 && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 gap-1 text-xs cursor-help" data-testid={`badge-results-${survey.id}`}>
-                  <FileIcon className="w-3 h-3" />
-                  {survey.responseCount} Results
-                </Badge>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="max-w-xs text-xs">
-                {survey.responseCount} response{survey.responseCount === 1 ? '' : 's'} collected
               </TooltipContent>
             </Tooltip>
           )}
@@ -261,10 +258,24 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
           <Edit3 className="w-4 h-4 mr-2" />
           Edit
         </Button>
-        <Button className="flex-1" onClick={onAnalyze} data-testid={`button-analyze-${index}`}>
-          <BarChart3 className="w-4 h-4 mr-2" />
-          Analyze
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button 
+              className="flex-1" 
+              onClick={onAnalyze} 
+              data-testid={`button-analyze-${index}`}
+              disabled={survey.responseCount === 0}
+            >
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Analyze
+            </Button>
+          </TooltipTrigger>
+          {survey.responseCount === 0 && (
+            <TooltipContent side="bottom" className="max-w-xs text-xs">
+              Collect responses first to analyze survey data
+            </TooltipContent>
+          )}
+        </Tooltip>
       </CardFooter>
 
       {/* Share Dialog */}
