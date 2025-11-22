@@ -254,15 +254,34 @@ export default function SurveyView() {
   // Welcome Screen
   if (currentStep === -1) {
     return (
-      <SurveyLayout>
-        <SurveyWelcome
-          survey={survey}
-          onStart={handleStart}
-          onBack={handleBack}
-          isLoading={false}
-          defaultIllustration={leadershipIllustration}
-        />
-      </SurveyLayout>
+      <>
+        <SurveyLayout>
+          <SurveyWelcome
+            survey={survey}
+            onStart={handleStart}
+            onBack={handleBack}
+            isLoading={false}
+            defaultIllustration={leadershipIllustration}
+          />
+        </SurveyLayout>
+        {/* Exit Warning Dialog */}
+        <AlertDialog open={showExitWarning} onOpenChange={setShowExitWarning}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Exit survey?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to exit? You haven't started the survey yet.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel data-testid="button-cancel-exit">Keep Browsing</AlertDialogCancel>
+              <AlertDialogAction onClick={confirmExit} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" data-testid="button-confirm-exit">
+                Exit Survey
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </>
     );
   }
 
