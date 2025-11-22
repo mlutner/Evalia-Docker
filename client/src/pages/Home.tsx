@@ -28,16 +28,16 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10 flex flex-col">
       <Header />
-      <main className="flex-1 container mx-auto px-4 py-8 flex items-center">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
+      <main className="flex-1 container mx-auto px-6 flex items-center justify-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center w-full max-w-7xl">
           {/* Left Side Content */}
-          <div className="space-y-8">
+          <div className="space-y-10">
             {/* Headline */}
             <div className="space-y-6">
-              <h1 className="md:text-6xl font-bold text-[69px]" style={{color: '#071A32'}}>
+              <h1 className="text-7xl md:text-8xl font-bold leading-tight" style={{color: '#071A32'}}>
                 Collect training feedback that actually improves training
               </h1>
-              <p className="text-lg text-muted-foreground leading-relaxed">
+              <p className="text-xl text-muted-foreground leading-relaxed max-w-lg">
                 Evalia gives trainers ready-made templates, AI-powered question creation, and instant reporting – so you can design better sessions and measure what matters.
               </p>
             </div>
@@ -64,18 +64,18 @@ export default function Home() {
             </div>
 
             {/* Trust Statement */}
-            <p className="text-sm text-muted-foreground">
+            <p className="text-base text-muted-foreground pt-4">
               Trusted by trainers, facilitators, HR teams, and L&D professionals.
             </p>
           </div>
 
           {/* Right Side - Image */}
-          <div className="flex items-center justify-center">
-            <div className="relative w-full max-h-screen">
+          <div className="flex items-center justify-center h-full min-h-96">
+            <div className="relative w-full">
               <img
                 src={surveyImage}
                 alt="Survey illustration"
-                className="w-full h-full object-contain"
+                className="w-full h-auto object-contain"
               />
             </div>
           </div>
