@@ -104,6 +104,7 @@ export default function PublishStep({
     handleSaveScoring,
     autoPopulateCategoriesFromSections,
     isQuestionScorable,
+    validateScoreRanges,
   } = useScoring(scoreConfig);
 
   // Count non-scorable questions

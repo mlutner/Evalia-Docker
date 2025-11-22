@@ -114,6 +114,54 @@ export function useScoring(initialConfig?: SurveyScoreConfig) {
     setScoreRanges([...scoreRanges, newRange]);
   };
 
+  // Validate score ranges for a category
+  const validateScoreRanges = (categoryId?: string): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+    const rangesToCheck = categoryId 
+      ? scoreRanges.filter(r => r.category === categoryId)
+      : scoreRanges;
+
+    rangesToCheck.forEach((range, idx) => {
+      // Check minScore < maxScore
+      if (range.minScore >= range.maxScore) {
+        errors.push(`Range ${idx + 1}: Min score must be less than max score`);
+      }
+
+      // Check for missing label
+      if (!range.label.trim()) {
+        errors.push(`Range ${idx + 1}: Label is required`);
+      }
+
+      // Check for missing interpretation
+      if (!range.interpretation.trim()) {
+        errors.push(`Range ${idx + 1}: Interpretation is required`);
+      }
+    });
+
+    // Check for overlapping ranges within category
+    if (categoryId) {
+      const catRanges = scoreRanges.filter(r => r.category === categoryId);
+      for (let i = 0; i < catRanges.length; i++) {
+        for (let j = i + 1; j < catRanges.length; j++) {
+          const r1 = catRanges[i];
+          const r2 = catRanges[j];
+          // Check if ranges overlap
+          if ((r1.minScore <= r2.maxScore && r1.maxScore >= r2.minScore)) {
+            errors.push(`Ranges overlap: "${r1.label}" and "${r2.label}"`);
+          }
+        }
+      }
+    }
+
+    // Warn about gaps (non-critical, so not added to errors array)
+    // This would be nice-to-have feedback but not a blocker
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+    };
+  };
+
   const handleUpdateScoreRange = (index: number, field: keyof ScoringRule, value: string | number) => {
     const updated = [...scoreRanges];
     updated[index] = { ...updated[index], [field]: value };
@@ -176,6 +224,19 @@ export function useScoring(initialConfig?: SurveyScoreConfig) {
   };
 
   const handleSaveScoring = (onScoreConfigChange?: (config: SurveyScoreConfig) => void) => {
+    // Validate all score ranges before saving
+    if (isEnabled && scoreRanges.length > 0) {
+      const validation = validateScoreRanges();
+      if (!validation.isValid) {
+        toast({
+          title: "Validation errors",
+          description: validation.errors.slice(0, 2).join(", ") + (validation.errors.length > 2 ? "..." : ""),
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     const config: SurveyScoreConfig = {
       enabled: isEnabled,
       categories,
@@ -212,5 +273,6 @@ export function useScoring(initialConfig?: SurveyScoreConfig) {
     handleSaveScoring,
     autoPopulateCategoriesFromSections,
     isQuestionScorable,
+    validateScoreRanges,
   };
 }

@@ -159,6 +159,22 @@ export const surveyResponses = pgTable("survey_responses", {
 export type SurveyResponse = typeof surveyResponses.$inferSelect;
 
 // Helper to calculate scores from responses
+/**
+ * Calculates survey scores based on respondent answers and scoring configuration.
+ * 
+ * SCORING SYSTEM:
+ * - Scorable question types: rating (1-ratingScale), nps (0-10), multiple_choice (1-5), checkbox (1-5 per selection), number (raw value)
+ * - Non-scorable types: text, textarea, email, date, section (excluded to maintain consistency)
+ * 
+ * NORMALIZATION ALGORITHM:
+ * 1. Raw scoring: Each question type contributes points (varies by type)
+ * 2. Theoretical max: Assumes 5 max points per question (adjusted for question type)
+ * 3. Normalize: (rawScore / theoreticalMaxRaw) * configuredMaxScore
+ * 4. Clamp: Final score never exceeds the configured maximum
+ * 
+ * NOTE: This assumes all questions in a category contribute meaningfully. 
+ * Mixing heterogeneous question types may produce unexpected normalized scores.
+ */
 export function calculateSurveyScores(
   questions: Question[],
   answers: Record<string, string | string[]>,
@@ -187,61 +203,52 @@ export function calculateSurveyScores(
       questionCounts[cat.id] = 0;
     });
 
-    // Calculate raw point values
+    // Calculate raw point values - only for scorable question types
     questions.forEach(q => {
       if (q.scoringCategory && answers[q.id]) {
         const answer = answers[q.id];
         let pointValue = 0;
-        let maxPossiblePoints = 0;
 
         if (q.type === "rating") {
-          // Rating questions: use the selected rating value (typically 1-5)
+          // Rating: use the selected value (1 to ratingScale, typically 1-5)
           const value = parseInt(Array.isArray(answer) ? answer[0] : answer, 10);
           if (!isNaN(value)) {
             pointValue = value;
-            maxPossiblePoints = q.ratingScale || 5;
           }
         } else if (q.type === "nps") {
           // NPS: use the value directly (0-10)
           const value = parseInt(Array.isArray(answer) ? answer[0] : answer, 10);
           if (!isNaN(value)) {
             pointValue = value;
-            maxPossiblePoints = 10;
           }
         } else if (q.type === "number") {
           // Number: use value directly
           const value = parseInt(Array.isArray(answer) ? answer[0] : answer, 10);
           if (!isNaN(value)) {
             pointValue = value;
-            maxPossiblePoints = value; // Will be scaled
           }
         } else if (q.type === "multiple_choice") {
-          // Multiple choice: try to extract numeric value first (for Likert scales)
+          // Multiple choice: try to extract numeric value first (for Likert scales like "5 - Strongly Agree")
           const answerText = Array.isArray(answer) ? answer[0] : answer;
           
           // Try to extract leading number (e.g., "5 (Strongly Agree)" → 5)
           const numMatch = answerText.match(/^(\d+)/);
           if (numMatch) {
             pointValue = parseInt(numMatch[1], 10);
-            maxPossiblePoints = 5; // Standard Likert scale
           } else if (q.options) {
-            // Fallback: map option index to points
+            // Fallback: map option index to points (0-indexed to 1-5 scale)
             const optionIndex = q.options.indexOf(answerText);
             if (optionIndex >= 0) {
               const numOptions = q.options.length;
-              maxPossiblePoints = Math.min(numOptions, 5);
-              pointValue = Math.ceil((optionIndex + 1) / numOptions * maxPossiblePoints);
+              const maxPoints = Math.min(numOptions, 5);
+              pointValue = Math.ceil((optionIndex + 1) / numOptions * maxPoints);
             }
           }
         } else if (q.type === "checkbox") {
-          // Checkboxes: 1 point per selection up to 5
+          // Checkboxes: 1 point per selection, capped at 5
           pointValue = Math.min(Array.isArray(answer) ? answer.length : 1, 5);
-          maxPossiblePoints = 5;
-        } else if (q.type === "text" || q.type === "textarea") {
-          // Text: 1 point if answered, up to 5
-          pointValue = answer && (Array.isArray(answer) ? answer[0].length : answer.length) > 0 ? 1 : 0;
-          maxPossiblePoints = 1;
         }
+        // NOTE: text, textarea, email, date, section types are intentionally NOT scored
 
         if (pointValue > 0) {
           rawScores[q.scoringCategory] = (rawScores[q.scoringCategory] || 0) + pointValue;
@@ -264,17 +271,19 @@ export function calculateSurveyScores(
         .filter(rule => rule.category === catId)
         .reduce((max, rule) => Math.max(max, rule.maxScore), 20);
 
-      // Calculate the theoretical max raw score (5 points per question)
+      // Calculate the theoretical max raw score (assumes ~5 points per question on average)
+      // ASSUMPTION: This works best when questions in a category are homogeneous (same type)
       const theoreticalMaxRaw = qCount * 5;
 
       // Normalize: (rawScore / theoreticalMaxRaw) * maxConfiguredScore
+      // This scales the raw score proportionally to the configured max
       if (theoreticalMaxRaw > 0) {
         scores[catId] = Math.round((rawScore / theoreticalMaxRaw) * maxConfiguredScore);
       } else {
         scores[catId] = 0;
       }
 
-      // Ensure score never exceeds max
+      // Ensure score never exceeds max (safety clamp)
       scores[catId] = Math.min(scores[catId], maxConfiguredScore);
     });
   }
