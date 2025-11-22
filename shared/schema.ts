@@ -159,16 +159,38 @@ export function calculateSurveyScores(
   if (preCalculatedScores) {
     scores = { ...scores, ...preCalculatedScores };
   } else {
-    // Calculate scores based on answers (local calculation for rating questions)
+    // Calculate scores based on answers
     questions.forEach(q => {
       if (q.scoringCategory && answers[q.id]) {
         const answer = answers[q.id];
-        // For rating questions, the answer is typically the number as a string
+        let pointValue = 0;
+
         if (q.type === "rating" || q.type === "nps" || q.type === "number") {
+          // For numeric questions, parse the value directly
           const value = parseInt(Array.isArray(answer) ? answer[0] : answer, 10);
           if (!isNaN(value)) {
-            scores[q.scoringCategory] = (scores[q.scoringCategory] || 0) + value;
+            pointValue = value;
           }
+        } else if (q.type === "multiple_choice") {
+          // For multiple choice, count selected options (1 point per option if counting, or use option index + 1)
+          const selectedOption = Array.isArray(answer) ? answer[0] : answer;
+          if (selectedOption && q.options) {
+            const optionIndex = q.options.indexOf(selectedOption);
+            if (optionIndex >= 0) {
+              // Map option position to score: first option = 1, second = 2, etc.
+              pointValue = optionIndex + 1;
+            }
+          }
+        } else if (q.type === "checkbox") {
+          // For checkboxes, count number of selected options
+          pointValue = Array.isArray(answer) ? answer.length : 1;
+        } else if (q.type === "text" || q.type === "textarea") {
+          // For text questions, give 1 point if answered
+          pointValue = answer && (Array.isArray(answer) ? answer[0].length : answer.length) > 0 ? 1 : 0;
+        }
+
+        if (pointValue > 0) {
+          scores[q.scoringCategory] = (scores[q.scoringCategory] || 0) + pointValue;
         }
       }
     });
