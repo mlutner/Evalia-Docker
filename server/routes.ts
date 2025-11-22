@@ -1005,6 +1005,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Prompt cannot be empty" });
       }
 
+      const settings = await storage.getAdminAISettings();
+      const apiKey = settings.apiKeys.quick_suggestions?.key;
+      const model = settings.models.quick_suggestions;
+      const baseUrl = settings.baseUrls.quick_suggestions;
+      const parameters = settings.parameters.quick_suggestions;
+
+      if (!apiKey) {
+        return res.status(500).json({ error: "AI enhancement not configured by admin" });
+      }
+
       const systemPrompt = `You are an expert survey design assistant. Your task is to enhance and improve a survey creation prompt to make it more detailed and effective.
 
 INSTRUCTIONS:
@@ -1021,8 +1031,36 @@ GUIDELINES FOR ENHANCEMENT:
 - Suggest question types that fit the survey topic
 - Add any missing context that would help generate better questions`;
 
-      const enhancedPrompt = await generateSurveyText(systemPrompt, prompt, "quick_suggestions");
-      
+      const response = await fetch(`${baseUrl}/chat/completions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: prompt },
+          ],
+          temperature: parameters?.temperature || 0.8,
+          max_tokens: parameters?.max_tokens || 1024,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("AI API error:", errorText);
+        return res.status(500).json({ error: "Failed to enhance prompt with AI" });
+      }
+
+      const data = await response.json();
+      const enhancedPrompt = data.choices?.[0]?.message?.content;
+
+      if (!enhancedPrompt) {
+        return res.status(500).json({ error: "No response from AI" });
+      }
+
       res.json({
         success: true,
         enhancedPrompt: enhancedPrompt.trim(),
