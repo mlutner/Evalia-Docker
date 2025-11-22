@@ -60,7 +60,8 @@ export default function Step1Start({
 
   const enhancePromptMutation = useMutation({
     mutationFn: async (currentPrompt: string) => {
-      return apiRequest("POST", "/api/enhance-prompt", { prompt: currentPrompt });
+      const res = await apiRequest("POST", "/api/enhance-prompt", { prompt: currentPrompt });
+      return res.json();
     },
     onSuccess: (data: any) => {
       if (data?.enhancedPrompt) {
