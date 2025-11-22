@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
+import { useScoring } from "@/hooks/useScoring";
 import type { Question, SurveyScoreConfig } from "@shared/schema";
 
 interface PublishStepProps {
@@ -62,12 +63,21 @@ export default function PublishStep({
   const currentTags = tags || [];
   const [illustrations, setIllustrations] = useState<string[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [isEnabled, setIsEnabled] = useState(scoreConfig?.enabled || false);
-  const [categories, setCategories] = useState(scoreConfig?.categories || []);
-  const [scoreRanges, setScoreRanges] = useState(scoreConfig?.scoreRanges || []);
-  const [resultsSummary, setResultsSummary] = useState(scoreConfig?.resultsSummary || "");
-  const [newCategoryName, setNewCategoryName] = useState("");
-  const [isAutoGenerating, setIsAutoGenerating] = useState(false);
+  const {
+    isEnabled,
+    setIsEnabled,
+    categories,
+    scoreRanges,
+    resultsSummary,
+    setResultsSummary,
+    newCategoryName,
+    setNewCategoryName,
+    isAutoGenerating,
+    handleAddCategory,
+    handleRemoveCategory,
+    handleAutoGenerateScoring,
+    handleSaveScoring,
+  } = useScoring(scoreConfig);
 
   useEffect(() => {
     const fetchIllustrations = async () => {
@@ -109,73 +119,6 @@ export default function PublishStep({
     }
   };
 
-  const handleAddCategory = () => {
-    if (newCategoryName.trim()) {
-      const newCategory = {
-        id: `cat-${Date.now()}`,
-        name: newCategoryName.trim(),
-      };
-      setCategories([...categories, newCategory]);
-      setNewCategoryName("");
-    }
-  };
-
-  const handleRemoveCategory = (catId: string) => {
-    setCategories(categories.filter((c) => c.id !== catId));
-    setScoreRanges(scoreRanges.filter((r) => r.category !== catId));
-  };
-
-  const handleAutoGenerateScoring = async () => {
-    if (questions.length === 0) {
-      toast({
-        title: "No questions",
-        description: "Add questions first before generating scoring configuration",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsAutoGenerating(true);
-    try {
-      const response = await fetch("/api/generate-scoring-config", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ questions }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to generate scoring config");
-      }
-
-      const { config } = await response.json();
-      setIsEnabled(true);
-      setCategories(config.categories || []);
-      setScoreRanges(config.scoreRanges || []);
-      
-      toast({
-        title: "Scoring configured",
-        description: "AI has automatically set up scoring categories and ranges based on your questions.",
-      });
-    } catch (error) {
-      toast({
-        title: "Auto-generation failed",
-        description: "Could not automatically generate scoring. You can configure it manually.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsAutoGenerating(false);
-    }
-  };
-
-  const handleSaveScoring = () => {
-    const config: SurveyScoreConfig = {
-      enabled: isEnabled,
-      categories,
-      scoreRanges,
-      resultsSummary: resultsSummary || undefined,
-    };
-    onScoreConfigChange?.(config);
-  };
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -413,7 +356,7 @@ export default function PublishStep({
                     <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
                       <p className="text-xs font-medium text-primary mb-2">Quick Setup</p>
                       <Button
-                        onClick={handleAutoGenerateScoring}
+                        onClick={() => handleAutoGenerateScoring(questions)}
                         disabled={isAutoGenerating || questions.length === 0}
                         className="w-full"
                         variant="outline"
@@ -475,7 +418,7 @@ export default function PublishStep({
 
                     {/* Save Button */}
                     <Button
-                      onClick={handleSaveScoring}
+                      onClick={() => handleSaveScoring(onScoreConfigChange)}
                       className="w-full"
                       size="sm"
                       data-testid="button-save-scoring"
