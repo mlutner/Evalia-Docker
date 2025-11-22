@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, Users, FileText, Calendar, Download, Loader2, Trash2, AlertTriangle } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ArrowLeft, Users, FileText, Calendar, Download, Loader2, Trash2, AlertTriangle, TrendingUp, ChevronDown, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import type { Survey, SurveyResponse } from "@shared/schema";
 
 interface AnalyticsData {
@@ -33,51 +34,7 @@ export default function AnalyticsPage() {
     }
   });
 
-  const bulkDeleteMutation = useMutation({
-    mutationFn: async (ids: string[]) => {
-      return apiRequest("POST", `/api/surveys/${id}/responses/bulk-delete`, { ids });
-    },
-    onSuccess: () => {
-      setSelectedIds(new Set());
-      queryClient.invalidateQueries({ queryKey: ["/api/surveys", id, "responses"] });
-      toast({ title: "Responses deleted successfully" });
-    },
-  });
-
-  const handleExport = async (format: "csv" | "json") => {
-    try {
-      const response = await fetch(`/api/surveys/${id}/responses/export?format=${format}`);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `responses_${id}.${format === "csv" ? "csv" : "json"}`;
-      a.click();
-      toast({ title: `Exported as ${format.toUpperCase()}` });
-    } catch (e) {
-      toast({ title: "Export failed", variant: "destructive" });
-    }
-  };
-
-  const toggleSelect = (responseId: string) => {
-    const newSelected = new Set(selectedIds);
-    if (newSelected.has(responseId)) {
-      newSelected.delete(responseId);
-    } else {
-      newSelected.add(responseId);
-    }
-    setSelectedIds(newSelected);
-  };
-
-  const toggleSelectAll = () => {
-    if (selectedIds.size === data?.responses.length) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(data?.responses.map(r => r.id) || []));
-    }
-  };
-
-  // Calculate statistics for a question
+  // Calculate statistics for a question (defined early so useMemo can use it)
   const getQuestionStats = (questionId: string) => {
     if (!data?.responses) return null;
 
@@ -138,6 +95,77 @@ export default function AnalyticsPage() {
       total: answers.length,
       answers: answers as string[],
     };
+  };
+
+  // Calculate key insights
+  const keyInsights = useMemo(() => {
+    if (!data || data.responses.length === 0) return null;
+
+    const insights: Array<{ question: string; insight: string; icon: string }> = [];
+    
+    data.survey.questions.forEach(question => {
+      const stats = getQuestionStats(question.id);
+      if (!stats) return;
+
+      if (stats.type === "multiple_choice" || stats.type === "checkbox") {
+        const entries = Object.entries(stats.distribution || {});
+        if (entries.length > 0) {
+          const [topAnswer, topCount] = entries.reduce((a, b) => (b[1] > a[1] ? b : a));
+          const percentage = ((topCount / stats.total) * 100).toFixed(0);
+          insights.push({
+            question: question.question,
+            insight: `${topAnswer} (${percentage}%)`,
+            icon: "⭐"
+          });
+        }
+      }
+    });
+
+    return insights.length > 0 ? insights.slice(0, 3) : null;
+  }, [data, getQuestionStats]);
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      return apiRequest("POST", `/api/surveys/${id}/responses/bulk-delete`, { ids });
+    },
+    onSuccess: () => {
+      setSelectedIds(new Set());
+      queryClient.invalidateQueries({ queryKey: ["/api/surveys", id, "responses"] });
+      toast({ title: "Responses deleted successfully" });
+    },
+  });
+
+  const handleExport = async (format: "csv" | "json") => {
+    try {
+      const response = await fetch(`/api/surveys/${id}/responses/export?format=${format}`);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `responses_${id}.${format === "csv" ? "csv" : "json"}`;
+      a.click();
+      toast({ title: `Exported as ${format.toUpperCase()}` });
+    } catch (e) {
+      toast({ title: "Export failed", variant: "destructive" });
+    }
+  };
+
+  const toggleSelect = (responseId: string) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(responseId)) {
+      newSelected.delete(responseId);
+    } else {
+      newSelected.add(responseId);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === data?.responses.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(data?.responses.map(r => r.id) || []));
+    }
   };
 
   if (isLoading) {
@@ -246,7 +274,7 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Responses</CardTitle>
@@ -254,6 +282,17 @@ export default function AnalyticsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold" data-testid="text-response-count">{count}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
+              <TrendingUp className="w-4 h-4 text-green-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-green-600">{survey.questions.length > 0 ? Math.round((count / survey.questions.length) * 100) : 0}%</div>
+              <p className="text-xs text-muted-foreground mt-1">{count} of {survey.questions.length} questions</p>
             </CardContent>
           </Card>
 
@@ -273,12 +312,33 @@ export default function AnalyticsPage() {
               <Calendar className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-xl font-semibold">
-                {new Date(survey.createdAt).toLocaleDateString()}
+              <div className="text-lg font-semibold">
+                {new Date(survey.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
               </div>
             </CardContent>
           </Card>
         </div>
+
+        {keyInsights && keyInsights.length > 0 && (
+          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-blue-200 dark:border-blue-800 mb-8">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Zap className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <CardTitle className="text-base">Key Insights</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {keyInsights.map((insight, idx) => (
+                  <div key={idx} className="p-3 bg-white/80 dark:bg-slate-900/80 rounded-lg border border-blue-100 dark:border-blue-800/50">
+                    <p className="text-xs text-muted-foreground font-medium mb-1 truncate">{insight.question}</p>
+                    <p className="font-semibold text-sm text-blue-700 dark:text-blue-300">{insight.insight}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {count === 0 ? (
           <Card>
@@ -364,72 +424,92 @@ export default function AnalyticsPage() {
                 </div>
               </CardContent>
             </Card>
-            <h2 className="text-2xl font-semibold">Question Breakdown</h2>
-            {survey.questions.map((question, index) => {
-              const stats = getQuestionStats(question.id);
-              if (!stats) return null;
+            <h2 className="text-2xl font-semibold mb-4">Question Breakdown</h2>
+            <div className="space-y-3">
+              {survey.questions.map((question, index) => {
+                const stats = getQuestionStats(question.id);
+                if (!stats) return null;
 
-              return (
-                <Card key={question.id} data-testid={`question-analytics-${question.id}`}>
-                  <CardHeader>
-                    <CardTitle>
-                      Q{index + 1}: {question.question}
-                    </CardTitle>
-                    {question.description && (
-                      <CardDescription>{question.description}</CardDescription>
-                    )}
-                    <div className="text-sm text-muted-foreground">
-                      {stats.total} {stats.total === 1 ? "response" : "responses"}
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    {(stats.type === "multiple_choice" || stats.type === "checkbox") && stats.distribution ? (
-                      <div className="space-y-3">
-                        {Object.entries(stats.distribution).map(([option, count]) => {
-                          const percentage = stats.total > 0 ? (count / stats.total) * 100 : 0;
-                          return (
-                            <div key={option} className="space-y-1">
-                              <div className="flex justify-between text-sm">
-                                <span>{option}</span>
-                                <span className="text-muted-foreground">
-                                  {count} ({percentage.toFixed(1)}%)
-                                </span>
+                const responseRate = data?.responses.length ? Math.round((stats.total / data.responses.length) * 100) : 0;
+
+                return (
+                  <Collapsible key={question.id} defaultOpen={index < 2}>
+                    <Card className="hover-elevate" data-testid={`question-analytics-${question.id}`}>
+                      <CollapsibleTrigger asChild>
+                        <button className="w-full text-left">
+                          <CardHeader className="pb-3">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1 min-w-0">
+                                <CardTitle className="text-base">
+                                  Q{index + 1}: {question.question}
+                                </CardTitle>
+                                {question.description && (
+                                  <CardDescription className="mt-1">{question.description}</CardDescription>
+                                )}
                               </div>
-                              <div className="h-2 bg-muted rounded-full overflow-hidden">
-                                <div
-                                  className="h-full bg-primary transition-all"
-                                  style={{ width: `${percentage}%` }}
-                                />
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                <div className="text-right">
+                                  <p className="text-sm font-semibold">{stats.total}</p>
+                                  <p className="text-xs text-muted-foreground">{responseRate}% answered</p>
+                                </div>
+                                <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
                               </div>
                             </div>
-                          );
-                        })}
-                      </div>
-                    ) : stats.answers && stats.answers.length > 0 ? (
-                      <div className="space-y-2">
-                        {stats.answers.slice(0, 10).map((answer, i) => (
-                          <div
-                            key={i}
-                            className="p-3 bg-muted rounded-md text-sm"
-                            data-testid={`answer-${question.id}-${i}`}
-                          >
-                            {answer}
-                          </div>
-                        ))}
-                        {stats.answers.length > 10 && (
-                          <p className="text-sm text-muted-foreground text-center pt-2">
-                            + {stats.answers.length - 10} more responses
-                          </p>
-                        )}
-                      </div>
-                    ) : (
-                      <p className="text-muted-foreground text-sm">No responses for this question</p>
-                    )}
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+                          </CardHeader>
+                        </button>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <CardContent className="pt-0">
+                          {(stats.type === "multiple_choice" || stats.type === "checkbox") && stats.distribution ? (
+                            <div className="space-y-3">
+                              {Object.entries(stats.distribution).map(([option, count], idx) => {
+                                const percentage = stats.total > 0 ? (count / stats.total) * 100 : 0;
+                                const isTop = idx === 0;
+                                return (
+                                  <div key={option} className="space-y-1">
+                                    <div className="flex justify-between text-sm items-center">
+                                      <span className={isTop ? "font-semibold" : ""}>{option}</span>
+                                      <span className="text-muted-foreground text-xs">
+                                        {count} ({percentage.toFixed(1)}%)
+                                      </span>
+                                    </div>
+                                    <div className="h-2.5 bg-muted rounded-full overflow-hidden">
+                                      <div
+                                        className={`h-full transition-all ${isTop ? "bg-blue-500 dark:bg-blue-400" : "bg-primary"}`}
+                                        style={{ width: `${percentage}%` }}
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : stats.answers && stats.answers.length > 0 ? (
+                            <div className="space-y-2">
+                              {stats.answers.slice(0, 8).map((answer, i) => (
+                                <div
+                                  key={i}
+                                  className="p-3 bg-muted rounded-md text-sm hover:bg-muted/80 transition-colors"
+                                  data-testid={`answer-${question.id}-${i}`}
+                                >
+                                  {answer}
+                                </div>
+                              ))}
+                              {stats.answers.length > 8 && (
+                                <p className="text-sm text-muted-foreground text-center pt-2 cursor-pointer hover:text-foreground transition-colors">
+                                  + {stats.answers.length - 8} more responses
+                                </p>
+                              )}
+                            </div>
+                          ) : (
+                            <p className="text-muted-foreground text-sm text-center py-4">No responses for this question</p>
+                          )}
+                        </CardContent>
+                      </CollapsibleContent>
+                    </Card>
+                  </Collapsible>
+                );
+              })}
+            </div>
         )}
       </main>
     </div>
