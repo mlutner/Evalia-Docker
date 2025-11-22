@@ -100,9 +100,6 @@ export const surveys = pgTable("surveys", {
   status: varchar("status").default("Active"),
   publishedAt: timestamp("published_at"),
   scoreConfig: jsonb("score_config").$type<SurveyScoreConfig>(), // Scoring configuration for assessment surveys
-  estimatedMinutes: integer("estimated_minutes"), // Estimated time to complete survey in minutes
-  privacyStatement: text("privacy_statement"), // Privacy/confidentiality statement for survey
-  dataUsageStatement: text("data_usage_statement"), // Statement about how data will be used
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

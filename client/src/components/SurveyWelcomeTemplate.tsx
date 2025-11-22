@@ -1,5 +1,4 @@
 import logoImage from "@assets/Untitled design (3)_1763764996441.png";
-import { Clock, BookOpen, Shield, TrendingUp } from "lucide-react";
 
 interface SurveyWelcomeTemplateProps {
   title: string;
@@ -7,10 +6,6 @@ interface SurveyWelcomeTemplateProps {
   illustration?: string;
   welcomeMessage?: string | null;
   onStart: () => void;
-  estimatedMinutes?: number;
-  questionCount?: number;
-  privacyStatement?: string;
-  dataUsageStatement?: string;
 }
 
 export default function SurveyWelcomeTemplate({
@@ -19,10 +14,6 @@ export default function SurveyWelcomeTemplate({
   illustration,
   welcomeMessage,
   onStart,
-  estimatedMinutes,
-  questionCount,
-  privacyStatement,
-  dataUsageStatement,
 }: SurveyWelcomeTemplateProps) {
   const purposePoints = welcomeMessage
     ? welcomeMessage.split("\n").filter((line) => line.trim())
@@ -86,38 +77,6 @@ export default function SurveyWelcomeTemplate({
         )}
       </div>
 
-      {/* Survey Metadata Bar */}
-      {(estimatedMinutes || questionCount || privacyStatement || dataUsageStatement) && (
-        <div className="px-[40px] py-[16px] bg-muted/40 border-t border-border mb-[12px]">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            {estimatedMinutes && (
-              <div className="flex flex-col items-center gap-1" data-testid="metadata-estimated-time">
-                <Clock className="w-4 h-4 text-muted-foreground" />
-                <span className="text-xs font-medium text-foreground">~{estimatedMinutes} min</span>
-              </div>
-            )}
-            {questionCount && (
-              <div className="flex flex-col items-center gap-1" data-testid="metadata-question-count">
-                <BookOpen className="w-4 h-4 text-muted-foreground" />
-                <span className="text-xs font-medium text-foreground">{questionCount} questions</span>
-              </div>
-            )}
-            {privacyStatement && (
-              <div className="flex flex-col items-center gap-1" data-testid="metadata-privacy">
-                <Shield className="w-4 h-4 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground truncate" title={privacyStatement}>Confidential</span>
-              </div>
-            )}
-            {dataUsageStatement && (
-              <div className="flex flex-col items-center gap-1" data-testid="metadata-data-usage">
-                <TrendingUp className="w-4 h-4 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground truncate" title={dataUsageStatement}>Data insights</span>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* Footer */}
       <footer className="survey-footer" style={{ justifyContent: 'center' }}>
         <button
@@ -130,7 +89,7 @@ export default function SurveyWelcomeTemplate({
         </button>
       </footer>
       <p className="survey-footnote text-center" data-testid="text-helper">
-        {privacyStatement || "Confidential and anonymous"}
+        Confidential and anonymous
       </p>
     </>
   );
