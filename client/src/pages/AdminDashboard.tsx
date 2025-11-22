@@ -343,7 +343,10 @@ export default function AdminDashboard() {
                       </div>
                       
                       <Button
-                        onClick={() => setShowKeyDialog(func.id)}
+                        onClick={() => {
+                          setNewApiKey(settings?.apiKeys?.[func.id]?.key || "");
+                          setShowKeyDialog(func.id);
+                        }}
                         variant="outline"
                         size="sm"
                         className="w-full text-xs"
