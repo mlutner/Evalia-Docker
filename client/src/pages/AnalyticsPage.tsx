@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ResponseDetailModal } from "@/components/ResponseDetailModal";
-import { ArrowLeft, Users, FileText, Calendar, Download, Loader2, Trash2, AlertTriangle, TrendingUp, ChevronDown, Zap } from "lucide-react";
+import { ArrowLeft, Users, FileText, Calendar, Download, Loader2, Trash2, AlertTriangle, TrendingUp, ChevronDown, Zap, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo } from "react";
 import type { Survey, SurveyResponse } from "@shared/schema";
@@ -300,23 +300,30 @@ export default function AnalyticsPage() {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Questions</CardTitle>
-              <FileText className="w-4 h-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Response Timeline</CardTitle>
+              <Clock className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{survey.questions.length}</div>
+              {data.responses.length > 0 ? (
+                <>
+                  <div className="text-sm font-semibold">
+                    {Math.round((new Date(data.responses[data.responses.length - 1].completedAt).getTime() - new Date(data.responses[0].completedAt).getTime()) / (1000 * 60 * 60 * 24))} days
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">from first to last response</p>
+                </>
+              ) : (
+                <div className="text-sm text-muted-foreground">No data yet</div>
+              )}
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Created</CardTitle>
-              <Calendar className="w-4 h-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Questions</CardTitle>
+              <FileText className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-lg font-semibold">
-                {new Date(survey.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-              </div>
+              <div className="text-3xl font-bold">{survey.questions.length}</div>
             </CardContent>
           </Card>
         </div>
