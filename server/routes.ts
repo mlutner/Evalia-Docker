@@ -1006,64 +1006,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Prompt cannot be empty" });
       }
 
-      const settings = await storage.getAdminAISettings();
-      const apiKey = settings.apiKeys.survey_generation?.key;
-      const baseUrl = settings.baseUrls.survey_generation || "https://openrouter.ai/api/v1";
-      const parameters = settings.parameters.survey_generation;
-
-      if (!apiKey) {
-        return res.status(500).json({ error: "AI enhancement not configured by admin" });
-      }
-
+      // Use the new model pool system with intelligent fallback
+      const { callEvaliaModelWithFallback } = await import("../src/ai/openRouterClient");
+      
       const enhancedUserPrompt = `Improve this survey prompt to make it more comprehensive and specific:
 
 ${prompt}
 
 Return ONLY the improved prompt text, nothing else.`;
 
-      // Use OpenRouter's Auto Model Selection for intelligent, cost-optimized model routing
-      // This automatically selects the best model for the prompt while optimizing costs
-      const response = await fetch(`${baseUrl}/chat/completions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`,
-          "HTTP-Referer": "https://evalia.replit.dev",
-          "X-Title": "Evalia Survey Builder",
-        },
-        body: JSON.stringify({
-          model: "openrouter/auto",
-          messages: [
-            { role: "user", content: enhancedUserPrompt },
-          ],
-          temperature: parameters?.temperature || 0.7,
-          max_tokens: parameters?.max_tokens || 1024,
-          provider: {
-            sort: "price",
-            allow_fallbacks: true,
-          }
-        }),
-      });
+      const result = await callEvaliaModelWithFallback(
+        [{ role: "user", content: enhancedUserPrompt }],
+        {
+          useCase: "quickRewrite",
+          temperature: 0.7,
+          max_tokens: 1024,
+        }
+      );
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("AI API error:", errorText);
-        return res.status(500).json({ error: "Failed to enhance prompt with AI" });
-      }
-
-      const data = await response.json();
-      console.log("OpenRouter response status: success, choices count:", data.choices?.length);
+      console.log(`Enhance prompt used model: ${result.modelUsed}`);
       
-      const enhancedPrompt = data.choices?.[0]?.message?.content;
-
-      if (!enhancedPrompt) {
-        console.error("No enhanced prompt. Response:", JSON.stringify(data).substring(0, 300));
-        return res.status(500).json({ error: "No response from AI" });
-      }
-
       res.json({
         success: true,
-        enhancedPrompt: enhancedPrompt.trim(),
+        enhancedPrompt: result.text.trim(),
       });
     } catch (error: any) {
       console.error("Enhance prompt error:", error.message);

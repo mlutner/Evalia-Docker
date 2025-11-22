@@ -1,0 +1,78 @@
+// src/ai/openRouterClient.ts
+import OpenAI from "openai";
+import type { ChatCompletionMessageParam, ChatCompletionCreateParams } from "openai/resources/chat";
+
+import { MODEL_POOLS, EvaliaUseCase } from "./modelConfig";
+
+export const openRouterClient = new OpenAI({
+  apiKey: process.env.OPENROUTER_API_KEY!,
+  baseURL: "https://openrouter.ai/api/v1",
+});
+
+// Optional but nice: so Evalia shows up in OR dashboards
+const OPENROUTER_HEADERS = {
+  "HTTP-Referer": "https://evalia.app",   // or your actual domain
+  "X-Title": "Evalia",
+};
+
+interface CallOptions extends Partial<ChatCompletionCreateParams> {
+  useCase: EvaliaUseCase;
+}
+
+/**
+ * Try models for a given use case in order, falling back on error/rate-limit.
+ */
+export async function callEvaliaModelWithFallback(
+  messages: ChatCompletionMessageParam[],
+  { useCase, ...opts }: CallOptions,
+) {
+  const pool = MODEL_POOLS[useCase];
+
+  if (!pool || pool.length === 0) {
+    throw new Error(`No models configured for use case: ${useCase}`);
+  }
+
+  let lastError: unknown;
+
+  for (const model of pool) {
+    try {
+      const completion = await openRouterClient.chat.completions.create(
+        {
+          model,
+          messages,
+          temperature: opts.temperature ?? 0.4,
+          ...opts,
+        },
+        { headers: OPENROUTER_HEADERS },
+      );
+
+      return {
+        modelUsed: model,
+        completion,
+        text: completion.choices[0]?.message?.content ?? "",
+      };
+    } catch (err: any) {
+      lastError = err;
+
+      const status = err?.status ?? err?.response?.status;
+      const isRateOrCapacity =
+        status === 429 ||
+        status === 503 ||
+        /rate limit|capacity|free tier/i.test(String(err?.message ?? ""));
+
+      console.warn(`Model ${model} failed (${status ?? "no-status"}).`, err?.message ?? err);
+
+      // If it's a transient / capacity error, try next model.
+      // If it's something else (bad request, auth), rethrow immediately.
+      if (!isRateOrCapacity) {
+        throw err;
+      }
+    }
+  }
+
+  throw new Error(
+    `All models failed for use case "${useCase}". Last error: ${String(
+      (lastError as any)?.message ?? lastError,
+    )}`,
+  );
+}
