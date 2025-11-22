@@ -63,11 +63,15 @@ export default function Step1Start({
       return apiRequest("POST", "/api/enhance-prompt", { prompt: currentPrompt });
     },
     onSuccess: (data: any) => {
-      setPrompt(data.enhancedPrompt);
-      toast({
-        title: "Prompt enhanced",
-        description: "Your prompt has been improved with AI suggestions.",
-      });
+      if (data?.enhancedPrompt) {
+        setPrompt(data.enhancedPrompt);
+        toast({
+          title: "Prompt enhanced",
+          description: "Your prompt has been improved with AI suggestions.",
+        });
+      } else {
+        throw new Error("No enhanced prompt received from server");
+      }
     },
     onError: (error: any) => {
       toast({
