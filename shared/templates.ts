@@ -19,7 +19,7 @@ export const surveyTemplates: SurveyTemplate[] = [
     timing: "Before training",
     audience: "Participants",
     topic: "assessment",
-    questionCount: 6,
+    questionCount: 10,
     questions: [
       {
         id: "q1",
@@ -44,14 +44,7 @@ export const surveyTemplates: SurveyTemplate[] = [
         id: "q4",
         type: "checkbox",
         question: "Which areas do you struggle with most related to this topic?",
-        options: [
-          "I don't know what to do",
-          "I know what to do but find it hard to do",
-          "Time pressure / workload",
-          "Tools, systems, or processes",
-          "Lack of support or alignment from others",
-          "Other",
-        ],
+        options: ["I don't know what to do", "I know what to do but find it hard to do", "Time pressure / workload", "Tools, systems, or processes", "Lack of support or alignment from others", "Other"],
         required: false,
       },
       {
@@ -66,6 +59,32 @@ export const surveyTemplates: SurveyTemplate[] = [
         question: "How urgent is it for you to improve your skills in this area?",
         required: true,
       },
+      {
+        id: "q7",
+        type: "rating",
+        question: "How clear are you on what success in this area looks like in your role?",
+        required: false,
+      },
+      {
+        id: "q8",
+        type: "multiple_choice",
+        question: "Which best describes your current overall workload during the period of this training?",
+        options: ["Lighter than usual", "About normal", "Heavier than usual", "Extremely heavy"],
+        required: false,
+      },
+      {
+        id: "q9",
+        type: "multiple_choice",
+        question: "Have you previously attended training on this or a closely related topic?",
+        options: ["No", "Yes, once", "Yes, multiple times"],
+        required: false,
+      },
+      {
+        id: "q10",
+        type: "textarea",
+        question: "If you have any specific scenarios or cases you would like the training to address, please briefly describe them.",
+        required: false,
+      },
     ],
   },
   {
@@ -75,7 +94,7 @@ export const surveyTemplates: SurveyTemplate[] = [
     timing: "Before training",
     audience: "Participants",
     topic: "assessment",
-    questionCount: 6,
+    questionCount: 10,
     questions: [
       {
         id: "q1",
@@ -99,14 +118,7 @@ export const surveyTemplates: SurveyTemplate[] = [
         id: "q4",
         type: "checkbox",
         question: "What might prevent you from fully engaging with this training?",
-        options: [
-          "Competing priorities / time conflicts",
-          "Unclear relevance to my role",
-          "Technology or access issues",
-          "High workload during the training period",
-          "Personal factors (energy, focus, etc.)",
-          "Other",
-        ],
+        options: ["Competing priorities / time conflicts", "Unclear relevance to my role", "Technology or access issues", "High workload during the training period", "Personal factors (energy, focus, etc.)", "Other"],
         required: false,
       },
       {
@@ -122,6 +134,30 @@ export const surveyTemplates: SurveyTemplate[] = [
         options: ["Yes, very clear", "Somewhat clear", "Not clear at all"],
         required: true,
       },
+      {
+        id: "q7",
+        type: "rating",
+        question: "How comfortable are you with the format of this training (e.g., virtual, in-person, blended)?",
+        required: false,
+      },
+      {
+        id: "q8",
+        type: "rating",
+        question: "How confident are you in your ability to keep up with any pre-work or assignments associated with this training?",
+        required: false,
+      },
+      {
+        id: "q9",
+        type: "textarea",
+        question: "Are there accessibility or learning needs we should be aware of to support your participation?",
+        required: false,
+      },
+      {
+        id: "q10",
+        type: "rating",
+        question: "How important is this training for your career development in the next 12 months?",
+        required: false,
+      },
     ],
   },
   {
@@ -131,7 +167,7 @@ export const surveyTemplates: SurveyTemplate[] = [
     timing: "During training",
     audience: "Participants",
     topic: "feedback",
-    questionCount: 6,
+    questionCount: 10,
     questions: [
       {
         id: "q1",
@@ -150,13 +186,7 @@ export const surveyTemplates: SurveyTemplate[] = [
         id: "q3",
         type: "checkbox",
         question: "Which training components are most helpful for your learning?",
-        options: [
-          "Presentations / lectures",
-          "Group discussions",
-          "Hands-on activities / practice",
-          "Case studies / scenarios",
-          "Slides, handouts, or reference materials",
-        ],
+        options: ["Presentations / lectures", "Group discussions", "Hands-on activities / practice", "Case studies / scenarios", "Slides, handouts, or reference materials"],
         required: false,
       },
       {
@@ -178,6 +208,30 @@ export const surveyTemplates: SurveyTemplate[] = [
         options: ["Yes, often", "Sometimes", "Rarely", "No"],
         required: true,
       },
+      {
+        id: "q7",
+        type: "rating",
+        question: "How satisfied are you with the opportunities to practice or apply the concepts during the session?",
+        required: false,
+      },
+      {
+        id: "q8",
+        type: "rating",
+        question: "How well do the examples and scenarios reflect your real work situation?",
+        required: false,
+      },
+      {
+        id: "q9",
+        type: "textarea",
+        question: "Is there any topic covered so far that you feel needs to be revisited or clarified?",
+        required: false,
+      },
+      {
+        id: "q10",
+        type: "textarea",
+        question: "Do you have any suggestions to improve the remaining sessions (format, interaction, pacing, tools)?",
+        required: false,
+      },
     ],
   },
   {
@@ -187,7 +241,7 @@ export const surveyTemplates: SurveyTemplate[] = [
     timing: "Immediately after session",
     audience: "Participants",
     topic: "feedback",
-    questionCount: 6,
+    questionCount: 10,
     questions: [
       {
         id: "q1",
@@ -215,14 +269,39 @@ export const surveyTemplates: SurveyTemplate[] = [
       },
       {
         id: "q5",
+        type: "rating",
+        question: "The session was engaging and kept my attention.",
+        required: false,
+      },
+      {
+        id: "q6",
+        type: "rating",
+        question: "The learning activities (discussions, exercises, polls, etc.) supported my understanding.",
+        required: false,
+      },
+      {
+        id: "q7",
         type: "textarea",
         question: "Which part(s) of this session did you find most valuable?",
         required: false,
       },
       {
-        id: "q6",
+        id: "q8",
         type: "textarea",
         question: "What, if anything, should be changed or improved in this session?",
+        required: false,
+      },
+      {
+        id: "q9",
+        type: "multiple_choice",
+        question: "Was the session length appropriate for the amount of content covered?",
+        options: ["Much too short", "Somewhat too short", "Just right", "Somewhat too long", "Much too long"],
+        required: false,
+      },
+      {
+        id: "q10",
+        type: "textarea",
+        question: "Do you have any additional comments for the trainer or organizers about this specific session?",
         required: false,
       },
     ],
@@ -234,7 +313,7 @@ export const surveyTemplates: SurveyTemplate[] = [
     timing: "Immediately after training",
     audience: "Participants",
     topic: "knowledge",
-    questionCount: 6,
+    questionCount: 10,
     questions: [
       {
         id: "q1",
@@ -272,16 +351,41 @@ export const surveyTemplates: SurveyTemplate[] = [
         question: "How likely are you to use what you learned in the next 2 weeks?",
         required: true,
       },
+      {
+        id: "q7",
+        type: "multiple_choice",
+        question: "Did this training fill specific knowledge gaps you had in this topic?",
+        options: ["Yes, completely", "Yes, partially", "Not really", "I didn't have gaps"],
+        required: false,
+      },
+      {
+        id: "q8",
+        type: "rating",
+        question: "How well did the assessments, quizzes, or practice activities reflect the key learning objectives?",
+        required: false,
+      },
+      {
+        id: "q9",
+        type: "textarea",
+        question: "What is one real situation at work where you plan to use what you learned?",
+        required: false,
+      },
+      {
+        id: "q10",
+        type: "textarea",
+        question: "What additional resources (job aids, guides, checklists) would help you retain and apply this knowledge?",
+        required: false,
+      },
     ],
   },
   {
     id: "post_training_satisfaction_experience",
     title: "Post-Training Satisfaction & Experience",
-    description: "Measures reactions to the overall training experience (classic Level 1).",
+    description: "Measures reactions to the overall training experience (Level 1: Reaction).",
     timing: "Immediately after training",
     audience: "Participants",
     topic: "satisfaction",
-    questionCount: 7,
+    questionCount: 11,
     questions: [
       {
         id: "q1",
@@ -316,14 +420,38 @@ export const surveyTemplates: SurveyTemplate[] = [
       },
       {
         id: "q6",
+        type: "rating",
+        question: "The training format (virtual, in-person, blended) worked well for me.",
+        required: false,
+      },
+      {
+        id: "q7",
+        type: "rating",
+        question: "The length and pacing of the training were appropriate.",
+        required: false,
+      },
+      {
+        id: "q8",
+        type: "rating",
+        question: "The training felt relevant to my day-to-day work.",
+        required: false,
+      },
+      {
+        id: "q9",
         type: "textarea",
         question: "What worked particularly well in this training?",
         required: false,
       },
       {
-        id: "q7",
+        id: "q10",
         type: "textarea",
         question: "What is one thing that should definitely be improved for future sessions?",
+        required: false,
+      },
+      {
+        id: "q11",
+        type: "textarea",
+        question: "Is there any topic you wish had been included or explored in more depth?",
         required: false,
       },
     ],
@@ -331,11 +459,11 @@ export const surveyTemplates: SurveyTemplate[] = [
   {
     id: "behaviour_change_followup",
     title: "Behaviour Change & Application (2–6 Weeks)",
-    description: "Checks whether participants are applying what they learned on the job and what's helping or blocking them.",
+    description: "Checks whether participants are applying what they learned on the job and what's helping or blocking them (Level 3: Behaviour).",
     timing: "2–6 weeks after training",
     audience: "Participants",
     topic: "application",
-    questionCount: 6,
+    questionCount: 10,
     questions: [
       {
         id: "q1",
@@ -354,14 +482,7 @@ export const surveyTemplates: SurveyTemplate[] = [
         id: "q3",
         type: "checkbox",
         question: "Which of the following outcomes have you experienced as a result of applying this training?",
-        options: [
-          "I save time",
-          "I make fewer errors",
-          "The quality of my work has improved",
-          "Collaboration with others has improved",
-          "I feel more confident",
-          "No noticeable change yet",
-        ],
+        options: ["I save time", "I make fewer errors", "The quality of my work has improved", "Collaboration with others has improved", "I feel more confident", "No noticeable change yet"],
         required: false,
       },
       {
@@ -382,6 +503,31 @@ export const surveyTemplates: SurveyTemplate[] = [
         question: "Compared to before the training, how confident do you feel now in this skill area?",
         required: true,
       },
+      {
+        id: "q7",
+        type: "multiple_choice",
+        question: "Have you shared what you learned with colleagues (e.g., explaining concepts, showing tools, coaching others)?",
+        options: ["Yes, in a formal way (presentations, demos, etc.)", "Yes, informally in conversations", "Not yet"],
+        required: false,
+      },
+      {
+        id: "q8",
+        type: "textarea",
+        question: "Have you noticed any feedback from others (manager, peers, customers) about changes in your behaviour after the training?",
+        required: false,
+      },
+      {
+        id: "q9",
+        type: "textarea",
+        question: "What is one behaviour change from this training that you want to make more consistent?",
+        required: false,
+      },
+      {
+        id: "q10",
+        type: "textarea",
+        question: "What additional support (coaching, refreshers, tools) would help you maintain or deepen these behaviour changes?",
+        required: false,
+      },
     ],
   },
   {
@@ -391,7 +537,7 @@ export const surveyTemplates: SurveyTemplate[] = [
     timing: "2–6 weeks after training",
     audience: "Managers",
     topic: "manager",
-    questionCount: 5,
+    questionCount: 10,
     questions: [
       {
         id: "q1",
@@ -410,14 +556,7 @@ export const surveyTemplates: SurveyTemplate[] = [
         id: "q3",
         type: "checkbox",
         question: "Which areas have you noticed improvements in? (Select all that apply.)",
-        options: [
-          "Quality of work",
-          "Speed / efficiency",
-          "Ownership and initiative",
-          "Collaboration with others",
-          "Communication",
-          "Customer / stakeholder outcomes",
-        ],
+        options: ["Quality of work", "Speed / efficiency", "Ownership and initiative", "Collaboration with others", "Communication", "Customer / stakeholder outcomes"],
         required: false,
       },
       {
@@ -428,8 +567,40 @@ export const surveyTemplates: SurveyTemplate[] = [
       },
       {
         id: "q5",
+        type: "multiple_choice",
+        question: "Since the training, have you adjusted this person's goals, responsibilities, or expectations to reflect new skills?",
+        options: ["Yes, formal changes (goals, KPIs, responsibilities)", "Yes, informal adjustments", "No changes"],
+        required: false,
+      },
+      {
+        id: "q6",
+        type: "multiple_choice",
+        question: "Have you provided specific feedback or coaching related to the training content?",
+        options: ["Yes, on a regular basis", "Yes, once or twice", "No"],
+        required: false,
+      },
+      {
+        id: "q7",
         type: "textarea",
-        question: "What additional support or follow-up would help your team member sustain or deepen these improvements?",
+        question: "Please describe one example where you observed this person positively applying something from the training.",
+        required: false,
+      },
+      {
+        id: "q8",
+        type: "textarea",
+        question: "Are there any areas where you expected to see more change or improvement than you have so far?",
+        required: false,
+      },
+      {
+        id: "q9",
+        type: "textarea",
+        question: "What additional support or resources from the organization would help this person sustain their new skills or behaviours?",
+        required: false,
+      },
+      {
+        id: "q10",
+        type: "rating",
+        question: "Overall, how valuable do you feel this training has been for this person's performance and development?",
         required: false,
       },
     ],
@@ -441,7 +612,7 @@ export const surveyTemplates: SurveyTemplate[] = [
     timing: "2–6 weeks after training",
     audience: "Participants",
     topic: "application",
-    questionCount: 5,
+    questionCount: 10,
     questions: [
       {
         id: "q1",
@@ -453,26 +624,14 @@ export const surveyTemplates: SurveyTemplate[] = [
         id: "q2",
         type: "checkbox",
         question: "Which factors most support you in applying this training?",
-        options: [
-          "Support from my manager",
-          "Support from colleagues / team",
-          "Clear processes and expectations",
-          "Tools and systems that make it easier",
-          "Time and space to practice new skills",
-        ],
+        options: ["Support from my manager", "Support from colleagues / team", "Clear processes and expectations", "Tools and systems that make it easier", "Time and space to practice new skills"],
         required: false,
       },
       {
         id: "q3",
         type: "checkbox",
         question: "Which factors most make it difficult to apply this training?",
-        options: [
-          "Time pressure / workload",
-          "Existing habits or ways of working",
-          "Lack of support from manager or team",
-          "Processes or policies that conflict with new behaviours",
-          "Unclear expectations from leadership",
-        ],
+        options: ["Time pressure / workload", "Existing habits or ways of working", "Lack of support from manager or team", "Processes or policies that conflict with new behaviours", "Unclear expectations from leadership"],
         required: false,
       },
       {
@@ -484,6 +643,37 @@ export const surveyTemplates: SurveyTemplate[] = [
       },
       {
         id: "q5",
+        type: "rating",
+        question: "Do you feel your manager actively encourages you to use what you learned in this training?",
+        required: false,
+      },
+      {
+        id: "q6",
+        type: "multiple_choice",
+        question: "Do your current goals or KPIs reflect the behaviours or skills covered in the training?",
+        options: ["Yes, clearly", "Somewhat", "No", "Not sure"],
+        required: false,
+      },
+      {
+        id: "q7",
+        type: "textarea",
+        question: "Have you encountered any conflicting instructions (e.g., asked to work in ways that go against what was taught)?",
+        required: false,
+      },
+      {
+        id: "q8",
+        type: "textarea",
+        question: "What specific changes in tools, processes, or policies would make it easier to apply this training?",
+        required: false,
+      },
+      {
+        id: "q9",
+        type: "rating",
+        question: "How likely are you to continue using what you learned over the next 3–6 months?",
+        required: false,
+      },
+      {
+        id: "q10",
         type: "textarea",
         question: "What type of support would most help you use this training more consistently?",
         required: false,
@@ -493,11 +683,11 @@ export const surveyTemplates: SurveyTemplate[] = [
   {
     id: "training_roi_impact",
     title: "Training ROI & Impact (Self + Manager)",
-    description: "Captures perceived business impact of the training, including productivity, quality, and confidence.",
+    description: "Captures perceived business impact of the training, including productivity, quality, and confidence (Level 4: Results).",
     timing: "Weeks or months after training",
     audience: "Participants & Managers",
     topic: "roi",
-    questionCount: 6,
+    questionCount: 10,
     questions: [
       {
         id: "q1",
@@ -531,15 +721,39 @@ export const surveyTemplates: SurveyTemplate[] = [
       },
       {
         id: "q6",
+        type: "multiple_choice",
+        question: "Has this training contributed to achieving any key team or organizational goals (e.g., revenue, quality, safety, customer satisfaction)?",
+        options: ["Yes, clearly", "Yes, somewhat", "No", "Not sure"],
+        required: false,
+      },
+      {
+        id: "q7",
+        type: "textarea",
+        question: "If applicable, briefly describe any measurable results (metrics, KPIs, targets) that you believe have improved due to this training.",
+        required: false,
+      },
+      {
+        id: "q8",
+        type: "rating",
+        question: "From a cost–benefit perspective, how would you rate the value of this training to the organization?",
+        required: false,
+      },
+      {
+        id: "q9",
         type: "textarea",
         question: "In your own words, what tangible impact has this training had on your work or your team?",
+        required: false,
+      },
+      {
+        id: "q10",
+        type: "textarea",
+        question: "What would make this training even more valuable or impactful?",
         required: false,
       },
     ],
   },
 ];
 
-// Template categories for organizing/sorting
 export const templateCategories = [
   { id: "assessment", label: "Assessment", description: "Identify needs and readiness" },
   { id: "feedback", label: "Feedback", description: "Gather real-time reactions" },
@@ -550,7 +764,6 @@ export const templateCategories = [
   { id: "roi", label: "ROI & Impact", description: "Business outcomes" },
 ];
 
-// Get templates grouped by category
 export function getTemplatesByCategory(category: string): SurveyTemplate[] {
   return surveyTemplates.filter((t) => t.topic === category);
 }
