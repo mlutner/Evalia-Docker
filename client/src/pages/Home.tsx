@@ -32,7 +32,7 @@ export default function Home() {
           <div className="space-y-8">
             {/* Headline */}
             <div className="space-y-6">
-              <h1 className="md:text-6xl font-bold text-[70px]" style={{color: '#071A32'}}>
+              <h1 className="md:text-6xl font-bold text-[69px]" style={{color: '#071A32'}}>
                 Collect training feedback that actually improves training
               </h1>
               <p className="text-lg text-muted-foreground leading-relaxed">
