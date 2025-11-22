@@ -68,8 +68,8 @@ export default function Home() {
           </div>
 
           {/* Right Side - Image Placeholder */}
-          <div className="flex items-center justify-center lg:justify-end">
-            <div className="relative w-full max-w-md">
+          <div className="flex items-center justify-center">
+            <div className="relative w-full max-w-2xl">
               <img
                 src="/attached_assets/Heading_1763750607423.png"
                 alt="Survey illustration"
