@@ -23,8 +23,7 @@ import { useAIChat } from "@/hooks/useAIChat";
 const WIZARD_STEPS = [
   { number: 1, title: "Start", description: "Select a template, generate with AI, or upload your content" },
   { number: 2, title: "Questions", description: "Build your questions. Use AI to help you refine them" },
-  { number: 3, title: "Customize", description: "Add survey title, welcome message, and other details. Set up scoring if needed" },
-  { number: 4, title: "Scoring", description: "(Optional) Configure scoring to show respondents their results", isOptional: true },
+  { number: 3, title: "Customize", description: "Add survey details, welcome message, and optional scoring configuration" },
 ];
 
 function formatTimeAgo(date: Date): string {
@@ -261,7 +260,7 @@ export default function Builder() {
             )}
           </div>
           <p className="text-muted-foreground mb-8">
-            {WIZARD_STEPS[surveyState.currentWizardStep - 1].description}
+            {WIZARD_STEPS[surveyState.currentWizardStep - 1]?.description || ""}
           </p>
           
           <WizardSteps
@@ -307,7 +306,7 @@ export default function Builder() {
           />
         )}
 
-        {/* Step 3: Publish - Add metadata */}
+        {/* Step 3: Customize - Add metadata and optional scoring */}
         {surveyState.currentWizardStep === 3 && (
           <PublishStep
             title={surveyState.currentSurveyTitle}
@@ -316,20 +315,14 @@ export default function Builder() {
             thankYouMessage={surveyState.thankYouMessage}
             illustrationUrl={surveyState.illustrationUrl}
             generatingField={aiChat.generatingField}
+            questions={surveyState.currentQuestions}
+            scoreConfig={surveyState.scoreConfig}
             onTitleChange={surveyState.setCurrentSurveyTitle}
             onDescriptionChange={surveyState.setCurrentSurveyDescription}
             onWelcomeChange={surveyState.setWelcomeMessage}
             onThankYouChange={surveyState.setThankYouMessage}
             onIllustrationChange={surveyState.setIllustrationUrl}
             onGenerateText={handleGenerateText}
-          />
-        )}
-
-        {/* Step 4: Scoring (Optional) - Configure assessment scoring */}
-        {surveyState.currentWizardStep === 4 && (
-          <ScoringConfigStep
-            questions={surveyState.currentQuestions}
-            scoreConfig={surveyState.scoreConfig}
             onScoreConfigChange={surveyState.setScoreConfig}
           />
         )}
@@ -362,7 +355,7 @@ export default function Builder() {
               </Button>
             )}
 
-            {surveyState.currentWizardStep < 4 ? (
+            {surveyState.currentWizardStep < 3 ? (
               <Button 
                 size="lg" 
                 onClick={surveyState.handleNextStep}

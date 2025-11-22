@@ -2,7 +2,13 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2, Upload, X } from "lucide-react";
+import { Sparkles, Loader2, Upload, X, Plus, Trash2 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useToast } from "@/hooks/use-toast";
+import type { Question, SurveyScoreConfig } from "@shared/schema";
 
 interface PublishStepProps {
   title: string;
@@ -14,6 +20,8 @@ interface PublishStepProps {
   trainingDate?: string;
   tags?: string[];
   generatingField: string | null;
+  questions?: Question[];
+  scoreConfig?: SurveyScoreConfig;
   onTitleChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
   onWelcomeChange: (value: string) => void;
@@ -23,6 +31,7 @@ interface PublishStepProps {
   onTagsChange?: (tags: string[]) => void;
   onIllustrationChange?: (url: string) => void;
   onGenerateText: (fieldType: "description" | "welcomeMessage" | "thankYouMessage") => void;
+  onScoreConfigChange?: (config: SurveyScoreConfig) => void;
 }
 
 export default function PublishStep({
@@ -35,6 +44,8 @@ export default function PublishStep({
   trainingDate,
   tags,
   generatingField,
+  questions = [],
+  scoreConfig,
   onTitleChange,
   onDescriptionChange,
   onWelcomeChange,
@@ -44,11 +55,19 @@ export default function PublishStep({
   onTagsChange,
   onIllustrationChange,
   onGenerateText,
+  onScoreConfigChange,
 }: PublishStepProps) {
+  const { toast } = useToast();
   const [tagInput, setTagInput] = useState("");
   const currentTags = tags || [];
   const [illustrations, setIllustrations] = useState<string[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(scoreConfig?.enabled || false);
+  const [categories, setCategories] = useState(scoreConfig?.categories || []);
+  const [scoreRanges, setScoreRanges] = useState(scoreConfig?.scoreRanges || []);
+  const [resultsSummary, setResultsSummary] = useState(scoreConfig?.resultsSummary || "");
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [isAutoGenerating, setIsAutoGenerating] = useState(false);
 
   useEffect(() => {
     const fetchIllustrations = async () => {
@@ -90,12 +109,80 @@ export default function PublishStep({
     }
   };
 
+  const handleAddCategory = () => {
+    if (newCategoryName.trim()) {
+      const newCategory = {
+        id: `cat-${Date.now()}`,
+        name: newCategoryName.trim(),
+      };
+      setCategories([...categories, newCategory]);
+      setNewCategoryName("");
+    }
+  };
+
+  const handleRemoveCategory = (catId: string) => {
+    setCategories(categories.filter((c) => c.id !== catId));
+    setScoreRanges(scoreRanges.filter((r) => r.category !== catId));
+  };
+
+  const handleAutoGenerateScoring = async () => {
+    if (questions.length === 0) {
+      toast({
+        title: "No questions",
+        description: "Add questions first before generating scoring configuration",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsAutoGenerating(true);
+    try {
+      const response = await fetch("/api/generate-scoring-config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ questions }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate scoring config");
+      }
+
+      const { config } = await response.json();
+      setIsEnabled(true);
+      setCategories(config.categories || []);
+      setScoreRanges(config.scoreRanges || []);
+      
+      toast({
+        title: "Scoring configured",
+        description: "AI has automatically set up scoring categories and ranges based on your questions.",
+      });
+    } catch (error) {
+      toast({
+        title: "Auto-generation failed",
+        description: "Could not automatically generate scoring. You can configure it manually.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAutoGenerating(false);
+    }
+  };
+
+  const handleSaveScoring = () => {
+    const config: SurveyScoreConfig = {
+      enabled: isEnabled,
+      categories,
+      scoreRanges,
+      resultsSummary: resultsSummary || undefined,
+    };
+    onScoreConfigChange?.(config);
+  };
+
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-semibold mb-3">Review & Finalize</h2>
+        <h2 className="text-3xl font-semibold mb-3">Customize Your Survey</h2>
         <p className="text-muted-foreground text-lg">
-          Add optional details to enhance your survey
+          Add details and optional scoring configuration
         </p>
       </div>
       <div className="space-y-6 bg-card border rounded-lg p-6">
@@ -274,6 +361,99 @@ export default function PublishStep({
             </div>
           )}
         </div>
+
+        {/* Scoring Configuration - Collapsible Section */}
+        <Collapsible defaultOpen={false} className="border rounded-lg">
+          <CollapsibleTrigger className="w-full">
+            <div className="p-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-medium">Optional: Scoring Configuration</h3>
+              </div>
+              <span className="text-xs text-muted-foreground">Configure results for respondents</span>
+            </div>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="border-t bg-muted/30 p-4 space-y-4">
+            <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+              <div>
+                <p className="text-sm font-medium">Enable Scoring</p>
+                <p className="text-xs text-muted-foreground">Show respondents their results</p>
+              </div>
+              <Switch
+                checked={isEnabled}
+                onCheckedChange={(checked) => {
+                  setIsEnabled(checked);
+                  if (!checked) {
+                    handleSaveScoring();
+                  }
+                }}
+                data-testid="switch-enable-scoring"
+              />
+            </div>
+
+            {isEnabled && (
+              <>
+                <Button
+                  onClick={handleAutoGenerateScoring}
+                  disabled={isAutoGenerating || questions.length === 0}
+                  className="w-full"
+                  variant="outline"
+                  size="sm"
+                  data-testid="button-auto-generate-scoring"
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  {isAutoGenerating ? "Generating..." : "AI Auto-Generate Scoring"}
+                </Button>
+
+                <div className="flex gap-2">
+                  <Input
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleAddCategory();
+                      }
+                    }}
+                    placeholder="Add scoring category..."
+                    className="text-sm"
+                    data-testid="input-category-name"
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleAddCategory}
+                    size="sm"
+                    data-testid="button-add-category"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                {categories.length > 0 && (
+                  <div className="space-y-2">
+                    {categories.map((cat) => (
+                      <div key={cat.id} className="flex items-center justify-between p-2 bg-background rounded border text-sm" data-testid={`category-${cat.id}`}>
+                        <span>{cat.name}</span>
+                        <Button variant="ghost" size="icon" onClick={() => handleRemoveCategory(cat.id)} className="h-6 w-6" data-testid={`button-remove-category-${cat.id}`}>
+                          <Trash2 className="w-3 h-3 text-destructive" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleSaveScoring}
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  data-testid="button-save-scoring"
+                >
+                  Save Scoring Configuration
+                </Button>
+              </>
+            )}
+          </CollapsibleContent>
+        </Collapsible>
 
         <div>
           <div className="flex items-center justify-between mb-2">
