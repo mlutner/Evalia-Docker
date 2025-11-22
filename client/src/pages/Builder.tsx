@@ -190,6 +190,10 @@ export default function Builder() {
       (result, questionCount) => {
         surveyState.setCurrentSurveyTitle(result.title);
         surveyState.setCurrentQuestions(result.questions);
+        // Apply AI-generated scoring configuration if available
+        if (result.scoreConfig) {
+          surveyState.setScoreConfig(result.scoreConfig);
+        }
         aiChat.setMessages([
           {
             id: "1",
