@@ -55,6 +55,29 @@ const isMasterAdmin = async (req: any, res: Response, next: NextFunction) => {
   }
 };
 
+// Helper to log AI usage
+const logAIUsage = async (userId: string | undefined, operationType: string, surveyId?: string) => {
+  try {
+    if (!lastTokenUsage) return;
+    
+    const cost = calculateTokenCost(lastTokenUsage);
+    await storage.logAIUsage({
+      userId: userId || null,
+      surveyId: surveyId || null,
+      operationType,
+      model: lastTokenUsage.model,
+      inputTokens: lastTokenUsage.inputTokens,
+      outputTokens: lastTokenUsage.outputTokens,
+      totalTokens: lastTokenUsage.totalTokens,
+      estimatedCost: cost,
+    });
+    
+    console.log(`✓ Logged ${operationType}: ${lastTokenUsage.totalTokens} tokens ($${cost})`);
+  } catch (err: any) {
+    console.warn("Failed to log AI usage:", err.message);
+  }
+};
+
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // Serve static assets from attached_assets directory
@@ -221,6 +244,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let survey;
       try {
         survey = await generateSurveyFromText(extractedText, `Document: ${fileName}`);
+        await logAIUsage(req.user.claims.sub, "document_parsing");
       } catch (aiError: any) {
         console.error("AI generation error:", aiError);
         return res.status(500).json({ 
@@ -297,6 +321,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const survey = await generateSurveyFromText(contentToProcess);
+      await logAIUsage(req.user.claims.sub, "survey_generation");
 
       res.json({
         title: survey.title,
@@ -327,6 +352,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const result = await refineSurvey(survey, message, history || [], fileData);
+      await logAIUsage(req.user.claims.sub, "survey_refinement");
 
       res.json(result);
     } catch (error: any) {
@@ -353,6 +379,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const text = await generateSurveyText(fieldType, surveyTitle, questions, scoreConfig);
+      await logAIUsage(req.user.claims.sub, "text_generation");
 
       res.json({ text });
     } catch (error: any) {
