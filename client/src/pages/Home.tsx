@@ -28,7 +28,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10 flex flex-col">
       <Header />
-      <main className="flex-1 container mx-auto px-6 flex items-start justify-center pt-8">
+      <main className="container mx-auto px-6 flex items-start justify-center pt-0">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center w-full max-w-7xl">
           {/* Left Side Content */}
           <div className="space-y-6">
