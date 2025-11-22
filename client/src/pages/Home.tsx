@@ -140,7 +140,6 @@ export default function Home() {
         <Button
           size="lg"
           onClick={() => setShowLoginModal(true)}
-          className="font-semibold text-lg"
           data-testid="button-final-cta"
         >
           Get started free
