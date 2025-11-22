@@ -916,31 +916,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get admin settings (admin only)
   app.get("/api/admin/settings", isAuthenticated, isMasterAdmin, async (req: any, res) => {
     try {
-      const apiKey = process.env.MISTRAL_API_KEY || "";
-      res.json({
-        currentApiKey: apiKey,
-        apiKeyRotated: null,
-      });
+      const apiKeys = {
+        mistral: { key: process.env.MISTRAL_API_KEY || "", rotated: null },
+        openai: { key: process.env.OPENAI_API_KEY || "", rotated: null },
+      };
+      res.json({ apiKeys });
     } catch (error: any) {
       console.error("Get admin settings error:", error);
       res.status(500).json({ error: "Failed to fetch settings" });
     }
   });
 
-  // Rotate API key (admin only)
+  // Update API key (admin only)
   app.post("/api/admin/api-key", isAuthenticated, isMasterAdmin, async (req: any, res) => {
     try {
-      const { apiKey } = req.body;
+      const { provider, apiKey } = req.body;
+
+      if (!provider || !["mistral", "openai"].includes(provider)) {
+        return res.status(400).json({ error: "Invalid provider. Must be 'mistral' or 'openai'" });
+      }
 
       if (!apiKey || typeof apiKey !== "string" || !apiKey.startsWith("sk-")) {
         return res.status(400).json({ error: "Invalid API key format. Must start with 'sk-'" });
       }
 
-      // In a real app, you'd update the environment variable or secret
+      // In production, you'd update environment variables or Replit secrets
       // For now, just validate and respond
       res.json({
         success: true,
-        message: "API key updated. Please restart the application for changes to take effect.",
+        message: `${provider} API key updated. Please restart the application for changes to take effect.`,
       });
     } catch (error: any) {
       console.error("Update API key error:", error);

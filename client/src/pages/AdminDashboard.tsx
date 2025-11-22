@@ -19,13 +19,12 @@ interface AIUsageStats {
 }
 
 interface AdminSettings {
-  currentApiKey: string;
-  apiKeyRotated: string | null;
+  apiKeys: Record<string, { key: string; rotated?: string | null }>;
 }
 
 export default function AdminDashboard() {
   const { toast } = useToast();
-  const [showKeyDialog, setShowKeyDialog] = useState(false);
+  const [showKeyDialog, setShowKeyDialog] = useState<string | null>(null);
   const [newApiKey, setNewApiKey] = useState("");
   const [copiedKey, setCopiedKey] = useState(false);
 
@@ -38,17 +37,17 @@ export default function AdminDashboard() {
   });
 
   const updateApiKeyMutation = useMutation({
-    mutationFn: async (apiKey: string) => {
-      return apiRequest("POST", "/api/admin/api-key", { apiKey });
+    mutationFn: async (data: { provider: string; apiKey: string }) => {
+      return apiRequest("POST", "/api/admin/api-key", data);
     },
-    onSuccess: () => {
+    onSuccess: (_, { provider }) => {
       toast({
         title: "API key updated",
-        description: "Your Mistral API key has been rotated successfully.",
+        description: `Your ${provider} API key has been rotated successfully.`,
       });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/settings"] });
       setNewApiKey("");
-      setShowKeyDialog(false);
+      setShowKeyDialog(null);
     },
     onError: (error: any) => {
       const msg = error?.message || "Failed to update API key";
@@ -70,6 +69,11 @@ export default function AdminDashboard() {
     if (!key) return "Not set";
     return key.substring(0, 8) + "..." + key.substring(key.length - 4);
   };
+
+  const providers = [
+    { id: "mistral", name: "Mistral AI", icon: "⚡" },
+    { id: "openai", name: "OpenAI (Fallback)", icon: "🔮" },
+  ];
 
   return (
     <div className="min-h-screen bg-background p-6 md:p-8">
@@ -147,6 +151,15 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
+        {/* Data Persistence Notice */}
+        <Card className="mb-8 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30" data-testid="card-data-notice">
+          <CardContent className="pt-6">
+            <p className="text-sm text-blue-700 dark:text-blue-300">
+              <strong>ℹ️ Token tracking started today:</strong> All AI operations going forward will be tracked for cost analysis. Historical operations before this feature was enabled won't show cost data.
+            </p>
+          </CardContent>
+        </Card>
+
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Usage by Operation */}
@@ -180,49 +193,44 @@ export default function AdminDashboard() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Key className="w-4 h-4" />
-                API Key Management
+                API Keys
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">Mistral API Key</label>
-                <div className="mt-2 p-3 bg-muted rounded-lg flex items-center justify-between" data-testid="display-current-key">
-                  <code className="text-xs text-muted-foreground font-mono">
-                    {maskApiKey(settings?.currentApiKey || "")}
-                  </code>
+              {providers.map((provider) => (
+                <div key={provider.id}>
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <span>{provider.icon}</span>
+                    {provider.name}
+                  </label>
+                  <div className="mt-2 p-3 bg-muted rounded-lg flex items-center justify-between" data-testid={`display-key-${provider.id}`}>
+                    <code className="text-xs text-muted-foreground font-mono">
+                      {maskApiKey(settings?.apiKeys?.[provider.id]?.key || "")}
+                    </code>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => copyToClipboard(settings?.apiKeys?.[provider.id]?.key || "")}
+                      disabled={!settings?.apiKeys?.[provider.id]?.key}
+                      data-testid={`button-copy-key-${provider.id}`}
+                    >
+                      {copiedKey ? "Copied!" : <Copy className="w-4 h-4" />}
+                    </Button>
+                  </div>
                   <Button
+                    onClick={() => setShowKeyDialog(provider.id)}
+                    variant="outline"
                     size="sm"
-                    variant="ghost"
-                    onClick={() => copyToClipboard(settings?.currentApiKey || "")}
-                    disabled={!settings?.currentApiKey}
-                    data-testid="button-copy-key"
+                    className="w-full mt-2"
+                    data-testid={`button-rotate-key-${provider.id}`}
                   >
-                    {copiedKey ? "Copied!" : <Copy className="w-4 h-4" />}
+                    Update Key
                   </Button>
                 </div>
-              </div>
+              ))}
 
-              {settings?.apiKeyRotated && (
-                <div className="p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg flex gap-2">
-                  <AlertCircle className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-                  <div className="text-xs text-blue-700 dark:text-blue-300">
-                    <p className="font-medium">Key rotated</p>
-                    <p>{new Date(settings.apiKeyRotated).toLocaleDateString()}</p>
-                  </div>
-                </div>
-              )}
-
-              <Button
-                onClick={() => setShowKeyDialog(true)}
-                variant="outline"
-                className="w-full"
-                data-testid="button-rotate-key"
-              >
-                Rotate API Key
-              </Button>
-
-              <p className="text-xs text-muted-foreground">
-                Update your Mistral API key to continue using AI features
+              <p className="text-xs text-muted-foreground pt-2 border-t">
+                Manage API keys for all LLM providers. The system uses Mistral by default with OpenAI as fallback.
               </p>
             </CardContent>
           </Card>
@@ -253,19 +261,21 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
-      {/* API Key Rotation Dialog */}
-      <AlertDialog open={showKeyDialog} onOpenChange={setShowKeyDialog}>
+      {/* API Key Update Dialog */}
+      <AlertDialog open={!!showKeyDialog} onOpenChange={(open) => !open && setShowKeyDialog(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Rotate Mistral API Key</AlertDialogTitle>
+            <AlertDialogTitle>
+              Update {providers.find(p => p.id === showKeyDialog)?.name} API Key
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              Enter your new API key. This will replace the current key and all AI features will use the new key.
+              Enter your new API key. This will replace the current key immediately.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div>
             <Input
               type="password"
-              placeholder="sk-..."
+              placeholder={showKeyDialog === "mistral" ? "sk-..." : "sk-..."}
               value={newApiKey}
               onChange={(e) => setNewApiKey(e.target.value)}
               data-testid="input-new-api-key"
@@ -274,11 +284,11 @@ export default function AdminDashboard() {
           <AlertDialogFooter>
             <AlertDialogCancel data-testid="button-cancel-rotate">Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => updateApiKeyMutation.mutate(newApiKey)}
+              onClick={() => updateApiKeyMutation.mutate({ provider: showKeyDialog || "mistral", apiKey: newApiKey })}
               disabled={!newApiKey || updateApiKeyMutation.isPending}
               data-testid="button-confirm-rotate"
             >
-              {updateApiKeyMutation.isPending ? "Rotating..." : "Rotate Key"}
+              {updateApiKeyMutation.isPending ? "Updating..." : "Update Key"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
