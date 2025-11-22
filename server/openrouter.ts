@@ -4,33 +4,37 @@ import mammoth from "mammoth";
 // Function-based configuration mapping
 type AIFunction = "survey_generation" | "survey_refinement" | "document_parsing" | "response_scoring" | "quick_suggestions" | "response_analysis";
 
+// Cache for admin settings to avoid repeated lookups
+let cachedSettings: any = null;
+let settingsRefreshTime = 0;
+const SETTINGS_CACHE_MS = 5000; // Refresh every 5 seconds
+
 // Get API key and model for a specific function
-function getAIConfig(func: AIFunction): { apiKey: string; model: string; provider: string } {
-  const envKeyMap: Record<AIFunction, string> = {
-    survey_generation: "API_KEY_SURVEY_GENERATION",
-    survey_refinement: "API_KEY_SURVEY_REFINEMENT",
-    document_parsing: "API_KEY_DOCUMENT_PARSING",
-    response_scoring: "API_KEY_RESPONSE_SCORING",
-    quick_suggestions: "API_KEY_QUICK_SUGGESTIONS",
-    response_analysis: "API_KEY_RESPONSE_ANALYSIS",
-  };
-
-  const envModelMap: Record<AIFunction, string> = {
-    survey_generation: "MODEL_SURVEY_GENERATION",
-    survey_refinement: "MODEL_SURVEY_REFINEMENT",
-    document_parsing: "MODEL_DOCUMENT_PARSING",
-    response_scoring: "MODEL_RESPONSE_SCORING",
-    quick_suggestions: "MODEL_QUICK_SUGGESTIONS",
-    response_analysis: "MODEL_RESPONSE_ANALYSIS",
-  };
-
-  const apiKey = process.env[envKeyMap[func]] || process.env.MISTRAL_API_KEY || "";
-  const model = process.env[envModelMap[func]] || getDefaultModel(func);
+async function getAIConfig(func: AIFunction): Promise<{ apiKey: string; model: string; provider: string }> {
+  // Lazy-load storage module to avoid circular dependency
+  const { storage } = await import("./storage");
   
-  // Detect provider from model name or API key
-  const provider = detectProvider(model, apiKey);
-  
-  return { apiKey, model, provider };
+  try {
+    // Refresh cache if needed
+    const now = Date.now();
+    if (!cachedSettings || now - settingsRefreshTime > SETTINGS_CACHE_MS) {
+      cachedSettings = await storage.getAdminAISettings();
+      settingsRefreshTime = now;
+    }
+
+    const apiKey = cachedSettings.apiKeys?.[func]?.key || process.env.MISTRAL_API_KEY || "";
+    const model = cachedSettings.models?.[func] || getDefaultModel(func);
+    
+    // Detect provider from model name or API key
+    const provider = detectProvider(model, apiKey);
+    
+    return { apiKey, model, provider };
+  } catch (error) {
+    console.warn("Failed to get admin settings, falling back to env vars:", error);
+    const apiKey = process.env.MISTRAL_API_KEY || "";
+    const model = getDefaultModel(func);
+    return { apiKey, model, provider: detectProvider(model, apiKey) };
+  }
 }
 
 function getDefaultModel(func: AIFunction): string {
@@ -60,7 +64,7 @@ async function callAI(
   func: AIFunction,
   responseFormat?: { type: "json_object" }
 ): Promise<string> {
-  const { apiKey, model, provider } = getAIConfig(func);
+  const { apiKey, model, provider } = await getAIConfig(func);
 
   if (!apiKey) {
     throw new Error(`API key not configured for ${func}`);

@@ -3,6 +3,11 @@ import { randomUUID } from "crypto";
 import { db } from "./db";
 import { eq, sql, gte } from "drizzle-orm";
 
+export interface AdminAISettings {
+  apiKeys: Record<string, { key: string; rotated?: string | null }>;
+  models: Record<string, string>;
+}
+
 export interface IStorage {
   // User operations (Replit Auth compatible)
   getUser(id: string): Promise<User | undefined>;
@@ -38,6 +43,10 @@ export interface IStorage {
   // AI usage tracking
   logAIUsage(usage: Omit<AIUsageRecord, 'id' | 'createdAt'>): Promise<AIUsageRecord>;
   getAIUsageStats(): Promise<{ total: AIUsageRecord[]; last24h: AIUsageRecord[] }>;
+  
+  // Admin AI settings
+  getAdminAISettings(): Promise<AdminAISettings>;
+  updateAdminAISettings(settings: Partial<AdminAISettings>): Promise<AdminAISettings>;
 }
 
 export class MemStorage implements IStorage {
@@ -45,12 +54,33 @@ export class MemStorage implements IStorage {
   private surveys: Map<string, Survey>;
   private responses: Map<string, SurveyResponse>;
   private respondents: Map<string, SurveyRespondent>;
+  private adminAISettings: AdminAISettings;
 
   constructor() {
     this.users = new Map();
     this.surveys = new Map();
     this.responses = new Map();
     this.respondents = new Map();
+    
+    // Initialize admin settings from env vars
+    this.adminAISettings = {
+      apiKeys: {
+        survey_generation: { key: process.env.API_KEY_SURVEY_GENERATION || "", rotated: null },
+        survey_refinement: { key: process.env.API_KEY_SURVEY_REFINEMENT || "", rotated: null },
+        document_parsing: { key: process.env.API_KEY_DOCUMENT_PARSING || "", rotated: null },
+        response_scoring: { key: process.env.API_KEY_RESPONSE_SCORING || "", rotated: null },
+        quick_suggestions: { key: process.env.API_KEY_QUICK_SUGGESTIONS || "", rotated: null },
+        response_analysis: { key: process.env.API_KEY_RESPONSE_ANALYSIS || "", rotated: null },
+      },
+      models: {
+        survey_generation: process.env.MODEL_SURVEY_GENERATION || "gpt-4o",
+        survey_refinement: process.env.MODEL_SURVEY_REFINEMENT || "gpt-4o",
+        document_parsing: process.env.MODEL_DOCUMENT_PARSING || "gpt-4-vision",
+        response_scoring: process.env.MODEL_RESPONSE_SCORING || "gpt-3.5-turbo",
+        quick_suggestions: process.env.MODEL_QUICK_SUGGESTIONS || "gpt-3.5-turbo",
+        response_analysis: process.env.MODEL_RESPONSE_ANALYSIS || "gpt-4o",
+      }
+    };
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -526,6 +556,20 @@ export class DbStorage implements IStorage {
     const last24h = await db.select().from(aiUsageLog).where(gte(aiUsageLog.createdAt, last24hDate));
 
     return { total, last24h };
+  }
+
+  async getAdminAISettings(): Promise<AdminAISettings> {
+    return this.adminAISettings;
+  }
+
+  async updateAdminAISettings(settings: Partial<AdminAISettings>): Promise<AdminAISettings> {
+    if (settings.apiKeys) {
+      this.adminAISettings.apiKeys = { ...this.adminAISettings.apiKeys, ...settings.apiKeys };
+    }
+    if (settings.models) {
+      this.adminAISettings.models = { ...this.adminAISettings.models, ...settings.models };
+    }
+    return this.adminAISettings;
   }
 }
 

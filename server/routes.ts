@@ -916,23 +916,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get admin settings (admin only)
   app.get("/api/admin/settings", isAuthenticated, isMasterAdmin, async (req: any, res) => {
     try {
-      const apiKeys = {
-        survey_generation: { key: process.env.API_KEY_SURVEY_GENERATION || "", rotated: null },
-        survey_refinement: { key: process.env.API_KEY_SURVEY_REFINEMENT || "", rotated: null },
-        document_parsing: { key: process.env.API_KEY_DOCUMENT_PARSING || "", rotated: null },
-        response_scoring: { key: process.env.API_KEY_RESPONSE_SCORING || "", rotated: null },
-        quick_suggestions: { key: process.env.API_KEY_QUICK_SUGGESTIONS || "", rotated: null },
-        response_analysis: { key: process.env.API_KEY_RESPONSE_ANALYSIS || "", rotated: null },
-      };
-      const models = {
-        survey_generation: process.env.MODEL_SURVEY_GENERATION || "gpt-4o",
-        survey_refinement: process.env.MODEL_SURVEY_REFINEMENT || "gpt-4o",
-        document_parsing: process.env.MODEL_DOCUMENT_PARSING || "gpt-4-vision",
-        response_scoring: process.env.MODEL_RESPONSE_SCORING || "gpt-3.5-turbo",
-        quick_suggestions: process.env.MODEL_QUICK_SUGGESTIONS || "gpt-3.5-turbo",
-        response_analysis: process.env.MODEL_RESPONSE_ANALYSIS || "gpt-4o",
-      };
-      res.json({ apiKeys, models });
+      const settings = await storage.getAdminAISettings();
+      res.json(settings);
     } catch (error: any) {
       console.error("Get admin settings error:", error);
       res.status(500).json({ error: "Failed to fetch settings" });
@@ -961,11 +946,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Invalid API key format. Must start with 'sk-'" });
       }
 
-      // In production, you'd update environment variables or Replit secrets
-      // For now, just validate and respond
+      await storage.updateAdminAISettings({
+        apiKeys: { [provider]: { key: apiKey, rotated: new Date().toISOString() } }
+      });
+
       res.json({
         success: true,
-        message: `${provider} API key updated. Please restart the application for changes to take effect.`,
+        message: `${provider} API key updated successfully. New settings are now active.`,
       });
     } catch (error: any) {
       console.error("Update API key error:", error);
@@ -995,11 +982,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Model name cannot be empty" });
       }
 
-      // In production, you'd update environment variables
-      // For now, just validate and respond
+      await storage.updateAdminAISettings({
+        models: { [provider]: model }
+      });
+
       res.json({
         success: true,
-        message: `${provider} model updated to "${model}". Please restart the application for changes to take effect.`,
+        message: `${provider} model updated to "${model}". New settings are now active.`,
       });
     } catch (error: any) {
       console.error("Update model error:", error);
