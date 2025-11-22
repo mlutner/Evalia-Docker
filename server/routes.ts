@@ -1007,9 +1007,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const settings = await storage.getAdminAISettings();
       const apiKey = settings.apiKeys.survey_generation?.key;
+      const model = settings.models.survey_generation;
+      const baseUrl = settings.baseUrls.survey_generation;
+      const parameters = settings.parameters.survey_generation;
 
       if (!apiKey) {
         return res.status(500).json({ error: "AI enhancement not configured by admin" });
+      }
+
+      if (!model) {
+        return res.status(500).json({ error: "Model not configured by admin" });
       }
 
       const systemPrompt = `You are an expert survey design assistant. Your task is to enhance and improve a survey creation prompt to make it more detailed and effective.
@@ -1028,8 +1035,8 @@ GUIDELINES FOR ENHANCEMENT:
 - Suggest question types that fit the survey topic
 - Add any missing context that would help generate better questions`;
 
-      // Use OpenRouter with Mistral small model
-      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      // Use the admin-configured model and base URL for survey generation
+      const response = await fetch(`${baseUrl}/chat/completions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -1038,19 +1045,19 @@ GUIDELINES FOR ENHANCEMENT:
           "X-Title": "Evalia Survey Builder",
         },
         body: JSON.stringify({
-          model: "mistralai/mistral-7b-instruct",
+          model,
           messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: prompt },
           ],
-          temperature: 0.7,
-          max_tokens: 1024,
+          temperature: parameters?.temperature || 0.7,
+          max_tokens: parameters?.max_tokens || 1024,
         }),
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("OpenRouter API error:", errorText);
+        console.error("AI API error:", errorText);
         return res.status(500).json({ error: "Failed to enhance prompt with AI" });
       }
 
