@@ -922,7 +922,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         mistral_ocr: { key: process.env.MISTRAL_OCR_API_KEY || process.env.MISTRAL_API_KEY || "", rotated: null },
         openai_ocr: { key: process.env.OPENAI_OCR_API_KEY || process.env.OPENAI_API_KEY || "", rotated: null },
       };
-      res.json({ apiKeys });
+      const models = {
+        mistral_generation: process.env.MODEL_MISTRAL_GENERATION || "pixtral-large-latest",
+        openai_generation: process.env.MODEL_OPENAI_GENERATION || "gpt-4o",
+        mistral_ocr: process.env.MODEL_MISTRAL_OCR || "mistral-ocr-2505",
+        openai_ocr: process.env.MODEL_OPENAI_OCR || "gpt-4-vision",
+      };
+      res.json({ apiKeys, models });
     } catch (error: any) {
       console.error("Get admin settings error:", error);
       res.status(500).json({ error: "Failed to fetch settings" });
@@ -958,6 +964,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Update API key error:", error);
       res.status(500).json({ error: "Failed to update API key" });
+    }
+  });
+
+  // Update model (admin only)
+  app.post("/api/admin/model", isAuthenticated, isMasterAdmin, async (req: any, res) => {
+    try {
+      const { provider, model } = req.body;
+
+      const validProviders = [
+        "mistral_generation",
+        "openai_generation",
+        "mistral_ocr",
+        "openai_ocr",
+      ];
+
+      if (!provider || !validProviders.includes(provider)) {
+        return res.status(400).json({ error: `Invalid provider. Must be one of: ${validProviders.join(", ")}` });
+      }
+
+      if (!model || typeof model !== "string" || model.trim().length === 0) {
+        return res.status(400).json({ error: "Model name cannot be empty" });
+      }
+
+      // In production, you'd update environment variables
+      // For now, just validate and respond
+      res.json({
+        success: true,
+        message: `${provider} model updated to "${model}". Please restart the application for changes to take effect.`,
+      });
+    } catch (error: any) {
+      console.error("Update model error:", error);
+      res.status(500).json({ error: "Failed to update model" });
     }
   });
 

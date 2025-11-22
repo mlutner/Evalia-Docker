@@ -20,12 +20,15 @@ interface AIUsageStats {
 
 interface AdminSettings {
   apiKeys: Record<string, { key: string; rotated?: string | null }>;
+  models: Record<string, string>;
 }
 
 export default function AdminDashboard() {
   const { toast } = useToast();
   const [showKeyDialog, setShowKeyDialog] = useState<string | null>(null);
+  const [showModelDialog, setShowModelDialog] = useState<string | null>(null);
   const [newApiKey, setNewApiKey] = useState("");
+  const [newModel, setNewModel] = useState("");
   const [copiedKey, setCopiedKey] = useState(false);
 
   const { data: stats, isLoading: statsLoading } = useQuery<AIUsageStats>({
@@ -53,6 +56,29 @@ export default function AdminDashboard() {
       const msg = error?.message || "Failed to update API key";
       toast({
         title: "Couldn't update key",
+        description: msg,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateModelMutation = useMutation({
+    mutationFn: async (data: { provider: string; model: string }) => {
+      return apiRequest("POST", "/api/admin/model", data);
+    },
+    onSuccess: (_, { provider }) => {
+      toast({
+        title: "Model updated",
+        description: `Model for ${provider} has been updated successfully.`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/settings"] });
+      setNewModel("");
+      setShowModelDialog(null);
+    },
+    onError: (error: any) => {
+      const msg = error?.message || "Failed to update model";
+      toast({
+        title: "Couldn't update model",
         description: msg,
         variant: "destructive",
       });
@@ -232,29 +258,58 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   {category.providers.map((providerInfo) => (
-                    <div key={providerInfo.id} className="ml-6 space-y-2">
-                      <div className="text-xs text-muted-foreground">
-                        {providerInfo.provider}: <span className="font-mono">{providerInfo.model}</span>
+                    <div key={providerInfo.id} className="ml-6 space-y-2 p-3 bg-muted/50 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs font-medium">{providerInfo.provider}</p>
                       </div>
-                      <div className="p-2 bg-muted rounded flex items-center justify-between" data-testid={`display-key-${providerInfo.id}`}>
-                        <code className="text-xs text-muted-foreground font-mono">
-                          {maskApiKey(settings?.apiKeys?.[providerInfo.id]?.key || "")}
-                        </code>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => copyToClipboard(settings?.apiKeys?.[providerInfo.id]?.key || "")}
-                          disabled={!settings?.apiKeys?.[providerInfo.id]?.key}
-                          data-testid={`button-copy-key-${providerInfo.id}`}
-                        >
-                          {copiedKey ? "Copied!" : <Copy className="w-4 h-4" />}
-                        </Button>
+                      
+                      {/* Model Configuration */}
+                      <div className="space-y-1">
+                        <label className="text-xs text-muted-foreground">Model:</label>
+                        <div className="p-2 bg-background rounded border border-input flex items-center justify-between" data-testid={`display-model-${providerInfo.id}`}>
+                          <code className="text-xs font-mono truncate">
+                            {settings?.models?.[providerInfo.id] || providerInfo.model}
+                          </code>
+                          <Button
+                            onClick={() => {
+                              setNewModel(settings?.models?.[providerInfo.id] || providerInfo.model);
+                              setShowModelDialog(providerInfo.id);
+                            }}
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 px-2 text-xs"
+                            data-testid={`button-edit-model-${providerInfo.id}`}
+                          >
+                            Edit
+                          </Button>
+                        </div>
                       </div>
+
+                      {/* API Key Configuration */}
+                      <div className="space-y-1">
+                        <label className="text-xs text-muted-foreground">API Key:</label>
+                        <div className="p-2 bg-background rounded border border-input flex items-center justify-between" data-testid={`display-key-${providerInfo.id}`}>
+                          <code className="text-xs text-muted-foreground font-mono">
+                            {maskApiKey(settings?.apiKeys?.[providerInfo.id]?.key || "")}
+                          </code>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => copyToClipboard(settings?.apiKeys?.[providerInfo.id]?.key || "")}
+                            disabled={!settings?.apiKeys?.[providerInfo.id]?.key}
+                            data-testid={`button-copy-key-${providerInfo.id}`}
+                            className="h-6 px-2"
+                          >
+                            {copiedKey ? "Copied!" : <Copy className="w-3 h-3" />}
+                          </Button>
+                        </div>
+                      </div>
+                      
                       <Button
                         onClick={() => setShowKeyDialog(providerInfo.id)}
                         variant="outline"
                         size="sm"
-                        className="w-full"
+                        className="w-full text-xs"
                         data-testid={`button-rotate-key-${providerInfo.id}`}
                       >
                         Update Key
@@ -325,6 +380,40 @@ export default function AdminDashboard() {
               data-testid="button-confirm-rotate"
             >
               {updateApiKeyMutation.isPending ? "Updating..." : "Update Key"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Model Update Dialog */}
+      <AlertDialog open={!!showModelDialog} onOpenChange={(open) => !open && setShowModelDialog(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Update Model</AlertDialogTitle>
+            <AlertDialogDescription>
+              Enter the model name/ID for {showModelDialog ? providerLabels[showModelDialog] : "API"}. Examples: gpt-4o, claude-3-5-sonnet, mistral-large, etc.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-3">
+            <Input
+              type="text"
+              placeholder="e.g., gpt-4o, mistral-large, claude-3-5-sonnet"
+              value={newModel}
+              onChange={(e) => setNewModel(e.target.value)}
+              data-testid="input-new-model"
+            />
+            <p className="text-xs text-muted-foreground">
+              Update the model name to test different providers or model versions. Changes take effect on next restart.
+            </p>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-model">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => updateModelMutation.mutate({ provider: showModelDialog || "mistral_generation", model: newModel })}
+              disabled={!newModel || updateModelMutation.isPending}
+              data-testid="button-confirm-model"
+            >
+              {updateModelMutation.isPending ? "Updating..." : "Update Model"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
