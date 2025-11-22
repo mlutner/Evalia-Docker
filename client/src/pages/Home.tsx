@@ -4,9 +4,7 @@ import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import { useAuth } from "@/hooks/useAuth";
 
-import surveyImage from "@assets/image_1763774897410.png";
-
-import ChatGPT_Image_Nov_21__2025__05_27_53_PM from "@assets/ChatGPT Image Nov 21, 2025, 05_27_53 PM.png";
+import surveyImage from "@assets/ChatGPT Image Nov 21, 2025, 05_34_39 PM_1763775306037.png";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -32,19 +30,8 @@ export default function Home() {
       <Header />
       <main className="container mx-auto px-4 py-12 md:py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left Side - Image */}
-          <div className="flex items-center justify-center order-2 lg:order-1">
-            <div className="relative w-full">
-              <img
-                src={ChatGPT_Image_Nov_21__2025__05_27_53_PM}
-                alt="Survey illustration"
-                className="w-full h-auto object-contain scale-125"
-              />
-            </div>
-          </div>
-
-          {/* Right Side Content */}
-          <div className="space-y-8 order-1 lg:order-2">
+          {/* Left Side Content */}
+          <div className="space-y-8">
             {/* Headline */}
             <div className="space-y-6">
               <h1 className="md:text-6xl font-bold text-[69px]" style={{color: '#071A32'}}>
@@ -80,6 +67,17 @@ export default function Home() {
             <p className="text-sm text-muted-foreground">
               Trusted by trainers, facilitators, HR teams, and L&D professionals.
             </p>
+          </div>
+
+          {/* Right Side - Image */}
+          <div className="flex items-center justify-center">
+            <div className="relative w-full">
+              <img
+                src={surveyImage}
+                alt="Survey illustration"
+                className="w-full h-auto object-contain scale-125"
+              />
+            </div>
           </div>
         </div>
       </main>
