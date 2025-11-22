@@ -406,156 +406,152 @@ export default function Builder() {
                 </TabsContent>
 
                 <TabsContent value="ai" className="space-y-10 pt-8">
-                  <div className="space-y-6 max-w-3xl mx-auto">
-                    <div className="bg-gradient-to-br from-accent/8 via-accent/4 to-background rounded-xl p-6 md:p-8 border border-accent/20">
-                      <h3 className="text-lg font-semibold mb-3">Generate with AI</h3>
-                      <p className="text-muted-foreground leading-relaxed">
-                        Describe what your survey is about and what you want to measure. AI will generate custom questions tailored to your needs. Be specific about the training topic, learning objectives, or feedback you're seeking. Example: "I need a survey to assess employee understanding of our new compliance policy and willingness to apply it on the job."
-                      </p>
-                    </div>
-                    
-                    {fileProcessing.isProcessing ? (
-                      <div className="bg-primary/5 border border-primary/20 rounded-lg p-8 text-center space-y-4">
-                        <div className="flex justify-center">
-                          <Loader2 className="w-12 h-12 text-primary animate-spin" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-lg mb-1">AI is creating your survey...</p>
-                          <p className="text-sm text-muted-foreground">
-                            This may take 10-20 seconds. We're analyzing your description and crafting thoughtful questions.
-                          </p>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <div>
-                          <label className="text-sm font-medium mb-2 block">
-                            Describe your survey
-                          </label>
-                          <Textarea
-                            value={prompt}
-                            onChange={(e) => setPrompt(e.target.value)}
-                            placeholder="Example: I need a survey to gather feedback on our recent training workshop about leadership skills. Include questions about content quality, trainer effectiveness, and practical application."
-                            className="min-h-[150px] text-base"
-                            data-testid="input-survey-prompt"
-                          />
-                        </div>
-                        <Button
-                          size="lg"
-                          onClick={handleGenerateFromPrompt}
-                          disabled={!prompt.trim() || fileProcessing.isProcessing}
-                          className="w-full"
-                          data-testid="button-generate"
-                        >
-                          <Sparkles className="w-5 h-5 mr-2" />
-                          Generate Survey with AI
-                        </Button>
-                      </>
-                    )}
-
-                    {surveyState.currentQuestions.length > 0 && (
-                      <div className="mt-10 bg-muted/40 border border-border/50 rounded-xl p-6 md:p-8">
-                        <label className="text-sm font-semibold mb-3 block text-foreground">
-                          Survey Title <span className="text-destructive">*</span>
-                        </label>
-                        <Input
-                          value={surveyState.currentSurveyTitle}
-                          onChange={(e) => surveyState.setCurrentSurveyTitle(e.target.value)}
-                          placeholder="Enter a title for your survey..."
-                          className="text-base"
-                          data-testid="input-survey-title-ai"
-                        />
-                        <p className="text-xs text-muted-foreground mt-2">
-                          AI has suggested a title based on your description. Feel free to customize it.
-                        </p>
-                      </div>
-                    )}
+                  <div className="bg-gradient-to-br from-accent/8 via-accent/4 to-background rounded-xl p-6 md:p-8 border border-accent/20">
+                    <h3 className="text-lg font-semibold mb-3">Generate with AI</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Describe what your survey is about and what you want to measure. AI will generate custom questions tailored to your needs. Be specific about the training topic, learning objectives, or feedback you're seeking. Example: "I need a survey to assess employee understanding of our new compliance policy and willingness to apply it on the job."
+                    </p>
                   </div>
-                </TabsContent>
-
-                <TabsContent value="upload" className="space-y-10 pt-8">
-                  <div className="max-w-3xl mx-auto space-y-8">
-                    {/* File Upload Section */}
-                    <div className="space-y-4 bg-gradient-to-br from-green-500/8 via-green-500/4 to-background rounded-xl p-6 md:p-8 border border-green-600/20">
+                  
+                  {fileProcessing.isProcessing ? (
+                    <div className="bg-primary/5 border border-primary/20 rounded-lg p-8 text-center space-y-4">
+                      <div className="flex justify-center">
+                        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+                      </div>
                       <div>
-                        <h3 className="text-lg font-semibold mb-3">Upload Document or Paste Text</h3>
-                        <p className="text-muted-foreground leading-relaxed">
-                          Upload a PDF, DOCX, or TXT document (or paste text) and AI will analyze the content and automatically generate survey questions. Works great for training materials, course content, or any document you want to turn into an assessment.
+                        <p className="font-medium text-lg mb-1">AI is creating your survey...</p>
+                        <p className="text-sm text-muted-foreground">
+                          This may take 10-20 seconds. We're analyzing your description and crafting thoughtful questions.
                         </p>
                       </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
                       <div>
                         <label className="text-sm font-medium mb-2 block">
-                          Choose a document
-                        </label>
-                        <FileUploadZone
-                          onFileSelect={handleFileSelect}
-                          isProcessing={fileProcessing.isProcessing}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Divider */}
-                    <div className="relative">
-                      <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-muted"></div>
-                      </div>
-                      <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-background text-muted-foreground">Or</span>
-                      </div>
-                    </div>
-
-                    {/* Paste Text Section */}
-                    <div className="space-y-4">
-                      <div>
-                        <h3 className="text-lg font-semibold mb-2">Paste Text</h3>
-                        <p className="text-muted-foreground mb-4">
-                          Paste your content directly and AI will create survey questions from it.
-                        </p>
-                      </div>
-                      <div>
-                        <label htmlFor="paste-text" className="text-sm font-medium mb-2 block">
-                          Paste your text here
+                          Describe your survey
                         </label>
                         <Textarea
-                          id="paste-text"
-                          value={fileProcessing.parsedText}
-                          onChange={(e) => fileProcessing.setParsedText(e.target.value)}
-                          placeholder="Paste text content, training materials, course notes, or any document content..."
-                          className="min-h-32 resize-none"
-                          disabled={fileProcessing.isProcessing}
-                          data-testid="textarea-paste-text"
+                          value={prompt}
+                          onChange={(e) => setPrompt(e.target.value)}
+                          placeholder="Example: I need a survey to gather feedback on our recent training workshop about leadership skills. Include questions about content quality, trainer effectiveness, and practical application."
+                          className="min-h-[150px] text-base"
+                          data-testid="input-survey-prompt"
                         />
                       </div>
                       <Button
                         size="lg"
-                        onClick={handlePasteText}
-                        disabled={!fileProcessing.parsedText.trim() || fileProcessing.isProcessing}
+                        onClick={handleGenerateFromPrompt}
+                        disabled={!prompt.trim() || fileProcessing.isProcessing}
                         className="w-full"
-                        data-testid="button-process-text"
+                        data-testid="button-generate"
                       >
                         <Sparkles className="w-5 h-5 mr-2" />
-                        Process Text & Generate Survey
+                        Generate Survey with AI
                       </Button>
                     </div>
+                  )}
 
-                    {surveyState.currentQuestions.length > 0 && (
-                      <div className="mt-8 bg-card border rounded-lg p-6">
-                        <label className="text-sm font-medium mb-2 block">
-                          Survey Title <span className="text-destructive">*</span>
-                        </label>
-                        <Input
-                          value={surveyState.currentSurveyTitle}
-                          onChange={(e) => surveyState.setCurrentSurveyTitle(e.target.value)}
-                          placeholder="Enter a title for your survey..."
-                          className="text-base"
-                          data-testid="input-survey-title-upload"
-                        />
-                        <p className="text-xs text-muted-foreground mt-2">
-                          AI has suggested a title based on your document. Feel free to customize it.
-                        </p>
-                      </div>
-                    )}
+                  {surveyState.currentQuestions.length > 0 && (
+                    <div className="mt-10 bg-muted/40 border border-border/50 rounded-xl p-6 md:p-8">
+                      <label className="text-sm font-semibold mb-3 block text-foreground">
+                        Survey Title <span className="text-destructive">*</span>
+                      </label>
+                      <Input
+                        value={surveyState.currentSurveyTitle}
+                        onChange={(e) => surveyState.setCurrentSurveyTitle(e.target.value)}
+                        placeholder="Enter a title for your survey..."
+                        className="text-base"
+                        data-testid="input-survey-title-ai"
+                      />
+                      <p className="text-xs text-muted-foreground mt-2">
+                        AI has suggested a title based on your description. Feel free to customize it.
+                      </p>
+                    </div>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="upload" className="space-y-10 pt-8">
+                  {/* File Upload Section */}
+                  <div className="space-y-4 bg-gradient-to-br from-green-500/8 via-green-500/4 to-background rounded-xl p-6 md:p-8 border border-green-600/20">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3">Upload Document or Paste Text</h3>
+                      <p className="text-muted-foreground leading-relaxed">
+                        Upload a PDF, DOCX, or TXT document (or paste text) and AI will analyze the content and automatically generate survey questions. Works great for training materials, course content, or any document you want to turn into an assessment.
+                      </p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">
+                        Choose a document
+                      </label>
+                      <FileUploadZone
+                        onFileSelect={handleFileSelect}
+                        isProcessing={fileProcessing.isProcessing}
+                      />
+                    </div>
                   </div>
+
+                  {/* Divider */}
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-muted"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="px-2 bg-background text-muted-foreground">Or</span>
+                    </div>
+                  </div>
+
+                  {/* Paste Text Section */}
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Paste Text</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Paste your content directly and AI will create survey questions from it.
+                      </p>
+                    </div>
+                    <div>
+                      <label htmlFor="paste-text" className="text-sm font-medium mb-2 block">
+                        Paste your text here
+                      </label>
+                      <Textarea
+                        id="paste-text"
+                        value={fileProcessing.parsedText}
+                        onChange={(e) => fileProcessing.setParsedText(e.target.value)}
+                        placeholder="Paste text content, training materials, course notes, or any document content..."
+                        className="min-h-32 resize-none"
+                        disabled={fileProcessing.isProcessing}
+                        data-testid="textarea-paste-text"
+                      />
+                    </div>
+                    <Button
+                      size="lg"
+                      onClick={handlePasteText}
+                      disabled={!fileProcessing.parsedText.trim() || fileProcessing.isProcessing}
+                      className="w-full"
+                      data-testid="button-process-text"
+                    >
+                      <Sparkles className="w-5 h-5 mr-2" />
+                      Process Text & Generate Survey
+                    </Button>
+                  </div>
+
+                  {surveyState.currentQuestions.length > 0 && (
+                    <div className="mt-10 bg-muted/40 border border-border/50 rounded-xl p-6 md:p-8">
+                      <label className="text-sm font-semibold mb-3 block text-foreground">
+                        Survey Title <span className="text-destructive">*</span>
+                      </label>
+                      <Input
+                        value={surveyState.currentSurveyTitle}
+                        onChange={(e) => surveyState.setCurrentSurveyTitle(e.target.value)}
+                        placeholder="Enter a title for your survey..."
+                        className="text-base"
+                        data-testid="input-survey-title-upload"
+                      />
+                      <p className="text-xs text-muted-foreground mt-2">
+                        AI has suggested a title based on your document. Feel free to customize it.
+                      </p>
+                    </div>
+                  )}
                 </TabsContent>
               </Tabs>
             </div>
