@@ -15,6 +15,7 @@ export interface IStorage {
   updateSurvey(id: string, survey: Partial<InsertSurvey>): Promise<Survey | undefined>;
   deleteSurvey(id: string): Promise<boolean>;
   checkSurveyOwnership(surveyId: string, userId: string): Promise<boolean>;
+  duplicateSurvey(id: string, userId: string): Promise<Survey | undefined>;
   
   // Respondent operations
   createRespondent(surveyId: string, respondent: InsertSurveyRespondent): Promise<SurveyRespondent>;
@@ -115,6 +116,20 @@ export class MemStorage implements IStorage {
 
   async deleteSurvey(id: string): Promise<boolean> {
     return this.surveys.delete(id);
+  }
+
+  async duplicateSurvey(id: string, userId: string): Promise<Survey | undefined> {
+    const survey = this.surveys.get(id);
+    if (!survey) return undefined;
+    const newSurvey: Survey = {
+      ...survey,
+      id: randomUUID(),
+      title: `${survey.title} (Copy)`,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.surveys.set(newSurvey.id, newSurvey);
+    return newSurvey;
   }
 
   async createResponse(surveyId: string, answers: Record<string, string | string[]>): Promise<SurveyResponse> {
@@ -273,6 +288,33 @@ export class DbStorage implements IStorage {
     // Then delete the survey
     const result = await db.delete(surveys).where(eq(surveys.id, id)).returning();
     return result.length > 0;
+  }
+
+  async duplicateSurvey(id: string, userId: string): Promise<Survey | undefined> {
+    const survey = await this.getSurvey(id);
+    if (!survey) return undefined;
+    
+    const newSurvey = await this.createSurvey(
+      {
+        title: `${survey.title} (Copy)`,
+        description: survey.description,
+        questions: survey.questions,
+        welcomeMessage: survey.welcomeMessage,
+        thankYouMessage: survey.thankYouMessage,
+        illustrationUrl: survey.illustrationUrl,
+        trainerName: survey.trainerName,
+        trainingDate: survey.trainingDate,
+        tags: survey.tags,
+        isAnonymous: survey.isAnonymous,
+        webhookUrl: survey.webhookUrl,
+        status: survey.status,
+        publishedAt: null,
+        scoreConfig: survey.scoreConfig,
+      },
+      userId
+    );
+    
+    return newSurvey;
   }
 
   async createResponse(surveyId: string, answers: Record<string, string | string[]>): Promise<SurveyResponse> {

@@ -273,6 +273,7 @@ export default function Dashboard() {
                       onAnalyze={() => handleAnalyze(survey.id)}
                       onExport={() => handleExport(survey.id)}
                       onDelete={() => handleDelete(survey.id)}
+                      onDuplicate={() => handleDuplicate(survey.id)}
                       onManageRespondents={() => setLocation(`/respondents/${survey.id}`)}
                       index={index}
                     />
@@ -328,6 +329,7 @@ export default function Dashboard() {
                       onAnalyze={() => handleAnalyze(survey.id)}
                       onExport={() => handleExport(survey.id)}
                       onDelete={() => handleDelete(survey.id)}
+                      onDuplicate={() => handleDuplicate(survey.id)}
                       onManageRespondents={() => setLocation(`/respondents/${survey.id}`)}
                       index={index}
                     />

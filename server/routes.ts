@@ -429,6 +429,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Duplicate survey (protected)
+  app.post("/api/surveys/:id/duplicate", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user.claims.sub;
+
+      // Verify ownership
+      const isOwner = await storage.checkSurveyOwnership(id, userId);
+      if (!isOwner) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      const duplicated = await storage.duplicateSurvey(id, userId);
+      if (!duplicated) {
+        return res.status(404).json({ error: "Survey not found" });
+      }
+
+      const responseCount = await storage.getResponseCount(duplicated.id);
+      const questionCount = duplicated.questions?.length || 0;
+      res.status(201).json({
+        ...duplicated,
+        responseCount,
+        questionCount,
+      });
+    } catch (error: any) {
+      console.error("Duplicate survey error:", error);
+      res.status(500).json({ error: "Failed to duplicate survey" });
+    }
+  });
+
   // Get single survey (public - no authentication required)
   app.get("/api/surveys/:id", async (req, res) => {
     try {
