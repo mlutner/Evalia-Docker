@@ -26,7 +26,7 @@ export default function SurveyResults({
   );
 
   // Find interpretations and range info for each score
-  const getScoreRangeInfo = (categoryId: string, score: number) => {
+  const getScoreRangeInfo = (categoryId: string, score: number, maxScore: number) => {
     const config = survey.scoreConfig;
     if (!config?.scoreRanges) return null;
     
@@ -36,16 +36,19 @@ export default function SurveyResults({
     
     if (!range) return null;
     
-    // Calculate position within range (0 = min, 1 = max)
-    const rangeSize = range.maxScore - range.minScore;
-    const positionInRange = (score - range.minScore) / rangeSize;
+    // Calculate position on FULL SCALE (0 to maxScore)
+    const percentageOfMax = (score / maxScore) * 100;
     
-    // Determine color based on position: red (low), orange (mid), green (high)
+    // Determine color and performance level based on full scale: red (0-33%), orange (33-66%), green (66-100%)
     let progressColor = "bg-red-500";
-    if (positionInRange > 0.66) {
+    let performanceLevel = "low";
+    
+    if (percentageOfMax >= 66) {
       progressColor = "bg-green-500";
-    } else if (positionInRange > 0.33) {
+      performanceLevel = "high";
+    } else if (percentageOfMax >= 33) {
       progressColor = "bg-amber-500";
+      performanceLevel = "mid";
     }
     
     return {
@@ -53,10 +56,8 @@ export default function SurveyResults({
       label: range.label,
       minScore: range.minScore,
       maxScore: range.maxScore,
-      isHighPerformance: positionInRange >= 0.8,
-      isLowPerformance: positionInRange <= 0.2,
-      isMidPerformance: positionInRange > 0.2 && positionInRange < 0.8,
-      positionInRange,
+      percentageOfMax,
+      performanceLevel,
       progressColor,
     };
   };
@@ -117,22 +118,23 @@ export default function SurveyResults({
         {/* Score Cards */}
         <div className="space-y-6 mb-8">
           {scores.map((result) => {
-            const rangeInfo = getScoreRangeInfo(result.categoryId, result.score);
+            const rangeInfo = getScoreRangeInfo(result.categoryId, result.score, result.maxScore);
             const progressColor = rangeInfo?.progressColor || "bg-blue-500";
 
             const rangeLabel = rangeInfo?.label || "Assessment";
 
-            // Generate contextual recommendations based on performance level
+            // Generate contextual recommendations based on performance level (mapped to colors)
             const getRecommendation = () => {
               if (!rangeInfo) return null;
               
               const config = survey.scoreConfig;
               const feedbackTemplates = config?.feedbackTemplates || [];
               
-              if (rangeInfo.isHighPerformance) {
+              // Map recommendations to color-coded performance levels
+              if (rangeInfo.performanceLevel === "high") {
                 const template = feedbackTemplates.find(f => f.level === "high")?.template;
                 return template || `You demonstrate strong ${result.categoryName.toLowerCase()}. Continue to leverage your strengths and consider mentoring others in this area.`;
-              } else if (rangeInfo.isLowPerformance) {
+              } else if (rangeInfo.performanceLevel === "low") {
                 const template = feedbackTemplates.find(f => f.level === "low")?.template;
                 return template || `Focus on developing your ${result.categoryName.toLowerCase()}. Consider seeking feedback, practicing key skills, and exploring resources to strengthen this competency.`;
               } else {
@@ -204,9 +206,9 @@ export default function SurveyResults({
                     {rangeInfo && (
                       <p className="text-xs text-muted-foreground">
                         Range: {rangeInfo.minScore} - {rangeInfo.maxScore}
-                        {rangeInfo.isHighPerformance && " • Excellent"}
-                        {rangeInfo.isMidPerformance && " • On track"}
-                        {rangeInfo.isLowPerformance && " • Needs development"}
+                        {rangeInfo.performanceLevel === "high" && " • Excellent"}
+                        {rangeInfo.performanceLevel === "mid" && " • On track"}
+                        {rangeInfo.performanceLevel === "low" && " • Needs development"}
                       </p>
                     )}
                   </div>
