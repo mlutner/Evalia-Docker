@@ -238,7 +238,7 @@ export default function Builder() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10">
       <Header />
       <main className="container mx-auto px-4 py-8">
         {/* Back to Dashboard Button */}
@@ -364,7 +364,7 @@ export default function Builder() {
                 </div>
 
                 <TabsContent value="templates" className="space-y-10 pt-8">
-                  <div className="bg-primary/3 rounded-xl p-6 md:p-8 border border-primary/10">
+                  <div className="bg-gradient-to-br from-primary/5 via-primary/3 to-background rounded-xl p-6 md:p-8 border border-primary/15">
                     <h3 className="text-lg font-semibold mb-3">Professional Training Templates</h3>
                     <p className="text-muted-foreground leading-relaxed">
                       Start with proven survey frameworks designed for trainers. Browse templates below, preview them to see all questions, and click "Use Template" to get started. Once selected, you can customize the title and edit any questions in Step 2.
@@ -407,7 +407,7 @@ export default function Builder() {
 
                 <TabsContent value="ai" className="space-y-10 pt-8">
                   <div className="space-y-6 max-w-3xl mx-auto">
-                    <div className="bg-accent/5 rounded-xl p-6 md:p-8 border border-accent/20">
+                    <div className="bg-gradient-to-br from-accent/8 via-accent/4 to-background rounded-xl p-6 md:p-8 border border-accent/20">
                       <h3 className="text-lg font-semibold mb-3">Generate with AI</h3>
                       <p className="text-muted-foreground leading-relaxed">
                         Describe what your survey is about and what you want to measure. AI will generate custom questions tailored to your needs. Be specific about the training topic, learning objectives, or feedback you're seeking. Example: "I need a survey to assess employee understanding of our new compliance policy and willingness to apply it on the job."
@@ -476,7 +476,7 @@ export default function Builder() {
                 <TabsContent value="upload" className="space-y-10 pt-8">
                   <div className="max-w-3xl mx-auto space-y-8">
                     {/* File Upload Section */}
-                    <div className="space-y-4 bg-success/3 rounded-xl p-6 md:p-8 border border-success/20">
+                    <div className="space-y-4 bg-gradient-to-br from-green-500/8 via-green-500/4 to-background rounded-xl p-6 md:p-8 border border-green-600/20">
                       <div>
                         <h3 className="text-lg font-semibold mb-3">Upload Document or Paste Text</h3>
                         <p className="text-muted-foreground leading-relaxed">
