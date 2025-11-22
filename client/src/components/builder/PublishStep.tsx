@@ -4,7 +4,7 @@ import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown, Clock, BookOpen, ChevronRight, Link2, Unlink2 } from "lucide-react";
+import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown, Clock, BookOpen, ChevronRight, Link2, Unlink2, FileText, BarChart3 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -204,6 +204,33 @@ export default function PublishStep({
   };
 
   const STANDARD_PRIVACY_STATEMENT = "Your responses are confidential and will be kept strictly anonymous. All data will be handled according to applicable privacy regulations.";
+
+  // Helper function to determine if a question type contributes to scoring
+  const getScorableQuestionTypes = () => ["rating", "nps", "multiple_choice", "checkbox", "number"];
+  const isScorableQuestion = (q: Question) => getScorableQuestionTypes().includes(q.type);
+  const scorableQuestions = questions.filter(isScorableQuestion);
+
+  // Helper to get max points a question can contribute
+  const getMaxPointsForQuestion = (q: Question): number => {
+    if (q.type === "rating") return q.ratingScale || 5;
+    if (q.type === "nps") return 10;
+    if (q.type === "number") return 5;
+    if (q.type === "multiple_choice") return 5;
+    if (q.type === "checkbox") return 5;
+    return 0;
+  };
+
+  // Get question type display
+  const getQuestionTypeLabel = (type: string): string => {
+    const labels: Record<string, string> = {
+      rating: "Rating",
+      nps: "NPS",
+      multiple_choice: "Multiple Choice",
+      checkbox: "Checkboxes",
+      number: "Number",
+    };
+    return labels[type] || type;
+  };
 
   // Auto-populate estimated time based on question count
   useEffect(() => {
@@ -512,149 +539,180 @@ export default function PublishStep({
                       </p>
                     </div>
 
-                    {/* Manual Categories with Score Ranges */}
-                    <div className="space-y-3">
-                      <div>
-                        <label className="text-xs font-semibold text-foreground mb-2 block">Scoring Categories</label>
-                        <div className="flex gap-2">
-                          <Input
-                            value={newCategoryName}
-                            onChange={(e) => setNewCategoryName(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
-                                e.preventDefault();
-                                handleAddCategory();
-                              }
-                            }}
-                            placeholder="e.g., Leadership Style, Engagement Level..."
-                            className="text-sm"
-                            data-testid="input-category-name"
-                          />
-                          <Button
-                            type="button"
-                            onClick={handleAddCategory}
-                            size="sm"
-                            className="flex-shrink-0"
-                            data-testid="button-add-category"
-                          >
-                            <Plus className="w-4 h-4" />
-                          </Button>
-                        </div>
+                    {/* Create New Category */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-semibold text-foreground">Add Scoring Category</label>
+                      <div className="flex gap-2">
+                        <Input
+                          value={newCategoryName}
+                          onChange={(e) => setNewCategoryName(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              handleAddCategory();
+                            }
+                          }}
+                          placeholder="e.g., Leadership, Engagement, Technical Skills..."
+                          className="text-sm"
+                          data-testid="input-category-name"
+                        />
+                        <Button
+                          type="button"
+                          onClick={handleAddCategory}
+                          size="sm"
+                          className="flex-shrink-0"
+                          data-testid="button-add-category"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </Button>
                       </div>
+                    </div>
 
-                      {categories.length > 0 && (
-                        <div className="space-y-2 p-3 bg-muted/40 rounded-lg border">
-                          <p className="text-xs font-medium text-muted-foreground">Configured Categories & Score Ranges</p>
+                    {/* Category Configuration - Consolidated Self-Contained Units */}
+                    {categories.length > 0 && (
+                      <DndContext onDragEnd={handleQuestionDragEnd}>
+                        <div className="space-y-3">
                           {categories.map((cat) => {
                             const ranges = getCategoryRanges(cat.id);
+                            const assignedQuestions = scorableQuestions.filter(q => q.scoringCategory === cat.id);
+                            const unassignedScorableQuestions = scorableQuestions.filter(q => !q.scoringCategory || q.scoringCategory !== cat.id);
+                            const maxPossiblePoints = assignedQuestions.reduce((sum, q) => sum + getMaxPointsForQuestion(q), 0);
                             const isExpanded = expandedCategories.includes(cat.id);
+
                             return (
-                              <div key={cat.id} className="bg-background rounded border" data-testid={`category-${cat.id}`}>
+                              <div key={cat.id} className="border rounded-lg bg-card overflow-hidden" data-testid={`category-${cat.id}`}>
+                                {/* Category Header */}
                                 <button
                                   onClick={() => toggleExpandCategory(cat.id)}
-                                  className="w-full flex items-center justify-between p-2.5 text-sm hover:bg-muted/50 transition-colors group"
+                                  className="w-full flex items-center justify-between p-3 hover:bg-muted/30 transition-colors group"
                                 >
-                                  <div className="flex items-center gap-2 flex-1">
-                                    <ChevronRight className={`w-4 h-4 text-muted-foreground transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-                                    <span className="font-medium">{cat.name}</span>
-                                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">{ranges.length} range{ranges.length !== 1 ? 's' : ''}</span>
+                                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                                    <ChevronRight className={`w-4 h-4 text-muted-foreground flex-shrink-0 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                                    <div className="text-left min-w-0">
+                                      <h4 className="font-semibold text-sm">{cat.name}</h4>
+                                      <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground flex-wrap">
+                                        <span>{assignedQuestions.length} question{assignedQuestions.length !== 1 ? 's' : ''}</span>
+                                        <span>•</span>
+                                        <span>{ranges.length} score range{ranges.length !== 1 ? 's' : ''}</span>
+                                        <span>•</span>
+                                        <span className="text-primary font-medium">{maxPossiblePoints} max pts</span>
+                                      </div>
+                                    </div>
                                   </div>
-                                  <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleRemoveCategory(cat.id); }} className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity" data-testid={`button-remove-category-${cat.id}`}>
+                                  <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleRemoveCategory(cat.id); }} className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" data-testid={`button-remove-category-${cat.id}`}>
                                     <Trash2 className="w-3 h-3 text-destructive" />
                                   </Button>
                                 </button>
-                                
+
                                 {isExpanded && (
-                                  <div className="border-t p-3 space-y-3 bg-muted/20">
-                                    {ranges.map((range, idx) => {
-                                      const actualIdx = scoreRanges.indexOf(range);
-                                      return (
-                                        <div key={actualIdx} className="space-y-2 p-2 bg-background rounded border">
-                                          <div className="grid grid-cols-3 gap-2">
-                                            <Input
-                                              placeholder="Label"
-                                              value={range.label}
-                                              onChange={(e) => handleUpdateScoreRange(actualIdx, 'label', e.target.value)}
-                                              className="text-xs"
-                                              data-testid={`input-range-label-${actualIdx}`}
-                                            />
-                                            <Input
-                                              placeholder="Min"
-                                              type="number"
-                                              value={range.minScore}
-                                              onChange={(e) => handleUpdateScoreRange(actualIdx, 'minScore', parseInt(e.target.value) || 0)}
-                                              className="text-xs"
-                                              data-testid={`input-range-min-${actualIdx}`}
-                                            />
-                                            <Input
-                                              placeholder="Max"
-                                              type="number"
-                                              value={range.maxScore}
-                                              onChange={(e) => handleUpdateScoreRange(actualIdx, 'maxScore', parseInt(e.target.value) || 0)}
-                                              className="text-xs"
-                                              data-testid={`input-range-max-${actualIdx}`}
-                                            />
-                                          </div>
-                                          <Textarea
-                                            placeholder="Interpretation (shown to respondents)"
-                                            value={range.interpretation}
-                                            onChange={(e) => handleUpdateScoreRange(actualIdx, 'interpretation', e.target.value)}
-                                            className="text-xs resize-none"
-                                            rows={2}
-                                            data-testid={`textarea-range-interpretation-${actualIdx}`}
-                                          />
-                                          <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => handleRemoveScoreRange(actualIdx)}
-                                            className="text-destructive"
-                                            data-testid={`button-remove-range-${actualIdx}`}
-                                          >
-                                            <Trash2 className="w-3 h-3 mr-1" />
-                                            Remove Score Range
-                                          </Button>
+                                  <div className="border-t bg-muted/10 p-4 space-y-4">
+                                    {/* Score Ranges Section */}
+                                    <div className="space-y-2">
+                                      <div className="flex items-center justify-between">
+                                        <h5 className="text-xs font-semibold">Score Ranges & Interpretations</h5>
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => handleAddScoreRange(cat.id)}
+                                          className="h-6 text-xs"
+                                          data-testid={`button-add-range-${cat.id}`}
+                                        >
+                                          <Plus className="w-3 h-3 mr-1" />
+                                          Add Range
+                                        </Button>
+                                      </div>
+                                      {ranges.length > 0 ? (
+                                        <div className="space-y-2">
+                                          {ranges.map((range, idx) => {
+                                            const actualIdx = scoreRanges.indexOf(range);
+                                            return (
+                                              <div key={actualIdx} className="bg-background rounded border p-2.5 space-y-2">
+                                                <div className="grid grid-cols-4 gap-2">
+                                                  <Input
+                                                    placeholder="Label (e.g., Low)"
+                                                    value={range.label}
+                                                    onChange={(e) => handleUpdateScoreRange(actualIdx, 'label', e.target.value)}
+                                                    className="text-xs col-span-2"
+                                                    data-testid={`input-range-label-${actualIdx}`}
+                                                  />
+                                                  <Input
+                                                    placeholder="Min"
+                                                    type="number"
+                                                    value={range.minScore}
+                                                    onChange={(e) => handleUpdateScoreRange(actualIdx, 'minScore', parseInt(e.target.value) || 0)}
+                                                    className="text-xs"
+                                                    data-testid={`input-range-min-${actualIdx}`}
+                                                  />
+                                                  <Input
+                                                    placeholder="Max"
+                                                    type="number"
+                                                    value={range.maxScore}
+                                                    onChange={(e) => handleUpdateScoreRange(actualIdx, 'maxScore', parseInt(e.target.value) || 0)}
+                                                    className="text-xs"
+                                                    data-testid={`input-range-max-${actualIdx}`}
+                                                  />
+                                                </div>
+                                                <Textarea
+                                                  placeholder="What does this score range mean? (shown to respondents)"
+                                                  value={range.interpretation}
+                                                  onChange={(e) => handleUpdateScoreRange(actualIdx, 'interpretation', e.target.value)}
+                                                  className="text-xs resize-none"
+                                                  rows={2}
+                                                  data-testid={`textarea-range-interpretation-${actualIdx}`}
+                                                />
+                                                <Button
+                                                  variant="ghost"
+                                                  size="sm"
+                                                  onClick={() => handleRemoveScoreRange(actualIdx)}
+                                                  className="h-6 text-xs text-destructive w-full"
+                                                  data-testid={`button-remove-range-${actualIdx}`}
+                                                >
+                                                  <Trash2 className="w-3 h-3 mr-1" />
+                                                  Remove
+                                                </Button>
+                                              </div>
+                                            );
+                                          })}
                                         </div>
-                                      );
-                                    })}
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => handleAddScoreRange(cat.id)}
-                                      className="w-full"
-                                      data-testid={`button-add-range-${cat.id}`}
-                                    >
-                                      <Plus className="w-3 h-3 mr-1" />
-                                      Add Score Range
-                                    </Button>
+                                      ) : (
+                                        <p className="text-xs text-muted-foreground italic py-2">No score ranges yet. Add one to define scoring levels.</p>
+                                      )}
+                                    </div>
+
+                                    {/* Question Assignment Section */}
+                                    <div className="space-y-2">
+                                      <h5 className="text-xs font-semibold">Assigned Scorable Questions</h5>
+                                      {assignedQuestions.length > 0 ? (
+                                        <div className="space-y-1">
+                                          {assignedQuestions.map((q) => (
+                                            <div key={q.id} className="flex items-center justify-between p-2 bg-background rounded border text-xs group hover:bg-muted/50 transition-colors">
+                                              <span className="truncate flex-1">{q.question}</span>
+                                              <div className="flex items-center gap-1 flex-shrink-0">
+                                                <span className="text-primary font-medium">{getMaxPointsForQuestion(q)}pt</span>
+                                                <span className="text-muted-foreground text-xs">({getQuestionTypeLabel(q.type)})</span>
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      ) : (
+                                        <p className="text-xs text-muted-foreground italic py-2">Drag scorable questions here</p>
+                                      )}
+
+                                      {unassignedScorableQuestions.length > 0 && (
+                                        <CategoryDropZone category={cat} assignedQuestions={assignedQuestions} />
+                                      )}
+                                    </div>
                                   </div>
                                 )}
                               </div>
                             );
                           })}
                         </div>
-                      )}
-                    </div>
 
-                    {/* Question Assignment Section with Drag & Drop */}
-                    {categories.length > 0 && questions.length > 0 && (
-                      <DndContext onDragEnd={handleQuestionDragEnd}>
-                        <div className="space-y-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
-                          <p className="text-xs font-semibold text-foreground">Assign Questions to Categories</p>
-                          <p className="text-xs text-muted-foreground">Drag questions into categories to assign them for scoring</p>
-                          
-                          {/* Unassigned Questions */}
-                          <UnassignedQuestionsZone questions={questions} />
-                          
-                          {/* Category Drop Zones */}
-                          <div className="space-y-2">
-                            {categories.map((cat) => {
-                              const assignedQuestions = questions.filter(q => q.scoringCategory === cat.id);
-                              return (
-                                <CategoryDropZone key={cat.id} category={cat} assignedQuestions={assignedQuestions} />
-                              );
-                            })}
-                          </div>
-                        </div>
+                        {/* Unassigned Scorable Questions Pool */}
+                        {scorableQuestions.length > 0 && (
+                          <UnassignedQuestionsZone questions={scorableQuestions} />
+                        )}
                       </DndContext>
                     )}
 
