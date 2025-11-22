@@ -26,7 +26,7 @@ export default function SurveyResults({
   );
 
   // Find interpretations and range info for each score
-  const getScoreRangeInfo = (categoryId: string, score: number, maxScore: number) => {
+  const getScoreRangeInfo = (categoryId: string, score: number, maxScore: number, originalCategoryScore: number, originalMaxScore: number) => {
     const config = survey.scoreConfig;
     if (!config?.scoreRanges) return null;
     
@@ -36,29 +36,45 @@ export default function SurveyResults({
     // Determine color and performance level based on full scale: red (0-33%), orange (33-66%), green (66-100%)
     let progressColor = "bg-red-500";
     let performanceLevel = "low";
+    let badgeBgColor = "bg-red-100";
+    let badgeTextColor = "text-red-700";
+    let badgeBorderColor = "border-red-200";
     
     if (percentageOfMax >= 66) {
       progressColor = "bg-green-500";
       performanceLevel = "high";
+      badgeBgColor = "bg-green-100";
+      badgeTextColor = "text-green-700";
+      badgeBorderColor = "border-green-200";
     } else if (percentageOfMax >= 33) {
       progressColor = "bg-amber-500";
       performanceLevel = "mid";
+      badgeBgColor = "bg-amber-100";
+      badgeTextColor = "text-amber-700";
+      badgeBorderColor = "border-amber-200";
     }
     
-    // Try to find exact matching range
+    // Try to find exact matching range using ORIGINAL (non-normalized) score
     const range = config.scoreRanges.find(
-      (r: any) => r.category === categoryId && score >= r.minScore && score <= r.maxScore
+      (r: any) => r.category === categoryId && originalCategoryScore >= r.minScore && originalCategoryScore <= r.maxScore
     );
     
     if (range) {
+      // Normalize the range bounds to 0-100 scale
+      const normalizedMinScore = originalMaxScore > 0 ? Math.round((range.minScore / originalMaxScore) * 100) : 0;
+      const normalizedMaxScore = originalMaxScore > 0 ? Math.round((range.maxScore / originalMaxScore) * 100) : 100;
+      
       return {
         interpretation: range.interpretation,
         label: range.label,
-        minScore: range.minScore,
-        maxScore: range.maxScore,
+        minScore: normalizedMinScore,
+        maxScore: normalizedMaxScore,
         percentageOfMax,
         performanceLevel,
         progressColor,
+        badgeBgColor,
+        badgeTextColor,
+        badgeBorderColor,
       };
     }
     
@@ -78,6 +94,9 @@ export default function SurveyResults({
       percentageOfMax,
       performanceLevel,
       progressColor,
+      badgeBgColor,
+      badgeTextColor,
+      badgeBorderColor,
     };
   };
 
@@ -137,7 +156,15 @@ export default function SurveyResults({
         {/* Score Cards */}
         <div className="space-y-6 mb-8">
           {scores.map((result) => {
-            const rangeInfo = getScoreRangeInfo(result.categoryId, result.score, result.maxScore);
+            // We need the original category score to match against original ranges
+            // Calculate it by denormalizing: if score is out of 100, what would it be out of the original max?
+            const config = survey.scoreConfig;
+            const originalMaxScore = config?.scoreRanges
+              .filter((r: any) => r.category === result.categoryId)
+              .reduce((max: number, r: any) => Math.max(max, r.maxScore), 20) || 20;
+            const originalCategoryScore = (result.score / result.maxScore) * originalMaxScore;
+            
+            const rangeInfo = getScoreRangeInfo(result.categoryId, result.score, result.maxScore, originalCategoryScore, originalMaxScore);
             const progressColor = rangeInfo?.progressColor || "bg-blue-500";
 
             const rangeLabel = rangeInfo?.label || "Assessment";
@@ -223,12 +250,16 @@ export default function SurveyResults({
                       </div>
                     )}
                     {rangeInfo && (
-                      <p className="text-xs text-muted-foreground">
-                        Range: {rangeInfo.minScore} - {rangeInfo.maxScore}
-                        {rangeInfo.performanceLevel === "high" && " • Excellent"}
-                        {rangeInfo.performanceLevel === "mid" && " • On track"}
-                        {rangeInfo.performanceLevel === "low" && " • Needs development"}
-                      </p>
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <p className="text-xs text-muted-foreground">
+                          Range: {rangeInfo.minScore} - {rangeInfo.maxScore}
+                        </p>
+                        <div className={`px-2.5 py-1 rounded-full text-xs font-medium border ${rangeInfo.badgeBgColor} ${rangeInfo.badgeTextColor} ${rangeInfo.badgeBorderColor}`}>
+                          {rangeInfo.performanceLevel === "high" && "Excellent"}
+                          {rangeInfo.performanceLevel === "mid" && "On track"}
+                          {rangeInfo.performanceLevel === "low" && "Needs development"}
+                        </div>
+                      </div>
                     )}
                   </div>
                 </CardContent>
