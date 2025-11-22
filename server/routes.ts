@@ -326,7 +326,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const surveys = await storage.getAllSurveys(userId);
-      res.json(surveys);
+      
+      // Calculate response count and question count for each survey
+      const surveysWithCounts = await Promise.all(
+        surveys.map(async (survey) => {
+          const responseCount = await storage.getResponseCount(survey.id);
+          const questionCount = survey.questions?.length || 0;
+          return {
+            ...survey,
+            responseCount,
+            questionCount,
+          };
+        })
+      );
+      
+      res.json(surveysWithCounts);
     } catch (error: any) {
       console.error("Get surveys error:", error);
       res.status(500).json({ error: "Failed to fetch surveys" });
