@@ -129,11 +129,19 @@ export default function Builder() {
       (result, questionCount) => {
         surveyState.setCurrentSurveyTitle(result.title);
         surveyState.setCurrentQuestions(result.questions);
+        // Load suggested scoring config if provided
+        if (result.scoreConfig) {
+          surveyState.setScoreConfig(result.scoreConfig);
+          toast({
+            title: "Scoring suggestion created",
+            description: "AI has suggested a scoring configuration for this assessment. You can customize it in Step 4.",
+          });
+        }
         aiChat.setMessages([
           {
             id: "1",
             role: "assistant",
-            content: `I've created a ${questionCount}-question survey based on your${selectedFileForAI ? ` ${selectedFileForAI.name}` : ' description'}. You can edit the questions directly, preview the survey, or ask me to make changes!`,
+            content: `I've created a ${questionCount}-question survey based on your${selectedFileForAI ? ` ${selectedFileForAI.name}` : ' description'}. ${result.scoreConfig ? 'I also suggested a scoring configuration that you can customize in Step 4. ' : ''}You can edit the questions directly, preview the survey, or ask me to make changes!`,
           },
         ]);
         setPrompt("");

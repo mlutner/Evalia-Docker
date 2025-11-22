@@ -116,12 +116,87 @@ export async function parseDocument(fileContent: string, fileName: string): Prom
 }
 
 /**
+ * Suggest scoring configuration based on survey questions
+ */
+export async function suggestScoringConfig(
+  title: string,
+  questions: Question[]
+): Promise<any | null> {
+  // Only suggest scoring for assessment/evaluation surveys
+  const assessmentKeywords = ['assess', 'evaluate', 'score', 'skill', 'competency', 'leadership', 'performance', 'capability', 'proficiency'];
+  const isAssessmentSurvey = assessmentKeywords.some(keyword => 
+    title.toLowerCase().includes(keyword) || 
+    questions.some(q => q.question.toLowerCase().includes(keyword))
+  );
+
+  if (!isAssessmentSurvey) {
+    return null; // Don't suggest scoring for non-assessment surveys
+  }
+
+  const systemPrompt = `You are an expert in educational assessment and survey design. Based on survey questions, suggest a scoring configuration that would work well for this assessment.
+
+INSTRUCTIONS:
+1. Analyze the survey questions to identify 2-3 key competency/skill categories
+2. For each category, suggest score ranges with interpretations
+3. Suggest which questions contribute to which categories
+
+Return ONLY valid JSON with this exact structure:
+{
+  "categories": [
+    { "id": "cat1", "name": "Category Name" },
+    { "id": "cat2", "name": "Another Category" }
+  ],
+  "scoreRanges": [
+    { "category": "cat1", "label": "Level 1", "minScore": 0, "maxScore": 5, "interpretation": "Beginner level..." },
+    { "category": "cat1", "label": "Level 2", "minScore": 6, "maxScore": 10, "interpretation": "Intermediate level..." },
+    { "category": "cat1", "label": "Level 3", "minScore": 11, "maxScore": 15, "interpretation": "Advanced level..." }
+  ],
+  "suggestedQuestionCategoryMap": {
+    "q1": "cat1",
+    "q2": "cat2",
+    "q3": "cat1"
+  }
+}`;
+
+  const userPrompt = `Survey Title: ${title}
+
+Questions:
+${questions.map((q, i) => `Q${i + 1} (ID: ${q.id}): ${q.question}`).join('\n')}
+
+Analyze these questions and suggest:
+1. 2-3 key skill/competency categories to score on
+2. Score ranges (0-15 or 0-20 suggested) with level labels and interpretations for each category
+3. Which questions contribute to which categories
+
+Make interpretations clear and practical - they'll be shown to respondents after survey completion.`;
+
+  const messages: ChatMessage[] = [
+    { role: "system", content: systemPrompt },
+    { role: "user", content: userPrompt },
+  ];
+
+  try {
+    const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
+    const parsed = JSON.parse(response);
+    return {
+      enabled: true,
+      categories: parsed.categories || [],
+      scoreRanges: parsed.scoreRanges || [],
+      suggestedQuestionCategoryMap: parsed.suggestedQuestionCategoryMap,
+    };
+  } catch (error) {
+    console.warn("Scoring suggestion failed, will skip:", error);
+    return null;
+  }
+}
+
+/**
  * Generate survey questions from text content
  */
 export async function generateSurveyFromText(
   content: string,
   context?: string
-): Promise<{ title: string; questions: Question[] }> {
+): Promise<{ title: string; questions: Question[]; scoreConfig?: any }> {
   const systemPrompt = `You are an expert at extracting survey questions from documents. Your job is to CAREFULLY read the document and extract ALL questions with COMPLETE answer choices. Do NOT skip or condense any questions.
 
 CRITICAL RULES FOR DOCUMENT EXTRACTION:
@@ -189,9 +264,26 @@ VALIDATION CHECKLIST:
       return q;
     });
     
+    // Try to suggest scoring configuration
+    let scoreConfig;
+    try {
+      scoreConfig = await suggestScoringConfig(parsed.title || "Generated Survey", questions);
+      // Apply suggested category mappings to questions if available
+      if (scoreConfig?.suggestedQuestionCategoryMap) {
+        const categoryMap = scoreConfig.suggestedQuestionCategoryMap;
+        questions = questions.map(q => ({
+          ...q,
+          scoringCategory: categoryMap[q.id],
+        }));
+      }
+    } catch (scoringError) {
+      console.warn("Could not suggest scoring config:", scoringError);
+    }
+    
     return {
       title: parsed.title || "Generated Survey",
       questions,
+      ...(scoreConfig && { scoreConfig }),
     };
   } catch (error) {
     console.error("Failed to parse survey generation response:", error);

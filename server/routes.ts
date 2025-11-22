@@ -227,6 +227,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({
         title: survey.title,
         questions: survey.questions,
+        ...(survey.scoreConfig && { scoreConfig: survey.scoreConfig }),
       });
     } catch (error: any) {
       console.error("Survey generation error:", error);
