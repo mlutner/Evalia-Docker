@@ -188,6 +188,49 @@ export async function calculateScoresWithAI(
 }
 
 /**
+ * Calculate theoretical max score based on question count and types
+ */
+function calculateTheoreticalMaxScore(questions: Question[]): number {
+  // Each question contributes up to 5 points
+  // This is based on the scoring algorithm in schema.ts
+  return questions.length * 5;
+}
+
+/**
+ * Generate appropriate score ranges based on theoretical max
+ */
+function generateScoreRanges(categoryId: string, theoreticalMax: number, questionCount: number) {
+  // Divide the max score into 3 ranges: low, mid, high
+  const lowEnd = Math.ceil(theoreticalMax / 3);
+  const midEnd = Math.ceil((theoreticalMax * 2) / 3);
+  const highEnd = theoreticalMax;
+  
+  return [
+    {
+      category: categoryId,
+      minScore: 0,
+      maxScore: lowEnd,
+      label: questionCount < 5 ? "Developing" : "Needs Development",
+      interpretation: `Score range: 0-${lowEnd}. Your performance indicates room for growth in this area.`
+    },
+    {
+      category: categoryId,
+      minScore: lowEnd + 1,
+      maxScore: midEnd,
+      label: questionCount < 5 ? "Good" : "Developing",
+      interpretation: `Score range: ${lowEnd + 1}-${midEnd}. You demonstrate satisfactory performance with opportunities for improvement.`
+    },
+    {
+      category: categoryId,
+      minScore: midEnd + 1,
+      maxScore: highEnd,
+      label: "Excellent",
+      interpretation: `Score range: ${midEnd + 1}-${highEnd}. You demonstrate strong competency and mastery in this area.`
+    }
+  ];
+}
+
+/**
  * Suggest scoring configuration based on survey questions
  */
 export async function suggestScoringConfig(
@@ -206,19 +249,32 @@ export async function suggestScoringConfig(
     return null; // Don't suggest scoring for non-assessment surveys
   }
 
+  // Calculate theoretical max score
+  const theoreticalMax = calculateTheoreticalMaxScore(questions);
+  console.log(`Scoring config: ${questions.length} questions, theoretical max: ${theoreticalMax}`);
+
   const systemPrompt = `You are an expert in educational assessment and survey design. Based on survey questions, suggest a scoring configuration that would work well for this assessment.
+
+SURVEY ANALYSIS:
+- Total Questions: ${questions.length}
+- Theoretical Maximum Score Per Category: ${theoreticalMax} (${questions.length} questions × 5 points each)
+- Scoring Scale: Score ranges MUST fit within the theoretical maximum of ${theoreticalMax}
 
 INSTRUCTIONS:
 1. Analyze the survey questions to identify 2-3 key competency/skill categories
-2. For each category, suggest score ranges with DISTINCT PERFORMANCE LEVEL LABELS
-3. Suggest which questions contribute to which categories
+2. For each category, suggest 3 score ranges that scale with the question count
+3. Score ranges should divide the ${theoreticalMax}-point scale into thirds:
+   - LOW (0-${Math.ceil(theoreticalMax / 3)}): "Needs Development" or "Developing"
+   - MID (${Math.ceil(theoreticalMax / 3) + 1}-${Math.ceil((theoreticalMax * 2) / 3)}): "Developing" or "Satisfactory" or "Moderate"
+   - HIGH (${Math.ceil((theoreticalMax * 2) / 3) + 1}-${theoreticalMax}): "Strong", "Excellent", or "Advanced"
+4. Suggest which questions contribute to which categories
 
-CRITICAL: For each category, create 3 score ranges with DIFFERENT labels that reflect performance progression:
-- LOWEST range (e.g., 0-5): Use labels like "Needs Development", "Poor", "Beginner", "Low"
-- MIDDLE range (e.g., 6-10): Use labels like "Developing", "Moderate", "Satisfactory", "Fair"
-- HIGHEST range (e.g., 11-15): Use labels like "Excellent", "Strong", "Advanced", "High"
-
-IMPORTANT: Do NOT reuse the same label for different ranges. Each range must have a unique, descriptive label that matches its performance level.
+CRITICAL REQUIREMENTS:
+- Each range must have a UNIQUE label - never repeat the same label
+- Score ranges must respect the theoretical maximum of ${theoreticalMax}
+- Ranges must be contiguous (no gaps) and non-overlapping
+- Interpretations must reference the actual score range
+- All minScore and maxScore values must be <= ${theoreticalMax}
 
 Return ONLY valid JSON with this exact structure:
 {
@@ -227,9 +283,9 @@ Return ONLY valid JSON with this exact structure:
     { "id": "cat2", "name": "Another Category" }
   ],
   "scoreRanges": [
-    { "category": "cat1", "label": "Needs Development", "minScore": 0, "maxScore": 5, "interpretation": "Beginner level..." },
-    { "category": "cat1", "label": "Developing", "minScore": 6, "maxScore": 10, "interpretation": "Intermediate level..." },
-    { "category": "cat1", "label": "Excellent", "minScore": 11, "maxScore": 15, "interpretation": "Advanced level..." }
+    { "category": "cat1", "label": "Needs Development", "minScore": 0, "maxScore": ${Math.ceil(theoreticalMax / 3)}, "interpretation": "..." },
+    { "category": "cat1", "label": "Developing", "minScore": ${Math.ceil(theoreticalMax / 3) + 1}, "maxScore": ${Math.ceil((theoreticalMax * 2) / 3)}, "interpretation": "..." },
+    { "category": "cat1", "label": "Excellent", "minScore": ${Math.ceil((theoreticalMax * 2) / 3) + 1}, "maxScore": ${theoreticalMax}, "interpretation": "..." }
   ],
   "suggestedQuestionCategoryMap": {
     "q1": "cat1",
@@ -239,15 +295,17 @@ Return ONLY valid JSON with this exact structure:
 }`;
 
   const userPrompt = `Survey Title: ${title}
+Question Count: ${questions.length}
 
 Questions:
 ${questions.map((q, i) => `Q${i + 1} (ID: ${q.id}): ${q.question}`).join('\n')}
 
 Analyze these questions and suggest:
 1. 2-3 key skill/competency categories to score on
-2. Score ranges (0-15 or 0-20 suggested) with level labels and interpretations for each category
+2. Score ranges with labels and interpretations that fit within the ${theoreticalMax}-point scale
 3. Which questions contribute to which categories
 
+Remember: Score ranges must divide the ${theoreticalMax}-point max into three tiers with different labels.
 Make interpretations clear and practical - they'll be shown to respondents after survey completion.`;
 
   const messages: ChatMessage[] = [
@@ -259,8 +317,19 @@ Make interpretations clear and practical - they'll be shown to respondents after
     const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
     const parsed = JSON.parse(response);
     
-    // Post-process to ensure score ranges have distinct labels and interpretations
+    const theoreticalMax = calculateTheoreticalMaxScore(questions);
+    
+    // Post-process to ensure score ranges are valid and distinct
     const processedRanges = (parsed.scoreRanges || []).map((range: any, index: number) => {
+      // Validate and clamp score ranges
+      range.minScore = Math.max(0, Math.min(range.minScore, theoreticalMax));
+      range.maxScore = Math.max(0, Math.min(range.maxScore, theoreticalMax));
+      
+      // Ensure minScore <= maxScore
+      if (range.minScore > range.maxScore) {
+        [range.minScore, range.maxScore] = [range.maxScore, range.minScore];
+      }
+      
       // Count ranges for this category
       const rangesForCategory = (parsed.scoreRanges || []).filter((r: any) => r.category === range.category);
       const positionInCategory = rangesForCategory.findIndex((r: any) => r === range);
@@ -272,8 +341,22 @@ Make interpretations clear and practical - they'll be shown to respondents after
         range.label = defaultLabels[positionInCategory] || `Level ${positionInCategory + 1}`;
       }
       
+      // Ensure interpretation mentions the score range
+      if (!range.interpretation || !range.interpretation.includes(range.minScore.toString())) {
+        range.interpretation = `Score range: ${range.minScore}-${range.maxScore}. ${range.interpretation || `Performance in the ${range.label} category.`}`;
+      }
+      
       return range;
-    });
+    }).filter(r => r.minScore !== r.maxScore || r.minScore === 0); // Remove invalid ranges
+    
+    // If no valid ranges, generate fallback ranges
+    if (processedRanges.length === 0 && parsed.categories && parsed.categories.length > 0) {
+      console.warn("No valid ranges generated, using fallback ranges");
+      parsed.categories.forEach((cat: any) => {
+        const fallbackRanges = generateScoreRanges(cat.id, theoreticalMax, questions.length);
+        processedRanges.push(...fallbackRanges);
+      });
+    }
     
     return {
       enabled: true,
