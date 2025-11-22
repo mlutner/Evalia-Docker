@@ -31,7 +31,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10 flex flex-col">
       <Header />
       <main className="container mx-auto px-6 flex items-start justify-center -mt-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center w-full max-w-7xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-16 w-full max-w-7xl">
           {/* Left Side Content */}
           <div className="space-y-5">
             {/* Headline */}
