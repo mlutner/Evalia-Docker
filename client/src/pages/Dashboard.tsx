@@ -221,15 +221,14 @@ export default function Dashboard() {
                       survey={{
                         id: survey.id,
                         title: survey.title,
-                        description: survey.description,
+                        description: survey.description || undefined,
                         createdAt: survey.createdAt.toString(),
-                        responseCount: survey.responseCount || 0,
                         questionCount: survey.questions.length,
-                        status: survey.status,
+                        status: survey.status || undefined,
                         publishedAt: survey.publishedAt?.toString(),
-                        trainerName: survey.trainerName,
+                        trainerName: survey.trainerName || undefined,
                         trainingDate: survey.trainingDate?.toString(),
-                        tags: survey.tags,
+                        tags: survey.tags || undefined,
                         questions: survey.questions,
                         scoreConfig: survey.scoreConfig,
                       }}
@@ -241,22 +240,6 @@ export default function Dashboard() {
                       onManageRespondents={() => setLocation(`/respondents/${survey.id}`)}
                       index={index}
                     />
-                    {(survey.expiresAt || survey.maxResponses) && (
-                      <div className="flex gap-2 mt-2 flex-wrap items-center">
-                        {survey.expiresAt && (
-                          <Badge variant="outline" className="text-xs" data-testid={`badge-expires-${survey.id}`}>
-                            <Clock className="w-3 h-3 mr-1" />
-                            {new Date(survey.expiresAt).toLocaleDateString()}
-                          </Badge>
-                        )}
-                        {survey.maxResponses && (
-                          <Badge variant="outline" className="text-xs" data-testid={`badge-limit-${survey.id}`}>
-                            <Users className="w-3 h-3 mr-1" />
-                            {survey.maxResponses}
-                          </Badge>
-                        )}
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
@@ -292,15 +275,14 @@ export default function Dashboard() {
                       survey={{
                         id: survey.id,
                         title: survey.title,
-                        description: survey.description,
+                        description: survey.description || undefined,
                         createdAt: survey.createdAt.toString(),
-                        responseCount: survey.responseCount || 0,
                         questionCount: survey.questions.length,
-                        status: survey.status,
+                        status: survey.status || undefined,
                         publishedAt: survey.publishedAt?.toString(),
-                        trainerName: survey.trainerName,
+                        trainerName: survey.trainerName || undefined,
                         trainingDate: survey.trainingDate?.toString(),
-                        tags: survey.tags,
+                        tags: survey.tags || undefined,
                         questions: survey.questions,
                         scoreConfig: survey.scoreConfig,
                       }}
@@ -312,22 +294,6 @@ export default function Dashboard() {
                       onManageRespondents={() => setLocation(`/respondents/${survey.id}`)}
                       index={index}
                     />
-                    {(survey.expiresAt || survey.maxResponses) && (
-                      <div className="flex gap-2 mt-2 flex-wrap items-center">
-                        {survey.expiresAt && (
-                          <Badge variant="outline" className="text-xs" data-testid={`badge-expires-${survey.id}`}>
-                            <Clock className="w-3 h-3 mr-1" />
-                            {new Date(survey.expiresAt).toLocaleDateString()}
-                          </Badge>
-                        )}
-                        {survey.maxResponses && (
-                          <Badge variant="outline" className="text-xs" data-testid={`badge-limit-${survey.id}`}>
-                            <Users className="w-3 h-3 mr-1" />
-                            {survey.maxResponses}
-                          </Badge>
-                        )}
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
