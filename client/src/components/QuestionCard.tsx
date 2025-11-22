@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { MessageSquare, AtSign, Hash, Type, CheckCircle2, Radio, ThumbsUp, Gauge, Grid3x3, List, Calendar } from "lucide-react";
+import { MessageSquare, AtSign, Hash, Type, CheckCircle2, Radio, ThumbsUp, Gauge, Grid3x3, List, Calendar, Star } from "lucide-react";
 import type { Question, QuestionType } from "@shared/schema";
 
 export type { Question, QuestionType };
@@ -64,10 +64,12 @@ function getQuestionTypeLabel(type: QuestionType) {
 
 export default function QuestionCard({ question, onAnswer, initialAnswer }: QuestionCardProps) {
   const [answer, setAnswer] = useState<string | string[]>(initialAnswer || (question.type === 'checkbox' ? [] : ''));
+  const [hoverRating, setHoverRating] = useState<number | null>(null);
 
   // Reset answer state when moving to a new question
   useEffect(() => {
     setAnswer(initialAnswer || (question.type === 'checkbox' ? [] : ''));
+    setHoverRating(null);
   }, [question.id, question.type]);
 
   const handleTextChange = (value: string) => {
@@ -231,49 +233,55 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
         )}
 
         {question.type === "rating" && (
-          <div className="space-y-5">
-            {/* Labels */}
-            <div className="flex items-center justify-between px-1 text-xs font-medium text-muted-foreground">
-              <span>Disagree</span>
-              <span>Neutral</span>
-              <span>Agree</span>
-            </div>
-
-            {/* Rating Scale - Top to Bottom (Disagree to Agree) */}
-            <div className="space-y-2">
-              {[1, 2, 3, 4, 5].map((rating) => {
-                const isSelected = answer === rating.toString();
-                const labels = {
-                  1: "Strongly Disagree",
-                  2: "Disagree",
-                  3: "Neutral",
-                  4: "Agree",
-                  5: "Strongly Agree",
-                };
+          <div className="space-y-6">
+            {/* Star Rating UI */}
+            <div className="flex items-center justify-center gap-3 py-6">
+              {[1, 2, 3, 4, 5].map((star) => {
+                const isSelected = answer === star.toString();
+                const isHovered = hoverRating !== null && star <= hoverRating;
+                
                 return (
                   <button
-                    key={rating}
-                    onClick={() => handleMultipleChoice(rating.toString())}
-                    data-testid={`rating-${rating}`}
-                    className={`w-full p-3.5 rounded-lg border transition-all text-left ${
-                      isSelected
-                        ? "border-primary bg-primary/8 shadow-sm"
-                        : "border-border/50 bg-card/30 hover:bg-primary/5 hover:border-primary/30"
-                    } hover-elevate active-elevate-2`}
+                    key={star}
+                    onClick={() => {
+                      handleMultipleChoice(star.toString());
+                      setHoverRating(null);
+                    }}
+                    onMouseEnter={() => setHoverRating(star)}
+                    onMouseLeave={() => setHoverRating(null)}
+                    data-testid={`rating-${star}`}
+                    className="transition-transform active-elevate-2"
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="text-sm sm:text-base font-normal">{labels[rating as keyof typeof labels]}</div>
-                        <div className="text-xs text-muted-foreground">{rating} of 5</div>
-                      </div>
-                      <div className={`text-base font-semibold ${isSelected ? "text-primary" : "text-muted-foreground/50"}`}>
-                        {rating}
-                      </div>
-                    </div>
+                    <Star
+                      className={`w-12 h-12 transition-all ${
+                        isSelected || isHovered
+                          ? "fill-amber-400 stroke-amber-400 scale-110"
+                          : "fill-muted-foreground/20 stroke-muted-foreground/40 hover:scale-105"
+                      }`}
+                    />
                   </button>
                 );
               })}
             </div>
+
+            {/* Labels below stars */}
+            <div className="flex items-center justify-center gap-2 text-xs font-medium text-muted-foreground">
+              <span>Not at all</span>
+              <span className="text-muted-foreground/40">•</span>
+              <span>Very much</span>
+            </div>
+
+            {/* Selected rating display */}
+            {answer && (
+              <div className="text-center p-3 rounded-lg bg-primary/8 border border-primary/20">
+                <div className="text-sm font-medium text-primary">
+                  {['', 'Not at all', 'Slightly', 'Moderately', 'Mostly', 'Very much'][parseInt(answer as string)]}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {answer} out of 5
+                </div>
+              </div>
+            )}
           </div>
         )}
 
