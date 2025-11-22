@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Plus, FileText, BarChart3, Calendar, Clock, Users } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import type { Survey } from "@shared/schema";
+import type { SurveyWithCounts } from "@shared/schema";
 import type { ReactNode } from "react";
 
 export default function Dashboard() {
@@ -22,7 +22,7 @@ export default function Dashboard() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const { toast } = useToast();
 
-  const { data: surveys = [], isLoading } = useQuery<Survey[]>({
+  const { data: surveys = [], isLoading } = useQuery<SurveyWithCounts[]>({
     queryKey: ["/api/surveys"],
   });
 

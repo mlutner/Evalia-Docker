@@ -126,6 +126,12 @@ export const insertSurveySchema = createInsertSchema(surveys, {
 export type InsertSurvey = z.infer<typeof insertSurveySchema>;
 export type Survey = typeof surveys.$inferSelect;
 
+// Survey type with computed fields (responseCount, questionCount) added by API
+export type SurveyWithCounts = Survey & {
+  responseCount: number;
+  questionCount: number;
+};
+
 export type SurveyRespondent = typeof surveyRespondents.$inferSelect;
 
 export const insertSurveyRespondentSchema = z.object({
