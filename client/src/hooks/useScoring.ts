@@ -33,24 +33,55 @@ export function useScoring(initialConfig?: SurveyScoreConfig) {
     }
   };
 
+  // Scorable question types
+  const SCORABLE_TYPES = new Set(['rating', 'nps', 'multiple_choice', 'checkbox', 'number']);
+  
+  // Check if a question is scorable
+  const isQuestionScorable = (question: Question) => {
+    return SCORABLE_TYPES.has(question.type);
+  };
+
   // Auto-populate categories from question sections
   const autoPopulateCategoriesFromSections = (questions: Question[]) => {
     if (categories.length > 0) return; // Don't override existing categories
     
-    const uniqueSections = new Set<string>();
-    questions.forEach(q => {
+    // Filter only scorable questions
+    const scorableQuestions = questions.filter(isQuestionScorable);
+    
+    // Group scorable questions by section
+    const sectionMap = new Map<string, Question[]>();
+    let hasUnsectionedQuestions = false;
+    
+    scorableQuestions.forEach(q => {
       if (q.sectionId) {
-        uniqueSections.add(q.sectionId);
+        if (!sectionMap.has(q.sectionId)) {
+          sectionMap.set(q.sectionId, []);
+        }
+        sectionMap.get(q.sectionId)!.push(q);
+      } else {
+        hasUnsectionedQuestions = true;
       }
     });
 
-    if (uniqueSections.size > 1) {
-      const newCategories = Array.from(uniqueSections).map(section => ({
-        id: `cat-${section}-${Date.now()}`,
-        name: section,
-      }));
-      setCategories(newCategories);
-      return newCategories;
+    // Create categories only for sections with questions
+    const newCategories: Array<{ id: string; name: string }> = [];
+    
+    // Add categories for sections
+    sectionMap.forEach((questions, section) => {
+      if (questions.length > 0) {
+        newCategories.push({
+          id: `cat-${section}-${Date.now()}`,
+          name: section,
+        });
+      }
+    });
+
+    // If there are scorable questions and either multiple sections or unsectioned questions
+    if (newCategories.length > 0 || hasUnsectionedQuestions) {
+      if (newCategories.length > 0) {
+        setCategories(newCategories);
+        return newCategories;
+      }
     }
     return [];
   };
@@ -180,5 +211,6 @@ export function useScoring(initialConfig?: SurveyScoreConfig) {
     handleAutoGenerateScoring,
     handleSaveScoring,
     autoPopulateCategoriesFromSections,
+    isQuestionScorable,
   };
 }

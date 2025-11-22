@@ -103,7 +103,16 @@ export default function PublishStep({
     handleAutoGenerateScoring,
     handleSaveScoring,
     autoPopulateCategoriesFromSections,
+    isQuestionScorable,
   } = useScoring(scoreConfig);
+
+  // Count non-scorable questions
+  const nonScorableQuestions = questions?.filter(q => !isQuestionScorable(q)) || [];
+  
+  // Filter out empty categories
+  const categoriesWithQuestions = categories.filter(cat => 
+    questions?.some(q => isQuestionScorable(q) && (q.sectionId === cat.name))
+  );
 
   // Drag and drop handler for question assignment
   const handleQuestionDragEnd = (event: DragEndEvent) => {
@@ -509,13 +518,18 @@ export default function PublishStep({
               <CardContent className="space-y-4 border-t pt-4">
                 {/* Enable Toggle */}
                 <div className="flex items-center justify-between p-4 bg-background/60 rounded-lg border border-primary/20">
-                  <div>
+                  <div className="flex-1">
                     <p className="text-sm font-semibold text-foreground">Enable Scoring</p>
                     <p className="text-xs text-muted-foreground mt-0.5">
                       Respondents will see their assessment results
                       {questions?.some(q => q.sectionId) && categories.length === 0 && (
                         <span className="block mt-1 text-primary font-medium">
                           💡 Survey sections will auto-populate as scoring categories
+                        </span>
+                      )}
+                      {nonScorableQuestions.length > 0 && isEnabled && (
+                        <span className="block mt-1 text-amber-600 dark:text-amber-500 font-medium">
+                          ℹ️ {nonScorableQuestions.length} question(s) won't be scored (text, email, date fields aren't scorable)
                         </span>
                       )}
                     </p>
