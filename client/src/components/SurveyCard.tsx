@@ -5,11 +5,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { MoreVertical, Eye, BarChart3, Download, Share2, Check, Copy, Edit3, Users, CheckCircle, Pause, Lock, Download as DownloadIcon } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useState, useRef, lazy, Suspense } from "react";
+import { useState, useRef } from "react";
 import type { Question } from "@shared/schema";
-
-// Lazy load QRCode to avoid ESM issues
-const QRCode = lazy(() => import("qrcode.react").then(mod => ({ default: mod.default })));
 
 export interface Survey {
   id: string;
@@ -134,18 +131,6 @@ export default function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport
     }
   };
 
-  const handleDownloadQR = () => {
-    if (qrRef.current) {
-      const canvas = qrRef.current.querySelector("canvas");
-      if (canvas) {
-        const url = canvas.toDataURL("image/png");
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `survey-${survey.id}-qr.png`;
-        link.click();
-      }
-    }
-  };
 
   return (
     <Card className="hover-elevate transition-all flex flex-col" data-testid={`survey-card-${survey.id}`}>
@@ -256,58 +241,23 @@ export default function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport
 
       {/* Share Dialog */}
       <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
-        <DialogContent className="max-w-md" data-testid="dialog-share">
+        <DialogContent data-testid="dialog-share">
           <DialogHeader>
             <DialogTitle>Share Survey</DialogTitle>
             <DialogDescription>
               Share with respondents to collect responses
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-6">
-            {/* QR Code Section */}
-            <div className="flex flex-col items-center space-y-3">
-              <div className="p-4 bg-white rounded-lg border">
-                <div ref={qrRef}>
-                  <Suspense fallback={<div className="w-[200px] h-[200px] bg-muted rounded animate-pulse" />}>
-                    <QRCode
-                      value={shareUrl}
-                      size={200}
-                      level="H"
-                      includeMargin={true}
-                      data-testid="qr-code"
-                    />
-                  </Suspense>
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground text-center">
-                Scan this QR code to take the survey
-              </p>
-              <Button onClick={handleDownloadQR} size="sm" variant="outline" className="w-full" data-testid="button-download-qr">
-                <DownloadIcon className="w-4 h-4 mr-2" />
-                Download QR Code
-              </Button>
-            </div>
-
-            {/* Divider */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border/30"></div>
-              </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="px-2 bg-background text-muted-foreground">or copy link</span>
-              </div>
-            </div>
-
-            {/* Copy Link Section */}
-            <div className="space-y-2">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
               <input
                 type="text"
                 value={shareUrl}
                 readOnly
-                className="w-full px-3 py-2 border rounded-md bg-muted text-xs"
+                className="flex-1 px-3 py-2 border rounded-md bg-muted text-sm"
                 data-testid="input-share-url"
               />
-              <Button onClick={handleCopyLink} className="w-full" variant="outline" data-testid="button-copy-link">
+              <Button onClick={handleCopyLink} variant="outline" data-testid="button-copy-link">
                 {copied ? (
                   <>
                     <Check className="w-4 h-4 mr-2" />
@@ -316,11 +266,14 @@ export default function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport
                 ) : (
                   <>
                     <Copy className="w-4 h-4 mr-2" />
-                    Copy Link
+                    Copy
                   </>
                 )}
               </Button>
             </div>
+            <p className="text-sm text-muted-foreground">
+              Anyone with this link can submit a response to your survey.
+            </p>
           </div>
         </DialogContent>
       </Dialog>
