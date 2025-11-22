@@ -71,7 +71,7 @@ export default function Home() {
 
           {/* Right Side - Image Placeholder */}
           <div className="flex items-center justify-center">
-            <div className="relative w-full max-w-2xl">
+            <div className="relative w-full">
               <img
                 src={ChatGPT_Image_Nov_21__2025__05_24_08_PM}
                 alt="Survey illustration"
