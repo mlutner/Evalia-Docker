@@ -243,11 +243,15 @@ export default function Dashboard() {
                       survey={{
                         id: survey.id,
                         title: survey.title,
+                        description: survey.description,
                         createdAt: survey.createdAt.toString(),
                         responseCount: 0,
                         questionCount: survey.questions.length,
                         status: survey.status,
                         publishedAt: survey.publishedAt?.toString(),
+                        trainerName: survey.trainerName,
+                        trainingDate: survey.trainingDate?.toString(),
+                        tags: survey.tags,
                       }}
                       onEdit={() => handleEdit(survey.id)}
                       onView={() => handleView(survey.id)}
@@ -329,11 +333,15 @@ export default function Dashboard() {
                       survey={{
                         id: survey.id,
                         title: survey.title,
+                        description: survey.description,
                         createdAt: survey.createdAt.toString(),
                         responseCount: 0,
                         questionCount: survey.questions.length,
                         status: survey.status,
                         publishedAt: survey.publishedAt?.toString(),
+                        trainerName: survey.trainerName,
+                        trainingDate: survey.trainingDate?.toString(),
+                        tags: survey.tags,
                       }}
                       onEdit={() => handleEdit(survey.id)}
                       onView={() => handleView(survey.id)}

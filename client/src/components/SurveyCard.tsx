@@ -10,11 +10,15 @@ import { useState } from "react";
 export interface Survey {
   id: string;
   title: string;
+  description?: string;
   createdAt: string;
   responseCount: number;
   questionCount: number;
   status?: "Active" | "Paused" | "Closed";
   publishedAt?: string | null;
+  trainerName?: string;
+  trainingDate?: string;
+  tags?: string[];
 }
 
 interface SurveyCardProps {
@@ -94,9 +98,24 @@ export default function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport
         <div className="flex flex-row items-start justify-between space-y-0">
           <div className="flex-1">
             <h3 className="font-semibold text-lg line-clamp-2">{survey.title}</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Created {new Date(survey.createdAt).toLocaleDateString()}
-            </p>
+            {survey.description && (
+              <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{survey.description}</p>
+            )}
+            <div className="flex flex-col gap-1 mt-2">
+              {survey.trainerName && (
+                <p className="text-xs text-muted-foreground">
+                  <span className="font-medium">Trainer:</span> {survey.trainerName}
+                </p>
+              )}
+              {survey.trainingDate && (
+                <p className="text-xs text-muted-foreground">
+                  <span className="font-medium">Training Date:</span> {new Date(survey.trainingDate).toLocaleDateString()}
+                </p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Created {new Date(survey.createdAt).toLocaleDateString()}
+              </p>
+            </div>
           </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -144,7 +163,7 @@ export default function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport
         )}
       </CardHeader>
 
-      <CardContent className="flex-1">
+      <CardContent className="flex-1 space-y-4">
         <div className="flex gap-6 text-sm">
           <div>
             <p className="text-muted-foreground">Questions</p>
@@ -155,6 +174,15 @@ export default function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport
             <p className="font-semibold text-lg" data-testid="text-response-count">{survey.responseCount}</p>
           </div>
         </div>
+        {survey.tags && survey.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 pt-2">
+            {survey.tags.map((tag) => (
+              <Badge key={tag} variant="secondary" className="text-xs">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
       </CardContent>
 
       <CardFooter className="gap-2">
