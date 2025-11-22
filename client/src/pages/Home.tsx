@@ -35,7 +35,7 @@ export default function Home() {
           {/* Left Side Content */}
           <div className="space-y-5">
             {/* Headline */}
-            <div className="space-y-2">
+            <div className="space-y-1">
               <h1 className="font-bold text-[84px]" style={{color: '#071A32', lineHeight: '1.0'}}>
                 Collect training feedback that actually improves training
               </h1>
