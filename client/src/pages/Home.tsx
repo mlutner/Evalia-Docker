@@ -33,9 +33,9 @@ export default function Home() {
       <main className="container mx-auto px-6 flex items-start justify-center -mt-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center w-full max-w-7xl">
           {/* Left Side Content */}
-          <div className="space-y-6">
+          <div className="space-y-5">
             {/* Headline */}
-            <div className="space-y-4">
+            <div className="space-y-2">
               <h1 className="font-bold text-[84px]" style={{color: '#071A32', lineHeight: '1.0'}}>
                 Collect training feedback that actually improves training
               </h1>
@@ -44,7 +44,7 @@ export default function Home() {
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-5 pt-2">
+            <div className="flex flex-col sm:flex-row gap-5 pt-4">
               <Button
                 size="lg"
                 onClick={() => setLocation("/login")}
