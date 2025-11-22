@@ -4,7 +4,7 @@ import express from "express";
 import path from "path";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { parsePDFWithVision, parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText } from "./openrouter";
+import { parsePDFWithVision, parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText, suggestScoringConfig } from "./openrouter";
 import { insertSurveySchema, questionSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
@@ -426,7 +426,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Questions array required" });
       }
 
-      const config = await generateScoringConfig(questions);
+      const config = await suggestScoringConfig("Generated Survey", questions);
       res.json({ config });
     } catch (error: any) {
       console.error("Generate scoring config error:", error);
