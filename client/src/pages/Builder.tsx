@@ -255,8 +255,8 @@ export default function Builder() {
           </Button>
         </div>
 
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-2">
+        <div className="mb-12 pb-8 border-b border-border/30">
+          <div className="flex items-center justify-between mb-3">
             <h1 className="text-4xl font-semibold">
               {isEditMode ? "Edit Survey" : "Create Survey"}
             </h1>
@@ -267,7 +267,7 @@ export default function Builder() {
               </div>
             )}
           </div>
-          <p className="text-muted-foreground mb-6">
+          <p className="text-muted-foreground mb-8">
             {WIZARD_STEPS[surveyState.currentWizardStep - 1].description}
           </p>
           
@@ -279,17 +279,17 @@ export default function Builder() {
 
         {/* Step 1: Start - Choose creation method */}
         {surveyState.currentWizardStep === 1 && (
-          <div className="space-y-8">
-            <div className="max-w-5xl mx-auto">
+          <div className="space-y-12">
+            <div className="max-w-6xl mx-auto">
               {/* Tab Header */}
-              <div className="mb-8">
-                <h2 className="text-2xl font-semibold mb-1">Step 1: Choose your creation method</h2>
-                <p className="text-muted-foreground">Pick the option that works best for you. You can edit questions in the next step regardless of which method you choose.</p>
+              <div className="mb-10">
+                <h2 className="text-2xl font-semibold mb-2">Step 1: Choose your creation method</h2>
+                <p className="text-muted-foreground text-base leading-relaxed">Pick the option that works best for you. You can edit questions in the next step regardless of which method you choose.</p>
               </div>
 
               <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "templates" | "ai" | "upload")} className="w-full">
                 {/* Custom Tab Button Group */}
-                <div className="grid grid-cols-3 gap-4 mb-8">
+                <div className="grid grid-cols-3 gap-4 mb-12 px-1">
                   <button
                     onClick={() => setActiveTab("templates")}
                     data-testid="tab-templates"
@@ -363,14 +363,14 @@ export default function Builder() {
                   </button>
                 </div>
 
-                <TabsContent value="templates" className="space-y-8 pt-2">
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">Professional Training Templates</h3>
-                    <p className="text-muted-foreground mb-6">
+                <TabsContent value="templates" className="space-y-10 pt-8">
+                  <div className="bg-primary/3 rounded-xl p-6 md:p-8 border border-primary/10">
+                    <h3 className="text-lg font-semibold mb-3">Professional Training Templates</h3>
+                    <p className="text-muted-foreground leading-relaxed">
                       Start with proven survey frameworks designed for trainers. Browse templates below, preview them to see all questions, and click "Use Template" to get started. Once selected, you can customize the title and edit any questions in Step 2.
                     </p>
                   </div>
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 py-2">
                     {surveyTemplates.map((template) => (
                       <TemplateCard
                         key={template.id}
@@ -387,8 +387,8 @@ export default function Builder() {
                   </div>
 
                   {surveyState.currentQuestions.length > 0 && (
-                    <div className="mt-8 bg-card border rounded-lg p-6">
-                      <label className="text-sm font-medium mb-2 block">
+                    <div className="mt-10 bg-muted/40 border border-border/50 rounded-xl p-6 md:p-8">
+                      <label className="text-sm font-semibold mb-3 block text-foreground">
                         Survey Title <span className="text-destructive">*</span>
                       </label>
                       <Input
@@ -405,11 +405,11 @@ export default function Builder() {
                   )}
                 </TabsContent>
 
-                <TabsContent value="ai" className="space-y-8 pt-2">
-                  <div className="space-y-6 max-w-2xl mx-auto">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-2">Generate with AI</h3>
-                      <p className="text-muted-foreground mb-4">
+                <TabsContent value="ai" className="space-y-10 pt-8">
+                  <div className="space-y-6 max-w-3xl mx-auto">
+                    <div className="bg-accent/5 rounded-xl p-6 md:p-8 border border-accent/20">
+                      <h3 className="text-lg font-semibold mb-3">Generate with AI</h3>
+                      <p className="text-muted-foreground leading-relaxed">
                         Describe what your survey is about and what you want to measure. AI will generate custom questions tailored to your needs. Be specific about the training topic, learning objectives, or feedback you're seeking. Example: "I need a survey to assess employee understanding of our new compliance policy and willingness to apply it on the job."
                       </p>
                     </div>
@@ -454,8 +454,8 @@ export default function Builder() {
                     )}
 
                     {surveyState.currentQuestions.length > 0 && (
-                      <div className="mt-8 bg-card border rounded-lg p-6">
-                        <label className="text-sm font-medium mb-2 block">
+                      <div className="mt-10 bg-muted/40 border border-border/50 rounded-xl p-6 md:p-8">
+                        <label className="text-sm font-semibold mb-3 block text-foreground">
                           Survey Title <span className="text-destructive">*</span>
                         </label>
                         <Input
@@ -473,13 +473,13 @@ export default function Builder() {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="upload" className="space-y-8 pt-2">
-                  <div className="max-w-2xl mx-auto space-y-8">
+                <TabsContent value="upload" className="space-y-10 pt-8">
+                  <div className="max-w-3xl mx-auto space-y-8">
                     {/* File Upload Section */}
-                    <div className="space-y-4">
+                    <div className="space-y-4 bg-success/3 rounded-xl p-6 md:p-8 border border-success/20">
                       <div>
-                        <h3 className="text-lg font-semibold mb-2">Upload Document or Paste Text</h3>
-                        <p className="text-muted-foreground mb-4">
+                        <h3 className="text-lg font-semibold mb-3">Upload Document or Paste Text</h3>
+                        <p className="text-muted-foreground leading-relaxed">
                           Upload a PDF, DOCX, or TXT document (or paste text) and AI will analyze the content and automatically generate survey questions. Works great for training materials, course content, or any document you want to turn into an assessment.
                         </p>
                       </div>
