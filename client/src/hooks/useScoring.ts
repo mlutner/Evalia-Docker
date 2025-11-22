@@ -71,7 +71,7 @@ export function useScoring(initialConfig?: SurveyScoreConfig) {
     setScoreRanges(scoreRanges.filter((_, i) => i !== index));
   };
 
-  const handleAutoGenerateScoring = async (questions: Question[]) => {
+  const handleAutoGenerateScoring = async (questions: Question[], onScoreConfigChange?: (config: SurveyScoreConfig) => void) => {
     if (questions.length === 0) {
       toast({
         title: "No questions",
@@ -97,6 +97,15 @@ export function useScoring(initialConfig?: SurveyScoreConfig) {
       setIsEnabled(true);
       setCategories(config.categories || []);
       setScoreRanges(config.scoreRanges || []);
+      
+      // Auto-save immediately
+      const newConfig: SurveyScoreConfig = {
+        enabled: true,
+        categories: config.categories || [],
+        scoreRanges: config.scoreRanges || [],
+        resultsSummary: resultsSummary || undefined,
+      };
+      onScoreConfigChange?.(newConfig);
 
       toast({
         title: "Scoring configured",

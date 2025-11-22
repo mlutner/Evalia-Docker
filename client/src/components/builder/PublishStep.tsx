@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown, Clock, BookOpen } from "lucide-react";
+import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown, Clock, BookOpen, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -85,8 +85,14 @@ export default function PublishStep({
     newCategoryName,
     setNewCategoryName,
     isAutoGenerating,
+    expandedCategories,
     handleAddCategory,
     handleRemoveCategory,
+    toggleExpandCategory,
+    getCategoryRanges,
+    handleAddScoreRange,
+    handleUpdateScoreRange,
+    handleRemoveScoreRange,
     handleAutoGenerateScoring,
     handleSaveScoring,
   } = useScoring(scoreConfig);
@@ -385,7 +391,7 @@ export default function PublishStep({
                     <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
                       <p className="text-xs font-medium text-primary mb-2">Quick Setup</p>
                       <Button
-                        onClick={() => handleAutoGenerateScoring(questions)}
+                        onClick={() => handleAutoGenerateScoring(questions, onScoreConfigChange)}
                         disabled={isAutoGenerating || questions.length === 0}
                         className="w-full"
                         variant="outline"
@@ -400,7 +406,7 @@ export default function PublishStep({
                       </p>
                     </div>
 
-                    {/* Manual Categories */}
+                    {/* Manual Categories with Score Ranges */}
                     <div className="space-y-3">
                       <div>
                         <label className="text-xs font-semibold text-foreground mb-2 block">Scoring Categories</label>
@@ -432,15 +438,93 @@ export default function PublishStep({
 
                       {categories.length > 0 && (
                         <div className="space-y-2 p-3 bg-muted/40 rounded-lg border">
-                          <p className="text-xs font-medium text-muted-foreground">Configured Categories</p>
-                          {categories.map((cat) => (
-                            <div key={cat.id} className="flex items-center justify-between p-2.5 bg-background rounded border text-sm hover:bg-muted/50 transition-colors group" data-testid={`category-${cat.id}`}>
-                              <span className="font-medium">{cat.name}</span>
-                              <Button variant="ghost" size="icon" onClick={() => handleRemoveCategory(cat.id)} className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity" data-testid={`button-remove-category-${cat.id}`}>
-                                <Trash2 className="w-3 h-3 text-destructive" />
-                              </Button>
-                            </div>
-                          ))}
+                          <p className="text-xs font-medium text-muted-foreground">Configured Categories & Score Ranges</p>
+                          {categories.map((cat) => {
+                            const ranges = getCategoryRanges(cat.id);
+                            const isExpanded = expandedCategories.includes(cat.id);
+                            return (
+                              <div key={cat.id} className="bg-background rounded border" data-testid={`category-${cat.id}`}>
+                                <button
+                                  onClick={() => toggleExpandCategory(cat.id)}
+                                  className="w-full flex items-center justify-between p-2.5 text-sm hover:bg-muted/50 transition-colors group"
+                                >
+                                  <div className="flex items-center gap-2 flex-1">
+                                    <ChevronRight className={`w-4 h-4 text-muted-foreground transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                                    <span className="font-medium">{cat.name}</span>
+                                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">{ranges.length} range{ranges.length !== 1 ? 's' : ''}</span>
+                                  </div>
+                                  <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleRemoveCategory(cat.id); }} className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity" data-testid={`button-remove-category-${cat.id}`}>
+                                    <Trash2 className="w-3 h-3 text-destructive" />
+                                  </Button>
+                                </button>
+                                
+                                {isExpanded && (
+                                  <div className="border-t p-3 space-y-3 bg-muted/20">
+                                    {ranges.map((range, idx) => {
+                                      const actualIdx = scoreRanges.indexOf(range);
+                                      return (
+                                        <div key={actualIdx} className="space-y-2 p-2 bg-background rounded border">
+                                          <div className="grid grid-cols-3 gap-2">
+                                            <Input
+                                              placeholder="Label"
+                                              value={range.label}
+                                              onChange={(e) => handleUpdateScoreRange(actualIdx, 'label', e.target.value)}
+                                              className="text-xs"
+                                              data-testid={`input-range-label-${actualIdx}`}
+                                            />
+                                            <Input
+                                              placeholder="Min"
+                                              type="number"
+                                              value={range.minScore}
+                                              onChange={(e) => handleUpdateScoreRange(actualIdx, 'minScore', parseInt(e.target.value) || 0)}
+                                              className="text-xs"
+                                              data-testid={`input-range-min-${actualIdx}`}
+                                            />
+                                            <Input
+                                              placeholder="Max"
+                                              type="number"
+                                              value={range.maxScore}
+                                              onChange={(e) => handleUpdateScoreRange(actualIdx, 'maxScore', parseInt(e.target.value) || 0)}
+                                              className="text-xs"
+                                              data-testid={`input-range-max-${actualIdx}`}
+                                            />
+                                          </div>
+                                          <Textarea
+                                            placeholder="Interpretation (shown to respondents)"
+                                            value={range.interpretation}
+                                            onChange={(e) => handleUpdateScoreRange(actualIdx, 'interpretation', e.target.value)}
+                                            className="text-xs resize-none"
+                                            rows={2}
+                                            data-testid={`textarea-range-interpretation-${actualIdx}`}
+                                          />
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => handleRemoveScoreRange(actualIdx)}
+                                            className="text-destructive"
+                                            data-testid={`button-remove-range-${actualIdx}`}
+                                          >
+                                            <Trash2 className="w-3 h-3 mr-1" />
+                                            Remove Score Range
+                                          </Button>
+                                        </div>
+                                      );
+                                    })}
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => handleAddScoreRange(cat.id)}
+                                      className="w-full"
+                                      data-testid={`button-add-range-${cat.id}`}
+                                    >
+                                      <Plus className="w-3 h-3 mr-1" />
+                                      Add Score Range
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
                       )}
                     </div>
