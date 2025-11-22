@@ -1,6 +1,13 @@
 import { useState } from "react";
 import logoImage from "@assets/Untitled design (3)_1763764996441.png";
-import { Clock, BookOpen, Shield, TrendingUp, ChevronDown } from "lucide-react";
+import { Clock, BookOpen, Shield, TrendingUp, X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
 
 interface SurveyWelcomeTemplateProps {
   title: string;
@@ -25,7 +32,7 @@ export default function SurveyWelcomeTemplate({
   privacyStatement,
   dataUsageStatement,
 }: SurveyWelcomeTemplateProps) {
-  const [isPrivacyExpanded, setIsPrivacyExpanded] = useState(false);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
   const purposePoints = welcomeMessage
     ? welcomeMessage.split("\n").filter((line) => line.trim())
     : [];
@@ -106,41 +113,47 @@ export default function SurveyWelcomeTemplate({
         )}
       </div>
 
-      {/* Privacy & Data Collapsible Section */}
+      {/* Privacy & Data Link */}
       {(privacyStatement || dataUsageStatement) && (
-        <div className="mx-[40px] mb-[16px] border border-border rounded-md" data-testid="privacy-data-section">
+        <div className="text-center mb-[16px]">
           <button
-            onClick={() => setIsPrivacyExpanded(!isPrivacyExpanded)}
-            className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/50 transition-colors"
-            data-testid="button-privacy-toggle"
+            onClick={() => setIsPrivacyModalOpen(true)}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors underline cursor-pointer"
+            data-testid="button-privacy-link"
             type="button"
           >
-            <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-medium">Privacy & Data</span>
-            </div>
-            <ChevronDown 
-              className={`w-4 h-4 text-muted-foreground transition-transform ${isPrivacyExpanded ? 'rotate-180' : ''}`}
-            />
+            Privacy & Data
           </button>
-          
-          {isPrivacyExpanded && (
-            <div className="px-4 py-3 border-t border-border bg-muted/20 space-y-3">
+        </div>
+      )}
+
+      {/* Privacy & Data Modal */}
+      {(privacyStatement || dataUsageStatement) && (
+        <Dialog open={isPrivacyModalOpen} onOpenChange={setIsPrivacyModalOpen}>
+          <DialogContent className="max-w-md" data-testid="privacy-data-modal">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Shield className="w-4 h-4" />
+                Privacy & Data
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4 max-h-[60vh] overflow-y-auto">
               {privacyStatement && (
                 <div data-testid="privacy-statement-content">
-                  <h4 className="text-xs font-semibold mb-1 text-foreground">Privacy</h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{privacyStatement}</p>
+                  <h4 className="text-sm font-semibold mb-2 text-foreground">Privacy</h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{privacyStatement}</p>
                 </div>
               )}
               {dataUsageStatement && (
                 <div data-testid="data-usage-statement-content">
-                  <h4 className="text-xs font-semibold mb-1 text-foreground">Data Usage</h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{dataUsageStatement}</p>
+                  <h4 className="text-sm font-semibold mb-2 text-foreground">Data Usage</h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{dataUsageStatement}</p>
                 </div>
               )}
             </div>
-          )}
-        </div>
+          </DialogContent>
+        </Dialog>
       )}
 
       {/* Footer */}
