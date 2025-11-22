@@ -1,0 +1,657 @@
+{
+  "survey": {
+    "title": "Leadership Style Self-Assessment Tool",
+    "questions": [
+      {
+        "id": "q1",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I prefer to make decisions quickly without consulting others.",
+        "required": true,
+        "scoringCategory": "cat1"
+      },
+      {
+        "id": "q2",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I believe clear direction and control are key to achieving results.",
+        "required": true,
+        "scoringCategory": "cat1"
+      },
+      {
+        "id": "q3",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I expect team members to follow established rules and procedures.",
+        "required": true,
+        "scoringCategory": "cat1"
+      },
+      {
+        "id": "q4",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I am comfortable taking full responsibility for final decisions.",
+        "required": true,
+        "scoringCategory": "cat1"
+      },
+      {
+        "id": "q5",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I encourage team input before making important decisions.",
+        "required": true,
+        "scoringCategory": "cat2"
+      },
+      {
+        "id": "q6",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I value collaboration and consensus in decision-making.",
+        "required": true,
+        "scoringCategory": "cat2"
+      },
+      {
+        "id": "q7",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I make an effort to listen to all perspectives in team discussions.",
+        "required": true,
+        "scoringCategory": "cat2"
+      },
+      {
+        "id": "q8",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "My team feels their opinions influence outcomes.",
+        "required": true,
+        "scoringCategory": "cat2"
+      },
+      {
+        "id": "q9",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I prefer to let my team make their own decisions.",
+        "required": true,
+        "scoringCategory": "cat2"
+      },
+      {
+        "id": "q10",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I give minimal direction and allow people to find their own approach.",
+        "required": true,
+        "scoringCategory": "cat2"
+      },
+      {
+        "id": "q11",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I trust employees to manage their work independently.",
+        "required": true,
+        "scoringCategory": "cat2"
+      },
+      {
+        "id": "q12",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I step in only when problems become serious.",
+        "required": true,
+        "scoringCategory": "cat2"
+      },
+      {
+        "id": "q13",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I often talk about a bigger vision or purpose to motivate others.",
+        "required": true,
+        "scoringCategory": "cat3"
+      },
+      {
+        "id": "q14",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I encourage innovation and creative thinking.",
+        "required": true,
+        "scoringCategory": "cat3"
+      },
+      {
+        "id": "q15",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I seek to inspire enthusiasm and commitment to shared goals.",
+        "required": true,
+        "scoringCategory": "cat3"
+      },
+      {
+        "id": "q16",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I model the change I want to see in my team.",
+        "required": true,
+        "scoringCategory": "cat3"
+      },
+      {
+        "id": "q17",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I use clear rewards and consequences to manage performance.",
+        "required": true,
+        "scoringCategory": "cat1"
+      },
+      {
+        "id": "q18",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I monitor progress closely and provide corrective feedback.",
+        "required": true,
+        "scoringCategory": "cat1"
+      },
+      {
+        "id": "q19",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I prefer structured systems to maintain accountability.",
+        "required": true,
+        "scoringCategory": "cat1"
+      },
+      {
+        "id": "q20",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I set measurable goals and track outcomes regularly.",
+        "required": true,
+        "scoringCategory": "cat1"
+      },
+      {
+        "id": "q21",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I prioritize my team's well-being and development.",
+        "required": true,
+        "scoringCategory": "cat3"
+      },
+      {
+        "id": "q22",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I believe serving others is key to leading effectively.",
+        "required": true,
+        "scoringCategory": "cat3"
+      },
+      {
+        "id": "q23",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I make decisions based on what will benefit my team the most.",
+        "required": true,
+        "scoringCategory": "cat3"
+      },
+      {
+        "id": "q24",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I actively remove obstacles to help others succeed.",
+        "required": true,
+        "scoringCategory": "cat3"
+      },
+      {
+        "id": "q25",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I spend time mentoring and developing others' skills.",
+        "required": true,
+        "scoringCategory": "cat3"
+      },
+      {
+        "id": "q26",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I give feedback aimed at growth, not just performance.",
+        "required": true,
+        "scoringCategory": "cat3"
+      },
+      {
+        "id": "q27",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I enjoy helping people find their own solutions.",
+        "required": true,
+        "scoringCategory": "cat3"
+      },
+      {
+        "id": "q28",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I see my role as helping others reach their potential.",
+        "required": true,
+        "scoringCategory": "cat3"
+      },
+      {
+        "id": "q29",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I strictly follow policies and expect others to do the same.",
+        "required": true,
+        "scoringCategory": "cat1"
+      },
+      {
+        "id": "q30",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I believe consistency and compliance are essential for success.",
+        "required": true,
+        "scoringCategory": "cat1"
+      },
+      {
+        "id": "q31",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I rely on standard procedures to guide decisions.",
+        "required": true,
+        "scoringCategory": "cat1"
+      },
+      {
+        "id": "q32",
+        "type": "multiple_choice",
+        "options": [
+          "1 (Strongly Disagree)",
+          "2",
+          "3",
+          "4",
+          "5 (Strongly Agree)"
+        ],
+        "question": "I prefer stability and order over flexibility.",
+        "required": true,
+        "scoringCategory": "cat1"
+      }
+    ]
+  },
+  "responses": [
+    {
+      "id": "0811df07-ef32-40cf-8de4-63edd4541c84",
+      "surveyId": "d92303b0-2a10-4079-b9ce-273ada2492bd",
+      "answers": {
+        "q1": "3",
+        "q2": "5 (Strongly Agree)",
+        "q3": "4",
+        "q4": "3",
+        "q5": "2",
+        "q6": "1 (Strongly Disagree)",
+        "q7": "5 (Strongly Agree)",
+        "q8": "4",
+        "q9": "3",
+        "q10": "5 (Strongly Agree)",
+        "q11": "3",
+        "q12": "5 (Strongly Agree)",
+        "q13": "3",
+        "q14": "4",
+        "q15": "3",
+        "q16": "5 (Strongly Agree)",
+        "q17": "3",
+        "q18": "5 (Strongly Agree)",
+        "q19": "3",
+        "q20": "3",
+        "q21": "5 (Strongly Agree)",
+        "q22": "4",
+        "q23": "3",
+        "q24": "5 (Strongly Agree)",
+        "q25": "5 (Strongly Agree)",
+        "q26": "4",
+        "q27": "5 (Strongly Agree)",
+        "q28": "4",
+        "q29": "2",
+        "q30": "1 (Strongly Disagree)",
+        "q31": "3",
+        "q32": "2"
+      },
+      "startedAt": "2025-11-22T04:49:09.694Z",
+      "completedAt": "2025-11-22T04:49:09.694Z"
+    },
+    {
+      "id": "6b4441ea-a268-42b1-94ae-b9d7820726c8",
+      "surveyId": "d92303b0-2a10-4079-b9ce-273ada2492bd",
+      "answers": {
+        "q1": "4",
+        "q2": "4",
+        "q3": "5 (Strongly Agree)",
+        "q4": "4",
+        "q5": "4",
+        "q6": "2",
+        "q7": "1 (Strongly Disagree)",
+        "q8": "1 (Strongly Disagree)",
+        "q9": "3",
+        "q10": "4",
+        "q11": "3",
+        "q12": "2",
+        "q13": "1 (Strongly Disagree)",
+        "q14": "3",
+        "q15": "4",
+        "q16": "2",
+        "q17": "5 (Strongly Agree)",
+        "q18": "4",
+        "q19": "3",
+        "q20": "4",
+        "q21": "5 (Strongly Agree)",
+        "q22": "4",
+        "q23": "4",
+        "q24": "5 (Strongly Agree)",
+        "q25": "3",
+        "q26": "3",
+        "q27": "4",
+        "q28": "2",
+        "q29": "5 (Strongly Agree)",
+        "q30": "4",
+        "q31": "5 (Strongly Agree)",
+        "q32": "3"
+      },
+      "startedAt": "2025-11-22T04:45:22.754Z",
+      "completedAt": "2025-11-22T04:45:22.754Z"
+    },
+    {
+      "id": "77675ef4-02ca-41d1-85f8-3e2f44716f9d",
+      "surveyId": "d92303b0-2a10-4079-b9ce-273ada2492bd",
+      "answers": {
+        "q1": "4",
+        "q2": "5 (Strongly Agree)",
+        "q3": "4",
+        "q4": "5 (Strongly Agree)",
+        "q5": "4",
+        "q6": "5 (Strongly Agree)",
+        "q7": "4",
+        "q8": "5 (Strongly Agree)",
+        "q9": "4",
+        "q10": "5 (Strongly Agree)",
+        "q11": "4",
+        "q12": "5 (Strongly Agree)",
+        "q13": "3",
+        "q14": "5 (Strongly Agree)",
+        "q15": "3",
+        "q16": "5 (Strongly Agree)",
+        "q17": "4",
+        "q18": "4",
+        "q19": "5 (Strongly Agree)",
+        "q20": "3",
+        "q21": "5 (Strongly Agree)",
+        "q22": "4",
+        "q23": "5 (Strongly Agree)",
+        "q24": "5 (Strongly Agree)",
+        "q25": "3",
+        "q26": "5 (Strongly Agree)",
+        "q27": "4",
+        "q28": "5 (Strongly Agree)",
+        "q29": "5 (Strongly Agree)",
+        "q30": "5 (Strongly Agree)",
+        "q31": "4",
+        "q32": "4"
+      },
+      "startedAt": "2025-11-22T04:42:55.525Z",
+      "completedAt": "2025-11-22T04:42:55.525Z"
+    },
+    {
+      "id": "34832474-6526-46ec-a289-abe9b4e8ece9",
+      "surveyId": "d92303b0-2a10-4079-b9ce-273ada2492bd",
+      "answers": {
+        "q1": "3",
+        "q2": "5 (Strongly Agree)",
+        "q3": "4",
+        "q4": "5 (Strongly Agree)",
+        "q5": "3",
+        "q6": "5 (Strongly Agree)",
+        "q7": "2",
+        "q8": "5 (Strongly Agree)",
+        "q9": "4",
+        "q10": "2",
+        "q11": "5 (Strongly Agree)",
+        "q12": "4",
+        "q13": "3",
+        "q14": "2",
+        "q15": "5 (Strongly Agree)",
+        "q16": "4",
+        "q17": "5 (Strongly Agree)",
+        "q18": "4",
+        "q19": "3",
+        "q20": "5 (Strongly Agree)",
+        "q21": "4",
+        "q22": "5 (Strongly Agree)",
+        "q23": "4",
+        "q24": "5 (Strongly Agree)",
+        "q25": "4",
+        "q26": "3",
+        "q27": "3",
+        "q28": "5 (Strongly Agree)",
+        "q29": "3",
+        "q30": "5 (Strongly Agree)",
+        "q31": "4",
+        "q32": "5 (Strongly Agree)"
+      },
+      "startedAt": "2025-11-22T04:40:05.186Z",
+      "completedAt": "2025-11-22T04:40:05.186Z"
+    },
+    {
+      "id": "f4de74a8-8621-4536-8c7d-cb261540ccf9",
+      "surveyId": "d92303b0-2a10-4079-b9ce-273ada2492bd",
+      "answers": {
+        "q1": "3",
+        "q2": "5 (Strongly Agree)",
+        "q3": "5 (Strongly Agree)",
+        "q4": "5 (Strongly Agree)",
+        "q5": "4",
+        "q6": "4",
+        "q7": "5 (Strongly Agree)",
+        "q8": "4",
+        "q9": "5 (Strongly Agree)",
+        "q10": "4",
+        "q11": "4",
+        "q12": "3",
+        "q13": "5 (Strongly Agree)",
+        "q14": "4",
+        "q15": "5 (Strongly Agree)",
+        "q16": "4",
+        "q17": "4",
+        "q18": "5 (Strongly Agree)",
+        "q19": "4",
+        "q20": "4",
+        "q21": "5 (Strongly Agree)",
+        "q22": "5 (Strongly Agree)",
+        "q23": "5 (Strongly Agree)",
+        "q24": "4",
+        "q25": "3",
+        "q26": "2",
+        "q27": "1 (Strongly Disagree)",
+        "q28": "5 (Strongly Agree)",
+        "q29": "2",
+        "q30": "4",
+        "q31": "3",
+        "q32": "5 (Strongly Agree)"
+      },
+      "startedAt": "2025-11-22T04:36:28.937Z",
+      "completedAt": "2025-11-22T04:36:28.937Z"
+    }
+  ]
+}

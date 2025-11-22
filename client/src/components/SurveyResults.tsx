@@ -25,15 +25,25 @@ export default function SurveyResults({
     survey.scoreConfig || undefined
   );
 
-  // Find interpretations for each score
-  const getInterpretation = (categoryId: string, score: number): string | null => {
+  // Find interpretations and range info for each score
+  const getScoreRangeInfo = (categoryId: string, score: number) => {
     const config = survey.scoreConfig;
     if (!config?.scoreRanges) return null;
     
     const range = config.scoreRanges.find(
       (r: any) => r.category === categoryId && score >= r.minScore && score <= r.maxScore
     );
-    return range?.interpretation || null;
+    
+    if (!range) return null;
+    
+    return {
+      interpretation: range.interpretation,
+      label: range.label,
+      minScore: range.minScore,
+      maxScore: range.maxScore,
+      isHighPerformance: score >= range.maxScore - (range.maxScore - range.minScore) * 0.2,
+      isLowPerformance: score <= range.minScore + (range.maxScore - range.minScore) * 0.2,
+    };
   };
 
   // Handle exit - either call onExit prop or reload
@@ -93,6 +103,8 @@ export default function SurveyResults({
         <div className="space-y-6 mb-8">
           {scores.map((result) => {
             const percentage = (result.score / result.maxScore) * 100;
+            const rangeInfo = getScoreRangeInfo(result.categoryId, result.score);
+            
             const progressColor =
               percentage >= 80
                 ? "bg-green-500"
@@ -102,14 +114,20 @@ export default function SurveyResults({
                     ? "bg-yellow-500"
                     : "bg-red-500";
 
-            // Get the interpretation from score ranges
-            const interpretation = getInterpretation(result.categoryId, result.score) || result.interpretation;
+            const rangeLabel = rangeInfo?.label || (
+              percentage >= 80 ? "Excellent" : 
+              percentage >= 60 ? "Strong" : 
+              percentage >= 40 ? "Developing" : "Early Stage"
+            );
 
             return (
               <Card key={result.categoryId} data-testid={`card-score-${result.categoryId}`}>
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{result.categoryName}</CardTitle>
+                    <div>
+                      <CardTitle className="text-lg">{result.categoryName}</CardTitle>
+                      <p className="text-xs text-muted-foreground mt-1">{rangeLabel}</p>
+                    </div>
                     <div className="text-right">
                       <span className="text-3xl font-bold text-primary" data-testid={`text-score-${result.categoryId}`}>
                         {result.score}
@@ -145,12 +163,21 @@ export default function SurveyResults({
                     />
                   </div>
 
-                  {/* Interpretation */}
-                  {interpretation && (
-                    <p className="text-sm text-muted-foreground italic" data-testid={`text-interpretation-${result.categoryId}`}>
-                      {interpretation}
-                    </p>
-                  )}
+                  {/* Interpretation and Range Context */}
+                  <div className="space-y-2">
+                    {rangeInfo?.interpretation && (
+                      <p className="text-sm text-foreground" data-testid={`text-interpretation-${result.categoryId}`}>
+                        {rangeInfo.interpretation}
+                      </p>
+                    )}
+                    {rangeInfo && (
+                      <p className="text-xs text-muted-foreground">
+                        Range: {rangeInfo.minScore} - {rangeInfo.maxScore}
+                        {rangeInfo.isHighPerformance && " • Strong performance in this area"}
+                        {rangeInfo.isLowPerformance && " • Consider development opportunities"}
+                      </p>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             );
