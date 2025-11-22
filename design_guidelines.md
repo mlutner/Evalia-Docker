@@ -14,20 +14,26 @@ Evalia follows Typeform's pioneering one-question-at-a-time philosophy while ada
 
 ## Evalia Color Palette
 
-The design system uses Evalia's core brand colors to create visual distinction and hierarchy:
+The design system uses carefully selected colors to create visual distinction with a "calm productivity" vibe:
 
-- **Lime (#CCFF00 / #A3E635)**: Vibrant, energetic, used for templates and structure
-- **Cyan/Teal (#22D3EE)**: Innovative, AI-powered, used for AI-generated content and smart features
-- **Amber (#D97706)**: Active, warm, used for uploads and file processing
-- **Navy (#071A32)**: Deep, authoritative, used for text and critical information
+- **Soft Amber (#F4C264)**: Warm, mature, welcoming - used for templates and primary call-to-action areas
+- **Cyan (#22D3EE)**: Innovative, AI-powered - used for AI-generated content and smart features
+- **Warm Amber (#D97706)**: Active, energetic - used for uploads, file processing, and secondary actions
+- **Navy (#071A32)**: Deep, authoritative - used for text and critical information
 
 **Survey Creation Methods Use Color Language:**
-- **Templates**: Lime accent - establishes energy and structure
-- **AI Generation**: Cyan accent - communicates intelligence and innovation
-- **Upload/Paste**: Amber accent - signals action and file processing
+- **Templates**: Soft Amber accent - warm welcome, establishes structure and professionalism
+- **AI Generation**: Cyan accent - communicates intelligence, innovation, and AI-powered capability
+- **Upload/Paste**: Warm Amber accent - signals action, active processing, file handling
+
+**Design Principles:**
+- Soft Amber pairs beautifully with Cyan on the color wheel
+- Warms up the palette without overwhelming
+- Perfect for callouts, highlights, and onboarding experiences
+- Creates wellness + coaching interface feeling (ideal for trainer platform)
 
 Each method features:
-- Gradient background (15% opacity, fading to background)
+- Gradient background (20-25% opacity, fading to background)
 - Colored left border accent (4px solid)
 - Matching colored border for visual cohesion
 - Consistent typography and spacing
