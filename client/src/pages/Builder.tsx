@@ -108,11 +108,15 @@ export default function Builder() {
         fileProcessing.setParsedText(result.parsedText);
         surveyState.setCurrentSurveyTitle(result.title);
         surveyState.setCurrentQuestions(result.questions);
+        // Apply AI-generated scoring configuration if available
+        if (result.scoreConfig) {
+          surveyState.setScoreConfig(result.scoreConfig);
+        }
         aiChat.setMessages([
           {
             id: "1",
             role: "assistant",
-            content: `I've analyzed your document and created ${result.questions.length} questions based on the content. You can edit the questions directly, preview the survey, or ask me to make changes!`,
+            content: `I've analyzed your document and created ${result.questions.length} questions based on the content. ${result.scoreConfig ? 'I also suggested a scoring configuration that you can customize in Step 4. ' : ''}You can edit the questions directly, preview the survey, or ask me to make changes!`,
           },
         ]);
       },
