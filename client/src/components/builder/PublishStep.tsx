@@ -102,6 +102,7 @@ export default function PublishStep({
     handleRemoveScoreRange,
     handleAutoGenerateScoring,
     handleSaveScoring,
+    autoPopulateCategoriesFromSections,
   } = useScoring(scoreConfig);
 
   // Drag and drop handler for question assignment
@@ -231,37 +232,12 @@ export default function PublishStep({
     );
   };
 
-  // Auto-populate scoring categories from survey sections/questions
+  // Auto-populate scoring categories from survey sections when scoring is enabled
   useEffect(() => {
     if (isEnabled && categories.length === 0 && questions && questions.length > 0) {
-      // Extract unique sections from questions
-      const uniqueSections = new Set<string>();
-      questions.forEach(q => {
-        if (q.sectionId) {
-          uniqueSections.add(q.sectionId);
-        }
-      });
-
-      // If there are multiple sections, auto-create categories
-      if (uniqueSections.size > 1) {
-        const sectionsArray = Array.from(uniqueSections);
-        
-        // Add first category to initialize
-        setNewCategoryName(sectionsArray[0]);
-        handleAddCategory();
-
-        // Schedule adding remaining categories
-        setTimeout(() => {
-          sectionsArray.slice(1).forEach((section, idx) => {
-            setTimeout(() => {
-              setNewCategoryName(section);
-              handleAddCategory();
-            }, idx * 100);
-          });
-        }, 100);
-      }
+      autoPopulateCategoriesFromSections(questions);
     }
-  }, [isEnabled, categories.length]);
+  }, [isEnabled]);
 
   // Auto-populate estimated time based on question count
   useEffect(() => {
@@ -535,7 +511,14 @@ export default function PublishStep({
                 <div className="flex items-center justify-between p-4 bg-background/60 rounded-lg border border-primary/20">
                   <div>
                     <p className="text-sm font-semibold text-foreground">Enable Scoring</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Respondents will see their assessment results</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Respondents will see their assessment results
+                      {questions?.some(q => q.sectionId) && categories.length === 0 && (
+                        <span className="block mt-1 text-primary font-medium">
+                          💡 Survey sections will auto-populate as scoring categories
+                        </span>
+                      )}
+                    </p>
                   </div>
                   <Switch
                     checked={isEnabled}

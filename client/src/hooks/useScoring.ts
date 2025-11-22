@@ -33,6 +33,28 @@ export function useScoring(initialConfig?: SurveyScoreConfig) {
     }
   };
 
+  // Auto-populate categories from question sections
+  const autoPopulateCategoriesFromSections = (questions: Question[]) => {
+    if (categories.length > 0) return; // Don't override existing categories
+    
+    const uniqueSections = new Set<string>();
+    questions.forEach(q => {
+      if (q.sectionId) {
+        uniqueSections.add(q.sectionId);
+      }
+    });
+
+    if (uniqueSections.size > 1) {
+      const newCategories = Array.from(uniqueSections).map(section => ({
+        id: `cat-${section}-${Date.now()}`,
+        name: section,
+      }));
+      setCategories(newCategories);
+      return newCategories;
+    }
+    return [];
+  };
+
   const handleRemoveCategory = (catId: string) => {
     setCategories(categories.filter((c) => c.id !== catId));
     setScoreRanges(scoreRanges.filter((r) => r.category !== catId));
@@ -157,5 +179,6 @@ export function useScoring(initialConfig?: SurveyScoreConfig) {
     handleRemoveScoreRange,
     handleAutoGenerateScoring,
     handleSaveScoring,
+    autoPopulateCategoriesFromSections,
   };
 }
