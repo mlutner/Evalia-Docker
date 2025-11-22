@@ -5,6 +5,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
+import { useUpdateChecker } from "@/hooks/useUpdateChecker";
+import UpdateNotification from "@/components/UpdateNotification";
 import Home from "@/pages/Home";
 import Dashboard from "@/pages/Dashboard";
 import Builder from "@/pages/Builder";
@@ -78,9 +80,16 @@ function Router() {
 }
 
 function App() {
+  const { updateAvailable, dismissUpdate, reloadApp } = useUpdateChecker();
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <UpdateNotification
+          visible={updateAvailable}
+          onDismiss={dismissUpdate}
+          onReload={reloadApp}
+        />
         <Toaster />
         <Router />
       </TooltipProvider>

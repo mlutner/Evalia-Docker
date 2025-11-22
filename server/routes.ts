@@ -33,6 +33,9 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
 
+// App version - increment this when deploying updates
+const APP_VERSION = process.env.APP_VERSION || Date.now().toString();
+
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // Serve static assets from attached_assets directory
@@ -41,6 +44,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Setup Replit Auth (supports Google + Email/Password)
   await setupAuth(app);
+
+  // Get app version (public endpoint - no auth required)
+  app.get("/api/version", (req: any, res) => {
+    res.json({ version: APP_VERSION });
+  });
 
   // Get current authenticated user
   app.get("/api/auth/user", isAuthenticated, async (req: any, res) => {
