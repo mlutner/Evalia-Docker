@@ -1,4 +1,4 @@
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import type { Survey } from "@shared/schema";
 import SurveyWelcomeTemplate from "@/components/SurveyWelcomeTemplate";
 
@@ -40,16 +40,16 @@ export default function SurveyWelcome({
   return (
     <div className="survey-shell">
       <main className="survey-card pl-[45px] pr-[45px]" aria-labelledby="survey-title">
-        {/* Back Button */}
+        {/* Exit Button */}
         {onBack && (
           <button
             onClick={onBack}
-            data-testid="button-back-survey"
+            data-testid="button-exit-survey"
             className="survey-back-button"
             type="button"
-            aria-label="Go back"
+            aria-label="Exit survey"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <X className="w-5 h-5" />
           </button>
         )}
         <SurveyWelcomeTemplate
