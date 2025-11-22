@@ -49,7 +49,6 @@ export function useAIChat() {
           history: updatedMessages.map((m) => ({
             role: m.role,
             content: m.content,
-            fileData: m.fileData,
           })),
         }),
       });

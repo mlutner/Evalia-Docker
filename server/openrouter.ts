@@ -213,6 +213,38 @@ export async function refineSurvey(
   conversationHistory: ChatMessage[] = [],
   fileData?: { name: string; type: string; base64: string }
 ): Promise<{ questions?: Question[]; message: string }> {
+  // Process file data if provided
+  let enhancedMessage = userMessage;
+  if (fileData && fileData.base64) {
+    try {
+      const buffer = Buffer.from(fileData.base64, "base64");
+      const fileType = fileData.type;
+      let fileContent = "";
+
+      if (fileType === "application/pdf") {
+        fileContent = await parsePDFWithVision(buffer, fileData.name);
+      } else if (
+        fileType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+        fileType === "application/msword"
+      ) {
+        const result = await mammoth.extractRawText({ buffer });
+        fileContent = result.value;
+      } else if (fileType === "text/plain") {
+        fileContent = buffer.toString("utf-8");
+      } else if (fileType.startsWith("image/")) {
+        fileContent = `[Image uploaded: ${fileData.name}]`;
+      }
+
+      if (fileContent) {
+        enhancedMessage = `${userMessage}\n\n---\nFile content (${fileData.name}):\n${fileContent}`;
+      }
+    } catch (fileError: any) {
+      console.error("File processing in chat failed:", fileError);
+      enhancedMessage = `${userMessage}\n\n[Note: Could not process attached file]`;
+    }
+  }
+
+  // Build messages WITHOUT fileData field - only include role and content
   const systemPrompt = `You are an AI assistant helping refine training surveys. You have full context about the survey.
 
 SURVEY INFORMATION:
@@ -253,8 +285,11 @@ ${JSON.stringify(survey.questions, null, 2)}`;
 
   const messages: ChatMessage[] = [
     { role: "system", content: systemPrompt },
-    ...conversationHistory,
-    { role: "user", content: userMessage },
+    ...conversationHistory.map((m) => ({
+      role: m.role,
+      content: m.content,
+    })),
+    { role: "user", content: enhancedMessage },
   ];
 
   const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
