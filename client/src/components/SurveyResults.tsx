@@ -100,13 +100,9 @@ export default function SurveyResults({
     };
   };
 
-  // Handle exit - either call onExit prop or reload
+  // Handle exit - navigate away from the survey to home page
   const handleExit = () => {
-    if (onExit) {
-      onExit();
-    } else {
-      window.location.href = "/";
-    }
+    window.location.href = "/";
   };
 
   if (!scores) {
