@@ -130,14 +130,17 @@ export default function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport
         </DropdownMenu>
         </div>
         {statusDisplay.badge && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              {statusDisplay.badge}
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="max-w-xs">
-              {statusDisplay.tooltip}
-            </TooltipContent>
-          </Tooltip>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-muted-foreground">Status:</span>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                {statusDisplay.badge}
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="max-w-xs">
+                {statusDisplay.tooltip}
+              </TooltipContent>
+            </Tooltip>
+          </div>
         )}
       </CardHeader>
 
