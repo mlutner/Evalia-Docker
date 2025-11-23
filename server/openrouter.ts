@@ -302,8 +302,16 @@ Make interpretations clear and practical - they'll be shown to respondents after
 
   try {
     const result = await callOpenRouterModel(messages);
-    const response = result.text;
-    const parsed = JSON.parse(response);
+    let response = result.text;
+    
+    // Extract JSON from response (in case there's markdown code blocks)
+    let jsonStr = response.trim();
+    const jsonMatch = jsonStr.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      jsonStr = jsonMatch[0];
+    }
+    
+    const parsed = JSON.parse(jsonStr);
     
     const theoreticalMax = calculateTheoreticalMaxScore(questions);
     
