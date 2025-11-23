@@ -225,11 +225,14 @@ export async function suggestScoringConfig(
   questions: Question[]
 ): Promise<any | null> {
   // Only suggest scoring for assessment/evaluation surveys
-  const assessmentKeywords = ['assess', 'evaluate', 'score', 'skill', 'competency', 'leadership', 'performance', 'capability', 'proficiency', 'mental health', 'mental', 'health', 'wellbeing', 'wellness', 'engagement', 'satisfaction', 'understanding', 'knowledge', 'learning', 'training', 'effectiveness', 'awareness', 'readiness'];
+  const assessmentKeywords = ['assess', 'evaluate', 'score', 'skill', 'competency', 'leadership', 'performance', 'capability', 'proficiency', 'mental health', 'mental', 'health', 'wellbeing', 'well-being', 'wellness', 'engagement', 'satisfaction', 'understanding', 'knowledge', 'learning', 'training', 'effectiveness', 'awareness', 'readiness'];
+  const lowerTitle = title.toLowerCase();
   const isAssessmentSurvey = assessmentKeywords.some(keyword => 
-    title.toLowerCase().includes(keyword) || 
+    lowerTitle.includes(keyword) || 
     questions.some(q => q.question.toLowerCase().includes(keyword))
-  );
+  ) || 
+  // Also check for hyphenated versions
+  /well[\s-]being|well[\s-]ness/.test(lowerTitle);
 
   if (!isAssessmentSurvey) {
     console.log("Survey not detected as assessment survey. Title:", title, "Keywords:", assessmentKeywords);
