@@ -300,6 +300,11 @@ Make interpretations clear and practical - they'll be shown to respondents after
     
     // Extract JSON from response (in case there's markdown code blocks)
     let jsonStr = response.trim();
+    
+    // Remove markdown code blocks if present
+    jsonStr = jsonStr.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+    
+    // Extract JSON object
     const jsonMatch = jsonStr.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       jsonStr = jsonMatch[0];
@@ -429,8 +434,13 @@ VALIDATION CHECKLIST:
   const response = result.text;
   
   try {
-    // Extract JSON from response (in case there's extra text)
+    // Extract JSON from response (in case there's extra text or markdown)
     let jsonStr = response.trim();
+    
+    // Remove markdown code blocks if present
+    jsonStr = jsonStr.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+    
+    // Extract JSON object
     const jsonMatch = jsonStr.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       jsonStr = jsonMatch[0];
