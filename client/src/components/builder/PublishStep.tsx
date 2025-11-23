@@ -804,32 +804,6 @@ export default function PublishStep({
                                       )}
                                     </div>
 
-                                    {/* Unassigned Questions Drop Zone */}
-                                    {unassignedScorableQuestions.length > 0 && (
-                                      <div className="pt-2 space-y-2">
-                                        <p className="text-xs font-semibold text-foreground">Assign Scorable Questions</p>
-                                        <div className="border-2 border-dashed rounded-lg p-3 bg-muted/5 space-y-1.5">
-                                          {unassignedScorableQuestions.map((q) => (
-                                            <div key={q.id} className="flex items-start justify-between p-2 bg-background rounded border hover:bg-muted/40 transition-colors text-xs">
-                                              <div className="flex-1 min-w-0">
-                                                <p className="truncate font-medium">{q.question}</p>
-                                                <p className="text-xs text-muted-foreground mt-0.5">{getQuestionTypeLabel(q.type)} • {getMaxPointsForQuestion(q)}pt</p>
-                                              </div>
-                                              <Button
-                                                size="sm"
-                                                variant="outline"
-                                                className="h-6 text-xs ml-2 flex-shrink-0"
-                                                onClick={() => handleQuestionDragEnd({ active: { id: q.id }, over: { id: cat.id } } as any)}
-                                                data-testid={`button-assign-${q.id}-to-${cat.id}`}
-                                              >
-                                                <Plus className="w-3 h-3 mr-1" />
-                                                Assign
-                                              </Button>
-                                            </div>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    )}
                                   </div>
                                 )}
                               </div>
@@ -849,7 +823,7 @@ export default function PublishStep({
                                 {scorableQuestions.filter(q => !q.scoringCategory).length}
                               </span>
                             </div>
-                            <p className="text-xs text-muted-foreground">Click a category above to assign questions</p>
+                            <p className="text-xs text-muted-foreground">Assign to a category to include in scoring</p>
                             <div className="space-y-1.5">
                               {scorableQuestions.filter(q => !q.scoringCategory).map((q) => (
                                 <div key={q.id} className="flex items-start justify-between p-2 bg-background rounded border hover:bg-muted/40 transition-colors text-xs">
@@ -857,7 +831,12 @@ export default function PublishStep({
                                     <p className="truncate font-medium">{q.question}</p>
                                     <p className="text-xs text-muted-foreground mt-0.5">{getQuestionTypeLabel(q.type)} • {getMaxPointsForQuestion(q)}pt</p>
                                   </div>
-                                  <Select>
+                                  <Select onValueChange={(catId) => {
+                                    const updated = questions.map(quest =>
+                                      quest.id === q.id ? { ...quest, scoringCategory: catId } : quest
+                                    );
+                                    onQuestionsChange?.(updated);
+                                  }}>
                                     <SelectTrigger className="h-6 w-28 text-xs px-2 ml-2 flex-shrink-0" data-testid={`button-assign-unassigned-${q.id}`}>
                                       <Plus className="w-3 h-3 mr-1" />
                                       <span>Assign to</span>
@@ -865,12 +844,7 @@ export default function PublishStep({
                                     <SelectContent align="end">
                                       <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Choose Category</div>
                                       {categories.map((cat) => (
-                                        <SelectItem key={cat.id} value={cat.id} onClick={() => {
-                                          const updated = questions.map(quest =>
-                                            quest.id === q.id ? { ...quest, scoringCategory: cat.id } : quest
-                                          );
-                                          onQuestionsChange?.(updated);
-                                        }}>
+                                        <SelectItem key={cat.id} value={cat.id}>
                                           {cat.name}
                                         </SelectItem>
                                       ))}
