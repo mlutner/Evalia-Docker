@@ -4,7 +4,7 @@ import express from "express";
 import path from "path";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { parsePDFWithVision, parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText, suggestScoringConfig, lastTokenUsage, calculateTokenCost } from "./openrouter";
+import { parsePDFWithVision, parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText, suggestScoringConfig } from "./openrouter";
 import { insertSurveySchema, questionSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
@@ -35,48 +35,6 @@ const upload = multer({
 
 // App version - increment this when deploying updates
 const APP_VERSION = process.env.APP_VERSION || Date.now().toString();
-
-// Master admin middleware
-const isMasterAdmin = async (req: any, res: Response, next: NextFunction) => {
-  try {
-    if (!req.user) return res.status(401).json({ error: "Not authenticated" });
-    
-    const userId = req.user.claims.sub;
-    const user = await storage.getUser(userId);
-    
-    if (!user?.isMasterAdmin) {
-      return res.status(403).json({ error: "Admin access required" });
-    }
-    
-    next();
-  } catch (error: any) {
-    console.error("Admin middleware error:", error);
-    res.status(500).json({ error: "Authorization check failed" });
-  }
-};
-
-// Helper to log AI usage
-const logAIUsage = async (userId: string | undefined, operationType: string, surveyId?: string) => {
-  try {
-    if (!lastTokenUsage) return;
-    
-    const cost = calculateTokenCost(lastTokenUsage);
-    await storage.logAIUsage({
-      userId: userId || null,
-      surveyId: surveyId || null,
-      operationType,
-      model: lastTokenUsage.model,
-      inputTokens: lastTokenUsage.inputTokens,
-      outputTokens: lastTokenUsage.outputTokens,
-      totalTokens: lastTokenUsage.totalTokens,
-      estimatedCost: cost,
-    });
-    
-    console.log(`✓ Logged ${operationType}: ${lastTokenUsage.totalTokens} tokens ($${cost})`);
-  } catch (err: any) {
-    console.warn("Failed to log AI usage:", err.message);
-  }
-};
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -244,7 +202,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let survey;
       try {
         survey = await generateSurveyFromText(extractedText, `Document: ${fileName}`);
-        await logAIUsage(req.user.claims.sub, "document_parsing");
       } catch (aiError: any) {
         console.error("AI generation error:", aiError);
         return res.status(500).json({ 
@@ -321,7 +278,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const survey = await generateSurveyFromText(contentToProcess);
-      await logAIUsage(req.user.claims.sub, "survey_generation");
 
       res.json({
         title: survey.title,
@@ -352,7 +308,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const result = await refineSurvey(survey, message, history || [], fileData);
-      await logAIUsage(req.user.claims.sub, "survey_refinement");
 
       res.json(result);
     } catch (error: any) {
@@ -379,7 +334,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const text = await generateSurveyText(fieldType, surveyTitle, questions, scoreConfig);
-      await logAIUsage(req.user.claims.sub, "text_generation");
 
       res.json({ text });
     } catch (error: any) {
@@ -848,286 +802,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Delete respondent error:", error);
       res.status(500).json({ error: "Failed to delete respondent" });
-    }
-  });
-
-  // ==== ADMIN ENDPOINTS ====
-
-  // Get AI usage stats (admin only)
-  app.get("/api/admin/ai-usage-stats", isAuthenticated, isMasterAdmin, async (req: any, res) => {
-    try {
-      const { total, last24h } = await storage.getAIUsageStats();
-
-      // Aggregate stats
-      const byOperation: Record<string, { tokens: number; cost: string; count: number }> = {};
-      const byModel: Record<string, { tokens: number; cost: string }> = {};
-      let totalTokens = 0;
-      let totalCost = 0;
-
-      total.forEach(log => {
-        totalTokens += log.totalTokens;
-        totalCost += parseFloat(log.estimatedCost);
-
-        if (!byOperation[log.operationType]) {
-          byOperation[log.operationType] = { tokens: 0, cost: "0", count: 0 };
-        }
-        byOperation[log.operationType].tokens += log.totalTokens;
-        byOperation[log.operationType].count += 1;
-
-        if (!byModel[log.model]) {
-          byModel[log.model] = { tokens: 0, cost: "0" };
-        }
-        byModel[log.model].tokens += log.totalTokens;
-      });
-
-      // Recalculate costs from totals
-      Object.keys(byOperation).forEach(op => {
-        const cost = byOperation[op].tokens / 1_000_000 * 4; // Approximate average
-        byOperation[op].cost = cost.toFixed(6);
-      });
-
-      Object.keys(byModel).forEach(model => {
-        const cost = byModel[model].tokens / 1_000_000 * 4;
-        byModel[model].cost = cost.toFixed(6);
-      });
-
-      // Last 24h stats
-      let last24hTokens = 0;
-      let last24hCost = 0;
-      last24h.forEach(log => {
-        last24hTokens += log.totalTokens;
-        last24hCost += parseFloat(log.estimatedCost);
-      });
-
-      res.json({
-        totalTokens,
-        totalCost: totalCost.toFixed(6),
-        operationCount: total.length,
-        byOperation,
-        byModel,
-        last24h: { tokens: last24hTokens, cost: last24hCost.toFixed(6) },
-      });
-    } catch (error: any) {
-      console.error("Get AI usage stats error:", error);
-      res.status(500).json({ error: "Failed to fetch AI usage stats" });
-    }
-  });
-
-  // Get admin settings (admin only)
-  app.get("/api/admin/settings", isAuthenticated, isMasterAdmin, async (req: any, res) => {
-    try {
-      const settings = await storage.getAdminAISettings();
-      res.json(settings);
-    } catch (error: any) {
-      console.error("Get admin settings error:", error);
-      res.status(500).json({ error: "Failed to fetch settings" });
-    }
-  });
-
-  // Update API key (admin only)
-  app.post("/api/admin/api-key", isAuthenticated, isMasterAdmin, async (req: any, res) => {
-    try {
-      const { provider, apiKey } = req.body;
-
-      const validFunctions = [
-        "survey_generation",
-        "survey_refinement",
-        "document_parsing",
-        "response_scoring",
-        "quick_suggestions",
-        "response_analysis",
-      ];
-
-      if (!provider || !validFunctions.includes(provider)) {
-        return res.status(400).json({ error: `Invalid function. Must be one of: ${validFunctions.join(", ")}` });
-      }
-
-      if (!apiKey || typeof apiKey !== "string" || apiKey.trim().length < 10) {
-        return res.status(400).json({ error: "Invalid API key. Must be a non-empty string (at least 10 characters)" });
-      }
-
-      await storage.updateAdminAISettings({
-        apiKeys: { [provider]: { key: apiKey, rotated: new Date().toISOString() } }
-      });
-
-      console.log(`✓ API key updated for ${provider}`);
-      res.json({
-        success: true,
-        message: `${provider} API key updated successfully. Settings have been saved and are now active.`,
-      });
-    } catch (error: any) {
-      console.error("❌ Update API key error:", error.message);
-      res.status(500).json({ error: error.message || "Failed to update API key. Please try again." });
-    }
-  });
-
-  // Update model (admin only)
-  app.post("/api/admin/model", isAuthenticated, isMasterAdmin, async (req: any, res) => {
-    try {
-      const { provider, model } = req.body;
-
-      const validFunctions = [
-        "survey_generation",
-        "survey_refinement",
-        "document_parsing",
-        "response_scoring",
-        "quick_suggestions",
-        "response_analysis",
-      ];
-
-      if (!provider || !validFunctions.includes(provider)) {
-        return res.status(400).json({ error: `Invalid function. Must be one of: ${validFunctions.join(", ")}` });
-      }
-
-      if (!model || typeof model !== "string" || model.trim().length === 0) {
-        return res.status(400).json({ error: "Model name cannot be empty" });
-      }
-
-      await storage.updateAdminAISettings({
-        models: { [provider]: model }
-      });
-
-      res.json({
-        success: true,
-        message: `${provider} model updated to "${model}". New settings are now active.`,
-      });
-    } catch (error: any) {
-      console.error("Update model error:", error);
-      res.status(500).json({ error: "Failed to update model" });
-    }
-  });
-
-  // Enhance prompt with AI
-  app.post("/api/enhance-prompt", isAuthenticated, async (req: any, res) => {
-    try {
-      const { prompt } = req.body;
-      
-      if (!prompt || typeof prompt !== "string" || prompt.trim().length === 0) {
-        return res.status(400).json({ error: "Prompt cannot be empty" });
-      }
-
-      const { callOpenRouterModel } = await import("../src/ai/openRouterClient");
-      
-      const enhancedUserPrompt = `Improve this survey prompt to make it more comprehensive and specific:
-
-${prompt}
-
-Return ONLY the improved prompt text, nothing else.`;
-
-      const result = await callOpenRouterModel(
-        [{ role: "user", content: enhancedUserPrompt }],
-        {
-          temperature: 0.7,
-          max_tokens: 1024,
-        }
-      );
-      
-      // Clean up markup (remove markdown, HTML, etc.)
-      let cleanedText = result.text.trim();
-      
-      // Remove markdown code blocks
-      cleanedText = cleanedText.replace(/```[\s\S]*?```/g, "");
-      cleanedText = cleanedText.replace(/`([^`]+)`/g, "$1");
-      
-      // Remove markdown formatting
-      cleanedText = cleanedText.replace(/\*\*(.*?)\*\*/g, "$1");
-      cleanedText = cleanedText.replace(/__(.*?)__/g, "$1");
-      cleanedText = cleanedText.replace(/\*(.*?)\*/g, "$1");
-      cleanedText = cleanedText.replace(/_(.*?)_/g, "$1");
-      cleanedText = cleanedText.replace(/\[(.*?)\]\(.*?\)/g, "$1");
-      
-      // Remove HTML tags
-      cleanedText = cleanedText.replace(/<[^>]*>/g, "");
-      
-      // Clean up extra whitespace
-      cleanedText = cleanedText.replace(/\n\n+/g, "\n").trim();
-      
-      res.json({
-        success: true,
-        enhancedPrompt: cleanedText,
-      });
-    } catch (error: any) {
-      console.error("Enhance prompt error:", error.message);
-      res.status(500).json({ error: "Failed to enhance prompt: " + error.message });
-    }
-  });
-
-  // Test all AI APIs (admin only)
-  app.post("/api/admin/test-ai", isAuthenticated, isMasterAdmin, async (req: any, res) => {
-    try {
-      const settings = await storage.getAdminAISettings();
-      const testResults: Record<string, any> = {};
-      
-      const functions = [
-        "survey_generation",
-        "survey_refinement",
-        "document_parsing",
-        "response_scoring",
-        "quick_suggestions",
-        "response_analysis",
-      ];
-
-      for (const func of functions) {
-        const apiKey = settings.apiKeys[func]?.key;
-        const model = settings.models[func];
-        const baseUrl = settings.baseUrls[func];
-        
-        if (!apiKey) {
-          testResults[func] = { status: "MISSING_KEY", error: "API key not configured" };
-          continue;
-        }
-
-        try {
-          // Make a simple test call to each API
-          const response = await fetch(`${baseUrl}/chat/completions`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${apiKey}`,
-            },
-            body: JSON.stringify({
-              model,
-              messages: [{ role: "user", content: "Say 'ok'" }],
-              max_tokens: 10,
-            }),
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            testResults[func] = {
-              status: "SUCCESS",
-              model,
-              baseUrl,
-              response: data.choices?.[0]?.message?.content,
-            };
-          } else {
-            const errorText = await response.text();
-            testResults[func] = {
-              status: "FAILED",
-              statusCode: response.status,
-              model,
-              baseUrl,
-              error: errorText.substring(0, 200),
-            };
-          }
-        } catch (error: any) {
-          testResults[func] = {
-            status: "ERROR",
-            model,
-            baseUrl,
-            error: error.message,
-          };
-        }
-      }
-
-      res.json({
-        success: true,
-        timestamp: new Date().toISOString(),
-        results: testResults,
-      });
-    } catch (error: any) {
-      console.error("Test AI error:", error);
-      res.status(500).json({ error: "Failed to test AI APIs" });
     }
   });
 

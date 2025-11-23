@@ -1,89 +1,104 @@
 import type { Question } from "@shared/schema";
 import mammoth from "mammoth";
-import { callOpenRouterModel } from "../src/ai/openRouterClient";
+
+// Use Mistral API key
+const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
+const MISTRAL_BASE_URL = "https://api.mistral.ai/v1";
+const MISTRAL_OCR_URL = "https://api.mistral.ai/v1/ocr";
+
+// Mistral models
+const MODELS = {
+  // For survey generation and chat
+  GENERATION: "pixtral-large-latest", // Mistral Pixtral Large for survey generation and refinement
+  // For OCR/document parsing (native OCR model)
+  OCR: "mistral-ocr-2505", // Mistral OCR native model - specialized for document OCR
+};
 
 interface ChatMessage {
   role: "system" | "user" | "assistant";
   content: string;
 }
 
-export interface TokenUsageData {
-  inputTokens: number;
-  outputTokens: number;
-  totalTokens: number;
-  model: string;
-}
+async function callMistral(
+  messages: ChatMessage[],
+  model: string = MODELS.GENERATION,
+  responseFormat?: { type: "json_object" }
+): Promise<string> {
+  if (!MISTRAL_API_KEY) {
+    throw new Error("Mistral API key not configured");
+  }
 
-// Global token tracking for this session
-export let lastTokenUsage: TokenUsageData | null = null;
+  const response = await fetch(`${MISTRAL_BASE_URL}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${MISTRAL_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      ...(responseFormat && { response_format: responseFormat }),
+    }),
+  });
 
-// Pricing table for various models
-const PRICING: Record<string, { input: number; output: number }> = {
-  // OpenAI
-  "gpt-4o": { input: 5.0, output: 15.0 },
-  "gpt-4-turbo": { input: 10.0, output: 30.0 },
-  "gpt-3.5-turbo": { input: 0.5, output: 1.5 },
-  "gpt-4-vision": { input: 10.0, output: 30.0 },
-  // Mistral
-  "pixtral-large-latest": { input: 2.0, output: 6.0 },
-  "mistral-ocr-2505": { input: 0.5, output: 1.5 },
-  "mistral-large": { input: 0.27, output: 0.81 },
-  // Anthropic Claude
-  "claude-3-5-sonnet": { input: 3.0, output: 15.0 },
-  "claude-3-opus": { input: 15.0, output: 75.0 },
-  // Google Gemini
-  "gemini-pro": { input: 0.5, output: 1.5 },
-};
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Mistral API error: ${error}`);
+  }
 
-// Calculate estimated cost
-export function calculateTokenCost(usage: TokenUsageData): string {
-  const pricing = PRICING[usage.model] || { input: 2.0, output: 6.0 }; // Mistral as default
-  
-  const inputCost = (usage.inputTokens / 1_000_000) * pricing.input;
-  const outputCost = (usage.outputTokens / 1_000_000) * pricing.output;
-  const totalCost = inputCost + outputCost;
-  
-  return totalCost.toFixed(6);
+  const data = await response.json();
+  return data.choices[0]?.message?.content || "";
 }
 
 /**
- * Parse PDF using configured OCR provider
+ * Parse PDF using Mistral OCR native API
  */
 export async function parsePDFWithVision(pdfBuffer: Buffer, fileName: string): Promise<string> {
+  if (!MISTRAL_API_KEY) {
+    throw new Error("Mistral API key not configured");
+  }
+
   try {
     // Encode PDF as base64
     const base64PDF = pdfBuffer.toString("base64");
-    
-    const messages: ChatMessage[] = [
-      {
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text: "Extract all text from this PDF document. Return only the extracted text content."
-          },
-          {
-            type: "image_url",
-            image_url: {
-              url: `data:application/pdf;base64,${base64PDF}`,
-            }
-          }
-        ] as any,
-      }
-    ];
 
-    // Call OpenRouter with single model
-    const result = await callOpenRouterModel(messages);
-    return result.text;
+    const response = await fetch(MISTRAL_OCR_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${MISTRAL_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: MODELS.OCR,
+        document: {
+          type: "document_url",
+          document_url: `data:application/pdf;base64,${base64PDF}`,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Mistral OCR API error: ${error}`);
+    }
+
+    const data = await response.json();
+    console.log("Mistral OCR response:", JSON.stringify(data).substring(0, 500));
+    
+    // OCR returns pages array with markdown content
+    if (data.pages && Array.isArray(data.pages)) {
+      return data.pages.map((page: any) => page.markdown || "").join("\n");
+    }
+    
+    // Try alternative response formats
+    return data.result?.markdown || data.markdown || data.content || data.text || "";
   } catch (error: any) {
-    // Fallback: use text-based extraction
-    console.warn("OCR API failed, falling back to text extraction:", error.message);
-    return "";
+    throw new Error(`PDF OCR failed: ${error.message}`);
   }
 }
 
 /**
- * Parse text from an uploaded document
+ * Parse text from an uploaded document using OCR
  */
 export async function parseDocument(fileContent: string, fileName: string): Promise<string> {
   const messages: ChatMessage[] = [
@@ -97,8 +112,7 @@ export async function parseDocument(fileContent: string, fileName: string): Prom
     },
   ];
 
-  const result = await callOpenRouterModel(messages);
-  return result.text;
+  return callMistral(messages, MODELS.OCR);
 }
 
 /**
@@ -156,8 +170,7 @@ export async function calculateScoresWithAI(
         { role: "user", content: userPrompt },
       ];
 
-      const result = await callOpenRouterModel(messages);
-    const response = result.text;
+      const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
       const aiScores = JSON.parse(response);
       
       // Add AI scores to category scores
@@ -225,14 +238,11 @@ export async function suggestScoringConfig(
   questions: Question[]
 ): Promise<any | null> {
   // Only suggest scoring for assessment/evaluation surveys
-  const assessmentKeywords = ['assess', 'evaluate', 'score', 'skill', 'competency', 'leadership', 'performance', 'capability', 'proficiency', 'mental health', 'mental', 'health', 'wellbeing', 'well-being', 'wellness', 'engagement', 'satisfaction', 'understanding', 'knowledge', 'learning', 'training', 'effectiveness', 'awareness', 'readiness'];
-  const lowerTitle = title.toLowerCase();
+  const assessmentKeywords = ['assess', 'evaluate', 'score', 'skill', 'competency', 'leadership', 'performance', 'capability', 'proficiency', 'mental health', 'mental', 'health', 'wellbeing', 'wellness', 'engagement', 'satisfaction', 'understanding', 'knowledge', 'learning', 'training', 'effectiveness', 'awareness', 'readiness'];
   const isAssessmentSurvey = assessmentKeywords.some(keyword => 
-    lowerTitle.includes(keyword) || 
+    title.toLowerCase().includes(keyword) || 
     questions.some(q => q.question.toLowerCase().includes(keyword))
-  ) || 
-  // Also check for hyphenated versions
-  /well[\s-]being|well[\s-]ness/.test(lowerTitle);
+  );
 
   if (!isAssessmentSurvey) {
     console.log("Survey not detected as assessment survey. Title:", title, "Keywords:", assessmentKeywords);
@@ -266,16 +276,22 @@ CRITICAL REQUIREMENTS:
 - Interpretations must reference the actual score range
 - All minScore and maxScore values must be <= ${theoreticalMax}
 
-OUTPUT INSTRUCTIONS:
-- Return ONLY valid JSON, no markdown code blocks, no extra text
-- Do not include markdown formatting
-- Start with { and end with }
-
-REQUIRED JSON STRUCTURE:
+Return ONLY valid JSON with this exact structure:
 {
-  "categories": [{"id": "cat1", "name": "Leadership"}],
-  "scoreRanges": [{"category": "cat1", "label": "Needs Development", "minScore": 0, "maxScore": 10, "interpretation": "string"}],
-  "suggestedQuestionCategoryMap": {"q1": "cat1", "q2": "cat1"}
+  "categories": [
+    { "id": "cat1", "name": "Category Name" },
+    { "id": "cat2", "name": "Another Category" }
+  ],
+  "scoreRanges": [
+    { "category": "cat1", "label": "Needs Development", "minScore": 0, "maxScore": ${Math.ceil(theoreticalMax / 3)}, "interpretation": "..." },
+    { "category": "cat1", "label": "Developing", "minScore": ${Math.ceil(theoreticalMax / 3) + 1}, "maxScore": ${Math.ceil((theoreticalMax * 2) / 3)}, "interpretation": "..." },
+    { "category": "cat1", "label": "Excellent", "minScore": ${Math.ceil((theoreticalMax * 2) / 3) + 1}, "maxScore": ${theoreticalMax}, "interpretation": "..." }
+  ],
+  "suggestedQuestionCategoryMap": {
+    "q1": "cat1",
+    "q2": "cat2",
+    "q3": "cat1"
+  }
 }`;
 
   const userPrompt = `Survey Title: ${title}
@@ -298,22 +314,8 @@ Make interpretations clear and practical - they'll be shown to respondents after
   ];
 
   try {
-    const result = await callOpenRouterModel(messages);
-    let response = result.text;
-    
-    // Extract JSON from response (in case there's markdown code blocks)
-    let jsonStr = response.trim();
-    
-    // Remove markdown code blocks if present
-    jsonStr = jsonStr.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
-    
-    // Extract JSON object
-    const jsonMatch = jsonStr.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      jsonStr = jsonMatch[0];
-    }
-    
-    const parsed = JSON.parse(jsonStr);
+    const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
+    const parsed = JSON.parse(response);
     
     const theoreticalMax = calculateTheoreticalMaxScore(questions);
     
@@ -375,36 +377,49 @@ export async function generateSurveyFromText(
   content: string,
   context?: string
 ): Promise<{ title: string; questions: Question[]; scoreConfig?: any }> {
-  const systemPrompt = `You are an expert survey designer. Your job is to either EXTRACT questions from a provided document OR GENERATE new survey questions based on a prompt.
+  const systemPrompt = `You are an expert at extracting survey questions from documents. Your job is to CAREFULLY read the document and extract ALL questions with COMPLETE answer choices. Do NOT skip or condense any questions.
 
-INSTRUCTIONS:
-1. If you receive a document with existing questions → EXTRACT them exactly as written
-2. If you receive a prompt/description → GENERATE new survey questions matching that description
-3. Always create varied, well-designed questions with appropriate answer options
+CRITICAL RULES FOR DOCUMENT EXTRACTION:
+- Extract EVERY SINGLE question from the document - no skipping or summarizing
+- When you see statements with rating scales (like 1-5 Likert scales), EACH statement is a separate question
+- For multiple choice or checkbox questions, extract EVERY SINGLE answer option listed
+- Do NOT skip any answer choices - if the document shows A, B, C, D, E - include all 5 options
+- Preserve the exact wording of questions and answer choices from the document
+- If a question has numbered or lettered options (1,2,3 or A,B,C), capture ALL of them
+- Pay special attention to questions that continue across multiple lines or pages
+- For Likert/rating questions, preserve the rating scale (e.g., "1 (Strongly Disagree) to 5 (Strongly Agree)") in the options
 
-QUESTION DESIGN RULES:
-- For prompts: Generate 10+ thoughtful questions unless specified otherwise
-- For documents: Extract ALL questions with COMPLETE answer choices (do NOT skip any)
-- Use varied question types: text, textarea, multiple_choice, checkbox, email, number, rating
-- For rating/Likert scales: use multiple_choice with clear scale labels (e.g., "1-Strongly Disagree" to "5-Strongly Agree")
-- Multiple choice: include 3-5 options minimum (extract all from document)
-- Checkbox: allow multiple selections with 2+ options
-- Make questions clear, specific, and avoid ambiguity
+QUESTION GENERATION RULES:
+- Extract ALL questions from the document - there is no limit on quantity
+- Use varied question types based on the document: text, textarea, multiple_choice, checkbox, email, number
+- For rating scales (Likert), use type "multiple_choice" with the rating options as choices
+- For multiple_choice: extract ALL options from document (minimum 2)
+- For checkbox: extract ALL options that allow multiple selections
+- Make questions clear and preserve original intent and wording
 
-OUTPUT INSTRUCTIONS:
-- Return ONLY valid JSON, no markdown code blocks
-- Do not wrap in triple backticks
-- Start with { and end with }
-- Include at least 10 questions
-
-REQUIRED JSON STRUCTURE:
+Return ONLY valid JSON with this exact structure:
 {
-  "title": "Survey Title",
+  "title": "Survey Title (extract from document or generate)",
   "questions": [
-    {"id": "q1", "type": "multiple_choice", "question": "Question text", "description": null, "options": ["Option 1", "Option 2"], "required": true},
-    {"id": "q2", "type": "text", "question": "Another question", "description": null, "options": null, "required": false}
+    {
+      "id": "q1",
+      "type": "text" | "textarea" | "multiple_choice" | "checkbox" | "email" | "number",
+      "question": "Question text exactly as in document?",
+      "description": "Optional context",
+      "options": ["Option A text", "Option B text", "Option C text", "Option D text"],
+      "required": true
+    }
   ]
-}`;
+}
+
+VALIDATION CHECKLIST:
+✓ ALL questions from the document are included (do not skip any)
+✓ Every statement/question in the document has been extracted as a separate question
+✓ Every multiple_choice has at least 2 options (all options from document)
+✓ Every checkbox has at least 2 options (all options from document)
+✓ All answer choices from the document are included
+✓ Question text matches the document wording exactly
+✓ For rating scales: options include the full scale (e.g., 1-5) with labels (e.g., "Strongly Disagree" to "Strongly Agree")`;
 
   const userPrompt = context
     ? `Context: ${context}\n\nDocument content to extract questions from:\n${content}\n\nExtract ALL questions with COMPLETE answer choices. Do not skip any options.`
@@ -415,23 +430,10 @@ REQUIRED JSON STRUCTURE:
     { role: "user", content: userPrompt },
   ];
 
-  const result = await callOpenRouterModel(messages);
-  const response = result.text;
+  const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
   
   try {
-    // Extract JSON from response (in case there's extra text or markdown)
-    let jsonStr = response.trim();
-    
-    // Remove markdown code blocks if present
-    jsonStr = jsonStr.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
-    
-    // Extract JSON object
-    const jsonMatch = jsonStr.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      jsonStr = jsonMatch[0];
-    }
-    
-    const parsed = JSON.parse(jsonStr);
+    const parsed = JSON.parse(response);
     
     // Validate that multiple choice questions have adequate options
     let questions = (parsed.questions || []).map((q: any) => {
@@ -465,7 +467,6 @@ REQUIRED JSON STRUCTURE:
     };
   } catch (error) {
     console.error("Failed to parse survey generation response:", error);
-    console.error("Raw response (first 500 chars):", response.substring(0, 500));
     throw new Error("Failed to generate survey questions");
   }
 }
@@ -564,10 +565,10 @@ ${JSON.stringify(survey.questions, null, 2)}`;
     { role: "user", content: enhancedMessage },
   ];
 
-  const result = await callOpenRouterModel(messages);
+  const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
   
   try {
-    const parsed = JSON.parse(result.text);
+    const parsed = JSON.parse(response);
     return {
       questions: parsed.questions,
       message: parsed.message || "I've updated the survey based on your request.",
@@ -706,6 +707,5 @@ OUTPUT FORMAT: Plain text only, no special formatting.`;
     { role: "user", content: userPrompt },
   ];
 
-  const result = await callOpenRouterModel(messages);
-  return result.text;
+  return callMistral(messages, MODELS.GENERATION);
 }

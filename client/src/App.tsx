@@ -15,7 +15,6 @@ import AnalyticsPage from "@/pages/AnalyticsPage";
 import RespondentsPage from "@/pages/RespondentsPage";
 import HelpPage from "@/pages/HelpPage";
 import Account from "@/pages/Account";
-import AdminDashboard from "@/pages/AdminDashboard";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/not-found";
 
@@ -65,9 +64,6 @@ function Router() {
       </Route>
       <Route path="/help">
         {() => <ProtectedRoute component={HelpPage} />}
-      </Route>
-      <Route path="/admin">
-        {() => <ProtectedRoute component={AdminDashboard} />}
       </Route>
       <Route path="/builder/:id">
         {() => <ProtectedRoute component={Builder} />}

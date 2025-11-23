@@ -22,32 +22,7 @@ export const users = pgTable("users", {
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   resendApiKey: varchar("resend_api_key"),
-  isMasterAdmin: boolean("is_master_admin").default(false),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// AI Usage tracking table
-export const aiUsageLog = pgTable("ai_usage_log", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id),
-  surveyId: varchar("survey_id").references(() => surveys.id),
-  operationType: varchar("operation_type").notNull(), // "survey_generation", "pdf_parsing", "scoring", "text_generation", "survey_refinement"
-  model: varchar("model").notNull(),
-  inputTokens: integer("input_tokens").notNull(),
-  outputTokens: integer("output_tokens").notNull(),
-  totalTokens: integer("total_tokens").notNull(),
-  estimatedCost: varchar("estimated_cost").notNull(), // Stored as string for precision
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
-
-// Admin AI Settings table (persists configuration across restarts)
-export const adminAISettings = pgTable("admin_ai_settings", {
-  id: varchar("id").primaryKey().default(sql`'admin'`), // Single row
-  apiKeys: jsonb("api_keys").notNull(), // { [function]: { key: string, rotated: string|null } }
-  models: jsonb("models").notNull(), // { [function]: string }
-  baseUrls: jsonb("base_urls").notNull(), // { [function]: string }
-  parameters: jsonb("parameters").notNull(), // { [function]: { temperature, max_tokens, etc } }
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 

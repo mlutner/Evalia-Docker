@@ -1,5 +1,4 @@
 import { useState, useRef } from "react";
-import { useMutation } from "@tanstack/react-query";
 import { Sparkles, Layers, FileUp, Upload, X, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,8 +14,6 @@ import FileUploadZone from "@/components/FileUploadZone";
 import { surveyTemplates } from "@shared/templates";
 import type { SurveyTemplate } from "@shared/templates";
 import type { Question } from "@shared/schema";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
 
 interface Step1StartProps {
   currentQuestions: Question[];
@@ -48,7 +45,6 @@ export default function Step1Start({
   onPasteText,
   isProcessing,
 }: Step1StartProps) {
-  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<"templates" | "ai" | "upload">("templates");
   const [prompt, setPrompt] = useState("");
   const [selectedFileForAI, setSelectedFileForAI] = useState<{ name: string; type: string; base64: string } | null>(null);
@@ -57,31 +53,6 @@ export default function Step1Start({
   const [showPromptSuggestions, setShowPromptSuggestions] = useState(false);
   const [parsedText, setParsedText] = useState("");
   const aiFileInputRef = useRef<HTMLInputElement>(null);
-
-  const enhancePromptMutation = useMutation({
-    mutationFn: async (currentPrompt: string) => {
-      const res = await apiRequest("POST", "/api/enhance-prompt", { prompt: currentPrompt });
-      return res.json();
-    },
-    onSuccess: (data: any) => {
-      if (data?.enhancedPrompt) {
-        setPrompt(data.enhancedPrompt);
-        toast({
-          title: "Prompt enhanced",
-          description: "Your prompt has been improved with AI suggestions.",
-        });
-      } else {
-        throw new Error("No enhanced prompt received from server");
-      }
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Could not enhance prompt",
-        description: error?.message || "Failed to enhance your prompt. Try again.",
-        variant: "destructive",
-      });
-    },
-  });
 
   const handleGenerateClick = () => {
     onGenerateFromPrompt(prompt, includeScoringToggle, selectedFileForAI || undefined);
@@ -222,25 +193,9 @@ export default function Step1Start({
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <label className="text-sm font-medium">Describe your survey</label>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => enhancePromptMutation.mutate(prompt)}
-                      disabled={!prompt.trim() || enhancePromptMutation.isPending}
-                      className="text-xs h-7" 
-                      data-testid="button-enhance-prompt"
-                    >
-                      {enhancePromptMutation.isPending ? (
-                        <>
-                          <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                          Enhancing...
-                        </>
-                      ) : (
-                        <>
-                          <Wand2 className="w-3 h-3 mr-1" />
-                          Enhance
-                        </>
-                      )}
+                    <Button variant="ghost" size="sm" onClick={() => setShowPromptSuggestions(true)} className="text-xs h-7" data-testid="button-enhance-prompt">
+                      <Wand2 className="w-3 h-3 mr-1" />
+                      Enhance
                     </Button>
                   </div>
                   <Textarea

@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 
-const UPDATE_POPUP_COOLDOWN = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
-
 export function useUpdateChecker() {
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [currentVersion, setCurrentVersion] = useState<string | null>(null);
@@ -27,38 +25,27 @@ export function useUpdateChecker() {
 
         setCurrentVersion(storedVersion);
 
-        // If versions differ, check if we should show the popup
+        // If versions differ, an update is available
         if (storedVersion !== serverVersion) {
+          setUpdateAvailable(true);
           setNewVersion(serverVersion);
-          
-          // Check when we last showed/dismissed the update popup
-          const lastPopupTime = localStorage.getItem("lastUpdatePopupTime");
-          const now = Date.now();
-          
-          if (!lastPopupTime || now - parseInt(lastPopupTime) > UPDATE_POPUP_COOLDOWN) {
-            // Show the popup only if cooldown has passed
-            setUpdateAvailable(true);
-            localStorage.setItem("lastUpdatePopupTime", now.toString());
-          }
         }
       } catch (error) {
         console.error("Failed to check for updates:", error);
       }
     };
 
-    // Check on mount
+    // Check immediately on mount
     checkForUpdates();
 
-    // Check every 30 minutes instead of every 60 seconds
-    const interval = setInterval(checkForUpdates, 30 * 60 * 1000);
+    // Check every 60 seconds (can be adjusted)
+    const interval = setInterval(checkForUpdates, 60000);
 
     return () => clearInterval(interval);
   }, []);
 
   const dismissUpdate = () => {
     setUpdateAvailable(false);
-    // Record the time we dismissed so we don't show it again for 12 hours
-    localStorage.setItem("lastUpdatePopupTime", Date.now().toString());
   };
 
   const reloadApp = () => {
