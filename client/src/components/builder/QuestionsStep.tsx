@@ -49,6 +49,7 @@ export default function QuestionsStep({
   onNext,
 }: QuestionsStepProps) {
   const [chatOpen, setChatOpen] = useState(true);
+  const [chatExpanded, setChatExpanded] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -136,7 +137,13 @@ export default function QuestionsStep({
         </div>
       </div>
 
-      <div className={`grid gap-6 transition-all ${chatOpen ? 'lg:grid-cols-[1fr,380px]' : 'lg:grid-cols-1'}`}>
+      <div className={`grid gap-6 transition-all ${
+        chatOpen 
+          ? chatExpanded 
+            ? 'lg:grid-cols-[1fr,600px]' 
+            : 'lg:grid-cols-[1fr,280px]'
+          : 'lg:grid-cols-1'
+      }`}>
         {/* Questions Editor - Main Area */}
         <div className="space-y-4">
           {questions.length === 0 ? (

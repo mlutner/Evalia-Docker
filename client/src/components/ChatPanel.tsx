@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Sparkles, Upload, X } from "lucide-react";
+import { Send, Sparkles, Upload, X, Maximize2, Minimize2 } from "lucide-react";
 
 export interface Message {
   id: string;
@@ -20,9 +20,11 @@ interface ChatPanelProps {
   onSendMessage: (message: string, fileData?: { name: string; type: string; base64: string }) => void;
   isLoading?: boolean;
   showHeader?: boolean;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
 }
 
-export default function ChatPanel({ messages, onSendMessage, isLoading = false, showHeader = true }: ChatPanelProps) {
+export default function ChatPanel({ messages, onSendMessage, isLoading = false, showHeader = true, isExpanded = false, onToggleExpand }: ChatPanelProps) {
   const [input, setInput] = useState("");
   const [selectedFile, setSelectedFile] = useState<{ name: string; type: string; base64: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -66,9 +68,27 @@ export default function ChatPanel({ messages, onSendMessage, isLoading = false, 
     <div className="flex flex-col h-full border rounded-xl bg-card">
       {showHeader && (
         <div className="p-4 border-b">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-primary" />
-            <h3 className="font-semibold">AI Assistant</h3>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              <h3 className="font-semibold">AI Assistant</h3>
+            </div>
+            {onToggleExpand && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={onToggleExpand}
+                data-testid="button-toggle-expand-chat"
+                className="h-8 w-8"
+              >
+                {isExpanded ? (
+                  <Minimize2 className="w-4 h-4" />
+                ) : (
+                  <Maximize2 className="w-4 h-4" />
+                )}
+              </Button>
+            )}
           </div>
           <p className="text-sm text-muted-foreground mt-1">
             Refine your survey with natural language
