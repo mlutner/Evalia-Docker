@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
-import { DndContext, DragEndEvent } from "@dnd-kit/core";
-import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown, Clock, BookOpen, ChevronRight, Link2, Unlink2, FileText, BarChart3, GripVertical, ArrowRight } from "lucide-react";
+import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown, Clock, BookOpen, ChevronRight, Link2, Unlink2, FileText, BarChart3, GripVertical } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -12,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
 import { useScoring } from "@/hooks/useScoring";
+import { ScoringConfiguration } from "./ScoringConfiguration";
 import type { Question, SurveyScoreConfig } from "@shared/schema";
 
 interface PublishStepProps {
@@ -552,330 +551,40 @@ export default function PublishStep({
             </CollapsibleTrigger>
 
             <CollapsibleContent>
-              <CardContent className="space-y-4 border-t pt-4">
-                {/* Enable Toggle */}
-                <div className="flex items-center justify-between p-4 bg-background/60 rounded-lg border border-primary/20">
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-foreground">Enable Scoring</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Respondents will see their assessment results
-                      {questions?.some(q => q.sectionId) && categories.length === 0 && (
-                        <span className="block mt-1 text-primary font-medium">
-                          💡 Survey sections will auto-populate as scoring categories
-                        </span>
-                      )}
-                      {nonScorableQuestions.length > 0 && isEnabled && (
-                        <span className="block mt-1 text-amber-600 dark:text-amber-500 font-medium">
-                          ℹ️ {nonScorableQuestions.length} question(s) won't be scored (text, email, date fields aren't scorable)
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                  <Switch
-                    checked={isEnabled}
-                    onCheckedChange={(checked) => {
-                      setIsEnabled(checked);
-                      if (!checked) {
-                        handleSaveScoring();
-                      }
-                    }}
-                    data-testid="switch-enable-scoring"
-                  />
-                </div>
-
-                {isEnabled && (
-                  <div className="space-y-4 pt-2">
-                    {/* AI Auto-Generate */}
-                    <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
-                      <p className="text-xs font-medium text-primary mb-2">Quick Setup</p>
-                      <Button
-                        onClick={() => handleAutoGenerateScoring(questions, onScoreConfigChange, onQuestionsChange)}
-                        disabled={isAutoGenerating || questions.length === 0}
-                        className="w-full"
-                        variant="outline"
-                        size="sm"
-                        data-testid="button-auto-generate-scoring"
-                      >
-                        <Sparkles className="w-4 h-4 mr-2" />
-                        {isAutoGenerating ? "Generating..." : "AI Auto-Generate Scoring"}
-                      </Button>
-                      <p className="text-xs text-muted-foreground mt-2 text-center">
-                        Let AI analyze your questions and create scoring automatically
-                      </p>
-                    </div>
-
-                    {/* Create New Category */}
-                    <div className="space-y-2">
-                      <label className="text-xs font-semibold text-foreground">Add Scoring Category</label>
-                      <div className="flex gap-2">
-                        <Input
-                          value={newCategoryName}
-                          onChange={(e) => setNewCategoryName(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              e.preventDefault();
-                              handleAddCategory();
-                            }
-                          }}
-                          placeholder="e.g., Leadership, Engagement, Technical Skills..."
-                          className="text-sm"
-                          data-testid="input-category-name"
-                        />
-                        <Button
-                          type="button"
-                          onClick={handleAddCategory}
-                          size="sm"
-                          className="flex-shrink-0"
-                          data-testid="button-add-category"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* Category Configuration - Consolidated Self-Contained Units */}
-                    {categories.length > 0 && (
-                      <DndContext onDragEnd={handleQuestionDragEnd}>
-                        <div className="space-y-3">
-                          {categories.map((cat) => {
-                            const ranges = getCategoryRanges(cat.id);
-                            const assignedQuestions = scorableQuestions.filter(q => q.scoringCategory === cat.id);
-                            const unassignedScorableQuestions = scorableQuestions.filter(q => !q.scoringCategory || q.scoringCategory !== cat.id);
-                            const maxPossiblePoints = assignedQuestions.reduce((sum, q) => sum + getMaxPointsForQuestion(q), 0);
-                            const isExpanded = expandedCategories.includes(cat.id);
-
-                            return (
-                              <div key={cat.id} className="border rounded-lg bg-card overflow-hidden" data-testid={`category-${cat.id}`}>
-                                {/* Category Header */}
-                                <button
-                                  onClick={() => toggleExpandCategory(cat.id)}
-                                  className="w-full flex items-center justify-between p-3 hover:bg-muted/30 transition-colors group"
-                                >
-                                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                                    <ChevronRight className={`w-4 h-4 text-muted-foreground flex-shrink-0 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-                                    <div className="text-left min-w-0">
-                                      <h4 className="font-semibold text-sm">{cat.name}</h4>
-                                      <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground flex-wrap">
-                                        <span>{assignedQuestions.length} question{assignedQuestions.length !== 1 ? 's' : ''}</span>
-                                        <span>•</span>
-                                        <span>{ranges.length} score range{ranges.length !== 1 ? 's' : ''}</span>
-                                        <span>•</span>
-                                        <span className="text-primary font-medium">{maxPossiblePoints} max pts</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); handleRemoveCategory(cat.id); }} className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" data-testid={`button-remove-category-${cat.id}`}>
-                                    <Trash2 className="w-3 h-3 text-destructive" />
-                                  </Button>
-                                </button>
-
-                                {isExpanded && (
-                                  <div className="border-t bg-muted/10 p-4 space-y-3">
-                                    {/* Assigned Questions Summary (Quick View) */}
-                                    {assignedQuestions.length > 0 && (
-                                      <div className="bg-background rounded border p-3 space-y-2">
-                                        <div className="flex items-center justify-between">
-                                          <h5 className="text-xs font-semibold text-foreground">Assigned Questions in {cat.name}</h5>
-                                          <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">{assignedQuestions.length}</span>
-                                        </div>
-                                        <p className="text-xs text-muted-foreground">Hover to see move options</p>
-                                        <div className="space-y-1.5">
-                                          {assignedQuestions.map((q) => (
-                                            <QuestionCard key={q.id} question={q} currentCategoryId={cat.id} isAssigned={true} />
-                                          ))}
-                                        </div>
-                                      </div>
-                                    )}
-
-                                    {/* Score Ranges with Nested Questions */}
-                                    <div className="space-y-2">
-                                      <div className="flex items-center justify-between mb-2">
-                                        <h5 className="text-xs font-semibold">Score Ranges & Assigned Questions</h5>
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() => handleAddScoreRange(cat.id)}
-                                          className="h-6 text-xs"
-                                          data-testid={`button-add-range-${cat.id}`}
-                                        >
-                                          <Plus className="w-3 h-3 mr-1" />
-                                          Add Range
-                                        </Button>
-                                      </div>
-                                      
-                                      {ranges.length > 0 ? (
-                                        <div className="space-y-2">
-                                          {ranges.map((range) => {
-                                            const actualIdx = scoreRanges.indexOf(range);
-                                            const rangeId = `${cat.id}-${actualIdx}`;
-                                            const isRangeExpanded = expandedRanges.includes(rangeId);
-                                            // Questions that would map to this range (for visualization)
-                                            const questionsInThisRange = assignedQuestions;
-                                            // Get category max score from all ranges
-                                            const categoryMaxScore = getCategoryRanges(cat.id).reduce((max, r) => Math.max(max, r.maxScore), 100);
-                                            
-                                            return (
-                                              <div key={actualIdx} className="bg-background rounded border overflow-hidden">
-                                                {/* Range Header - Collapsible */}
-                                                <button
-                                                  onClick={() => toggleExpandRange(rangeId)}
-                                                  className="w-full flex items-center justify-between p-2.5 hover:bg-muted/40 transition-colors text-left"
-                                                  data-testid={`button-toggle-range-${actualIdx}`}
-                                                >
-                                                  <div className="flex items-center gap-2 flex-1 min-w-0">
-                                                    <ChevronRight className={`w-4 h-4 text-muted-foreground flex-shrink-0 transition-transform ${isRangeExpanded ? 'rotate-90' : ''}`} />
-                                                    <div className="min-w-0">
-                                                      <div className="flex items-center gap-2 flex-wrap">
-                                                        <span className="font-medium text-sm">{range.label}</span>
-                                                        <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">{range.minScore}-{range.maxScore}</span>
-                                                      </div>
-                                                      <p className="text-xs text-muted-foreground truncate mt-0.5">{range.interpretation || "No interpretation yet"}</p>
-                                                    </div>
-                                                  </div>
-                                                  <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">of {categoryMaxScore}</span>
-                                                </button>
-
-                                                {/* Range Details & Assigned Questions */}
-                                                {isRangeExpanded && (
-                                                  <div className="border-t bg-muted/20 p-3 space-y-3">
-                                                    {/* Interpretation Textarea */}
-                                                    <div className="space-y-1">
-                                                      <label className="text-xs font-medium text-muted-foreground">Interpretation (shown to respondents)</label>
-                                                      <Textarea
-                                                        placeholder="What does this score range mean?"
-                                                        value={range.interpretation}
-                                                        onChange={(e) => handleUpdateScoreRange(actualIdx, 'interpretation', e.target.value)}
-                                                        className="text-xs resize-none"
-                                                        rows={2}
-                                                        data-testid={`textarea-range-interpretation-${actualIdx}`}
-                                                      />
-                                                    </div>
-
-                                                    {/* Score Range Inputs */}
-                                                    <div className="space-y-1">
-                                                      <label className="text-xs font-medium text-muted-foreground">Score Range (Best practice: 0-100 scale)</label>
-                                                      <div className="grid grid-cols-3 gap-2">
-                                                        <div>
-                                                          <Input
-                                                            placeholder="Label"
-                                                            value={range.label}
-                                                            onChange={(e) => handleUpdateScoreRange(actualIdx, 'label', e.target.value)}
-                                                            className="text-xs"
-                                                            data-testid={`input-range-label-${actualIdx}`}
-                                                          />
-                                                        </div>
-                                                        <div>
-                                                          <Input
-                                                            placeholder="Min (e.g. 0)"
-                                                            type="number"
-                                                            value={range.minScore}
-                                                            onChange={(e) => handleUpdateScoreRange(actualIdx, 'minScore', parseInt(e.target.value) || 0)}
-                                                            className="text-xs"
-                                                            data-testid={`input-range-min-${actualIdx}`}
-                                                          />
-                                                        </div>
-                                                        <div>
-                                                          <Input
-                                                            placeholder="Max (e.g. 100)"
-                                                            type="number"
-                                                            value={range.maxScore}
-                                                            onChange={(e) => handleUpdateScoreRange(actualIdx, 'maxScore', parseInt(e.target.value) || 0)}
-                                                            className="text-xs"
-                                                            data-testid={`input-range-max-${actualIdx}`}
-                                                          />
-                                                        </div>
-                                                      </div>
-                                                    </div>
-
-
-                                                    {/* Remove Button */}
-                                                    <Button
-                                                      variant="ghost"
-                                                      size="sm"
-                                                      onClick={() => handleRemoveScoreRange(actualIdx)}
-                                                      className="h-6 text-xs text-destructive w-full"
-                                                      data-testid={`button-remove-range-${actualIdx}`}
-                                                    >
-                                                      <Trash2 className="w-3 h-3 mr-1" />
-                                                      Remove Score Range
-                                                    </Button>
-                                                  </div>
-                                                )}
-                                              </div>
-                                            );
-                                          })}
-                                        </div>
-                                      ) : (
-                                        <p className="text-xs text-muted-foreground italic py-2">No score ranges yet. Add one to define scoring levels.</p>
-                                      )}
-                                    </div>
-
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-
-                        {/* Unassigned Scorable Questions Pool */}
-                        {scorableQuestions.filter(q => !q.scoringCategory).length > 0 && (
-                          <div className="border-2 border-dashed rounded-lg p-4 bg-muted/5 space-y-2">
-                            <div className="flex items-center justify-between">
-                              <h5 className="text-sm font-semibold flex items-center gap-2">
-                                <FileText className="w-4 h-4" />
-                                Unassigned Questions
-                              </h5>
-                              <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded">
-                                {scorableQuestions.filter(q => !q.scoringCategory).length}
-                              </span>
-                            </div>
-                            <p className="text-xs text-muted-foreground">Assign to a category to include in scoring</p>
-                            <div className="space-y-1.5">
-                              {scorableQuestions.filter(q => !q.scoringCategory).map((q) => (
-                                <div key={q.id} className="flex items-start justify-between p-2 bg-background rounded border hover:bg-muted/40 transition-colors text-xs">
-                                  <div className="flex-1 min-w-0">
-                                    <p className="truncate font-medium">{q.question}</p>
-                                    <p className="text-xs text-muted-foreground mt-0.5">{getQuestionTypeLabel(q.type)} • {getMaxPointsForQuestion(q)}pt</p>
-                                  </div>
-                                  <Select onValueChange={(catId) => {
-                                    const updated = questions.map(quest =>
-                                      quest.id === q.id ? { ...quest, scoringCategory: catId } : quest
-                                    );
-                                    onQuestionsChange?.(updated);
-                                  }}>
-                                    <SelectTrigger className="h-6 w-28 text-xs px-2 ml-2 flex-shrink-0" data-testid={`button-assign-unassigned-${q.id}`}>
-                                      <Plus className="w-3 h-3 mr-1" />
-                                      <span>Assign to</span>
-                                    </SelectTrigger>
-                                    <SelectContent align="end">
-                                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Choose Category</div>
-                                      {categories.map((cat) => (
-                                        <SelectItem key={cat.id} value={cat.id}>
-                                          {cat.name}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </DndContext>
-                    )}
-
-                    {/* Save Button */}
-                    <Button
-                      onClick={() => handleSaveScoring(onScoreConfigChange)}
-                      className="w-full"
-                      size="sm"
-                      data-testid="button-save-scoring"
-                    >
-                      <Award className="w-4 h-4 mr-2" />
-                      Save Scoring Configuration
-                    </Button>
-                  </div>
-                )}
+              <CardContent className="border-t pt-4">
+                <ScoringConfiguration
+                  isEnabled={isEnabled}
+                  onToggle={(checked) => {
+                    setIsEnabled(checked);
+                    if (!checked) {
+                      handleSaveScoring(onScoreConfigChange);
+                    }
+                  }}
+                  categories={categories}
+                  questions={questions}
+                  scoreConfig={scoreConfig}
+                  newCategoryName={newCategoryName}
+                  onNewCategoryNameChange={setNewCategoryName}
+                  onAddCategory={handleAddCategory}
+                  onRemoveCategory={handleRemoveCategory}
+                  onQuestionsChange={onQuestionsChange}
+                  onAutoGenerateScoring={() => handleAutoGenerateScoring(questions, onScoreConfigChange, onQuestionsChange)}
+                  isAutoGenerating={isAutoGenerating}
+                  expandedCategories={expandedCategories}
+                  onToggleExpandCategory={toggleExpandCategory}
+                  expandedRanges={expandedRanges}
+                  onToggleExpandRange={toggleExpandRange}
+                  getCategoryRanges={getCategoryRanges}
+                  onAddScoreRange={handleAddScoreRange}
+                  onUpdateScoreRange={handleUpdateScoreRange}
+                  onRemoveScoreRange={handleRemoveScoreRange}
+                  onSaveScoring={() => handleSaveScoring(onScoreConfigChange)}
+                  getQuestionTypeLabel={getQuestionTypeLabel}
+                  getMaxPointsForQuestion={getMaxPointsForQuestion}
+                  scorableQuestions={scorableQuestions}
+                  isQuestionScorable={isQuestionScorable}
+                  isScorableQuestion={isScorableQuestion}
+                />
               </CardContent>
             </CollapsibleContent>
           </Collapsible>
