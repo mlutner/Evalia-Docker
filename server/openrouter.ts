@@ -1,137 +1,6 @@
 import type { Question } from "@shared/schema";
 import mammoth from "mammoth";
-
-// Function-based configuration mapping
-type AIFunction = "survey_generation" | "survey_refinement" | "document_parsing" | "response_scoring" | "quick_suggestions" | "response_analysis";
-
-// Cache for admin settings to avoid repeated lookups
-let cachedSettings: any = null;
-let settingsRefreshTime = 0;
-const SETTINGS_CACHE_MS = 5000; // Refresh every 5 seconds
-
-// Get API key and model for a specific function
-async function getAIConfig(func: AIFunction): Promise<{ apiKey: string; model: string; provider: string; baseUrl: string; parameters: Record<string, any> }> {
-  // Lazy-load storage module to avoid circular dependency
-  const { storage } = await import("./storage");
-  
-  try {
-    // Refresh cache if needed
-    const now = Date.now();
-    if (!cachedSettings || now - settingsRefreshTime > SETTINGS_CACHE_MS) {
-      cachedSettings = await storage.getAdminAISettings();
-      settingsRefreshTime = now;
-    }
-
-    const apiKey = cachedSettings.apiKeys?.[func]?.key || process.env.MISTRAL_API_KEY || "";
-    const model = cachedSettings.models?.[func] || getDefaultModel(func);
-    const baseUrl = cachedSettings.baseUrls?.[func] || getDefaultBaseUrl(model);
-    const parameters = cachedSettings.parameters?.[func] || {};
-    
-    // Detect provider from model name or API key
-    const provider = detectProvider(model, apiKey);
-    
-    return { apiKey, model, provider, baseUrl, parameters };
-  } catch (error) {
-    console.warn("Failed to get admin settings, falling back to env vars:", error);
-    const apiKey = process.env.MISTRAL_API_KEY || "";
-    const model = getDefaultModel(func);
-    return { apiKey, model, provider: detectProvider(model, apiKey), baseUrl: getDefaultBaseUrl(model), parameters: {} };
-  }
-}
-
-function getDefaultBaseUrl(model: string): string {
-  if (model.includes("mistral")) return "https://api.mistral.ai/v1";
-  if (model.includes("claude")) return "https://api.anthropic.com/v1";
-  if (model.includes("gemini")) return "https://generativelanguage.googleapis.com/v1beta";
-  return "https://api.openai.com/v1";
-}
-
-function getDefaultModel(func: AIFunction): string {
-  const defaults: Record<AIFunction, string> = {
-    survey_generation: "gpt-4o",
-    survey_refinement: "gpt-4o",
-    document_parsing: "gpt-4-vision",
-    response_scoring: "gpt-3.5-turbo",
-    quick_suggestions: "gpt-3.5-turbo",
-    response_analysis: "gpt-4o",
-  };
-  return defaults[func];
-}
-
-function detectProvider(model: string, apiKey: string): string {
-  if (model.includes("gpt") || model.includes("o1")) return "openai";
-  if (model.includes("claude")) return "anthropic";
-  if (model.includes("mistral")) return "mistral";
-  if (model.includes("gemini")) return "google";
-  if (apiKey.startsWith("sk-ant")) return "anthropic";
-  return "openai"; // Default fallback
-}
-
-// Generic AI call function that supports multiple providers
-async function callAI(
-  messages: ChatMessage[],
-  func: AIFunction,
-  responseFormat?: { type: "json_object" }
-): Promise<string> {
-  const { apiKey, model, provider, baseUrl, parameters } = await getAIConfig(func);
-
-  if (!apiKey) {
-    throw new Error(`API key not configured for ${func}`);
-  }
-
-  if (provider === "openai") {
-    return callOpenAI(messages, apiKey, model, baseUrl, parameters, responseFormat);
-  } else if (provider === "mistral") {
-    return callMistral(messages, apiKey, model, baseUrl, parameters, responseFormat);
-  } else {
-    // Fallback to OpenAI format for unknown providers
-    return callOpenAI(messages, apiKey, model, baseUrl, parameters, responseFormat);
-  }
-}
-
-// OpenAI-compatible API call
-async function callOpenAI(
-  messages: ChatMessage[],
-  apiKey: string,
-  model: string,
-  baseUrl: string,
-  parameters: Record<string, any>,
-  responseFormat?: { type: "json_object" }
-): Promise<string> {
-  const response = await fetch(`${baseUrl}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages,
-      ...parameters,
-      ...(responseFormat && { response_format: responseFormat }),
-    }),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`OpenAI API error: ${error}`);
-  }
-
-  const data = await response.json();
-  
-  // Capture token usage
-  const usage = data.usage;
-  if (usage) {
-    lastTokenUsage = {
-      inputTokens: usage.prompt_tokens || 0,
-      outputTokens: usage.completion_tokens || 0,
-      totalTokens: usage.total_tokens || 0,
-      model,
-    };
-  }
-  
-  return data.choices[0]?.message?.content || "";
-}
+import { callOpenRouterModel } from "../src/ai/openRouterClient";
 
 interface ChatMessage {
   role: "system" | "user" | "assistant";
@@ -257,7 +126,8 @@ export async function parsePDFWithVision(pdfBuffer: Buffer, fileName: string): P
     ];
 
     // Use generic AI call which handles multiple providers
-    const response = await callAI(messages, "document_parsing");
+    const result = await callOpenRouterModel(messages);
+  const response = result.text;
     return response;
   } catch (error: any) {
     // Fallback: use text-based extraction
@@ -281,7 +151,8 @@ export async function parseDocument(fileContent: string, fileName: string): Prom
     },
   ];
 
-  return callAI(messages, "document_parsing");
+  const result = await callOpenRouterModel(messages);
+  return result.text;
 }
 
 /**
@@ -339,7 +210,8 @@ export async function calculateScoresWithAI(
         { role: "user", content: userPrompt },
       ];
 
-      const response = await callAI(messages, "response_scoring", { type: "json_object" });
+      const result = await callOpenRouterModel(messages);
+    const response = result.text;
       const aiScores = JSON.parse(response);
       
       // Add AI scores to category scores
@@ -483,7 +355,8 @@ Make interpretations clear and practical - they'll be shown to respondents after
   ];
 
   try {
-    const response = await callAI(messages, "quick_suggestions", { type: "json_object" });
+    const result = await callOpenRouterModel(messages);
+    const response = result.text;
     const parsed = JSON.parse(response);
     
     const theoreticalMax = calculateTheoreticalMaxScore(questions);
@@ -599,7 +472,8 @@ VALIDATION CHECKLIST:
     { role: "user", content: userPrompt },
   ];
 
-  const response = await callAI(messages, "survey_generation", { type: "json_object" });
+  const result = await callOpenRouterModel(messages);
+  const response = result.text;
   
   try {
     // Extract JSON from response (in case there's extra text)
