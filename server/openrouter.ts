@@ -9,7 +9,7 @@ const MISTRAL_OCR_URL = "https://api.mistral.ai/v1/ocr";
 // Mistral models
 const MODELS = {
   // For survey generation and chat
-  GENERATION: "pixtral-large-latest", // Mistral Pixtral Large for survey generation and refinement
+  GENERATION: "mistral-medium-latest", // Mistral Medium for survey generation and refinement
   // For OCR/document parsing (native OCR model)
   OCR: "mistral-ocr-2505", // Mistral OCR native model - specialized for document OCR
 };
