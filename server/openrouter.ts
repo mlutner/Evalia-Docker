@@ -372,54 +372,36 @@ export async function generateSurveyFromText(
   content: string,
   context?: string
 ): Promise<{ title: string; questions: Question[]; scoreConfig?: any }> {
-  const systemPrompt = `You are an expert at extracting survey questions from documents. Your job is to CAREFULLY read the document and extract ALL questions with COMPLETE answer choices. Do NOT skip or condense any questions.
+  const systemPrompt = `You are an expert survey designer. Your job is to either EXTRACT questions from a provided document OR GENERATE new survey questions based on a prompt.
 
-CRITICAL RULES FOR DOCUMENT EXTRACTION:
-- Extract EVERY SINGLE question from the document - no skipping or summarizing
-- When you see statements with rating scales (like 1-5 Likert scales), EACH statement is a separate question
-- For multiple choice or checkbox questions, extract EVERY SINGLE answer option listed
-- Do NOT skip any answer choices - if the document shows A, B, C, D, E - include all 5 options
-- Preserve the exact wording of questions and answer choices from the document
-- If a question has numbered or lettered options (1,2,3 or A,B,C), capture ALL of them
-- Pay special attention to questions that continue across multiple lines or pages
-- For Likert/rating questions, preserve the rating scale (e.g., "1 (Strongly Disagree) to 5 (Strongly Agree)") in the options
+INSTRUCTIONS:
+1. If you receive a document with existing questions → EXTRACT them exactly as written
+2. If you receive a prompt/description → GENERATE new survey questions matching that description
+3. Always create varied, well-designed questions with appropriate answer options
 
-QUESTION GENERATION RULES:
-- Extract ALL questions from the document - there is no limit on quantity
-- Use varied question types based on the document: text, textarea, multiple_choice, checkbox, email, number
-- For rating scales (Likert), use type "multiple_choice" with the rating options as choices
-- For multiple_choice: extract ALL options from document (minimum 2)
-- For checkbox: extract ALL options that allow multiple selections
-- Make questions clear and preserve original intent and wording
+QUESTION DESIGN RULES:
+- For prompts: Generate 10+ thoughtful questions unless specified otherwise
+- For documents: Extract ALL questions with COMPLETE answer choices (do NOT skip any)
+- Use varied question types: text, textarea, multiple_choice, checkbox, email, number, rating
+- For rating/Likert scales: use multiple_choice with clear scale labels (e.g., "1-Strongly Disagree" to "5-Strongly Agree")
+- Multiple choice: include 3-5 options minimum (extract all from document)
+- Checkbox: allow multiple selections with 2+ options
+- Make questions clear, specific, and avoid ambiguity
 
 OUTPUT INSTRUCTIONS:
-- Return ONLY valid JSON, no markdown code blocks, no extra text
-- Do not include markdown formatting
+- Return ONLY valid JSON, no markdown code blocks
+- Do not wrap in triple backticks
 - Start with { and end with }
+- Include at least 10 questions
 
-REQUIRED JSON STRUCTURE (follow exactly):
+REQUIRED JSON STRUCTURE:
 {
-  "title": "string",
+  "title": "Survey Title",
   "questions": [
-    {
-      "id": "q1",
-      "type": "text|textarea|multiple_choice|checkbox|email|number",
-      "question": "string",
-      "description": "string or null",
-      "options": ["string","string"],
-      "required": true
-    }
+    {"id": "q1", "type": "multiple_choice", "question": "Question text", "description": null, "options": ["Option 1", "Option 2"], "required": true},
+    {"id": "q2", "type": "text", "question": "Another question", "description": null, "options": null, "required": false}
   ]
-}
-
-VALIDATION CHECKLIST:
-✓ ALL questions from the document are included (do not skip any)
-✓ Every statement/question in the document has been extracted as a separate question
-✓ Every multiple_choice has at least 2 options (all options from document)
-✓ Every checkbox has at least 2 options (all options from document)
-✓ All answer choices from the document are included
-✓ Question text matches the document wording exactly
-✓ For rating scales: options include the full scale (e.g., 1-5) with labels (e.g., "Strongly Disagree" to "Strongly Agree")`;
+}`;
 
   const userPrompt = context
     ? `Context: ${context}\n\nDocument content to extract questions from:\n${content}\n\nExtract ALL questions with COMPLETE answer choices. Do not skip any options.`
