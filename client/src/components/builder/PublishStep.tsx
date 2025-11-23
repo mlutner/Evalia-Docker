@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown, Clock, BookOpen, ChevronRight, Link2, Unlink2, FileText, BarChart3, GripVertical } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown, Clock, BookOpen, ChevronRight, Link2, Unlink2, FileText, BarChart3, GripVertical, HelpCircle } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -595,7 +596,17 @@ export default function PublishStep({
           <h3 className="text-sm font-semibold">Survey Information</h3>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-medium mb-1.5 block">Estimated Time (optional)</label>
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <label className="text-xs font-medium">Estimated Time (optional)</label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs text-xs">
+                    How long you estimate it takes to complete the survey. Shown to respondents before they start.
+                  </TooltipContent>
+                </Tooltip>
+              </div>
               <div className="flex items-center gap-2">
                 <Input
                   type="number"
@@ -618,7 +629,17 @@ export default function PublishStep({
             </div>
           </div>
           <div>
-            <label className="text-xs font-medium mb-1.5 block">Privacy Statement (optional)</label>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <label className="text-xs font-medium">Privacy Statement (optional)</label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs text-xs">
+                  Assure respondents about their privacy and data protection. Shown on the welcome screen.
+                </TooltipContent>
+              </Tooltip>
+            </div>
             <Input
               value={privacyStatement || ""}
               onChange={(e) => onPrivacyStatementChange?.(e.target.value)}
@@ -628,7 +649,17 @@ export default function PublishStep({
             />
           </div>
           <div>
-            <label className="text-xs font-medium mb-1.5 block">Data Usage (optional)</label>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <label className="text-xs font-medium">Data Usage (optional)</label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs text-xs">
+                  Explain how you'll use the survey responses. Builds trust and transparency with respondents.
+                </TooltipContent>
+              </Tooltip>
+            </div>
             <Input
               value={dataUsageStatement || ""}
               onChange={(e) => onDataUsageStatementChange?.(e.target.value)}
@@ -641,7 +672,17 @@ export default function PublishStep({
 
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="text-sm font-medium">Welcome and introduction</label>
+            <div className="flex items-center gap-1.5">
+              <label className="text-sm font-medium">Welcome and introduction</label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs text-xs">
+                  Brief overview shown under the survey title. Helps respondents understand what they're about to take.
+                </TooltipContent>
+              </Tooltip>
+            </div>
             <Button
               size="sm"
               variant="ghost"
@@ -679,7 +720,17 @@ export default function PublishStep({
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium">Purpose of the survey</label>
+              <div className="flex items-center gap-1.5">
+                <label className="text-sm font-medium">Purpose of the survey</label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs text-xs">
+                    Add exactly 3 bullet points (one per line, 8-12 words each). Helps respondents understand why the survey matters.
+                  </TooltipContent>
+                </Tooltip>
+              </div>
               <Button
                 size="sm"
                 variant="ghost"
@@ -716,7 +767,17 @@ export default function PublishStep({
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium">Thank You Message</label>
+              <div className="flex items-center gap-1.5">
+                <label className="text-sm font-medium">Thank You Message</label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs text-xs">
+                    Shown to respondents after they complete and submit the survey. Thank them and reinforce survey impact.
+                  </TooltipContent>
+                </Tooltip>
+              </div>
               <Button
                 size="sm"
                 variant="ghost"
