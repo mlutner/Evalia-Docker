@@ -583,7 +583,7 @@ export default function PublishStep({
                     <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
                       <p className="text-xs font-medium text-primary mb-2">Quick Setup</p>
                       <Button
-                        onClick={() => handleAutoGenerateScoring(questions, onScoreConfigChange)}
+                        onClick={() => handleAutoGenerateScoring(questions, onScoreConfigChange, onQuestionsChange)}
                         disabled={isAutoGenerating || questions.length === 0}
                         className="w-full"
                         variant="outline"

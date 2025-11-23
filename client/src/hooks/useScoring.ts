@@ -176,7 +176,11 @@ export function useScoring(initialConfig?: SurveyScoreConfig) {
     setScoreRanges(scoreRanges.filter((_, i) => i !== index));
   };
 
-  const handleAutoGenerateScoring = async (questions: Question[], onScoreConfigChange?: (config: SurveyScoreConfig) => void) => {
+  const handleAutoGenerateScoring = async (
+    questions: Question[], 
+    onScoreConfigChange?: (config: SurveyScoreConfig) => void,
+    onQuestionsChange?: (questions: Question[]) => void
+  ) => {
     if (questions.length === 0) {
       toast({
         title: "No questions",
@@ -202,6 +206,21 @@ export function useScoring(initialConfig?: SurveyScoreConfig) {
       setIsEnabled(true);
       setCategories(config.categories || []);
       setScoreRanges(config.scoreRanges || []);
+      
+      // Apply category assignments from AI if available
+      let updatedQuestions = questions;
+      if (config.suggestedQuestionCategoryMap) {
+        const categoryMap = config.suggestedQuestionCategoryMap;
+        updatedQuestions = questions.map(q => {
+          const assignedCategoryId = categoryMap[q.id];
+          if (assignedCategoryId) {
+            return { ...q, scoringCategory: assignedCategoryId };
+          }
+          return q;
+        });
+        // Notify parent of question changes
+        onQuestionsChange?.(updatedQuestions);
+      }
       
       // Auto-save immediately
       const newConfig: SurveyScoreConfig = {
