@@ -546,12 +546,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auto-generate scoring configuration (protected)
   app.post("/api/generate-scoring-config", isAuthenticated, async (req: any, res) => {
     try {
-      const { questions } = req.body;
+      const { questions, surveyTitle } = req.body;
       if (!questions || !Array.isArray(questions)) {
         return res.status(400).json({ error: "Questions array required" });
       }
 
-      const config = await suggestScoringConfig("Generated Survey", questions);
+      const config = await suggestScoringConfig(surveyTitle || "Assessment Survey", questions);
       res.json({ config });
     } catch (error: any) {
       console.error("Generate scoring config error:", error);
