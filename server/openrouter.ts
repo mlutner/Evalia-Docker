@@ -233,6 +233,46 @@ function generateScoreRanges(categoryId: string, theoreticalMax: number, questio
 /**
  * Suggest scoring configuration based on survey questions
  */
+/**
+ * Generate a concise AI summary of the survey for dashboard display
+ */
+export async function generateSurveySummary(
+  title: string,
+  questions: Question[]
+): Promise<string> {
+  if (!questions || questions.length === 0) {
+    return "Survey with no questions";
+  }
+
+  const systemPrompt = `You are an expert at creating concise survey summaries. Create a brief, punchy 1-2 sentence summary that captures the essence of what the survey measures. Keep it under 100 characters. Be conversational and friendly.
+
+Examples:
+- "Measures employee satisfaction and engagement across departments"
+- "Assesses learning outcomes and training effectiveness"
+- "Gathers feedback on product features and improvements"
+- "Evaluates team collaboration and communication skills"`;
+
+  const userPrompt = `Survey Title: ${title}
+
+Questions (first 5):
+${questions.slice(0, 5).map((q, i) => `${i + 1}. ${q.question}`).join('\n')}
+
+Create a brief, friendly summary (under 100 characters) that describes what this survey is about.`;
+
+  const messages: ChatMessage[] = [
+    { role: "system", content: systemPrompt },
+    { role: "user", content: userPrompt },
+  ];
+
+  try {
+    const response = await callMistral(messages, MODELS.GENERATION);
+    return response.trim().substring(0, 150); // Trim to reasonable length
+  } catch (error) {
+    console.warn("Summary generation failed, using title:", error);
+    return `${questions.length}-question survey`;
+  }
+}
+
 export async function suggestScoringConfig(
   title: string,
   questions: Question[]

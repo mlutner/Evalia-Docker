@@ -4,7 +4,7 @@ import express from "express";
 import path from "path";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { parsePDFWithVision, parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText, suggestScoringConfig } from "./openrouter";
+import { parsePDFWithVision, parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText, suggestScoringConfig, generateSurveySummary } from "./openrouter";
 import { insertSurveySchema, questionSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
@@ -418,9 +418,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const userId = req.user.claims.sub;
+      
+      // Generate AI summary if no description provided
+      let summary = validationResult.data.description;
+      if (!summary && validationResult.data.questions && validationResult.data.questions.length > 0) {
+        try {
+          summary = await generateSurveySummary(validationResult.data.title, validationResult.data.questions);
+        } catch (error) {
+          console.warn("Failed to generate summary:", error);
+          // Fallback: use generic summary
+          summary = `${validationResult.data.questions.length}-question survey`;
+        }
+      }
+      
       // Auto-assign a random illustration to the survey
       const surveyData = {
         ...validationResult.data,
+        description: summary,
         illustrationUrl: getRandomIllustration(),
       };
       const survey = await storage.createSurvey(surveyData, userId);
