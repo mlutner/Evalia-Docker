@@ -263,22 +263,16 @@ CRITICAL REQUIREMENTS:
 - Interpretations must reference the actual score range
 - All minScore and maxScore values must be <= ${theoreticalMax}
 
-Return ONLY valid JSON with this exact structure:
+OUTPUT INSTRUCTIONS:
+- Return ONLY valid JSON, no markdown code blocks, no extra text
+- Do not include markdown formatting
+- Start with { and end with }
+
+REQUIRED JSON STRUCTURE:
 {
-  "categories": [
-    { "id": "cat1", "name": "Category Name" },
-    { "id": "cat2", "name": "Another Category" }
-  ],
-  "scoreRanges": [
-    { "category": "cat1", "label": "Needs Development", "minScore": 0, "maxScore": ${Math.ceil(theoreticalMax / 3)}, "interpretation": "..." },
-    { "category": "cat1", "label": "Developing", "minScore": ${Math.ceil(theoreticalMax / 3) + 1}, "maxScore": ${Math.ceil((theoreticalMax * 2) / 3)}, "interpretation": "..." },
-    { "category": "cat1", "label": "Excellent", "minScore": ${Math.ceil((theoreticalMax * 2) / 3) + 1}, "maxScore": ${theoreticalMax}, "interpretation": "..." }
-  ],
-  "suggestedQuestionCategoryMap": {
-    "q1": "cat1",
-    "q2": "cat2",
-    "q3": "cat1"
-  }
+  "categories": [{"id": "cat1", "name": "Leadership"}],
+  "scoreRanges": [{"category": "cat1", "label": "Needs Development", "minScore": 0, "maxScore": 10, "interpretation": "string"}],
+  "suggestedQuestionCategoryMap": {"q1": "cat1", "q2": "cat1"}
 }`;
 
   const userPrompt = `Survey Title: ${title}
@@ -393,16 +387,21 @@ QUESTION GENERATION RULES:
 - For checkbox: extract ALL options that allow multiple selections
 - Make questions clear and preserve original intent and wording
 
-Return ONLY valid JSON with this exact structure:
+OUTPUT INSTRUCTIONS:
+- Return ONLY valid JSON, no markdown code blocks, no extra text
+- Do not include markdown formatting
+- Start with { and end with }
+
+REQUIRED JSON STRUCTURE (follow exactly):
 {
-  "title": "Survey Title (extract from document or generate)",
+  "title": "string",
   "questions": [
     {
       "id": "q1",
-      "type": "text" | "textarea" | "multiple_choice" | "checkbox" | "email" | "number",
-      "question": "Question text exactly as in document?",
-      "description": "Optional context",
-      "options": ["Option A text", "Option B text", "Option C text", "Option D text"],
+      "type": "text|textarea|multiple_choice|checkbox|email|number",
+      "question": "string",
+      "description": "string or null",
+      "options": ["string","string"],
       "required": true
     }
   ]
