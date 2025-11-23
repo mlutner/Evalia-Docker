@@ -1022,9 +1022,29 @@ Return ONLY the improved prompt text, nothing else.`;
         }
       );
       
+      // Clean up markup (remove markdown, HTML, etc.)
+      let cleanedText = result.text.trim();
+      
+      // Remove markdown code blocks
+      cleanedText = cleanedText.replace(/```[\s\S]*?```/g, "");
+      cleanedText = cleanedText.replace(/`([^`]+)`/g, "$1");
+      
+      // Remove markdown formatting
+      cleanedText = cleanedText.replace(/\*\*(.*?)\*\*/g, "$1");
+      cleanedText = cleanedText.replace(/__(.*?)__/g, "$1");
+      cleanedText = cleanedText.replace(/\*(.*?)\*/g, "$1");
+      cleanedText = cleanedText.replace(/_(.*?)_/g, "$1");
+      cleanedText = cleanedText.replace(/\[(.*?)\]\(.*?\)/g, "$1");
+      
+      // Remove HTML tags
+      cleanedText = cleanedText.replace(/<[^>]*>/g, "");
+      
+      // Clean up extra whitespace
+      cleanedText = cleanedText.replace(/\n\n+/g, "\n").trim();
+      
       res.json({
         success: true,
-        enhancedPrompt: result.text.trim(),
+        enhancedPrompt: cleanedText,
       });
     } catch (error: any) {
       console.error("Enhance prompt error:", error.message);
