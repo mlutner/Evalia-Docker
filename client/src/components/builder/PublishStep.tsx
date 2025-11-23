@@ -174,7 +174,13 @@ export default function PublishStep({
           
           {isAssigned && (
             <div className="flex gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-              <Select open={showMoveMenu} onOpenChange={setShowMoveMenu}>
+              <Select open={showMoveMenu} onOpenChange={setShowMoveMenu} onValueChange={(value) => {
+                if (value === "unassigned") {
+                  handleMoveToUnassigned();
+                } else {
+                  handleMoveToCategory(value);
+                }
+              }}>
                 <SelectTrigger className="h-6 w-24 text-xs px-2" data-testid={`button-move-question-${question.id}`}>
                   <ArrowRight className="w-3 h-3 mr-1" />
                   <span>Move</span>
@@ -184,14 +190,14 @@ export default function PublishStep({
                     <>
                       <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Move to Category</div>
                       {otherCategories.map((cat) => (
-                        <SelectItem key={cat.id} value={cat.id} onClick={() => handleMoveToCategory(cat.id)}>
+                        <SelectItem key={cat.id} value={cat.id}>
                           {cat.name}
                         </SelectItem>
                       ))}
                       <div className="my-1 h-px bg-muted" />
                     </>
                   )}
-                  <SelectItem value="unassigned" onClick={handleMoveToUnassigned}>
+                  <SelectItem value="unassigned">
                     Unassigned
                   </SelectItem>
                 </SelectContent>
