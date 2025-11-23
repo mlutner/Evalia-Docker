@@ -17,53 +17,6 @@ export interface TokenUsageData {
 // Global token tracking for this session
 export let lastTokenUsage: TokenUsageData | null = null;
 
-async function callMistral(
-  messages: ChatMessage[],
-  apiKey: string,
-  model: string,
-  baseUrl: string,
-  parameters: Record<string, any>,
-  responseFormat?: { type: "json_object" }
-): Promise<string> {
-  if (!apiKey) {
-    throw new Error("Mistral API key not configured");
-  }
-
-  const response = await fetch(`${baseUrl}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages,
-      ...parameters,
-      ...(responseFormat && { response_format: responseFormat }),
-    }),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Mistral API error: ${error}`);
-  }
-
-  const data = await response.json();
-  
-  // Capture token usage
-  const usage = data.usage;
-  if (usage) {
-    lastTokenUsage = {
-      inputTokens: usage.prompt_tokens || 0,
-      outputTokens: usage.completion_tokens || 0,
-      totalTokens: usage.total_tokens || 0,
-      model,
-    };
-  }
-  
-  return data.choices[0]?.message?.content || "";
-}
-
 // Pricing table for various models
 const PRICING: Record<string, { input: number; output: number }> = {
   // OpenAI
@@ -97,12 +50,6 @@ export function calculateTokenCost(usage: TokenUsageData): string {
  * Parse PDF using configured OCR provider
  */
 export async function parsePDFWithVision(pdfBuffer: Buffer, fileName: string): Promise<string> {
-  const { apiKey, model } = getAIConfig("document_parsing");
-
-  if (!apiKey) {
-    throw new Error("OCR API key not configured");
-  }
-
   try {
     // Encode PDF as base64
     const base64PDF = pdfBuffer.toString("base64");
@@ -125,10 +72,9 @@ export async function parsePDFWithVision(pdfBuffer: Buffer, fileName: string): P
       }
     ];
 
-    // Use generic AI call which handles multiple providers
+    // Call OpenRouter with single model
     const result = await callOpenRouterModel(messages);
-  const response = result.text;
-    return response;
+    return result.text;
   } catch (error: any) {
     // Fallback: use text-based extraction
     console.warn("OCR API failed, falling back to text extraction:", error.message);
@@ -616,10 +562,10 @@ ${JSON.stringify(survey.questions, null, 2)}`;
     { role: "user", content: enhancedMessage },
   ];
 
-  const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
+  const result = await callOpenRouterModel(messages);
   
   try {
-    const parsed = JSON.parse(response);
+    const parsed = JSON.parse(result.text);
     return {
       questions: parsed.questions,
       message: parsed.message || "I've updated the survey based on your request.",
@@ -758,5 +704,6 @@ OUTPUT FORMAT: Plain text only, no special formatting.`;
     { role: "user", content: userPrompt },
   ];
 
-  return callMistral(messages, MODELS.GENERATION);
+  const result = await callOpenRouterModel(messages);
+  return result.text;
 }
