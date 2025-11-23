@@ -223,6 +223,8 @@ export default function QuestionsStep({
                     onSendMessage={onSendMessage}
                     isLoading={isProcessing}
                     showHeader={false}
+                    isExpanded={chatExpanded}
+                    onToggleExpand={() => setChatExpanded(!chatExpanded)}
                   />
                 </CardContent>
               </Card>
