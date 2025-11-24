@@ -136,9 +136,9 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
       style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
     >
       {/* Header: Title + Menu */}
-      <div className="px-5 pt-4 pb-2">
+      <div className="px-6 pt-5 pb-3">
         <div className="flex items-start justify-between gap-3">
-          <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#1C2635', lineHeight: '1.3' }} className="line-clamp-2 flex-1">{survey.title}</h3>
+          <h3 className="heading-4 flex-1">{survey.title}</h3>
           <div className="flex gap-1 flex-shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -195,17 +195,17 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
       </div>
 
       {/* Description */}
-      <div className="px-5 py-1">
+      <div className="px-6 py-2">
         {survey.description && (
-          <p style={{ fontSize: '13px', color: '#6A7789', lineHeight: '1.4' }} className="line-clamp-1">{survey.description}</p>
+          <p className="body-small line-clamp-1">{survey.description}</p>
         )}
         {!survey.description && survey.questions && (
-          <p style={{ fontSize: '13px', color: '#6A7789', lineHeight: '1.4' }} className="line-clamp-1">{generateSurveySummary(survey.questions)}</p>
+          <p className="body-small line-clamp-1">{generateSurveySummary(survey.questions)}</p>
         )}
       </div>
 
       {/* Metadata Row: Created + Scoring Badge */}
-      <div className="px-5 py-2 flex items-center justify-between">
+      <div className="px-6 py-3 flex items-center justify-between">
         <p style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500, letterSpacing: '0.4px' }}>
           Created {new Date(survey.createdAt).toLocaleDateString()}
         </p>
@@ -226,9 +226,9 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
 
       {/* Status Badge Row */}
       {statusDisplay.badge && (
-        <div className="px-5 py-1">
+        <div className="px-6 py-2">
           <div className="flex items-center gap-2">
-            <span style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500, letterSpacing: '0.4px' }}>Status:</span>
+            <span className="text-tertiary uppercase tracking-wider">Status:</span>
             <Tooltip>
               <TooltipTrigger asChild>
                 {statusDisplay.badge}
@@ -242,19 +242,19 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
       )}
 
       {/* Stats Row: Questions + Responses */}
-      <div className="px-5 py-3 flex gap-8 flex-1">
+      <div className="px-6 py-4 flex gap-8 flex-1">
         <div>
-          <p style={{ fontSize: '11px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 600, letterSpacing: '0.3px' }}>Questions</p>
-          <p style={{ fontSize: '24px', fontWeight: 700, color: '#1C2635', marginTop: '2px' }} data-testid="text-question-count">{survey.questionCount || 0}</p>
+          <p className="text-tertiary uppercase tracking-wider font-semibold">Questions</p>
+          <p style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-primary)', marginTop: '4px' }} data-testid="text-question-count">{survey.questionCount || 0}</p>
         </div>
         <div>
-          <p style={{ fontSize: '11px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 600, letterSpacing: '0.3px' }}>Responses</p>
-          <p style={{ fontSize: '24px', fontWeight: 700, color: '#1C2635', marginTop: '2px' }} data-testid="text-response-count">{survey.responseCount ?? 0}</p>
+          <p className="text-tertiary uppercase tracking-wider font-semibold">Responses</p>
+          <p style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-primary)', marginTop: '4px' }} data-testid="text-response-count">{survey.responseCount ?? 0}</p>
         </div>
       </div>
 
       {/* Buttons */}
-      <div className="px-5 py-4 gap-3 flex flex-col mt-auto">
+      <div className="px-6 py-5 gap-3 flex flex-col mt-auto">
         <div className="flex w-full gap-3">
           <Button 
             variant="outline" 
