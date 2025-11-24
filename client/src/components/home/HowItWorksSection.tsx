@@ -37,8 +37,8 @@ export function HowItWorksSection() {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-6 z-10">
-        <div className="text-center mb-16 md:mb-20">
-          <h2 className="text-4xl lg:text-5xl font-bold text-evalia-navy mb-6 leading-tight" data-testid="text-how-it-works">
+        <div className="text-center mb-16 md:mb-20 opacity-0 animate-fade-in" style={{ animationDuration: '0.6s', animationFillMode: 'forwards' }}>
+          <h2 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-evalia-navy to-evalia-teal-600 bg-clip-text text-transparent mb-6 leading-tight" data-testid="text-how-it-works">
             Create better training feedback in three steps
           </h2>
           <p className="text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
@@ -51,13 +51,21 @@ export function HowItWorksSection() {
           <div className="hidden md:block absolute top-8 left-0 right-0 h-1 bg-gradient-to-r from-evalia-teal-200 via-evalia-teal-300 to-evalia-teal-200 pointer-events-none z-0" style={{ maxWidth: '90%', marginLeft: '5%' }}></div>
 
           {/* Steps */}
-          {steps.map((step) => {
+          {steps.map((step, idx) => {
             const Icon = step.icon;
             return (
-              <div key={step.number} className="relative hover-elevate transition-all z-10">
+              <div 
+                key={step.number} 
+                className="relative hover-elevate transition-all z-10 opacity-0 animate-fade-in"
+                style={{
+                  animationDelay: `${idx * 0.15}s`,
+                  animationDuration: '0.6s',
+                  animationFillMode: 'forwards',
+                }}
+              >
                 <div className="flex flex-col items-center mb-8">
-                  <div className={`flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-br ${step.gradient} flex items-center justify-center shadow-lg`}>
-                    <Icon className="w-8 h-8 text-white" />
+                  <div className={`flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-br ${step.gradient} flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110`}>
+                    <Icon className="w-8 h-8 text-white transition-transform duration-300 group-hover:rotate-12" />
                   </div>
                   <div className="text-4xl font-bold text-evalia-teal-100/40 mt-3">{step.number}</div>
                 </div>

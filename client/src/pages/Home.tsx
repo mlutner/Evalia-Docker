@@ -6,6 +6,7 @@ import { Hero } from '@/components/Hero';
 import { FeatureCard } from '@/components/FeatureCard';
 import { ArrowRightIcon, CheckCircle2Icon } from 'lucide-react';
 import { SocialProofSection } from '@/components/home/SocialProofSection';
+import { MetricsSection } from '@/components/home/MetricsSection';
 import { HowItWorksSection } from '@/components/home/HowItWorksSection';
 import { Footer } from '@/components/home/Footer';
 
@@ -36,6 +37,7 @@ export default function Home() {
       <Navigation />
       <Hero />
       <SocialProofSection />
+      <MetricsSection />
       <HowItWorksSection />
 
       {/* Features section */}
