@@ -14,6 +14,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
   const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
 
   // Survey data state
+  const [surveyType, setSurveyType] = useState<"survey" | "assessment">("survey");
   const [currentSurveyTitle, setCurrentSurveyTitle] = useState("");
   const [currentSurveyDescription, setCurrentSurveyDescription] = useState("");
   const [welcomeMessage, setWelcomeMessage] = useState("");
@@ -36,6 +37,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
   // Create survey mutation
   const createSurveyMutation = useMutation({
     mutationFn: async (data: {
+      type?: "survey" | "assessment";
       title: string;
       description?: string;
       welcomeMessage?: string;
@@ -74,6 +76,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
   // Update survey mutation
   const updateSurveyMutation = useMutation({
     mutationFn: async (data: {
+      type?: "survey" | "assessment";
       title: string;
       description?: string;
       welcomeMessage?: string;

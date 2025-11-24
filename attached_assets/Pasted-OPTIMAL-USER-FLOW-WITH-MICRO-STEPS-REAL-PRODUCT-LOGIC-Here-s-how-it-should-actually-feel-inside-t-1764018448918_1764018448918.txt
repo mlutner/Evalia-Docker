@@ -1,0 +1,129 @@
+OPTIMAL USER FLOW WITH MICRO-STEPS (REAL PRODUCT LOGIC)
+
+Here’s how it should actually feel inside the app:
+
+⸻
+
+STEP 1 — Choose Type
+
+Survey
+“Collect feedback & reactions.”
+
+Assessment
+“Measure knowledge, skills, and behavior change with scoring.”
+
+Cognitive mode: intention-setting.
+
+⸻
+
+STEP 2 — Choose Build Method
+	•	Start from template
+	•	Create with AI
+	•	Import from PDF/Document
+
+Here the user chooses their starting point, not their structure.
+
+Cognitive mode: momentum.
+
+⸻
+
+STEP 3 — Build Questions (Editor Screen)
+
+This should be the heart of the product.
+
+On this screen, users can:
+
+For surveys:
+	•	Add Likert
+	•	Add rating
+	•	Add text
+	•	Add multi-select
+	•	Ask AI to refine a question
+	•	Convert text → question with one click
+
+For assessments:
+	•	Add MCQs
+	•	Add scenario questions
+	•	Add scale scoring
+	•	Add correct answer
+	•	Add per-response scoring
+	•	Add explanations
+
+IMPORTANT:
+Don’t bring scoring bands here — only scoring per question.
+
+Cognitive mode: content creation. Stay clean, stay focused.
+
+⸻
+
+STEP 4 — Logic & Structure
+	•	Reorder sections
+	•	Add branching rules
+	•	Add skip logic
+	•	Group questions into categories (important for assessment bands)
+
+Cognitive mode: structure/organization.
+
+⸻
+
+STEP 5 — Design & Experience
+
+This is where your current flow mixes things too early.
+
+Here, users customize:
+	•	Cover image
+	•	Brand color
+	•	Title & subtitle
+	•	Intro message
+	•	Thank-you page
+	•	Custom redirect URL
+	•	Email confirmations
+	•	Branding removal (paid tier)
+
+Cognitive mode: visual expression.
+
+⸻
+
+STEP 6 — Scoring & Interpretation (Assessments only)
+
+This is a whole separate mental mode. Keep it isolated.
+
+Here users configure:
+	•	Score categories
+	•	Scoring ranges
+	•	Labels (e.g., Needs Development / Proficient / Mastery)
+	•	Personalized feedback text
+	•	Recommended next steps
+	•	Category-specific interpretation
+	•	AI-generated feedback (optional)
+
+This is the “value” moment for assessments — don’t bury it.
+
+Cognitive mode: evaluation meaning-making. Very different from writing questions.
+
+⸻
+
+STEP 7 — Preview
+
+Let them:
+	•	simulate responses
+	•	see scoring
+	•	see feedback
+	•	test branching
+	•	test mobile view
+	•	test accessibility
+
+Cognitive mode: final check.
+
+⸻
+
+STEP 8 — Publish
+
+Allow:
+	•	Share link
+	•	Embed
+	•	QR code
+	•	LMS export (future)
+	•	API integration (future)
+	•	Email invitations
+	•	Anonymous vs identified mode
