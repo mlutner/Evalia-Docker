@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Send, MessageCircle, Loader } from "lucide-react";
+import { Send, MessageCircle, Loader, MessageSquare } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface ChatMessage {
@@ -10,6 +10,12 @@ interface ChatMessage {
   role: "user" | "assistant";
   content: string;
 }
+
+const EXAMPLE_QUESTIONS = [
+  "How do I create a survey?",
+  "How do I share my survey?",
+  "How do I analyze responses?"
+];
 
 const APP_CONTEXT = `You are a helpful AI assistant for Evalia, a survey and training feedback platform. 
 
@@ -57,13 +63,14 @@ export function AiChatbot() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async () => {
-    if (!input.trim()) return;
+  const handleSendMessage = async (messageContent?: string) => {
+    const messageToSend = messageContent || input;
+    if (!messageToSend.trim()) return;
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       role: "user",
-      content: input,
+      content: messageToSend,
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -75,7 +82,7 @@ export function AiChatbot() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: input,
+          message: messageToSend,
           history: messages.map((m) => ({
             role: m.role,
             content: m.content,
@@ -121,24 +128,43 @@ export function AiChatbot() {
           </p>
         </CardHeader>
 
-        <CardContent className="flex-1 overflow-y-auto p-4 space-y-4" style={{ backgroundColor: "#F7F9FC" }}>
+        <CardContent className="flex-1 overflow-y-auto p-8 flex flex-col" style={{ backgroundColor: "#F7F9FC" }}>
           {messages.length === 0 ? (
             <div className="flex items-center justify-center h-full">
-              <div className="text-center space-y-3">
-                <MessageCircle className="w-12 h-12 mx-auto text-muted-foreground/50" />
-                <p className="text-sm text-muted-foreground">
-                  Start a conversation! Ask me anything about Evalia.
-                </p>
-                <div className="text-xs text-muted-foreground space-y-1">
-                  <p>Example questions:</p>
-                  <p className="italic">• How do I create a survey?</p>
-                  <p className="italic">• How do I share my survey?</p>
-                  <p className="italic">• How do I analyze responses?</p>
+              <div className="text-center space-y-6 max-w-md">
+                <div className="flex justify-center">
+                  <div className="w-20 h-20 bg-teal-500 rounded-2xl flex items-center justify-center" style={{ backgroundColor: "#37C0A3" }}>
+                    <MessageSquare className="w-10 h-10 text-white" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold" style={{ color: "#1C2635" }}>Start a conversation!</h3>
+                  <p className="text-sm text-gray-600">
+                    Ask me anything about Evalia. I can help with surveys, responses, and features.
+                  </p>
+                </div>
+                <div className="space-y-3 pt-2">
+                  <p className="text-xs font-medium text-gray-700">Example questions:</p>
+                  <div className="space-y-2">
+                    {EXAMPLE_QUESTIONS.map((question, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleSendMessage(question)}
+                        disabled={isLoading}
+                        className="w-full text-left px-4 py-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors text-sm text-gray-700 disabled:opacity-50"
+                        data-testid={`button-example-question-${idx}`}
+                      >
+                        {question}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           ) : (
-            messages.map((msg) => (
+            <div className="space-y-4">
+            <>
+            {messages.map((msg) => (
               <div
                 key={msg.id}
                 className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
@@ -199,46 +225,51 @@ export function AiChatbot() {
                   </div>
                 </div>
               </div>
-            ))
-          )}
-          {isLoading && (
+            ))}
             <div className="flex justify-start">
-              <div className="bg-white border border-border px-4 py-3 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <Loader className="w-4 h-4 animate-spin text-primary" />
-                  <span className="text-sm text-muted-foreground">Thinking...</span>
+                <div className="bg-white border border-border px-4 py-3 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <Loader className="w-4 h-4 animate-spin" style={{ color: "#2F8FA5" }} />
+                    <span className="text-sm text-muted-foreground">Thinking...</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+            <div ref={messagesEndRef} />
+            </>
           )}
-          <div ref={messagesEndRef} />
         </CardContent>
 
-        <div className="border-t p-4" style={{ borderColor: "#E2E7EF" }}>
+        <div className="border-t p-4 bg-white" style={{ borderColor: "#E2E7EF" }}>
           <div className="flex gap-2">
             <Input
               placeholder="Ask me anything about Evalia..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === "Enter" && !isLoading) {
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey && !isLoading) {
+                  e.preventDefault();
                   handleSendMessage();
                 }
               }}
               disabled={isLoading}
-              className="flex-1"
+              className="flex-1 rounded-lg border-gray-300"
+              data-testid="input-chat-message"
             />
             <Button
-              onClick={handleSendMessage}
+              onClick={() => handleSendMessage()}
               disabled={isLoading || !input.trim()}
-              style={{ backgroundColor: "#2F8FA5" }}
-              className="text-white"
+              style={{ backgroundColor: "#37C0A3" }}
+              className="text-white hover:opacity-90"
               size="icon"
               data-testid="button-send-chat"
             >
               <Send className="w-4 h-4" />
             </Button>
           </div>
+          <p className="text-xs text-gray-500 mt-2 text-center">
+            Press Enter to send • Shift + Enter for new line
+          </p>
         </div>
       </Card>
     </div>
