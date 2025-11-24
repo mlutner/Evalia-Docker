@@ -458,20 +458,20 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
               <div className="flex items-center gap-2">
                 <input
                   type="text"
-                  value={shortUrl || (loadingShortUrl ? "Shortening..." : shareUrl)}
+                  value={shortUrl || shareUrl}
                   readOnly
                   className="flex-1 px-3 py-2 border rounded-md bg-muted text-sm"
                   data-testid="input-share-url"
                 />
                 <Button 
                   onClick={() => {
-                    navigator.clipboard.writeText(shortUrl || shareUrl);
+                    const urlToCopy = shortUrl || shareUrl;
+                    navigator.clipboard.writeText(urlToCopy);
                     setCopied(true);
                     setTimeout(() => setCopied(false), 2000);
                   }} 
                   variant="outline" 
                   data-testid="button-copy-link"
-                  disabled={loadingShortUrl}
                 >
                   {copied ? (
                     <>
@@ -487,7 +487,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                {shortUrl ? `Short link (${shortUrl.length} characters)` : "Generating short link..."} • Anyone with this link can submit a response
+                {shortUrl ? `Short link - easier to share` : `Full link`} • Anyone with this link can submit a response
               </p>
             </div>
           </div>
