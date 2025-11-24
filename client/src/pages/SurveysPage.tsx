@@ -167,21 +167,7 @@ export default function SurveysPage() {
                 {filteredSurveys.map((survey, index) => (
                   <div key={survey.id} className="relative">
                     <SurveyCard
-                      survey={{
-                        id: survey.id,
-                        title: survey.title,
-                        description: survey.description || null,
-                        createdAt: survey.createdAt,
-                        questionCount: survey.questions.length,
-                        responseCount: survey.responseCount,
-                        status: survey.status || null,
-                        publishedAt: survey.publishedAt || null,
-                        trainerName: survey.trainerName || null,
-                        trainingDate: survey.trainingDate || null,
-                        tags: survey.tags || null,
-                        questions: survey.questions,
-                        scoreConfig: survey.scoreConfig,
-                      }}
+                      survey={survey as any}
                       onEdit={() => setLocation(`/builder/${survey.id}`)}
                       onView={() => setLocation(`/survey/${survey.id}`)}
                       onAnalyze={() => setLocation(`/analytics/${survey.id}`)}

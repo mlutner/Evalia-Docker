@@ -119,7 +119,11 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
 
 
   return (
-    <Card className="card-hover hover-elevate shadow-sm transition-all flex flex-col" data-testid={`survey-card-${survey.id}`}>
+    <Card 
+      className="card-hover hover-elevate shadow-sm transition-all flex flex-col" 
+      style={{ height: '320px', display: 'flex', flexDirection: 'column' }}
+      data-testid={`survey-card-${survey.id}`}
+    >
       <CardHeader className="flex flex-col space-y-3 pb-4">
         <div className="flex flex-row items-start justify-between space-y-0">
           <div className="flex-1">
@@ -198,7 +202,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
         )}
       </CardHeader>
 
-      <CardContent className="flex-1 space-y-4">
+      <CardContent className="flex-1 space-y-4 overflow-y-auto">
         {/* Stats Section */}
         <div className="flex gap-6 text-sm">
           <div>
@@ -248,7 +252,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
         )}
       </CardContent>
 
-      <CardFooter className="gap-2">
+      <CardFooter className="gap-2 mt-auto">
         <Button variant="outline" className="flex-1" onClick={onEdit} data-testid={`button-edit-${index}`}>
           <Edit3 className="w-4 h-4 mr-2" />
           Edit
