@@ -78,6 +78,7 @@ export default function SurveyStartFlow({
   onPasteText,
   isProcessing,
 }: SurveyStartFlowProps) {
+  const [hasSelectedType, setHasSelectedType] = useState(false);
   const [expandedOption, setExpandedOption] = useState<string | null>(null);
   const [prompt, setPrompt] = useState("");
   const [selectedFileForAI, setSelectedFileForAI] = useState<{ name: string; type: string; base64: string } | null>(null);
@@ -86,6 +87,11 @@ export default function SurveyStartFlow({
   const [showPromptSuggestions, setShowPromptSuggestions] = useState(false);
   const [parsedText, setParsedText] = useState("");
   const aiFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleSurveyTypeChange = (type: SurveyType) => {
+    onSurveyTypeChange(type);
+    setHasSelectedType(true);
+  };
 
   const handleGenerateClick = () => {
     onGenerateFromPrompt(prompt, includeScoringToggle, selectedFileForAI || undefined);
@@ -117,22 +123,26 @@ export default function SurveyStartFlow({
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="max-w-7xl mx-auto px-4 py-6 md:py-10">
         {/* Survey Type Selection */}
-        <SurveyTypeSelector value={surveyType} onChange={onSurveyTypeChange} />
+        <SurveyTypeSelector value={surveyType} onChange={handleSurveyTypeChange} />
 
-        {/* Hero Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-3 md:mb-6 px-2"
-        >
-          <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 leading-tight" style={{ color: '#1C2635' }}>
-            How would you like to start?
-          </h1>
-          <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-6">
-            Pick the option that matches how much structure you already have.
-          </p>
-        </motion.div>
+        {/* Hero Section - Only show after type selection */}
+        <AnimatePresence>
+          {hasSelectedType && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-center mb-3 md:mb-6 px-2"
+            >
+              <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 leading-tight" style={{ color: '#1C2635' }}>
+                How would you like to start?
+              </h1>
+              <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-6">
+                Pick the option that matches how much structure you already have.
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Survey Title Input - Only show if questions exist */}
         <AnimatePresence>
@@ -158,8 +168,10 @@ export default function SurveyStartFlow({
           )}
         </AnimatePresence>
 
-        {/* Option Cards */}
-        <div className="space-y-3 mb-8">
+        {/* Option Cards - Only show after type selection */}
+        <AnimatePresence>
+          {hasSelectedType && (
+            <div className="space-y-3 mb-8">
           {OPTION_CARDS.map((option, index) => {
             const isExpanded = expandedOption === option.id;
             return (
@@ -363,7 +375,9 @@ export default function SurveyStartFlow({
             </motion.div>
             );
           })}
-        </div>
+            </div>
+          )}
+        </AnimatePresence>
 
         {/* Preview Modal */}
         <TemplatePreviewModal 
