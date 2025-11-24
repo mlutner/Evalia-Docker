@@ -126,7 +126,7 @@ export default function SurveyStartFlow({
         </AnimatePresence>
 
         {/* Option Cards */}
-        <div className="space-y-6 mb-12">
+        <div className="space-y-4 mb-12">
           {OPTION_CARDS.map((option, index) => (
             <motion.div
               key={option.id}
@@ -141,13 +141,13 @@ export default function SurveyStartFlow({
                 whileTap={{ y: 0 }}
               >
                 <div
-                  className="p-8 rounded-lg border-2 transition-all cursor-pointer group"
+                  className="p-8 px-10 rounded-lg border-2 transition-all cursor-pointer group"
                   style={{
                     borderColor: expandedOption === option.id ? option.color : "rgba(0,0,0,0.08)",
                     backgroundColor: expandedOption === option.id ? `${option.color}08` : "white",
                   }}
                 >
-                  <div className="flex items-start gap-6">
+                  <div className="flex items-start gap-8">
                     <div
                       className="w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0 transition-all group-hover:scale-110"
                       style={{
