@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import type { Question, Survey } from "@shared/schema";
+import type { Question, Survey, SurveyType } from "@shared/schema";
 
 interface UseSurveyStateProps {
   surveyId?: string;
@@ -14,7 +14,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
   const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
 
   // Survey data state
-  const [surveyType, setSurveyType] = useState<"survey" | "assessment">("survey");
+  const [surveyType, setSurveyType] = useState<SurveyType>("survey");
   const [currentSurveyTitle, setCurrentSurveyTitle] = useState("");
   const [currentSurveyDescription, setCurrentSurveyDescription] = useState("");
   const [welcomeMessage, setWelcomeMessage] = useState("");
@@ -37,7 +37,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
   // Create survey mutation
   const createSurveyMutation = useMutation({
     mutationFn: async (data: {
-      type?: "survey" | "assessment";
+      type?: SurveyType;
       title: string;
       description?: string;
       welcomeMessage?: string;
@@ -76,7 +76,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
   // Update survey mutation
   const updateSurveyMutation = useMutation({
     mutationFn: async (data: {
-      type?: "survey" | "assessment";
+      type?: SurveyType;
       title: string;
       description?: string;
       welcomeMessage?: string;
