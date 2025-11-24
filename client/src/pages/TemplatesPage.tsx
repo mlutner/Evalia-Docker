@@ -59,50 +59,58 @@ export default function TemplatesPage() {
             {templates.map((template) => (
               <Card 
                 key={template.id} 
-                className="flex flex-col hover-elevate"
+                className="evalia-survey-card"
                 data-testid={`template-card-${template.id}`}
+                style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
               >
-                <CardContent className="p-6 flex flex-col flex-1">
-                  <div className="flex items-start justify-between gap-4 mb-4">
-                    <h3 className="text-xl font-bold flex-1 leading-tight">{template.title}</h3>
-                    <div style={{ backgroundColor: 'rgba(163, 214, 92, 0.1)', borderRadius: '0.375rem', padding: '0.125rem 0.5rem', display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', fontWeight: '500', color: theme.colors.textPrimary }}>
-                      <FileText className="w-3.5 h-3.5" />
+                {/* Header: Title + Question Count Badge */}
+                <div className="px-5 pt-4 pb-2">
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#1C2635', lineHeight: '1.3' }} className="line-clamp-2 flex-1">{template.title}</h3>
+                    <div style={{ backgroundColor: 'rgba(163, 214, 92, 0.1)', color: '#1C2635', borderColor: 'rgba(163, 214, 92, 0.3)', fontSize: '11px', padding: '4px 8px', display: 'flex', alignItems: 'center', gap: '4px', border: '1px solid rgba(163, 214, 92, 0.3)', borderRadius: '6px' }} className="flex-shrink-0">
+                      <FileText className="w-3 h-3" />
                       {template.questions.length}
                     </div>
                   </div>
+                </div>
 
-                  <p className="text-sm mb-4" style={{ color: theme.text.secondary }}>{template.description}</p>
+                {/* Description */}
+                <div className="px-5 py-1">
+                  <p style={{ fontSize: '13px', color: '#6A7789', lineHeight: '1.4' }} className="line-clamp-2">{template.description}</p>
+                </div>
 
-                  <div className="space-y-2 mb-6 flex-1">
-                    <div className="flex items-center gap-3 text-sm" style={{ color: theme.text.secondary }}>
-                      <Clock className="w-4 h-4 flex-shrink-0" />
-                      <span>{template.category}</span>
-                    </div>
-                  </div>
+                {/* Category */}
+                <div className="px-5 py-2 flex items-center gap-2">
+                  <Clock className="w-4 h-4" style={{ color: '#6A7789' }} />
+                  <span style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500, letterSpacing: '0.4px' }}>
+                    {template.category}
+                  </span>
+                </div>
 
-                  <div className="flex gap-3">
+                {/* Buttons */}
+                <div className="px-5 py-4 gap-3 flex flex-col mt-auto">
+                  <div className="flex w-full gap-3">
                     <Button
                       onClick={() => setPreviewTemplate(template)}
                       variant="outline"
-                      className="flex-1"
+                      className="flex-1 h-10 font-semibold text-sm"
                       data-testid={`button-preview-template-${template.id}`}
                     >
                       Preview
                     </Button>
                     <Button 
                       onClick={() => handleUseTemplate(template)}
-                      className="flex-1"
+                      className="flex-1 h-10 font-semibold text-sm"
                       style={{ 
-                        backgroundColor: theme.colors.primary,
+                        backgroundColor: '#1F6F78',
                         color: '#FFFFFF',
-                        fontWeight: '600'
                       }}
                       data-testid={`button-use-template-${template.id}`}
                     >
                       Use Template
                     </Button>
                   </div>
-                </CardContent>
+                </div>
               </Card>
             ))}
           </div>
