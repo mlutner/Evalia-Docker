@@ -290,12 +290,6 @@ export default function SurveyView() {
       <main className="survey-card" key={currentStep}>
         {/* Header */}
         <header className="survey-header">
-          <img 
-            src={logoImage} 
-            alt="Survey logo" 
-            data-testid="icon-survey-logo"
-            className="survey-logo-img"
-          />
           <h1 className="survey-title" data-testid="text-question-number">
             Question {currentStep + 1}
           </h1>

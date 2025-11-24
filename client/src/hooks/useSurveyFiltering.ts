@@ -1,7 +1,11 @@
 import { useMemo } from "react";
-import type { SurveyWithCounts } from "@/pages/Dashboard";
+import type { Survey } from "@shared/schema";
 
 type SortOption = "newest" | "oldest" | "most-responses" | "alphabetical";
+
+export type SurveyWithCounts = Survey & {
+  responseCount: number;
+};
 
 export function useSurveyFiltering(
   surveys: SurveyWithCounts[],
