@@ -106,6 +106,51 @@ export const theme = {
     activeText: 'var(--sidebar-text-active)',     // #FFFFFF (100%)
     inactiveText: 'var(--sidebar-text-inactive)', // rgba(255,255,255,0.7) (70%)
   },
+
+  // CHARTS
+  charts: {
+    primaryLine: '#1F6F78',      // Teal - main data line/bar
+    secondaryBar: '#C3F33C',     // Lime - comparison/secondary
+    gridlines: '#E2E7EF',        // Light border for gridlines
+    labelText: '#6A7789',        // Secondary text for labels
+  },
+
+  // CARD LAYOUT SYSTEM
+  cardLayout: {
+    padding: '24px',
+    radius: '12px',
+    title: {
+      fontSize: '15px',
+      fontWeight: 600,
+      marginBottom: '16px',
+    },
+    subtitle: {
+      fontSize: '13px',
+      fontWeight: 400,
+      marginBottom: '8px',
+    },
+    metadata: {
+      spacing: '8px',
+    },
+  },
+
+  // COLOR USAGE GUIDELINES
+  colorUsage: {
+    navy: {
+      uses: ['sidebar', 'bold headers', 'text on lime', 'illustration backgrounds', 'heavy anchors'],
+      hex: '#0D1B2A',
+    },
+    teal: {
+      uses: ['key actions (primary button)', 'icons', 'chart lines', 'badges', 'data summaries'],
+      hex: '#2F8FA5',
+      chartHex: '#1F6F78',
+    },
+    lime: {
+      uses: ['New Survey CTA', 'highlight states', 'success states', 'empty state cards', 'onboarding cards'],
+      hex: '#A3D65C',
+      ctaHex: '#C3F33C',
+    },
+  },
 } as const;
 
 /**

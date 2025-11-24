@@ -64,6 +64,22 @@
   --sidebar-text-active: #FFFFFF;
   --sidebar-text-inactive: rgba(255, 255, 255, 0.7);
 
+  /* Chart Colors */
+  --chart-primary-line: #1F6F78;
+  --chart-secondary-bar: #C3F33C;
+  --chart-gridlines: #E2E7EF;
+  --chart-label-text: #6A7789;
+
+  /* Card Layout System */
+  --card-padding: 24px;
+  --card-radius: 12px;
+  --card-title-size: 15px;
+  --card-title-weight: 600;
+  --card-subtitle-size: 13px;
+  --card-subtitle-weight: 400;
+  --card-spacing-title: 16px;
+  --card-spacing-metadata: 8px;
+
   /* Tailwind CSS Variables */
   --background: 0 0% 97.3%;
   --foreground: 217 33% 17%;

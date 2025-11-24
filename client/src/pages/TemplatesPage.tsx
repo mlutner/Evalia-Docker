@@ -74,18 +74,10 @@ export default function TemplatesPage() {
                   <p className="text-sm mb-4" style={{ color: theme.text.secondary }}>{template.description}</p>
 
                   <div className="space-y-2 mb-6 flex-1">
-                    {template.timing && (
-                      <div className="flex items-center gap-3 text-sm" style={{ color: theme.text.secondary }}>
-                        <Clock className="w-4 h-4 flex-shrink-0" />
-                        <span>{template.timing}</span>
-                      </div>
-                    )}
-                    {template.audience && (
-                      <div className="flex items-center gap-3 text-sm" style={{ color: theme.text.secondary }}>
-                        <Users className="w-4 h-4 flex-shrink-0" />
-                        <span>{template.audience}</span>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-3 text-sm" style={{ color: theme.text.secondary }}>
+                      <Clock className="w-4 h-4 flex-shrink-0" />
+                      <span>{template.category}</span>
+                    </div>
                   </div>
 
                   <div className="flex gap-3">
