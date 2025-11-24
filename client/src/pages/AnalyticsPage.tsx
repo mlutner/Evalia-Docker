@@ -523,18 +523,6 @@ export default function AnalyticsPage() {
               })}
             </div>
           </div>
-        ) : (
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center py-12">
-                <Users className="w-16 h-16 text-muted-foreground/50 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No Responses Yet</h3>
-                <p className="text-muted-foreground">
-                  Share your survey to start collecting responses
-                </p>
-              </div>
-            </CardContent>
-          </Card>
         )}
       </main>
     </div>
