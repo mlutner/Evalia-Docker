@@ -18,6 +18,7 @@ import type { SurveyType } from "@shared/schema";
 interface SurveyStartFlowProps {
   surveyType: SurveyType;
   onSurveyTypeChange: (type: SurveyType) => void;
+  onTypeSelected?: () => void;
   currentQuestions: Question[];
   currentSurveyTitle: string;
   onSurveyTitleChange: (title: string) => void;
@@ -69,6 +70,7 @@ const OPTION_CARDS: OptionCard[] = [
 export default function SurveyStartFlow({
   surveyType,
   onSurveyTypeChange,
+  onTypeSelected,
   currentQuestions,
   currentSurveyTitle,
   onSurveyTitleChange,
@@ -91,6 +93,7 @@ export default function SurveyStartFlow({
   const handleSurveyTypeChange = (type: SurveyType) => {
     onSurveyTypeChange(type);
     setHasSelectedType(true);
+    onTypeSelected?.();
   };
 
   const handleGenerateClick = () => {

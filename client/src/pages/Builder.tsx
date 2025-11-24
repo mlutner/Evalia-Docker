@@ -20,9 +20,10 @@ import { useFileProcessing } from "@/hooks/useFileProcessing";
 import { useAIChat } from "@/hooks/useAIChat";
 
 const WIZARD_STEPS = [
-  { number: 1, title: "Choose Method", description: "Select how you want to build your survey", detailedDescription: "Pick templates, AI generation, or import content" },
-  { number: 2, title: "Refine & Customize", description: "Edit questions and add logic with AI guidance", detailedDescription: "Refine questions, set up skip logic, improve with AI suggestions" },
-  { number: 3, title: "Launch Survey", description: "Set up scoring, add messaging, and publish", detailedDescription: "Configure assessment scoring, customize messaging, launch your survey" },
+  { number: 1, title: "Choose Type", description: "Select survey or assessment", detailedDescription: "Decide whether you're collecting feedback or measuring performance" },
+  { number: 2, title: "Choose Method", description: "Select how you want to build", detailedDescription: "Pick templates, AI generation, or import content" },
+  { number: 3, title: "Refine & Customize", description: "Edit questions and add logic", detailedDescription: "Refine questions, set up skip logic, improve with AI suggestions" },
+  { number: 4, title: "Launch Survey", description: "Set up messaging and publish", detailedDescription: "Configure scoring, customize messaging, launch your survey" },
 ];
 
 function formatTimeAgo(date: Date): string {
@@ -255,9 +256,10 @@ export default function Builder() {
                 {isEditMode ? "Edit Survey" : "Create Survey"}
               </h1>
               <p className="text-base text-muted-foreground">
-                {surveyState.currentWizardStep === 1 && "Step 1 of 3: Choose how you'd like to create your survey"}
-                {surveyState.currentWizardStep === 2 && "Step 2 of 3: Build and refine your survey questions"}
-                {surveyState.currentWizardStep === 3 && "Step 3 of 3: Add details and publish your survey"}
+                {surveyState.currentWizardStep === 1 && "Step 1 of 4: Choose survey or assessment"}
+                {surveyState.currentWizardStep === 2 && "Step 2 of 4: Choose how you'd like to create your survey"}
+                {surveyState.currentWizardStep === 3 && "Step 3 of 4: Build and refine your survey questions"}
+                {surveyState.currentWizardStep === 4 && "Step 4 of 4: Add details and publish your survey"}
               </p>
             </div>
             {surveyState.lastAutoSave && (
@@ -274,18 +276,19 @@ export default function Builder() {
           />
         </div>
 
-        {/* Step 1: Start - Choose creation method */}
-        {surveyState.currentWizardStep === 1 && (
+        {/* Step 1 & 2: Start - Choose type and creation method */}
+        {(surveyState.currentWizardStep === 1 || surveyState.currentWizardStep === 2) && (
           <SurveyStartFlow
             surveyType={surveyState.surveyType}
             onSurveyTypeChange={surveyState.setSurveyType}
+            onTypeSelected={() => surveyState.setCurrentWizardStep(2)}
             currentQuestions={surveyState.currentQuestions}
             currentSurveyTitle={surveyState.currentSurveyTitle}
             onSurveyTitleChange={surveyState.setCurrentSurveyTitle}
             onUseTemplate={(template: SurveyTemplate) => {
               handleUseTemplate(template);
               if (surveyState.currentQuestions.length === 0) {
-                setTimeout(() => surveyState.setCurrentWizardStep(2), 100);
+                setTimeout(() => surveyState.setCurrentWizardStep(3), 100);
               }
             }}
             onFileSelect={handleFileSelect}
@@ -297,8 +300,8 @@ export default function Builder() {
           />
         )}
 
-        {/* Step 2: Questions - Build and refine */}
-        {surveyState.currentWizardStep === 2 && (
+        {/* Step 3: Questions - Build and refine */}
+        {surveyState.currentWizardStep === 3 && (
           <QuestionsStep
             questions={surveyState.currentQuestions}
             messages={aiChat.messages}
@@ -313,8 +316,8 @@ export default function Builder() {
           />
         )}
 
-        {/* Step 3: Customize - Add metadata and optional scoring */}
-        {surveyState.currentWizardStep === 3 && (
+        {/* Step 4: Customize - Add metadata and optional scoring */}
+        {surveyState.currentWizardStep === 4 && (
           <PublishStep
             title={surveyState.currentSurveyTitle}
             description={surveyState.currentSurveyDescription}
