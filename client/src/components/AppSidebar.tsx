@@ -31,7 +31,7 @@ export function AppSidebar() {
         )}
         <button
           onClick={() => setSidebarExpanded(!sidebarExpanded)}
-          className="text-[#1F8EFA] hover:bg-[#1F8EFA]/10 p-1 rounded transition-colors"
+          className="text-[#3A8DFF] hover:bg-[#3A8DFF]/10 p-1 rounded transition-colors"
           data-testid="button-toggle-sidebar"
           title={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
         >
@@ -62,13 +62,13 @@ export function AppSidebar() {
               onClick={() => setLocation(item.href)}
               className={`w-full flex items-center gap-4 px-4 py-3 rounded-md text-sm font-medium transition-all relative ${
                 active
-                  ? "text-[#1F8EFA] border-l-3 border-l-[#1F8EFA] bg-[#1F8EFA]/8"
-                  : "text-[#6B7785] hover:bg-[#1F8EFA]/8"
+                  ? "text-[#3A8DFF] border-l-3 border-l-[#3A8DFF] bg-[#3A8DFF]/8"
+                  : "text-[#6A7789] hover:bg-[#3A8DFF]/8"
               } ${sidebarExpanded ? "" : "justify-center px-0"}`}
               data-testid={`nav-${item.id}`}
               title={!sidebarExpanded ? item.label : ""}
             >
-              <Icon className={`w-6 h-6 flex-shrink-0 ${active ? "text-[#1F8EFA]" : "text-[#0D1B2A]"}`} strokeWidth={2} />
+              <Icon className={`w-6 h-6 flex-shrink-0 ${active ? "text-[#3A8DFF]" : "text-[#1C2635]"}`} strokeWidth={2} />
               {sidebarExpanded && <span>{item.label}</span>}
             </button>
           );
