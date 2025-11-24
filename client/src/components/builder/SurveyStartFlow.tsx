@@ -29,22 +29,22 @@ const PRIMARY_COLOR = "#2F8FA5";
 const OPTION_CARDS = [
   {
     id: "templates",
-    title: "Start with a template",
-    description: "Choose from professionally designed survey frameworks built specifically for training and assessment scenarios. Perfect for getting started quickly with best practices.",
+    title: "Use a ready-made template",
+    description: "Browse professionally designed survey templates built for training and assessments. Start instantly with proven best practices.",
     icon: Layers,
     color: PRIMARY_COLOR,
   },
   {
     id: "ai",
-    title: "Generate with AI",
-    description: "Describe your training needs and let AI create custom survey questions tailored to your specific learning objectives and target audience.",
+    title: "Create with AI",
+    description: "Tell us what you want to measure. AI will generate custom survey questions based on your training needs and learning objectives.",
     icon: Sparkles,
     color: PRIMARY_COLOR,
   },
   {
     id: "upload",
-    title: "Upload or paste",
-    description: "Import questions from an existing document, PDF, or training materials. Paste content directly or upload files for AI-powered survey generation.",
+    title: "Import your content",
+    description: "Upload a document, PDF, or paste your existing questions. We'll help you build your survey from the content you already have.",
     icon: FileUp,
     color: PRIMARY_COLOR,
   },
@@ -91,13 +91,13 @@ export default function SurveyStartFlow({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-16 md:mb-20"
+          className="text-center mb-20 md:mb-24"
         >
-          <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: '#1C2635' }}>
-            Build your training survey
+          <h1 className="text-5xl md:text-6xl font-bold mb-6" style={{ color: '#1C2635' }}>
+            How would you like to start?
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Choose how you'd like to start building your survey. You can edit everything in the next step regardless of which method you choose.
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            Select one of three methods below. Whichever you choose, you'll be able to refine your survey in the next step.
           </p>
         </motion.div>
 
@@ -141,9 +141,9 @@ export default function SurveyStartFlow({
                 whileTap={{ y: 0 }}
               >
                 <div
-                  className="p-8 px-10 rounded-lg border-2 transition-all cursor-pointer group"
+                  className="p-8 px-10 rounded-lg border-2 transition-all cursor-pointer group bg-white hover:shadow-md"
                   style={{
-                    borderColor: expandedOption === option.id ? option.color : "rgba(0,0,0,0.08)",
+                    borderColor: expandedOption === option.id ? option.color : "#E5E7EB",
                     backgroundColor: expandedOption === option.id ? `${option.color}08` : "white",
                   }}
                 >
@@ -158,17 +158,17 @@ export default function SurveyStartFlow({
                       <option.icon className="w-8 h-8" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-2xl font-semibold mb-2" style={{ color: '#1C2635' }}>
+                      <h3 className="text-2xl font-semibold mb-1" style={{ color: '#1C2635' }}>
                         {option.title}
                       </h3>
-                      <p className="text-base text-muted-foreground leading-relaxed">{option.description}</p>
+                      <p className="text-base text-muted-foreground leading-relaxed opacity-80">{option.description}</p>
                     </div>
                     <motion.div
                       animate={{ rotate: expandedOption === option.id ? 180 : 0 }}
                       transition={{ duration: 0.3 }}
-                      className="flex-shrink-0"
+                      className="flex-shrink-0 ml-4"
                     >
-                      <ChevronDown className="w-6 h-6 text-muted-foreground" />
+                      <ChevronDown className="w-6 h-6" style={{ color: option.color, opacity: expandedOption === option.id ? 1 : 0.5 }} />
                     </motion.div>
                   </div>
                 </div>
