@@ -1,0 +1,1254 @@
+{
+  "surveys": [
+    {
+      "id": "pre_training_needs_assessment",
+      "name": "Pre-Training Needs Assessment",
+      "description": "Identifies current skill level, pain points, and expectations before training.",
+      "timing": "before_training",
+      "audience": "participants",
+      "questions": [
+        {
+          "id": "q1",
+          "text": "Which best describes your current role?",
+          "type": "single_select",
+          "required": true,
+          "options": [
+            { "value": "individual_contributor", "label": "Individual contributor" },
+            { "value": "people_manager", "label": "People manager" },
+            { "value": "senior_leader", "label": "Senior leader / executive" },
+            { "value": "other", "label": "Other" }
+          ]
+        },
+        {
+          "id": "q2",
+          "text": "How familiar are you with the topic of this training?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Not at all familiar",
+              "3": "Somewhat familiar",
+              "5": "Very familiar"
+            }
+          }
+        },
+        {
+          "id": "q3",
+          "text": "How confident do you currently feel performing tasks related to this topic in your day-to-day work?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Not confident at all",
+              "3": "Moderately confident",
+              "5": "Very confident"
+            }
+          }
+        },
+        {
+          "id": "q4",
+          "text": "Which areas do you struggle with most related to this topic?",
+          "type": "multi_select",
+          "required": false,
+          "options": [
+            { "value": "knowledge_gaps", "label": "I don't know what to do" },
+            { "value": "skills_gaps", "label": "I know what to do but find it hard to do" },
+            { "value": "time_pressure", "label": "Time pressure / workload" },
+            { "value": "tools_process", "label": "Tools, systems, or processes" },
+            { "value": "support_alignment", "label": "Lack of support or alignment from others" },
+            { "value": "other", "label": "Other" }
+          ]
+        },
+        {
+          "id": "q5",
+          "text": "What would make this training most valuable for you personally?",
+          "type": "text",
+          "required": false,
+          "help_text": "Examples: specific scenarios, tools, processes, conversations, or decisions you’d like to handle better."
+        },
+        {
+          "id": "q6",
+          "text": "How urgent is it for you to improve your skills in this area?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Not urgent",
+              "3": "Somewhat urgent",
+              "5": "Very urgent"
+            }
+          }
+        },
+        {
+          "id": "q7",
+          "text": "How clear are you on what success in this area looks like in your role?",
+          "type": "rating",
+          "required": false,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Not clear at all",
+              "3": "Somewhat clear",
+              "5": "Very clear"
+            }
+          }
+        },
+        {
+          "id": "q8",
+          "text": "Which best describes your current overall workload during the period of this training?",
+          "type": "single_select",
+          "required": false,
+          "options": [
+            { "value": "light", "label": "Lighter than usual" },
+            { "value": "normal", "label": "About normal" },
+            { "value": "heavy", "label": "Heavier than usual" },
+            { "value": "very_heavy", "label": "Extremely heavy" }
+          ]
+        },
+        {
+          "id": "q9",
+          "text": "Have you previously attended training on this or a closely related topic?",
+          "type": "single_select",
+          "required": false,
+          "options": [
+            { "value": "no", "label": "No" },
+            { "value": "yes_once", "label": "Yes, once" },
+            { "value": "yes_multiple", "label": "Yes, multiple times" }
+          ]
+        },
+        {
+          "id": "q10",
+          "text": "If you have any specific scenarios or cases you would like the training to address, please briefly describe them.",
+          "type": "text",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "pre_training_readiness_motivation",
+      "name": "Pre-Training Readiness & Motivation",
+      "description": "Assesses learner motivation, mindset, and potential barriers before training starts.",
+      "timing": "before_training",
+      "audience": "participants",
+      "questions": [
+        {
+          "id": "q1",
+          "text": "How motivated are you to actively participate in this training?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Not motivated",
+              "3": "Somewhat motivated",
+              "5": "Highly motivated"
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "text": "How relevant do you believe this training is to your current role and responsibilities?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Not relevant",
+              "3": "Somewhat relevant",
+              "5": "Highly relevant"
+            }
+          }
+        },
+        {
+          "id": "q3",
+          "text": "How much support do you feel you have from your manager to apply what you learn in this training?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "No support",
+              "3": "Some support",
+              "5": "Strong support"
+            }
+          }
+        },
+        {
+          "id": "q4",
+          "text": "What might prevent you from fully engaging with this training?",
+          "type": "multi_select",
+          "required": false,
+          "options": [
+            { "value": "time_conflicts", "label": "Competing priorities / time conflicts" },
+            { "value": "low_relevance", "label": "Unclear relevance to my role" },
+            { "value": "tech_issues", "label": "Technology or access issues" },
+            { "value": "workload", "label": "High workload during the training period" },
+            { "value": "personal_factors", "label": "Personal factors (energy, focus, etc.)" },
+            { "value": "other", "label": "Other" }
+          ]
+        },
+        {
+          "id": "q5",
+          "text": "In one sentence, what would ‘success’ from this training look like for you?",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q6",
+          "text": "Do you understand the objectives and structure of this training?",
+          "type": "single_select",
+          "required": true,
+          "options": [
+            { "value": "very_clear", "label": "Yes, very clear" },
+            { "value": "somewhat_clear", "label": "Somewhat clear" },
+            { "value": "unclear", "label": "Not clear at all" }
+          ]
+        },
+        {
+          "id": "q7",
+          "text": "How comfortable are you with the format of this training (e.g., virtual, in-person, blended)?",
+          "type": "rating",
+          "required": false,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Not comfortable",
+              "3": "Somewhat comfortable",
+              "5": "Very comfortable"
+            }
+          }
+        },
+        {
+          "id": "q8",
+          "text": "How confident are you in your ability to keep up with any pre-work or assignments associated with this training?",
+          "type": "rating",
+          "required": false,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Not confident",
+              "3": "Somewhat confident",
+              "5": "Very confident"
+            }
+          }
+        },
+        {
+          "id": "q9",
+          "text": "Are there accessibility or learning needs we should be aware of to support your participation?",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q10",
+          "text": "How important is this training for your career development in the next 12 months?",
+          "type": "rating",
+          "required": false,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Not important",
+              "3": "Somewhat important",
+              "5": "Very important"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "mid_training_pulse_check",
+      "name": "Mid-Training Pulse Check",
+      "description": "Brief check-in during training to adjust pacing, format, and support.",
+      "timing": "during_training",
+      "audience": "participants",
+      "questions": [
+        {
+          "id": "q1",
+          "text": "How would you rate the pace of the training so far?",
+          "type": "single_select",
+          "required": true,
+          "options": [
+            { "value": "too_slow", "label": "Too slow" },
+            { "value": "about_right", "label": "About right" },
+            { "value": "too_fast", "label": "Too fast" }
+          ]
+        },
+        {
+          "id": "q2",
+          "text": "How confident do you feel in your understanding of the material covered so far?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Not at all confident",
+              "3": "Somewhat confident",
+              "5": "Very confident"
+            }
+          }
+        },
+        {
+          "id": "q3",
+          "text": "Which training components are most helpful for your learning?",
+          "type": "multi_select",
+          "required": false,
+          "options": [
+            { "value": "lectures", "label": "Presentations / lectures" },
+            { "value": "discussions", "label": "Group discussions" },
+            { "value": "activities", "label": "Hands-on activities / practice" },
+            { "value": "case_studies", "label": "Case studies / scenarios" },
+            { "value": "resources", "label": "Slides, handouts, or reference materials" }
+          ]
+        },
+        {
+          "id": "q4",
+          "text": "How engaged do you feel during the sessions so far?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Not engaged",
+              "3": "Moderately engaged",
+              "5": "Highly engaged"
+            }
+          }
+        },
+        {
+          "id": "q5",
+          "text": "What is one thing the trainer could change right now to improve your learning experience?",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q6",
+          "text": "Do you feel comfortable asking questions or speaking up during the training?",
+          "type": "single_select",
+          "required": true,
+          "options": [
+            { "value": "yes_often", "label": "Yes, often" },
+            { "value": "sometimes", "label": "Sometimes" },
+            { "value": "rarely", "label": "Rarely" },
+            { "value": "no", "label": "No" }
+          ]
+        },
+        {
+          "id": "q7",
+          "text": "How satisfied are you with the opportunities to practice or apply the concepts during the session?",
+          "type": "rating",
+          "required": false,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Very dissatisfied",
+              "3": "Neutral",
+              "5": "Very satisfied"
+            }
+          }
+        },
+        {
+          "id": "q8",
+          "text": "How well do the examples and scenarios reflect your real work situation?",
+          "type": "rating",
+          "required": false,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Not at all",
+              "3": "Somewhat",
+              "5": "Very well" }
+          }
+        },
+        {
+          "id": "q9",
+          "text": "Is there any topic covered so far that you feel needs to be revisited or clarified?",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q10",
+          "text": "Do you have any suggestions to improve the remaining sessions (format, interaction, pacing, tools)?",
+          "type": "text",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "session_level_feedback",
+      "name": "Session-Level Feedback",
+      "description": "Captures feedback on a specific training session, module, or class.",
+      "timing": "immediately_after_session",
+      "audience": "participants",
+      "questions": [
+        {
+          "id": "q1",
+          "text": "Overall, how would you rate this session?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Very poor",
+              "3": "Average",
+              "5": "Excellent"
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "text": "The objectives of the session were clear.",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Strongly disagree",
+              "3": "Neither agree nor disagree",
+              "5": "Strongly agree"
+            }
+          }
+        },
+        {
+          "id": "q3",
+          "text": "The trainer was well-prepared and organized.",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Strongly disagree",
+              "3": "Neither agree nor disagree",
+              "5": "Strongly agree"
+            }
+          }
+        },
+        {
+          "id": "q4",
+          "text": "The content level (difficulty, depth) was appropriate for me.",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Strongly disagree",
+              "3": "Neither agree nor disagree",
+              "5": "Strongly agree"
+            }
+          }
+        },
+        {
+          "id": "q5",
+          "text": "The session was engaging and kept my attention.",
+          "type": "rating",
+          "required": false,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Strongly disagree",
+              "3": "Neither agree nor disagree",
+              "5": "Strongly agree"
+            }
+          }
+        },
+        {
+          "id": "q6",
+          "text": "The learning activities (discussions, exercises, polls, etc.) supported my understanding.",
+          "type": "rating",
+          "required": false,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Strongly disagree",
+              "3": "Neither agree nor disagree",
+              "5": "Strongly agree"
+            }
+          }
+        },
+        {
+          "id": "q7",
+          "text": "Which part(s) of this session did you find most valuable?",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q8",
+          "text": "What, if anything, should be changed or improved in this session?",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q9",
+          "text": "Was the session length appropriate for the amount of content covered?",
+          "type": "single_select",
+          "required": false,
+          "options": [
+            { "value": "too_short", "label": "Much too short" },
+            { "value": "slightly_short", "label": "Somewhat too short" },
+            { "value": "just_right", "label": "Just right" },
+            { "value": "slightly_long", "label": "Somewhat too long" },
+            { "value": "too_long", "label": "Much too long" }
+          ]
+        },
+        {
+          "id": "q10",
+          "text": "Do you have any additional comments for the trainer or organizers about this specific session?",
+          "type": "text",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "post_training_knowledge_check",
+      "name": "Post-Training Knowledge Check",
+      "description": "Assesses knowledge and understanding immediately after training.",
+      "timing": "immediately_after_training",
+      "audience": "participants",
+      "questions": [
+        {
+          "id": "q1",
+          "text": "How confident are you that you can explain the key concepts covered in this training to a colleague?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Not confident at all",
+              "3": "Somewhat confident",
+              "5": "Very confident"
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "text": "How well do you understand when and where to apply what you learned?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Not at all",
+              "3": "Somewhat",
+              "5": "Very clearly"
+            }
+          }
+        },
+        {
+          "id": "q3",
+          "text": "If you were given a real work scenario related to this topic, how confident are you that you could handle it using what you learned?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Not confident",
+              "3": "Somewhat confident",
+              "5": "Very confident"
+            }
+          }
+        },
+        {
+          "id": "q4",
+          "text": "List one specific concept, tool, or technique from this training that you feel you understand very well.",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q5",
+          "text": "List one concept, tool, or technique that you would like more practice or clarification on.",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q6",
+          "text": "How likely are you to use what you learned in the next 2 weeks?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Very unlikely",
+              "3": "Somewhat likely",
+              "5": "Very likely"
+            }
+          }
+        },
+        {
+          "id": "q7",
+          "text": "Did this training fill specific knowledge gaps you had in this topic?",
+          "type": "single_select",
+          "required": false,
+          "options": [
+            { "value": "completely", "label": "Yes, completely" },
+            { "value": "partially", "label": "Yes, partially" },
+            { "value": "not_really", "label": "Not really" },
+            { "value": "no_gaps", "label": "I didn’t have gaps" }
+          ]
+        },
+        {
+          "id": "q8",
+          "text": "How well did the assessments, quizzes, or practice activities reflect the key learning objectives?",
+          "type": "rating",
+          "required": false,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Not well at all",
+              "3": "Somewhat well",
+              "5": "Extremely well"
+            }
+          }
+        },
+        {
+          "id": "q9",
+          "text": "What is one real situation at work where you plan to use what you learned?",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q10",
+          "text": "What additional resources (job aids, guides, checklists) would help you retain and apply this knowledge?",
+          "type": "text",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "post_training_satisfaction_experience",
+      "name": "Post-Training Satisfaction & Experience",
+      "description": "Measures reactions to the overall training experience (Level 1: Reaction).",
+      "timing": "immediately_after_training",
+      "audience": "participants",
+      "questions": [
+        {
+          "id": "q1",
+          "text": "Overall, how satisfied are you with this training?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Very dissatisfied",
+              "3": "Neutral",
+              "5": "Very satisfied"
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "text": "The training met my expectations.",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Strongly disagree",
+              "3": "Neither agree nor disagree",
+              "5": "Strongly agree"
+            }
+          }
+        },
+        {
+          "id": "q3",
+          "text": "The trainer created an inclusive and respectful learning environment.",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Strongly disagree",
+              "3": "Neither agree nor disagree",
+              "5": "Strongly agree"
+            }
+          }
+        },
+        {
+          "id": "q4",
+          "text": "The training materials (slides, handouts, tools) supported my learning effectively.",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Strongly disagree",
+              "3": "Neither agree nor disagree",
+              "5": "Strongly agree"
+            }
+          }
+        },
+        {
+          "id": "q5",
+          "text": "Would you recommend this training to a colleague with similar needs?",
+          "type": "single_select",
+          "required": true,
+          "options": [
+            { "value": "yes", "label": "Yes" },
+            { "value": "no", "label": "No" },
+            { "value": "not_sure", "label": "Not sure" }
+          ]
+        },
+        {
+          "id": "q6",
+          "text": "The training format (virtual, in-person, blended) worked well for me.",
+          "type": "rating",
+          "required": false,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Strongly disagree",
+              "3": "Neither agree nor disagree",
+              "5": "Strongly agree"
+            }
+          }
+        },
+        {
+          "id": "q7",
+          "text": "The length and pacing of the training were appropriate.",
+          "type": "rating",
+          "required": false,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Strongly disagree",
+              "3": "Neither agree nor disagree",
+              "5": "Strongly agree"
+            }
+          }
+        },
+        {
+          "id": "q8",
+          "text": "The training felt relevant to my day-to-day work.",
+          "type": "rating",
+          "required": false,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Strongly disagree",
+              "3": "Neither agree nor disagree",
+              "5": "Strongly agree"
+            }
+          }
+        },
+        {
+          "id": "q9",
+          "text": "What worked particularly well in this training?",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q10",
+          "text": "What is one thing that should definitely be improved for future sessions?",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q11",
+          "text": "Is there any topic you wish had been included or explored in more depth?",
+          "type": "text",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "behaviour_change_followup",
+      "name": "Behaviour Change & Application (2–6 Weeks)",
+      "description": "Checks whether participants are applying what they learned on the job and what’s helping or blocking them (Level 3: Behaviour).",
+      "timing": "weeks_after_training",
+      "audience": "participants",
+      "questions": [
+        {
+          "id": "q1",
+          "text": "How often have you applied what you learned in this training to your work in the past 2–6 weeks?",
+          "type": "single_select",
+          "required": true,
+          "options": [
+            { "value": "daily", "label": "Daily" },
+            { "value": "several_times_week", "label": "Several times per week" },
+            { "value": "weekly", "label": "About once per week" },
+            { "value": "rarely", "label": "Rarely" },
+            { "value": "never", "label": "Not at all" }
+          ]
+        },
+        {
+          "id": "q2",
+          "text": "To what extent has this training changed how you approach your work?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "No change",
+              "3": "Some change",
+              "5": "Significant change"
+            }
+          }
+        },
+        {
+          "id": "q3",
+          "text": "Which of the following outcomes have you experienced as a result of applying this training?",
+          "type": "multi_select",
+          "required": false,
+          "options": [
+            { "value": "saved_time", "label": "I save time" },
+            { "value": "fewer_errors", "label": "I make fewer errors" },
+            { "value": "better_quality", "label": "The quality of my work has improved" },
+            { "value": "better_collaboration", "label": "Collaboration with others has improved" },
+            { "value": "more_confidence", "label": "I feel more confident" },
+            { "value": "no_change", "label": "No noticeable change yet" }
+          ]
+        },
+        {
+          "id": "q4",
+          "text": "What has helped you most in applying what you learned?",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q5",
+          "text": "What has made it difficult to apply what you learned?",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q6",
+          "text": "Compared to before the training, how confident do you feel now in this skill area?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Less confident than before",
+              "3": "About the same",
+              "5": "Much more confident"
+            }
+          }
+        },
+        {
+          "id": "q7",
+          "text": "Have you shared what you learned with colleagues (e.g., explaining concepts, showing tools, coaching others)?",
+          "type": "single_select",
+          "required": false,
+          "options": [
+            { "value": "yes_formal", "label": "Yes, in a formal way (presentations, demos, etc.)" },
+            { "value": "yes_informal", "label": "Yes, informally in conversations" },
+            { "value": "not_yet", "label": "Not yet" }
+          ]
+        },
+        {
+          "id": "q8",
+          "text": "Have you noticed any feedback from others (manager, peers, customers) about changes in your behaviour after the training?",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q9",
+          "text": "What is one behaviour change from this training that you want to make more consistent?",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q10",
+          "text": "What additional support (coaching, refreshers, tools) would help you maintain or deepen these behaviour changes?",
+          "type": "text",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "manager_observation_followup",
+      "name": "Manager Observation Follow-Up",
+      "description": "Asks managers whether they observe behavioural changes and impact in their direct reports after training.",
+      "timing": "weeks_after_training",
+      "audience": "managers",
+      "questions": [
+        {
+          "id": "q1",
+          "text": "In the past 2–6 weeks, how often have you observed your team member applying skills or behaviours from this training?",
+          "type": "single_select",
+          "required": true,
+          "options": [
+            { "value": "frequently", "label": "Frequently" },
+            { "value": "sometimes", "label": "Sometimes" },
+            { "value": "rarely", "label": "Rarely" },
+            { "value": "not_observed", "label": "I have not observed this" }
+          ]
+        },
+        {
+          "id": "q2",
+          "text": "To what extent has this training improved your team member’s performance in their role?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "No improvement",
+              "3": "Some improvement",
+              "5": "Significant improvement"
+            }
+          }
+        },
+        {
+          "id": "q3",
+          "text": "Which areas have you noticed improvements in? (Select all that apply.)",
+          "type": "multi_select",
+          "required": false,
+          "options": [
+            { "value": "quality", "label": "Quality of work" },
+            { "value": "speed", "label": "Speed / efficiency" },
+            { "value": "ownership", "label": "Ownership and initiative" },
+            { "value": "collaboration", "label": "Collaboration with others" },
+            { "value": "communication", "label": "Communication" },
+            { "value": "customer_outcomes", "label": "Customer / stakeholder outcomes" }
+          ]
+        },
+        {
+          "id": "q4",
+          "text": "How supportive is your environment (systems, processes, culture) in enabling this person to apply what they learned?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Not supportive",
+              "3": "Moderately supportive",
+              "5": "Highly supportive"
+            }
+          }
+        },
+        {
+          "id": "q5",
+          "text": "Since the training, have you adjusted this person’s goals, responsibilities, or expectations to reflect new skills?",
+          "type": "single_select",
+          "required": false,
+          "options": [
+            { "value": "yes_formal", "label": "Yes, formal changes (goals, KPIs, responsibilities)" },
+            { "value": "yes_informal", "label": "Yes, informal adjustments" },
+            { "value": "no", "label": "No changes" }
+          ]
+        },
+        {
+          "id": "q6",
+          "text": "Have you provided specific feedback or coaching related to the training content?",
+          "type": "single_select",
+          "required": false,
+          "options": [
+            { "value": "yes_regular", "label": "Yes, on a regular basis" },
+            { "value": "yes_once", "label": "Yes, once or twice" },
+            { "value": "no", "label": "No" }
+          ]
+        },
+        {
+          "id": "q7",
+          "text": "Please describe one example where you observed this person positively applying something from the training.",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q8",
+          "text": "Are there any areas where you expected to see more change or improvement than you have so far?",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q9",
+          "text": "What additional support or resources from the organization would help this person sustain their new skills or behaviours?",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q10",
+          "text": "Overall, how valuable do you feel this training has been for this person’s performance and development?",
+          "type": "rating",
+          "required": false,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Not valuable",
+              "3": "Moderately valuable",
+              "5": "Highly valuable"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "training_transfer_barriers_support",
+      "name": "Training Transfer: Barriers & Support Needs",
+      "description": "Explores environmental and organisational factors that help or hinder applying training on the job.",
+      "timing": "weeks_after_training",
+      "audience": "participants",
+      "questions": [
+        {
+          "id": "q1",
+          "text": "How easy or difficult is it to apply what you learned in your actual work environment?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Very difficult",
+              "3": "Somewhat easy",
+              "5": "Very easy"
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "text": "Which factors most support you in applying this training?",
+          "type": "multi_select",
+          "required": false,
+          "options": [
+            { "value": "manager_support", "label": "Support from my manager" },
+            { "value": "team_support", "label": "Support from colleagues / team" },
+            { "value": "clear_processes", "label": "Clear processes and expectations" },
+            { "value": "tools_systems", "label": "Tools and systems that make it easier" },
+            { "value": "time_space", "label": "Time and space to practice new skills" }
+          ]
+        },
+        {
+          "id": "q3",
+          "text": "Which factors most make it difficult to apply this training?",
+          "type": "multi_select",
+          "required": false,
+          "options": [
+            { "value": "time_pressure", "label": "Time pressure / workload" },
+            { "value": "old_habits", "label": "Existing habits or ways of working" },
+            { "value": "lack_support", "label": "Lack of support from manager or team" },
+            { "value": "misaligned_processes", "label": "Processes or policies that conflict with new behaviours" },
+            { "value": "unclear_expectations", "label": "Unclear expectations from leadership" }
+          ]
+        },
+        {
+          "id": "q4",
+          "text": "Have you received any follow-up support (coaching, check-ins, refreshers) related to this training?",
+          "type": "single_select",
+          "required": true,
+          "options": [
+            { "value": "yes_regular", "label": "Yes, regular follow-up" },
+            { "value": "yes_once", "label": "Yes, once or twice" },
+            { "value": "no", "label": "No follow-up" }
+          ]
+        },
+        {
+          "id": "q5",
+          "text": "Do you feel your manager actively encourages you to use what you learned in this training?",
+          "type": "rating",
+          "required": false,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Not at all",
+              "3": "Somewhat",
+              "5": "Very much"
+            }
+          }
+        },
+        {
+          "id": "q6",
+          "text": "Do your current goals or KPIs reflect the behaviours or skills covered in the training?",
+          "type": "single_select",
+          "required": false,
+          "options": [
+            { "value": "yes_clearly", "label": "Yes, clearly" },
+            { "value": "somewhat", "label": "Somewhat" },
+            { "value": "no", "label": "No" },
+            { "value": "unsure", "label": "Not sure" }
+          ]
+        },
+        {
+          "id": "q7",
+          "text": "Have you encountered any conflicting instructions (e.g., asked to work in ways that go against what was taught)?",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q8",
+          "text": "What specific changes in tools, processes, or policies would make it easier to apply this training?",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q9",
+          "text": "How likely are you to continue using what you learned over the next 3–6 months?",
+          "type": "rating",
+          "required": false,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Very unlikely",
+              "3": "Somewhat likely",
+              "5": "Very likely"
+            }
+          }
+        },
+        {
+          "id": "q10",
+          "text": "What type of support would most help you use this training more consistently?",
+          "type": "text",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "training_roi_impact",
+      "name": "Training ROI & Impact (Self + Manager)",
+      "description": "Captures perceived business impact of the training, including productivity, quality, and confidence (Level 4: Results).",
+      "timing": "weeks_or_months_after_training",
+      "audience": "participants_or_managers",
+      "questions": [
+        {
+          "id": "q1",
+          "text": "Since completing this training, how has your overall productivity changed in the areas related to the training?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Significantly decreased",
+              "3": "No real change",
+              "5": "Significantly increased"
+            }
+          }
+        },
+        {
+          "id": "q2",
+          "text": "To what extent has this training reduced errors, rework, or issues in your work?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "No reduction",
+              "3": "Some reduction",
+              "5": "Strong reduction"
+            }
+          }
+        },
+        {
+          "id": "q3",
+          "text": "To what extent has this training improved outcomes for your internal or external customers?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "No improvement",
+              "3": "Some improvement",
+              "5": "Significant improvement"
+            }
+          }
+        },
+        {
+          "id": "q4",
+          "text": "If you had to estimate, how many hours per month do you save (or could you save) because of what you learned in this training?",
+          "type": "number",
+          "required": false,
+          "help_text": "Provide your best estimate in hours per month."
+        },
+        {
+          "id": "q5",
+          "text": "How likely are you to recommend continued or expanded investment in this training for others in your organization?",
+          "type": "rating",
+          "required": true,
+          "scale": {
+            "min": 0,
+            "max": 10,
+            "labels": {
+              "0": "Not at all likely",
+              "10": "Extremely likely"
+            }
+          }
+        },
+        {
+          "id": "q6",
+          "text": "Has this training contributed to achieving any key team or organizational goals (e.g., revenue, quality, safety, customer satisfaction)?",
+          "type": "single_select",
+          "required": false,
+          "options": [
+            { "value": "yes_clear", "label": "Yes, clearly" },
+            { "value": "yes_somewhat", "label": "Yes, somewhat" },
+            { "value": "no", "label": "No" },
+            { "value": "unsure", "label": "Not sure" }
+          ]
+        },
+        {
+          "id": "q7",
+          "text": "If applicable, briefly describe any measurable results (metrics, KPIs, targets) that you believe have improved due to this training.",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q8",
+          "text": "From a cost–benefit perspective, how would you rate the value of this training to the organization?",
+          "type": "rating",
+          "required": false,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "labels": {
+              "1": "Poor value",
+              "3": "Reasonable value",
+              "5": "Excellent value"
+            }
+          }
+        },
+        {
+          "id": "q9",
+          "text": "In your own words, what tangible impact has this training had on your work or your team?",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "q10",
+          "text": "What would need to be true for this training to deliver even greater impact in the future?",
+          "type": "text",
+          "required": false
+        }
+      ]
+    }
+  ]
+}
