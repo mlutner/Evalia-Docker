@@ -1,11 +1,10 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Layers, FileUp, Upload, X, Wand2, ChevronDown, ArrowRight } from "lucide-react";
+import { Sparkles, Layers, FileUp, Upload, X, Wand2, ChevronDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Loader2 } from "lucide-react";
 import TemplateCard from "@/components/TemplateCard";
 import TemplatePreviewModal from "@/components/TemplatePreviewModal";
 import FileUploadZone from "@/components/FileUploadZone";
@@ -24,16 +23,28 @@ interface SurveyStartFlowProps {
   isProcessing: boolean;
 }
 
-const PRIMARY_COLOR = "#2F8FA5";
+// Color palette
+const COLORS = {
+  primary: "#2F8FA5",
+  border: "#E5E7EB",
+  iconDefault: "#D1D5DB",
+  iconText: "#6B7280",
+} as const;
 
-const OPTION_CARDS = [
+interface OptionCard {
+  id: "templates" | "ai" | "upload";
+  title: string;
+  description: string;
+  icon: typeof Layers;
+  recommended?: boolean;
+}
+
+const OPTION_CARDS: OptionCard[] = [
   {
     id: "templates",
     title: "Use a ready-made template",
     description: "Start fast with proven training-focused templates.",
     icon: Layers,
-    color: PRIMARY_COLOR,
-    iconColor: "#2F8FA5",
     recommended: true,
   },
   {
@@ -41,16 +52,12 @@ const OPTION_CARDS = [
     title: "Create with AI",
     description: "Describe what you want to measure. AI generates a complete survey draft.",
     icon: Sparkles,
-    color: PRIMARY_COLOR,
-    iconColor: "#7C3AED",
   },
   {
     id: "upload",
     title: "Import your content",
     description: "Upload documents or paste questions. We convert them to a survey.",
     icon: FileUp,
-    color: PRIMARY_COLOR,
-    iconColor: "#6B7280",
   },
 ];
 
@@ -86,6 +93,18 @@ export default function SurveyStartFlow({
     onPasteText(parsedText);
     setParsedText("");
   };
+
+  const getCardStyles = (isExpanded: boolean) => ({
+    borderColor: isExpanded ? COLORS.primary : COLORS.border,
+    backgroundColor: isExpanded ? `${COLORS.primary}08` : "white",
+  });
+
+  const getIconStyles = (isExpanded: boolean) => ({
+    backgroundColor: isExpanded ? COLORS.primary : COLORS.iconDefault,
+    color: isExpanded ? "white" : COLORS.iconText,
+  });
+
+  const getChevronColor = (isExpanded: boolean) => isExpanded ? COLORS.primary : COLORS.iconDefault;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
@@ -131,7 +150,9 @@ export default function SurveyStartFlow({
 
         {/* Option Cards */}
         <div className="space-y-3 mb-8">
-          {OPTION_CARDS.map((option: any, index) => (
+          {OPTION_CARDS.map((option, index) => {
+            const isExpanded = expandedOption === option.id;
+            return (
             <motion.div
               key={option.id}
               initial={{ opacity: 0, y: 20 }}
@@ -139,17 +160,14 @@ export default function SurveyStartFlow({
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
               <motion.button
-                onClick={() => setExpandedOption(expandedOption === option.id ? null : option.id)}
+                onClick={() => setExpandedOption(isExpanded ? null : option.id)}
                 className="w-full text-left"
                 whileHover={{ y: -4 }}
                 whileTap={{ y: 0 }}
               >
                 <div
                   className={`p-8 px-10 rounded-lg border-2 transition-all cursor-pointer group bg-white ${option.recommended ? "shadow-lg" : "hover:shadow-lg"}`}
-                  style={{
-                    borderColor: expandedOption === option.id ? "#2F8FA5" : "#E5E7EB",
-                    backgroundColor: expandedOption === option.id ? "#2F8FA508" : "white",
-                  }}
+                  style={getCardStyles(isExpanded)}
                 >
                   <div className="flex items-start gap-8">
                     {option.recommended && (
@@ -161,10 +179,7 @@ export default function SurveyStartFlow({
                     )}
                     <div
                       className="w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0 transition-all group-hover:scale-120"
-                      style={{
-                        backgroundColor: expandedOption === option.id ? "#2F8FA5" : "#D1D5DB",
-                        color: expandedOption === option.id ? "white" : "#6B7280",
-                      }}
+                      style={getIconStyles(isExpanded)}
                     >
                       <option.icon className="w-8 h-8" />
                     </div>
@@ -175,11 +190,11 @@ export default function SurveyStartFlow({
                       <p className="text-base text-muted-foreground leading-relaxed opacity-80">{option.description}</p>
                     </div>
                     <motion.div
-                      animate={{ rotate: expandedOption === option.id ? 180 : 0 }}
+                      animate={{ rotate: isExpanded ? 180 : 0 }}
                       transition={{ duration: 0.3 }}
                       className="flex-shrink-0 ml-4"
                     >
-                      <ChevronDown className="w-6 h-6" style={{ color: expandedOption === option.id ? "#2F8FA5" : "#D1D5DB", opacity: 1 }} />
+                      <ChevronDown className="w-6 h-6" style={{ color: getChevronColor(isExpanded), opacity: 1 }} />
                     </motion.div>
                   </div>
                 </div>
@@ -187,7 +202,7 @@ export default function SurveyStartFlow({
 
               {/* Expanded Content */}
               <AnimatePresence>
-                {expandedOption === option.id && (
+                {isExpanded && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
@@ -195,7 +210,7 @@ export default function SurveyStartFlow({
                     transition={{ duration: 0.3 }}
                     className="overflow-hidden"
                   >
-                    <div className="p-8 bg-muted/40 rounded-b-lg border-l-2 border-r-2 border-b-2" style={{ borderLeftColor: "#2F8FA5", borderRightColor: "#2F8FA5", borderBottomColor: "#2F8FA5" }}>
+                    <div className="p-8 bg-muted/40 rounded-b-lg border-l-2 border-r-2 border-b-2" style={{ borderLeftColor: COLORS.primary, borderRightColor: COLORS.primary, borderBottomColor: COLORS.primary }}>
                       {option.id === "templates" && (
                         <div className="space-y-6">
                           <p className="text-sm text-muted-foreground">Select a template to get started instantly:</p>
@@ -267,7 +282,7 @@ export default function SurveyStartFlow({
                                   <Upload className="w-4 h-4 mr-2" />
                                   Attach File
                                 </Button>
-                                <Button size="lg" onClick={handleGenerateClick} disabled={(!prompt.trim() && !selectedFileForAI) || isProcessing} className="flex-1" style={{ backgroundColor: PRIMARY_COLOR, color: '#FFFFFF' }} data-testid="button-generate">
+                                <Button size="lg" onClick={handleGenerateClick} disabled={(!prompt.trim() && !selectedFileForAI) || isProcessing} className="flex-1" style={{ backgroundColor: COLORS.primary, color: '#FFFFFF' }} data-testid="button-generate">
                                   <Sparkles className="w-5 h-5 mr-2" />
                                   Generate
                                 </Button>
@@ -325,7 +340,7 @@ export default function SurveyStartFlow({
                               data-testid="textarea-paste-text"
                             />
                           </div>
-                          <Button size="lg" onClick={handlePasteClick} disabled={!parsedText.trim() || isProcessing} className="w-full" style={{ backgroundColor: PRIMARY_COLOR, color: '#FFFFFF' }} data-testid="button-process-text">
+                          <Button size="lg" onClick={handlePasteClick} disabled={!parsedText.trim() || isProcessing} className="w-full" style={{ backgroundColor: COLORS.primary, color: '#FFFFFF' }} data-testid="button-process-text">
                             <Sparkles className="w-5 h-5 mr-2" />
                             Process Text & Generate Survey
                           </Button>
@@ -336,7 +351,8 @@ export default function SurveyStartFlow({
                 )}
               </AnimatePresence>
             </motion.div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Preview Modal */}
