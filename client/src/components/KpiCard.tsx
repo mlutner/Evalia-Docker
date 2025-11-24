@@ -17,9 +17,9 @@ export function KpiCard({
   showBorder = true
 }: KpiCardProps) {
   return (
-    <Card className={`hover-elevate ${showBorder ? "border-l-2" : ""} h-full`} style={{
-      borderLeftColor: showBorder ? 'var(--color-primary)' : undefined,
-      backgroundColor: 'var(--color-neutral-surface)',
+    <Card className={`hover-elevate ${showBorder ? "border-l-4" : ""} h-full`} style={{
+      borderLeftColor: showBorder ? '#4CB4A0' : undefined,
+      backgroundColor: '#F5F7FA',
       borderColor: 'var(--color-neutral-border)',
     }}>
       <CardContent className="p-6">
@@ -29,8 +29,8 @@ export function KpiCard({
             <p className="text-[32px] font-bold mt-2" style={{ color: 'var(--color-neutral-text-primary)' }}>{value}</p>
             <p className="text-[13px] mt-2" style={{ color: 'var(--color-neutral-text-secondary)' }}>{subtext}</p>
           </div>
-          <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ml-4" style={{ backgroundColor: 'rgba(47, 143, 165, 0.1)' }}>
-            <Icon className="w-6 h-6" strokeWidth={2} style={{ color: 'var(--color-primary)' }} />
+          <div className="flex items-center justify-center flex-shrink-0 ml-4 w-12 h-12 rounded-[12px]" style={{ backgroundColor: '#F5F7FA' }}>
+            <Icon className="w-6 h-6" strokeWidth={2} style={{ color: 'rgba(14, 27, 44, 0.7)' }} />
           </div>
         </div>
       </CardContent>

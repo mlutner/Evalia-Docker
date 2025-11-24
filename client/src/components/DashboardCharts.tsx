@@ -13,24 +13,25 @@ interface TrendData {
 }
 
 export function ResponseTrendsChart({ data }: { data: TrendData[] }) {
-  const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#2F8FA5';
-  const textColor = getComputedStyle(document.documentElement).getPropertyValue('--color-text-secondary').trim() || '#6A7789';
-  const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-border').trim() || '#E2E7EF';
+  const primaryColor = '#4CB4A0';
+  const accentColor = '#C7F464';
+  const axisColor = '#475467';
   const surfaceColor = getComputedStyle(document.documentElement).getPropertyValue('--color-surface').trim() || '#FFFFFF';
+  const borderColor = '#E2E7EF';
 
   return (
     <ResponsiveContainer width="100%" height={250}>
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" stroke={borderColor} />
-        <XAxis dataKey="month" stroke={textColor} tick={{ fontSize: 12, fontWeight: 500 }} />
-        <YAxis stroke={textColor} tick={{ fontSize: 12, fontWeight: 500 }} />
+        <XAxis dataKey="month" stroke={axisColor} tick={{ fontSize: 12, fontWeight: 500 }} />
+        <YAxis stroke={axisColor} tick={{ fontSize: 12, fontWeight: 500 }} />
         <Tooltip 
           contentStyle={{
             backgroundColor: surfaceColor,
             border: `1px solid ${borderColor}`,
           }}
         />
-        <Line type="monotone" dataKey="responses" stroke={primaryColor} strokeWidth={2} dot={{ fill: primaryColor, r: 4 }} isAnimationActive={false} />
+        <Line type="monotone" dataKey="responses" stroke={primaryColor} strokeWidth={2} dot={{ fill: accentColor, r: 4 }} isAnimationActive={false} />
       </LineChart>
     </ResponsiveContainer>
   );
@@ -42,17 +43,17 @@ interface SurveyData {
 }
 
 export function CategoryBreakdownChart({ data }: { data: SurveyData[] }) {
-  const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#2F8FA5';
-  const textColor = getComputedStyle(document.documentElement).getPropertyValue('--color-text-secondary').trim() || '#6A7789';
-  const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-border').trim() || '#E2E7EF';
+  const primaryColor = '#4CB4A0';
+  const axisColor = '#475467';
   const surfaceColor = getComputedStyle(document.documentElement).getPropertyValue('--color-surface').trim() || '#FFFFFF';
+  const borderColor = '#E2E7EF';
 
   return (
     <ResponsiveContainer width="100%" height={250}>
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" stroke={borderColor} />
-        <XAxis dataKey="name" stroke={textColor} tick={{ fontSize: 12, fontWeight: 500 }} />
-        <YAxis stroke={textColor} tick={{ fontSize: 12, fontWeight: 500 }} />
+        <XAxis dataKey="name" stroke={axisColor} tick={{ fontSize: 12, fontWeight: 500 }} />
+        <YAxis stroke={axisColor} tick={{ fontSize: 12, fontWeight: 500 }} />
         <Tooltip 
           contentStyle={{
             backgroundColor: surfaceColor,
@@ -71,17 +72,17 @@ interface DistributionData {
 }
 
 export function DistributionChart({ data }: { data: DistributionData[] }) {
-  const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#2F8FA5';
-  const textColor = getComputedStyle(document.documentElement).getPropertyValue('--color-text-secondary').trim() || '#6A7789';
-  const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-border').trim() || '#E2E7EF';
+  const primaryColor = '#4CB4A0';
+  const axisColor = '#475467';
   const surfaceColor = getComputedStyle(document.documentElement).getPropertyValue('--color-surface').trim() || '#FFFFFF';
+  const borderColor = '#E2E7EF';
 
   return (
     <ResponsiveContainer width="100%" height={250}>
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" stroke={borderColor} />
-        <XAxis dataKey="rating" stroke={textColor} tick={{ fontSize: 12, fontWeight: 500 }} />
-        <YAxis stroke={textColor} tick={{ fontSize: 12, fontWeight: 500 }} />
+        <XAxis dataKey="rating" stroke={axisColor} tick={{ fontSize: 12, fontWeight: 500 }} />
+        <YAxis stroke={axisColor} tick={{ fontSize: 12, fontWeight: 500 }} />
         <Tooltip 
           contentStyle={{
             backgroundColor: surfaceColor,
@@ -100,17 +101,17 @@ interface ResponseVolumeData {
 }
 
 export function ResponseVolumeChart({ data }: { data: ResponseVolumeData[] }) {
-  const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#2F8FA5';
-  const textColor = getComputedStyle(document.documentElement).getPropertyValue('--color-text-secondary').trim() || '#6A7789';
-  const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-border').trim() || '#E2E7EF';
+  const primaryColor = '#4CB4A0';
+  const axisColor = '#475467';
   const surfaceColor = getComputedStyle(document.documentElement).getPropertyValue('--color-surface').trim() || '#FFFFFF';
+  const borderColor = '#E2E7EF';
 
   return (
     <ResponsiveContainer width="100%" height={250}>
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" stroke={borderColor} />
-        <XAxis dataKey="day" stroke={textColor} tick={{ fontSize: 12, fontWeight: 500 }} />
-        <YAxis stroke={textColor} tick={{ fontSize: 12, fontWeight: 500 }} />
+        <XAxis dataKey="day" stroke={axisColor} tick={{ fontSize: 12, fontWeight: 500 }} />
+        <YAxis stroke={axisColor} tick={{ fontSize: 12, fontWeight: 500 }} />
         <Tooltip 
           contentStyle={{
             backgroundColor: surfaceColor,
