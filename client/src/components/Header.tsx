@@ -21,11 +21,11 @@ export default function Header({ showActions = true }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/95 dark:bg-slate-900/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:supports-[backdrop-filter]:bg-slate-900/60">
-      <div className="container mx-auto flex h-16 items-center justify-end px-4">
-        <div className="flex items-center gap-2 sm:gap-3">
+    <header className="sticky top-0 z-50 w-full bg-[#FFFFFF] dark:bg-[#0D1B2A] border-b border-[#E7EBF0] dark:border-[#1F3B58] backdrop-blur supports-[backdrop-filter]:bg-[#FFFFFF]/60 dark:supports-[backdrop-filter]:bg-[#0D1B2A]/60">
+      <div className="flex h-14 items-center justify-end pr-6 gap-3">
+        <div className="flex items-center gap-3">
           {typedUser && (
-            <span className="hidden md:inline text-sm text-muted-foreground" data-testid="text-username">
+            <span className="hidden md:inline text-sm text-[#6B7785] font-medium" data-testid="text-username">
               {typedUser.email || `${typedUser.firstName || ''} ${typedUser.lastName || ''}`.trim() || 'User'}
             </span>
           )}
@@ -36,20 +36,19 @@ export default function Header({ showActions = true }: HeaderProps) {
                 size="sm"
                 onClick={() => setLocation("/account")}
                 data-testid="button-account"
-                className="px-2 sm:px-3"
+                className="text-[#6B7785] hover:text-[#1C2B36] hover:bg-[#1F8EFA]/8 px-3"
               >
-                <span className="hidden sm:inline">Account</span>
-                <span className="sm:hidden">⚙️</span>
+                <span className="hidden sm:inline text-sm font-medium">Account</span>
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleLogout}
                 data-testid="button-logout"
-                className="px-2 sm:px-3"
+                className="text-[#6B7785] hover:text-[#1C2B36] hover:bg-[#1F8EFA]/8 px-3"
               >
-                <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline ml-2">Logout</span>
+                <LogOut className="w-5 h-5 flex-shrink-0 text-[#0D1B2A]" strokeWidth={2} />
+                <span className="hidden sm:inline ml-2 text-sm font-medium">Logout</span>
               </Button>
             </>
           )}

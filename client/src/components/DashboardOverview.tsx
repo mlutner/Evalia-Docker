@@ -61,11 +61,11 @@ export function DashboardOverview() {
   return (
     <div className="space-y-8 pt-8">
       {/* Header with Time Filter */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between pr-6">
         <h2 className="text-[24px] font-bold text-[#1C2B36]">Dashboard</h2>
-        <button className="px-4 py-2 border border-[#E7EBF0] dark:border-[#1F3B58] rounded-lg text-sm flex items-center gap-2 hover:bg-[#F5F7FA] dark:hover:bg-[#0D1B2A]/50 transition-colors">
+        <button className="px-3 py-1.5 border border-[#E7EBF0] dark:border-[#1F3B58] rounded-md text-sm font-medium text-[#6B7785] flex items-center gap-2 hover:bg-[#1F8EFA]/8 dark:hover:bg-[#1F8EFA]/8 transition-colors" data-testid="button-date-filter">
           <span>Last 30 days</span>
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
         </button>
