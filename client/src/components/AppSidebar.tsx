@@ -82,7 +82,8 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
               key={item.id}
               onClick={() => handleNavigation(item.href)}
               className={`w-full flex items-center gap-4 px-4 py-3 rounded-[12px] text-sm font-medium transition-colors group ${
-                sidebarExpanded ? "" : "justify-center px-0"
+                sidebarExpanded ? "" : "justify-center px-0"`}
+              data-testid={`nav-${item.id}`}
               }`}
               style={{
                 color: '#6A7789',

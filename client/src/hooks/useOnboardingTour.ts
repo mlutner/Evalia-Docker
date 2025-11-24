@@ -40,7 +40,7 @@ export const useOnboardingTour = () => {
     },
     {
       target: '[data-testid="nav-respondents"]',
-      content: 'Manage survey respondents, track invitations, and view response status from here.',
+      content: 'Manage your respondent lists here. Track invitations and view response status.',
       placement: 'right',
       title: 'Respondent Management',
     },

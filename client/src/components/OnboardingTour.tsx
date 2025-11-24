@@ -23,14 +23,10 @@ export default function OnboardingTour() {
           width: 400,
           zIndex: 10000,
         },
-        beacon: {
-          inner: 'rgba(47, 143, 165, 1)',
-          outer: 'rgba(47, 143, 165, 0.8)',
-        },
         tooltip: {
           borderRadius: 8,
           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-        },
+        } as any,
       }}
       locale={{
         back: 'Back',
