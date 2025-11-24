@@ -2,7 +2,6 @@ import { useState } from "react";
 import ChatPanel from "@/components/ChatPanel";
 import QuestionEditor from "@/components/QuestionEditor";
 import FloatingAIChat from "@/components/FloatingAIChat";
-import { LivePreviewPanel } from "@/components/LivePreviewPanel";
 import { ToneAdjuster } from "@/components/ToneAdjuster";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,8 +29,6 @@ import {
 interface QuestionsStepProps {
   questions: Question[];
   title: string;
-  description?: string;
-  welcomeMessage?: string;
   messages: Message[];
   isProcessing: boolean;
   onSendMessage: (message: string) => void;
@@ -47,8 +44,6 @@ interface QuestionsStepProps {
 export default function QuestionsStep({
   questions,
   title,
-  description,
-  welcomeMessage,
   messages,
   isProcessing,
   onSendMessage,
@@ -230,9 +225,6 @@ export default function QuestionsStep({
         {chatOpen && (
           <div className="hidden md:block">
             <div className="sticky top-20 h-[calc(100vh-8rem)] overflow-y-auto space-y-4">
-              {/* Live Preview */}
-              <LivePreviewPanel survey={{ title, description, welcomeMessage, questions }} />
-              
               {/* Tone Adjuster */}
               <ToneAdjuster 
                 questions={questions} 
