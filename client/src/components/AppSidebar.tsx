@@ -87,9 +87,9 @@ export function AppSidebar() {
           );
         })}
       </nav>
-      {/* Footer: Account & Logout */}
+      {/* Footer: Account & Logout - Sticky */}
       {typedUser && (
-        <div className="px-3 py-4 space-y-2 border-t border-[var(--color-dark-navy)] mt-auto">
+        <div className="sticky bottom-0 z-10 px-3 py-4 space-y-2 border-t border-[rgba(255,255,255,0.1)] mt-auto" style={{ backgroundColor: 'var(--color-dark-navy)' }}>
           <Button
             onClick={() => setLocation("/account")}
             variant="ghost"
