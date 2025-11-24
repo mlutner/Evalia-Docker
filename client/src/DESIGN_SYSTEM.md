@@ -206,11 +206,104 @@ import { ButtonSystem } from '@/buttons';
 
 ---
 
+---
+
+## 🎯 INTERACTION STATES
+
+### Hover States
+Light background tint of the accent color for subtle feedback
+
+**Teal Hover:** #E1F6F3  
+**Lime Hover:** #F3FDE3
+
+```tsx
+import { InteractionStates } from '@/interactions';
+
+// Use on any element that needs hover feedback
+<div className={InteractionStates.hover.teal.className}>
+  Content
+</div>
+```
+
+### Active/Click State
+Slight darkening or inset shadow for press feedback
+
+```tsx
+<button className={InteractionStates.active.teal.className}>
+  Press me
+</button>
+```
+
+### Disabled State
+```
+Background: #F0F2F5
+Text: #B0B8C2
+Opacity: 60%
+Cursor: not-allowed
+```
+
+```tsx
+import { getDisabledClass } from '@/interactions';
+
+<button className={getDisabledClass()} disabled>
+  Disabled Button
+</button>
+```
+
+---
+
+## 🧭 SIDEBAR DESIGN STRATEGY
+
+### Sidebar Structure
+```
+Background: Navy #0A1A2F
+```
+
+### Sidebar Items
+
+**Inactive:**
+- Text: white @ 70% opacity
+- Background: transparent
+- Icon: white @ 70% opacity
+
+**Hover:**
+- Background: #112238 (subtle lighter navy)
+- Text: white @ 100%
+- Icon: white @ 100%
+- Transition: 150ms ease-in-out
+
+**Active:**
+- Text: white @ 100%
+- Left indicator: Lime bar (#A3D65C) - 4px wide, rounded right corners
+- Background: transparent
+- Icon: white @ 100%
+
+```tsx
+import { getSidebarItemClass } from '@/interactions';
+
+<button className={getSidebarItemClass(isActive)} data-active={isActive}>
+  <Icon />
+  <span>Menu Item</span>
+</button>
+```
+
+### CSS Classes for Sidebar Items
+```css
+.sidebar-item               /* base styles */
+.sidebar-item:hover         /* hover state */
+.sidebar-item.active        /* active state */
+.sidebar-item.active::before /* lime indicator bar */
+```
+
+---
+
 ## 🚀 USAGE CHECKLIST
 
 - [ ] Replace all hardcoded colors with theme.ts variables
 - [ ] Use CardSystem for all card styles
 - [ ] Use ButtonSystem for all button styles
-- [ ] No custom card/button variants allowed
+- [ ] Use InteractionStates for hover/active/disabled states
+- [ ] Use getSidebarItemClass for sidebar navigation items
+- [ ] No custom card/button/sidebar variants allowed
 - [ ] Update index.css when changing brand colors globally
-- [ ] Import from theme.ts, cards.ts, buttons.ts instead of creating new styles
+- [ ] Import from theme.ts, cards.ts, buttons.ts, interactions.ts instead of creating new styles

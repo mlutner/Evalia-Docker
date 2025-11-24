@@ -81,7 +81,7 @@ export const getButtonStyle = (
     return {
       background: button.background,
       color: button.text,
-      border: `1px solid ${button.border}`,
+      border: `1px solid ${(button as any).border}`,
       cursor: 'pointer',
     };
   }

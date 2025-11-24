@@ -40,8 +40,8 @@ export default function TemplatesPage() {
             onClick={() => setLocation("/builder")} 
             data-testid="button-new-template"
             style={{ 
-              backgroundColor: theme.colors.lime,
-              color: theme.buttons.lime.text,
+              backgroundColor: '#C3F33C',
+              color: '#0A1A2F',
               fontWeight: '600'
             }}
           >

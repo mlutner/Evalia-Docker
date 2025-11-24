@@ -87,6 +87,25 @@ export const theme = {
     active: 0.12,
     disabled: 0.5,
   },
+
+  // INTERACTION STATES
+  interactions: {
+    hoverTintTeal: 'var(--hover-tint-teal)',      // #E1F6F3 - subtle hover for teal
+    hoverTintLime: 'var(--hover-tint-lime)',      // #F3FDE3 - subtle hover for lime
+    disabled: {
+      bg: 'var(--disabled-bg)',                   // #F0F2F5
+      text: 'var(--disabled-text)',               // #B0B8C2
+    },
+  },
+
+  // SIDEBAR
+  sidebar: {
+    background: 'var(--sidebar-navy)',           // #0A1A2F
+    hover: 'var(--sidebar-hover)',               // #112238 - subtle lighter navy
+    activeIndicator: 'var(--sidebar-active-indicator)', // #A3D65C (lime bar)
+    activeText: 'var(--sidebar-text-active)',     // #FFFFFF (100%)
+    inactiveText: 'var(--sidebar-text-inactive)', // rgba(255,255,255,0.7) (70%)
+  },
 } as const;
 
 /**

@@ -49,6 +49,21 @@
   --button-secondary-hover: #F7F9FC;
   --button-ghost-text: #2F8FA5;
 
+  /* Interaction States - Hover */
+  --hover-tint-teal: #E1F6F3;
+  --hover-tint-lime: #F3FDE3;
+
+  /* Interaction States - Disabled */
+  --disabled-bg: #F0F2F5;
+  --disabled-text: #B0B8C2;
+
+  /* Sidebar Colors */
+  --sidebar-navy: #0A1A2F;
+  --sidebar-hover: #112238;
+  --sidebar-active-indicator: #A3D65C;
+  --sidebar-text-active: #FFFFFF;
+  --sidebar-text-inactive: rgba(255, 255, 255, 0.7);
+
   /* Tailwind CSS Variables */
   --background: 0 0% 97.3%;
   --foreground: 217 33% 17%;
@@ -99,6 +114,63 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
   background: var(--color-bg-light);
   min-height: 100vh;
+}
+
+/* INTERACTION STATE UTILITIES */
+
+/* Hover tint for teal elements */
+.hover-tint-teal:hover {
+  background-color: var(--hover-tint-teal);
+  transition: background-color 150ms ease-in-out;
+}
+
+/* Hover tint for lime elements */
+.hover-tint-lime:hover {
+  background-color: var(--hover-tint-lime);
+  transition: background-color 150ms ease-in-out;
+}
+
+/* Disabled state */
+.disabled-state {
+  background-color: var(--disabled-bg);
+  color: var(--disabled-text);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* SIDEBAR STYLES */
+
+.sidebar {
+  background-color: var(--sidebar-navy);
+}
+
+.sidebar-item {
+  position: relative;
+  color: var(--sidebar-text-inactive);
+  transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
+  cursor: pointer;
+}
+
+.sidebar-item:hover {
+  background-color: var(--sidebar-hover);
+  color: var(--sidebar-text-active);
+}
+
+.sidebar-item.active {
+  color: var(--sidebar-text-active);
+  background-color: transparent;
+}
+
+/* Active indicator: lime bar on left */
+.sidebar-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: var(--sidebar-active-indicator);
+  border-radius: 0 2px 2px 0;
 }
 
 .survey-shell {
