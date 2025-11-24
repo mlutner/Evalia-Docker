@@ -252,13 +252,13 @@
 .survey-primary {
   padding: 14px 28px;
   border-radius: 24px;
-  background: #071a32;
-  color: #ccff00;
+  background: #2F8FA5;
+  color: #ffffff;
   font-weight: 700;
   font-size: 17px;
   border: none;
   cursor: pointer;
-  box-shadow: 0 12px 28px rgba(7, 26, 50, 0.18);
+  box-shadow: 0 12px 28px rgba(47, 143, 165, 0.18);
   transition: transform 0.08s ease, box-shadow 0.08s ease;
   display: inline-flex;
   align-items: center;
@@ -267,7 +267,7 @@
 
 .survey-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 14px 32px rgba(7, 26, 50, 0.25);
+  box-shadow: 0 14px 32px rgba(47, 143, 165, 0.25);
 }
 
 .survey-primary:active {
@@ -297,12 +297,12 @@
   min-width: 260px;
   border-radius: 24px;
   border: none;
-  background: #071a32;
-  color: #ccff00;
+  background: #2F8FA5;
+  color: #ffffff;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 10px 25px rgba(7, 26, 50, 0.25);
+  box-shadow: 0 10px 25px rgba(47, 143, 165, 0.25);
   transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.12s ease;
   margin-top: 16px;
   margin-bottom: 12px;
@@ -310,8 +310,8 @@
 
 .hero-button:hover {
   transform: translateY(-1px);
-  background: #0b2543;
-  box-shadow: 0 18px 40px rgba(7, 26, 50, 0.45);
+  background: #247a96;
+  box-shadow: 0 18px 40px rgba(47, 143, 165, 0.45);
 }
 
 /* Responsive Design */
