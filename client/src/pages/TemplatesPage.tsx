@@ -86,7 +86,7 @@ export default function TemplatesPage() {
                   <div className="flex gap-3">
                     <Button
                       onClick={() => setPreviewTemplate(template)}
-                      className="flex-1 bg-evalia-primary hover:bg-evalia-primary/90 text-white"
+                      className="flex-1 bg-evalia-primary hover:bg-evalia-primary/90 text-[#0e1729]"
                       variant="default"
                       data-testid={`button-preview-template-${template.id}`}
                     >
