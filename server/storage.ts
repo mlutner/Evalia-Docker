@@ -39,6 +39,10 @@ export interface IStorage {
   getAllTemplates(): Promise<Template[]>;
   getTemplate(id: string): Promise<Template | undefined>;
   saveAsTemplate(survey: Survey, title: string, description: string, category: string): Promise<Template>;
+
+  // Short URL operations
+  createShortUrl(surveyId: string): Promise<string>;
+  getShortUrlSurveyId(code: string): Promise<string | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -47,6 +51,7 @@ export class MemStorage implements IStorage {
   private responses: Map<string, SurveyResponse>;
   private respondents: Map<string, SurveyRespondent>;
   private templates: Map<string, Template>;
+  private shortUrls: Map<string, string>; // maps short code to survey ID
 
   constructor() {
     this.users = new Map();
@@ -54,6 +59,7 @@ export class MemStorage implements IStorage {
     this.responses = new Map();
     this.respondents = new Map();
     this.templates = new Map();
+    this.shortUrls = new Map();
     this.initializeTemplates();
   }
 
@@ -221,6 +227,29 @@ export class MemStorage implements IStorage {
     };
     this.templates.set(templateId, template);
     return template;
+  }
+
+  async createShortUrl(surveyId: string): Promise<string> {
+    // Check if we already have a short URL for this survey
+    for (const [code, id] of this.shortUrls.entries()) {
+      if (id === surveyId) {
+        return code;
+      }
+    }
+    
+    // Generate a new short code (6 random alphanumeric characters)
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let code = '';
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    
+    this.shortUrls.set(code, surveyId);
+    return code;
+  }
+
+  async getShortUrlSurveyId(code: string): Promise<string | undefined> {
+    return this.shortUrls.get(code);
   }
 
   async getUser(id: string): Promise<User | undefined> {

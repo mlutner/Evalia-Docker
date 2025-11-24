@@ -886,6 +886,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Create short URL for survey
+  app.post("/api/surveys/:id/short-url", isAuthenticated, async (req: any, res) => {
+    try {
+      const surveyId = req.params.id;
+      const userId = req.user.claims.sub;
+
+      const survey = await storage.getSurvey(surveyId);
+      if (!survey) {
+        return res.status(404).json({ error: "Survey not found" });
+      }
+
+      const isOwner = await storage.checkSurveyOwnership(surveyId, userId);
+      if (!isOwner) {
+        return res.status(403).json({ error: "Unauthorized" });
+      }
+
+      const shortCode = await storage.createShortUrl(surveyId);
+      const shortUrl = `/s/${shortCode}`;
+      res.json({ shortUrl, shortCode });
+    } catch (error: any) {
+      console.error("Short URL error:", error);
+      res.status(500).json({ message: error.message || "Failed to create short URL" });
+    }
+  });
+
+  // Redirect from short URL to survey
+  app.get("/s/:code", async (req: any, res) => {
+    try {
+      const code = req.params.code;
+      const surveyId = await storage.getShortUrlSurveyId(code);
+      
+      if (!surveyId) {
+        return res.status(404).json({ error: "Survey not found" });
+      }
+
+      res.redirect(`/survey/${surveyId}`);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to redirect" });
+    }
+  });
+
   // Save survey as template
   app.post("/api/surveys/:id/save-as-template", isAuthenticated, async (req: any, res) => {
     try {

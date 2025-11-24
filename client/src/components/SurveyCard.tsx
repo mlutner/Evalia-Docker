@@ -75,9 +75,12 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
     if (shortUrl) return;
     setLoadingShortUrl(true);
     try {
-      const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(shareUrl)}`);
-      const data = await response.text();
-      setShortUrl(data);
+      const response = await fetch(`/api/surveys/${survey.id}/short-url`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+      });
+      const data = await response.json();
+      setShortUrl(`${window.location.origin}${data.shortUrl}`);
     } catch (err) {
       console.error("Failed to shorten URL:", err);
       setShortUrl(shareUrl);
