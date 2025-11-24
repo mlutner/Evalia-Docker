@@ -277,6 +277,8 @@ export default function Builder() {
         {/* Step 1: Start - Choose creation method */}
         {surveyState.currentWizardStep === 1 && (
           <SurveyStartFlow
+            surveyType={surveyState.surveyType}
+            onSurveyTypeChange={surveyState.setSurveyType}
             currentQuestions={surveyState.currentQuestions}
             currentSurveyTitle={surveyState.currentSurveyTitle}
             onSurveyTitleChange={surveyState.setCurrentSurveyTitle}
