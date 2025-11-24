@@ -79,6 +79,12 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
         method: "POST",
         headers: { "Content-Type": "application/json" }
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: "Unknown error" }));
+        throw new Error(`API error: ${response.status} - ${errorData.message || errorData.error || "Failed to generate short URL"}`);
+      }
+      
       const data = await response.json();
       setShortUrl(`${window.location.origin}${data.shortUrl}`);
     } catch (err) {
