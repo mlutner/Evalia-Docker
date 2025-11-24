@@ -60,7 +60,9 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
 
       response.json().then((data: any) => {
         if (data.id) {
-          window.history.replaceState({}, "", `/builder/${data.id}`);
+          setTimeout(() => {
+            window.location.href = "/dashboard";
+          }, 1000);
         }
       });
     },
@@ -94,9 +96,12 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       queryClient.invalidateQueries({ queryKey: ["/api/surveys"] });
       queryClient.invalidateQueries({ queryKey: ["/api/surveys", surveyId] });
       toast({
-        title: "Survey updated!",
-        description: "Your changes have been saved successfully.",
+        title: "Survey published!",
+        description: "Your changes have been saved and published successfully.",
       });
+      setTimeout(() => {
+        window.location.href = "/dashboard";
+      }, 1000);
     },
     onError: (error: any) => {
       toast({
