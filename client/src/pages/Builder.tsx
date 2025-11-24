@@ -373,11 +373,14 @@ export default function Builder() {
               </Button>
             )}
 
-            {surveyState.currentWizardStep < 3 ? (
+            {surveyState.currentWizardStep < 4 ? (
               <Button 
                 size="lg" 
                 onClick={surveyState.handleNextStep}
-                disabled={surveyState.currentWizardStep === 1 && (!surveyState.currentSurveyTitle.trim() || surveyState.currentQuestions.length === 0)}
+                disabled={
+                  (surveyState.currentWizardStep === 1 && (!surveyState.currentSurveyTitle.trim() || surveyState.currentQuestions.length === 0)) ||
+                  (surveyState.currentWizardStep === 3 && !surveyState.currentSurveyTitle.trim())
+                }
                 data-testid="button-next-step"
                 style={{ backgroundColor: '#2F8FA5', color: '#FFFFFF' }}
               >
