@@ -147,26 +147,26 @@ export default function SurveyStartFlow({
           )}
         </AnimatePresence>
 
-        {/* Survey Title Input - Only show if questions exist */}
+        {/* Survey Title Input - Only show after type selection */}
         <AnimatePresence>
-          {currentQuestions.length > 0 && (
+          {hasSelectedType && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="mb-12 p-6 rounded-lg bg-card border border-border"
+              className="mb-6 sm:mb-8 md:mb-12 p-4 sm:p-5 md:p-6 rounded-lg bg-card border border-border"
             >
-              <label className="text-sm font-semibold mb-3 block text-foreground">
-                Survey Title <span className="text-destructive">*</span>
+              <label className="text-xs sm:text-sm font-semibold mb-2 sm:mb-3 block text-foreground">
+                Collection Title <span className="text-destructive">*</span>
               </label>
               <Input
                 value={currentSurveyTitle}
                 onChange={(e) => onSurveyTitleChange(e.target.value)}
-                placeholder="Enter a title for your survey..."
-                className="text-base"
+                placeholder="Enter a title for your collection..."
+                className="text-sm md:text-base"
                 data-testid="input-survey-title-step1"
               />
-              <p className="text-xs text-muted-foreground mt-2">This will be the name respondents see when they start the survey</p>
+              <p className="text-xs text-muted-foreground mt-2">This will be the name respondents see when they start</p>
             </motion.div>
           )}
         </AnimatePresence>
