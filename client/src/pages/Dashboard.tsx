@@ -8,7 +8,7 @@ import { DashboardOverview } from "@/components/DashboardOverview";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Plus, FileText, BarChart3, Calendar, Clock, Users, Settings, Zap, BookOpen, LayoutDashboard } from "lucide-react";
+import { Plus, FileText, BarChart3, Calendar, Clock, Users, Settings, Zap, BookOpen, LayoutDashboard, Menu, X } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { SurveyWithCounts } from "@shared/schema";
@@ -16,6 +16,7 @@ import type { SurveyWithCounts } from "@shared/schema";
 export default function Dashboard() {
   const [, setLocation] = useLocation();
   const [activeView, setActiveView] = useState<"overview" | "surveys">("overview");
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -202,17 +203,28 @@ export default function Dashboard() {
 
       <div className="flex flex-1">
         {/* Sidebar */}
-        <aside className="w-48 bg-evalia-navy dark:bg-evalia-navy border-r border-slate-200 dark:border-slate-800 flex flex-col">
-          <div className="p-4 border-b border-slate-700 dark:border-slate-700">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded bg-white/20 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">E</span>
+        <aside className={`bg-gradient-to-b from-evalia-navy to-slate-900 border-r border-slate-700 flex flex-col transition-all duration-300 ${
+          sidebarExpanded ? "w-56" : "w-20"
+        }`}>
+          <div className="p-4 border-b border-slate-700 flex items-center justify-between">
+            {sidebarExpanded && (
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded bg-white/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-bold text-sm">E</span>
+                </div>
+                <span className="text-white font-semibold text-sm">Evalia</span>
               </div>
-              <span className="text-white font-semibold">Evalia</span>
-            </div>
+            )}
+            <button
+              onClick={() => setSidebarExpanded(!sidebarExpanded)}
+              className="text-white hover:bg-white/10 p-1 rounded transition-colors"
+              data-testid="button-toggle-sidebar"
+            >
+              {sidebarExpanded ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
 
-          <nav className="flex-1 p-4 space-y-2">
+          <nav className="flex-1 p-3 space-y-2">
             {sidebarItems.map((item) => {
               const isActive = activeView === item.id || (item.id === "surveys" && activeView === "surveys");
               const Icon = item.icon;
@@ -221,11 +233,13 @@ export default function Dashboard() {
                 return (
                   <div
                     key={item.id}
-                    className="flex items-center gap-3 px-3 py-2 text-slate-400 text-sm cursor-not-allowed rounded opacity-60"
+                    className={`flex items-center gap-3 px-3 py-2 text-slate-500 text-sm cursor-not-allowed rounded opacity-50 transition-all ${
+                      sidebarExpanded ? "" : "justify-center"
+                    }`}
                     title="Coming soon"
                   >
-                    <Icon className="w-4 h-4" />
-                    <span>{item.label}</span>
+                    <Icon className="w-5 h-5 flex-shrink-0" />
+                    {sidebarExpanded && <span className="text-xs">{item.label}</span>}
                   </div>
                 );
               }
@@ -234,15 +248,16 @@ export default function Dashboard() {
                 <button
                   key={item.id}
                   onClick={() => setActiveView(item.id as any)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded text-sm font-medium transition-colors ${
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all ${
                     isActive
                       ? "bg-white/20 text-white"
                       : "text-slate-300 hover:bg-white/10 hover:text-white"
-                  }`}
+                  } ${sidebarExpanded ? "" : "justify-center"}`}
                   data-testid={`nav-${item.id}`}
+                  title={!sidebarExpanded ? item.label : ""}
                 >
-                  <Icon className="w-4 h-4" />
-                  <span>{item.label}</span>
+                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  {sidebarExpanded && <span>{item.label}</span>}
                 </button>
               );
             })}
