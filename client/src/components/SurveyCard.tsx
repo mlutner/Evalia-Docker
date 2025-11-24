@@ -309,30 +309,34 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
             <Edit3 className="w-4 h-4 mr-2" />
             Edit
           </Button>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                onClick={onAnalyze} 
-                data-testid={`button-analyze-${index}`}
-                disabled={survey.responseCount === 0}
-                className="flex-1 font-semibold text-sm"
-                style={{
-                  backgroundColor: survey.responseCount === 0 ? 'rgba(47, 143, 165, 0.15)' : '#2F8FA5',
-                  color: survey.responseCount === 0 ? '#2F8FA5' : '#FFFFFF',
-                  border: 'none'
-                }}
-              >
-                <BarChart3 className="w-4 h-4 mr-2" strokeWidth={2} />
-                Analyze
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="max-w-xs text-xs">
-              {survey.responseCount === 0 
-                ? "No responses yet. Start collecting responses to view analytics."
-                : "View detailed analytics and response breakdown"
-              }
-            </TooltipContent>
-          </Tooltip>
+          <div className="flex-1">
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <div className="w-full">
+                  <Button 
+                    onClick={onAnalyze} 
+                    data-testid={`button-analyze-${index}`}
+                    disabled={survey.responseCount === 0}
+                    className="flex-1 font-semibold text-sm w-full"
+                    style={{
+                      backgroundColor: survey.responseCount === 0 ? 'rgba(47, 143, 165, 0.15)' : '#2F8FA5',
+                      color: survey.responseCount === 0 ? '#2F8FA5' : '#FFFFFF',
+                      border: 'none'
+                    }}
+                  >
+                    <BarChart3 className="w-4 h-4 mr-2" strokeWidth={2} />
+                    Analyze
+                  </Button>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="max-w-xs text-xs">
+                {survey.responseCount === 0 
+                  ? "No responses yet. Start collecting responses to view analytics."
+                  : "View detailed analytics and response breakdown"
+                }
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </div>
       </div>
       {/* Save as Template Dialog */}
