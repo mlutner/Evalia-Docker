@@ -60,8 +60,8 @@ export default function TemplatesPage() {
                 <CardContent className="p-6 flex flex-col flex-1">
                   <div className="flex items-start justify-between gap-4 mb-4">
                     <h3 className="text-xl font-bold flex-1 leading-tight">{template.title}</h3>
-                    <div className="bg-slate-200 dark:bg-slate-700 rounded-lg px-3 py-1 flex items-center gap-2 flex-shrink-0 text-sm font-medium text-slate-700 dark:text-slate-300">
-                      <FileText className="w-4 h-4" />
+                    <div className="bg-slate-200 dark:bg-slate-700 rounded-md px-2 py-0.5 flex items-center gap-1.5 flex-shrink-0 text-xs font-medium text-slate-700 dark:text-slate-300">
+                      <FileText className="w-3.5 h-3.5" />
                       {template.questions.length}
                     </div>
                   </div>
@@ -86,15 +86,15 @@ export default function TemplatesPage() {
                   <div className="flex gap-3">
                     <Button
                       onClick={() => setPreviewTemplate(template)}
-                      variant="outline"
-                      className="flex-1"
+                      className="flex-1 bg-evalia-primary hover:bg-evalia-primary/90 text-white"
+                      variant="default"
                       data-testid={`button-preview-template-${template.id}`}
                     >
                       Preview
                     </Button>
                     <Button 
                       onClick={() => handleUseTemplate(template)}
-                      className="flex-1 bg-evalia-primary hover:bg-evalia-primary/90 text-evalia-lime"
+                      className="flex-1 bg-evalia-primary hover:bg-evalia-primary/90 text-evalia-lime font-semibold"
                       data-testid={`button-use-template-${template.id}`}
                     >
                       Use Template
