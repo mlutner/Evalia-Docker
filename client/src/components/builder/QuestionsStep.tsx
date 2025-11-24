@@ -233,7 +233,7 @@ export default function QuestionsStep({
               />
               
               {/* AI Chat */}
-              <Card className="h-full flex flex-col">
+              <Card className="flex flex-col max-h-80">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm flex items-center gap-2">
                     <Bot className="w-4 h-4" />
@@ -243,7 +243,7 @@ export default function QuestionsStep({
                     Refine your questions
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex-1 overflow-hidden p-0">
+                <CardContent className="flex-1 overflow-auto p-0">
                   <ChatPanel
                     messages={messages}
                     onSendMessage={onSendMessage}
