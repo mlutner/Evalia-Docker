@@ -150,7 +150,42 @@ export function AiChatbot() {
                       : "bg-white border border-border"
                   }`}
                 >
-                  <p className="text-sm leading-relaxed break-words">{msg.content}</p>
+                  <div className="text-sm leading-relaxed break-words whitespace-pre-wrap space-y-3">
+                    {msg.content.split('\n\n').map((paragraph, idx) => (
+                      <div key={idx} className="space-y-2">
+                        {paragraph.split('\n').map((line, lineIdx) => {
+                          const trimmed = line.trim();
+                          if (trimmed.startsWith('- ')) {
+                            return (
+                              <div key={lineIdx} className="flex gap-2 ml-2">
+                                <span className="text-primary font-bold">•</span>
+                                <span>{trimmed.substring(2)}</span>
+                              </div>
+                            );
+                          }
+                          if (trimmed.startsWith('* ')) {
+                            return (
+                              <div key={lineIdx} className="flex gap-2 ml-2">
+                                <span className="text-primary font-bold">•</span>
+                                <span>{trimmed.substring(2)}</span>
+                              </div>
+                            );
+                          }
+                          if (/^\d+\./.test(trimmed)) {
+                            return (
+                              <div key={lineIdx} className="ml-2">
+                                <span className="text-primary font-semibold">{trimmed.split(' ')[0]}</span>
+                                <span> {trimmed.substring(trimmed.indexOf(' ')).trim()}</span>
+                              </div>
+                            );
+                          }
+                          return trimmed ? (
+                            <p key={lineIdx}>{line}</p>
+                          ) : null;
+                        })}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             ))
