@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash2, Check, Clock, Upload, AlertCircle, Info } from "lucide-react";
+import { Plus, Trash2, Check, Clock, Upload, AlertCircle, Info, Users } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { SurveyRespondent } from "@shared/schema";
@@ -217,7 +217,7 @@ export default function RespondentsPage() {
     },
   });
 
-  const completedCount = respondents.filter(r => r.submitted).length;
+  const completedCount = respondents.filter(r => r.submittedAt).length;
   const completionRate = respondents.length > 0 ? Math.round((completedCount / respondents.length) * 100) : 0;
 
   return (
