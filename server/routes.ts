@@ -890,7 +890,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/ai-chat", isAuthenticated, async (req: any, res) => {
     try {
       const { message, history = [], context } = req.body;
-      const userId = req.user?.id;
+      const userId = req.user.claims.sub;
 
       if (!message || typeof message !== "string") {
         return res.status(400).json({ error: "Message is required" });
