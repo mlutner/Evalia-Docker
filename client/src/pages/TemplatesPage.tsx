@@ -1,12 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, BookOpen, Badge } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Plus, Clock, Users, FileText } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { useState } from "react";
 import type { Template } from "@shared/schema";
 
 export default function TemplatesPage() {
   const [, setLocation] = useLocation();
+  const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null);
 
   const { data: templates = [], isLoading } = useQuery<Template[]>({
     queryKey: ["/api/templates"],
@@ -51,48 +54,92 @@ export default function TemplatesPage() {
             {templates.map((template) => (
               <Card 
                 key={template.id} 
-                className="flex flex-col hover:shadow-lg transition-shadow"
+                className="flex flex-col hover-elevate"
                 data-testid={`template-card-${template.id}`}
               >
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg mb-1">{template.title}</CardTitle>
-                      <CardDescription className="line-clamp-2">{template.description}</CardDescription>
-                    </div>
-                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <BookOpen className="w-5 h-5 text-primary" />
+                <CardContent className="p-6 flex flex-col flex-1">
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    <h3 className="text-xl font-bold flex-1 leading-tight">{template.title}</h3>
+                    <div className="bg-slate-200 dark:bg-slate-700 rounded-lg px-3 py-1 flex items-center gap-2 flex-shrink-0 text-sm font-medium text-slate-700 dark:text-slate-300">
+                      <FileText className="w-4 h-4" />
+                      {template.questions.length}
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col pb-6">
-                  <div className="flex-1 mb-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Badge variant="secondary" className="text-xs" data-testid={`badge-category-${template.id}`}>
-                        {template.category}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">
-                        {template.questions.length} questions
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      A template with {template.questions.length} pre-configured questions ready to customize.
-                    </p>
+
+                  <p className="text-sm text-muted-foreground mb-4">{template.description}</p>
+
+                  <div className="space-y-2 mb-6 flex-1">
+                    {template.timing && (
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                        <Clock className="w-4 h-4 flex-shrink-0" />
+                        <span>{template.timing}</span>
+                      </div>
+                    )}
+                    {template.audience && (
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                        <Users className="w-4 h-4 flex-shrink-0" />
+                        <span>{template.audience}</span>
+                      </div>
+                    )}
                   </div>
-                  <Button 
-                    onClick={() => handleUseTemplate(template)}
-                    className="w-full"
-                    variant="default"
-                    data-testid={`button-use-template-${template.id}`}
-                  >
-                    Use This Template
-                  </Button>
+
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={() => setPreviewTemplate(template)}
+                      variant="outline"
+                      className="flex-1"
+                      data-testid={`button-preview-template-${template.id}`}
+                    >
+                      Preview
+                    </Button>
+                    <Button 
+                      onClick={() => handleUseTemplate(template)}
+                      className="flex-1 bg-evalia-primary hover:bg-evalia-primary/90 text-evalia-lime"
+                      data-testid={`button-use-template-${template.id}`}
+                    >
+                      Use Template
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
           </div>
         )}
       </div>
+
+      <Dialog open={!!previewTemplate} onOpenChange={(open) => !open && setPreviewTemplate(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          {previewTemplate && (
+            <>
+              <DialogHeader>
+                <DialogTitle>{previewTemplate.title}</DialogTitle>
+                <DialogDescription>{previewTemplate.description}</DialogDescription>
+              </DialogHeader>
+              <div className="space-y-6">
+                {previewTemplate.questions.map((question, idx) => (
+                  <div key={question.id} className="border-b pb-4 last:border-b-0">
+                    <p className="font-semibold text-sm mb-2">
+                      {idx + 1}. {question.question}
+                      {question.required && <span className="text-red-500 ml-1">*</span>}
+                    </p>
+                    <p className="text-xs text-muted-foreground mb-2">Type: {question.type}</p>
+                    {question.options && question.options.length > 0 && (
+                      <ul className="text-sm space-y-1 ml-4 list-disc">
+                        {question.options.slice(0, 5).map((opt, i) => (
+                          <li key={i}>{opt}</li>
+                        ))}
+                        {question.options.length > 5 && (
+                          <li>... and {question.options.length - 5} more options</li>
+                        )}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
