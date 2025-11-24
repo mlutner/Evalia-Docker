@@ -216,7 +216,7 @@ export default function Dashboard() {
           </button>
         </div>
 
-        <nav className="flex-1 p-3 space-y-2">
+        <nav className="flex-1 p-3 space-y-2 bg-[#0e1729]">
           {sidebarItems.map((item) => {
             const isActive = activeView === item.id || (item.id === "surveys" && activeView === "surveys");
             const Icon = item.icon;
@@ -253,7 +253,6 @@ export default function Dashboard() {
           })}
         </nav>
       </aside>
-
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         <Header />
