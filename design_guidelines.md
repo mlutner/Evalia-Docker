@@ -1,219 +1,156 @@
-# Evalia Design Guidelines
+# Evalia Design System - Official
 
-## Design Approach
-**Reference-Based: Typeform-Inspired Survey Experience**
-
-Evalia follows Typeform's pioneering one-question-at-a-time philosophy while adapting it for trainer-focused survey creation. The design emphasizes conversational flow, generous whitespace, and seamless transitions that make both creating and taking surveys feel effortless.
-
-## Core Design Principles
-
-1. **Conversational Minimalism**: Each screen presents focused content without visual clutter
-2. **Progressive Disclosure**: Information reveals gracefully as users advance through workflows
-3. **Responsive Elegance**: Seamless experience from mobile to desktop
-4. **Purposeful Motion**: Transitions guide attention without distraction
+## Brand Identity
+**Evalia** is a professional survey analytics platform designed for trainers and educators. The design system emphasizes clarity, professionalism, and trustworthiness through a carefully curated palette of teals, limes, and neutrals.
 
 ## Evalia Color Palette
 
-The design system uses carefully selected colors to create visual distinction with a "calm productivity" vibe:
+### Primary Colors
+- **Primary Teal (#2F8FA5)**: Core brand color. Used for primary buttons, links, accents, and active states
+- **Dark Teal (#1F6F78)**: Darker teal for emphasis, chart primary data, and CTA buttons  
+- **Icon Teal (#37C0A3)**: Bright, vibrant teal for icons, highlights, and secondary accents
+- **Accent Lime (#A3D65C)**: Energetic lime for alerts, success states, and visual differentiation
 
-- **Accent Amber (#F5DFA1)**: Warm, gentle, welcoming - used for templates and primary call-to-action areas
-- **Cyan (#22D3EE)**: Innovative, AI-powered - used for AI-generated content and smart features
-- **Warm Amber (#D97706)**: Active, energetic - used for uploads, file processing, and secondary actions
-- **Navy (#071A32)**: Deep, authoritative - used for text and critical information
+### Neutral Colors
+- **Primary Text (#1C2635)**: Main text color for headings and important content
+- **Secondary Text (#6A7789)**: Muted text for descriptions, labels, and metadata
+- **Light Background (#F7F9FC)**: Page and section backgrounds
+- **Surface White (#FFFFFF)**: Card backgrounds and elevated surfaces
+- **Borders (#E2E7EF)**: Subtle dividers and card borders
 
-**Survey Creation Methods Use Color Language:**
-Each method has its **own color** for clear visual distinction and guidance:
-- **Templates**: Soft Amber (#F5DFA1) - warm welcome, establishes structure and professionalism
-- **AI Generation**: Cyan (#22D3EE) - communicates intelligence, innovation, and AI-powered capability
-- **Upload/Paste**: Warm Amber (#D97706) - signals action, active processing, file handling
-
-**Color System Application:**
-1. **Tab Buttons** - Preview the color of that method:
-   - Templates tab uses soft amber background and border
-   - AI tab uses cyan background and border
-   - Upload tab uses warm amber background and border
-   - Active icon circles use solid color; inactive circles use gray
-
-2. **Content Cards** - Match the tab color with:
-   - Gradient background (20-25% opacity)
-   - 4px colored left border accent
-   - Matching colored border (2px)
-   - Consistent typography and spacing
-
-3. **Accent Color Uses** (#F5DFA1 in Templates section):
-   - Primary call-to-action buttons (Use Template, Generate, Process)
-   - "Recommended" badges
-   - Highlight boxes for important information
-   - New feature indicators
-   - Featured template badges
-
-**Design Principles:**
-- Each method's color creates a visual "preview" of what users will experience
-- Tab colors guide users before they select
-- Colors communicate function: warmth (templates), innovation (AI), energy (upload)
-- Accent color highlights important actions without overwhelming the interface
-- Creates wellness + coaching interface feeling (ideal for trainer platform)
+### Component-Specific Colors
+- **Sidebar Navy (#0A1A2F)**: Dark background for sidebar navigation
+- **Disabled State (#F0F2F5)**: Background for disabled/inactive elements
+- **Success/Positive (Green)**: Charts and positive indicators
+- **Warning/Attention (Lime)**: Alerts and warnings
 
 ## Typography
 
-**Font Family**: Inter (Google Fonts)
+**Font Family**: Inter (system-ui fallback)
 - Headings: Inter SemiBold (600)
-- Body: Inter Regular (400)
+- Body: Inter Regular (400)  
 - UI Elements: Inter Medium (500)
 
 **Scale**:
-- Hero/Page Title: text-4xl (36px) → text-5xl (48px) on desktop
-- Question Text: text-2xl (24px) → text-3xl (30px) on desktop
-- Section Headers: text-xl (20px)
-- Body/Descriptions: text-base (16px)
-- Labels/Helpers: text-sm (14px)
-- Captions: text-xs (12px)
+- Page Titles: 24-32px (font-bold)
+- Section Headers: 18-20px (font-semibold)
+- Card Titles: 16px (font-semibold)
+- Body Text: 13-14px (font-regular)
+- Labels/Metadata: 11-12px (font-semibold, uppercase)
+- Captions: 12px (font-regular)
+
+## Spacing System
+
+**Consistent Spacing Values** (using Tailwind units):
+- Tight: 4px (gap-1, p-1)
+- Standard: 8px (gap-2, p-2)
+- Default: 12px (gap-3, p-3)
+- Medium: 16px (gap-4, p-4)
+- Large: 24px (gap-6, p-6)
+- XL: 32px (gap-8, p-8)
+
+**Card Structure**:
+- Padding: 20px (px-5, py-5)
+- Header padding: 16px (pt-4, pb-3)
+- Content padding: 12px (py-3)
+- Footer padding: 12px (py-5)
+- Gap between sections: 8-12px
+
+## Component Standards
+
+### Cards
+- **Border Radius**: 12px (rounded-[12px])
+- **Border**: 1px solid #E2E7EF
+- **Shadow**: 0 1px 3px rgba(0, 0, 0, 0.05)
+- **Background**: #FFFFFF
+- **Hover State**: Subtle elevation (box-shadow increase)
+- **Padding**: 20px internal spacing
+
+**Card Variants**:
+1. **Standard Card**: White background, light border, soft shadow
+2. **Insight Card**: Teal or lime left border accent (4px), neutral background
+3. **KPI Card**: Colored left border (4px) matching category, icon with matching color
+
+### Buttons
+- **Primary Button**: Dark Teal (#1F6F78) text/background, white text
+- **Secondary Button**: White background, border #E2E7EF, primary text
+- **Ghost Button**: No background, primary text (#2F8FA5)
+- **Icon Button**: 32x32px, no background, secondary text
+- **Border Radius**: 8px
+- **Height**: Standard 40px (h-10), Small 36px (h-9)
+
+### Survey Cards
+- **Height**: 360px (compact)
+- **Title**: 16px, font-semibold
+- **Spacing**: Consistent 5px padding on all sides (px-5 py-5)
+- **Buttons**: Positioned at bottom with 20px top padding
+- **Button Colors**: 
+  - Edit: Outline style
+  - Analyze: Dark Teal (#1F6F78) background
+
+### KPI Cards  
+- **Left Border**: 4px, color-coded (#2F8FA5, #37C0A3, #A3D65C)
+- **Icon**: Matches border color, 24px size
+- **Icon Background**: Light gray (#F7F9FA)
+- **Spacing**: 24px internal padding
+- **Text Hierarchy**: Label → Large Value → Subtext
+
+### Insight Cards
+- **Background**: Light neutral (#F7F9FC)
+- **Left Border**: 4px, color-coded by type
+- **Icon Colors**:
+  - Warning: Lime (#A3D65C)
+  - Info: Primary Teal (#2F8FA5)
+  - Neutral: Icon Teal (#37C0A3)
+
+### Charts
+All dashboard charts use distinct colors:
+1. **Response Trends**: Icon Teal (#37C0A3)
+2. **Skills Ratings**: Dark Teal (#1F6F78)
+3. **Distribution**: Accent Lime (#A3D65C)
+4. **Response Volume**: Primary Teal (#2F8FA5)
 
 ## Layout System
 
-**Spacing Primitives**: Use Tailwind units of 2, 4, 6, 8, 12, and 16
-- Tight spacing: p-2, gap-2 (8px)
-- Standard spacing: p-4, gap-4 (16px), m-6 (24px)
-- Generous spacing: p-8, py-12 (32px, 48px)
-- Section spacing: py-16, py-20 (64px, 80px)
+**Dashboard Layout**:
+- KPI Cards: 3-column grid (md:col-span-4), gap-6
+- Charts: 8-column for charts, 4-column for AI Insights
+- Recent Surveys: Full width table with 360px cards in grid
 
-**Container Strategy**:
-- Full-width sections: w-full with max-w-7xl mx-auto px-4
-- Centered content cards: max-w-2xl mx-auto
-- Question views: max-w-3xl mx-auto for optimal readability
-- Form inputs: max-w-md for focused interaction
+**Responsive Breakpoints**:
+- Mobile: Single column, full-width with padding
+- Tablet (md): 2-column grids, adjusted spacing
+- Desktop (lg): Multi-column dashboards, standard spacing
 
-**Grid Patterns**:
-- Dashboard survey cards: grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6
-- Feature highlights: grid-cols-1 md:grid-cols-2 gap-8
-- Mobile: Always single column with adequate padding
+## Consistency Rules
 
-## Component Library
+### Cross-Component Standards
+1. **All Cards**: 12px border-radius, 1px light border, soft shadow
+2. **All Text**: Use CSS variables for colors (#1C2635, #6A7789)
+3. **All Spacing**: Use defined Tailwind spacing units consistently
+4. **All Icons**: 18-24px size, color matching context
 
-### Navigation
-- Clean header with logo left, user menu right
-- Minimal border-bottom (border-gray-200) for subtle separation
-- Sticky positioning (sticky top-0) with backdrop-blur effect
-- Height: h-16 with flex items-center
+### DO's
+✓ Use CSS variables from index.css for all colors
+✓ Maintain 12px border-radius on all cards/buttons
+✓ Use consistent padding: 5px (py-5) for card sections
+✓ Apply 8px gaps between content sections
+✓ Color-code related components (KPI cards, charts, insights)
 
-### Survey Question Cards
-- Full-screen presentation: min-h-screen flex items-center justify-center
-- No visible borders or boxes - questions float on background
-- Fade + slide transitions: opacity and translateY(20px → 0)
-- Progress indicator: thin bar at top (h-1) with smooth width transition
+### DON'Ts
+✗ Don't use arbitrary hex colors in components (use CSS variables)
+✗ Don't use different border-radius values (always 12px except 8px for buttons)
+✗ Don't mix spacing inconsistently between cards
+✗ Don't use outdated color palette (amber/cyan)
+✗ Don't hardcode shadows - use standard 0 1px 3px rgba(0,0,0,0.05)
 
-### Input Fields
-- Large, friendly touch targets: h-12 to h-14
-- Rounded corners: rounded-lg (8px)
-- Subtle borders: border border-gray-300
-- Focus states: ring-2 ring-blue-500 ring-offset-2
-- Placeholder text: text-gray-400
+## Implementation Checklist
 
-### Buttons
-- Primary: bg-blue-600 text-white rounded-lg px-6 py-3
-- Secondary: bg-white border border-gray-300 text-gray-700
-- Minimum width: min-w-[120px] for consistency
-- Hover: subtle scale transform-scale-105 and brightness increase
-- Disabled: opacity-50 cursor-not-allowed
-
-### File Upload Zone
-- Dashed border dropzone: border-2 border-dashed border-gray-300 rounded-xl
-- Hover state: border-blue-500 bg-blue-50
-- Large hit area: min-h-[200px] flex items-center justify-center
-- Upload icon and clear instruction text centered
-
-### Dashboard Cards
-- White surface: bg-white with subtle shadow
-- Card shadow: shadow-sm (0 1px 2px rgba(0,0,0,0.05))
-- Hover elevation: shadow-md transition
-- Padding: p-6 with clear title and metadata hierarchy
-
-### Chat Panel (AI Refinement)
-- Side panel or modal overlay: max-w-md
-- Message bubbles: User (bg-blue-100, ml-auto), AI (bg-gray-100)
-- Rounded bubbles: rounded-2xl with p-4
-- Input at bottom with send button
-
-### Progress Indicators
-- Linear progress bar at screen top: h-1 bg-blue-600
-- Smooth width transitions: transition-all duration-500 ease-out
-- Percentage text: Small, unobtrusive (text-sm text-gray-500)
-
-## Animations
-
-**Timing**: Use sparingly with 300ms duration and ease-in-out easing
-- Question transitions: Fade in (opacity 0→1) + slide up (translateY 20px→0)
-- Page transitions: Cross-fade between views (200ms)
-- Button interactions: Subtle scale on hover (scale-105)
-- Card reveals: Staggered fade-in on dashboard load (delay increments of 50ms)
-
-**No Animations For**:
-- Loading states (use simple spinners)
-- Background elements
-- Decorative elements
-
-## Screen-Specific Layouts
-
-### Login/Signup Screen
-- Centered card approach: max-w-md mx-auto with vertical centering
-- Logo at top center
-- Form fields stacked with gap-4
-- Social proof or tagline below form
-- Clean background: gradient or subtle pattern
-
-### Dashboard
-- Header with "Create New Survey" primary CTA
-- Grid of survey cards showing: title, creation date, response count, quick actions
-- Empty state: Centered illustration with "Create your first survey" CTA
-- Filter/search bar if user has multiple surveys
-
-### Upload/Chat Screen
-- Split view on desktop: Upload zone (left 60%), Chat panel (right 40%)
-- Mobile: Stacked vertical with upload first
-- Progress feedback: Linear progress bar + status text during OCR
-- Parsed text preview: Collapsible section showing extracted content
-
-### Survey Builder Preview
-- Full-screen immersive view mimicking respondent experience
-- Single question centered with generous whitespace
-- Navigation: "Next" button bottom-right, "Back" text link bottom-left
-- Edit mode toggle: Floating button to switch between preview/edit
-
-### Survey View (Respondent)
-- Clean, distraction-free full-screen experience
-- One question at a time with smooth transitions
-- Keyboard navigation support (Enter to advance)
-- Thank you screen with custom message option
-
-## Images
-
-**Hero Section (Marketing/Landing Page)**:
-- Large hero image showing trainers/educators using the tool in collaborative settings
-- Image treatment: Subtle overlay (bg-black/20) for text legibility
-- Placement: Full-width background with centered content overlay
-- Height: min-h-[500px] md:min-h-[600px]
-
-**Dashboard Empty State**:
-- Illustrative image showing survey creation concept
-- Style: Modern, friendly illustration (not photography)
-- Size: max-w-md centered above CTA
-
-**Feature Showcases**:
-- Screenshots of actual interface showing AI chat, question preview, response analytics
-- Border: Subtle border or shadow for definition
-- Responsive sizing: Scale down proportionally on mobile
-
-## Accessibility
-
-- Focus indicators: Always visible with ring-2 ring-blue-500 ring-offset-2
-- Color contrast: Meet WCAG AA standards (4.5:1 for text)
-- Keyboard navigation: Full support for Tab, Enter, Escape
-- ARIA labels: Descriptive labels for all interactive elements
-- Form validation: Clear error states with red-500 text and icons
-
-## Responsive Breakpoints
-
-- Mobile: base (default) - Stack everything, full-width components
-- Tablet: md: (768px+) - Two-column grids, side-by-side layouts
-- Desktop: lg: (1024px+) - Multi-column dashboards, split views
-- Wide: xl: (1280px+) - Maximum container widths, spacious layouts
+For every new component:
+- [ ] Use colors from index.css CSS variables
+- [ ] Apply 12px border-radius (cards) / 8px (buttons)
+- [ ] Set padding: 20px (px-5 py-5) for card sections
+- [ ] Use light borders (#E2E7EF) and soft shadows
+- [ ] Ensure text colors are #1C2635 (primary) or #6A7789 (secondary)
+- [ ] Test colors in both light and dark modes if applicable
+- [ ] Match icon colors to context (border colors or category)

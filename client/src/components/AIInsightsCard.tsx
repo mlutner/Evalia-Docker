@@ -25,15 +25,15 @@ export default function AIInsightsCard({ insights, isLoading, error }: AIInsight
 
   if (error) {
     return (
-      <Card className="border-amber-200 bg-amber-50/50 dark:bg-amber-950/30 dark:border-amber-900 mb-8">
-        <CardHeader className="pb-3">
+      <Card className="border-[#E2E7EF] bg-[#F7F9FC] mb-8" style={{ borderRadius: '12px' }}>
+        <CardHeader className="pb-3 px-5 pt-4">
           <div className="flex items-center gap-3">
-            <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-500 flex-shrink-0" />
+            <AlertCircle className="w-5 h-5" style={{ color: '#A3D65C' }} />
             <CardTitle className="text-sm font-semibold">Analysis Unavailable</CardTitle>
           </div>
         </CardHeader>
-        <CardContent>
-          <p className="text-sm text-amber-700 dark:text-amber-400">{error}</p>
+        <CardContent className="px-5 pb-4">
+          <p className="text-sm" style={{ color: '#6A7789' }}>{error}</p>
         </CardContent>
       </Card>
     );
@@ -41,18 +41,18 @@ export default function AIInsightsCard({ insights, isLoading, error }: AIInsight
 
   if (isLoading) {
     return (
-      <Card className="border-slate-200 dark:border-slate-700 mb-8">
-        <CardHeader className="pb-3">
+      <Card className="border-[#E2E7EF] mb-8" style={{ borderRadius: '12px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+        <CardHeader className="pb-3 px-5 pt-4">
           <div className="flex items-center gap-3">
-            <div className="w-5 h-5 rounded-full border-2 border-slate-300 border-t-slate-600 dark:border-t-slate-300 animate-spin" />
+            <div className="w-5 h-5 rounded-full border-2" style={{ borderColor: '#E2E7EF', borderTopColor: '#2F8FA5' }} className="animate-spin" />
             <CardTitle className="text-sm font-semibold">Analyzing Responses</CardTitle>
           </div>
-          <p className="text-xs text-muted-foreground mt-1">Extracting themes and patterns...</p>
+          <p className="text-xs" style={{ color: '#6A7789', marginTop: '4px' }}>Extracting themes and patterns...</p>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-5 pb-4">
           <div className="space-y-2">
-            <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full w-full" />
-            <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full w-5/6" />
+            <div className="h-2 rounded-full w-full" style={{ backgroundColor: '#E2E7EF' }} />
+            <div className="h-2 rounded-full w-5/6" style={{ backgroundColor: '#E2E7EF' }} />
           </div>
         </CardContent>
       </Card>
@@ -64,11 +64,11 @@ export default function AIInsightsCard({ insights, isLoading, error }: AIInsight
   const sentimentTotal = insights.sentiment.positive + insights.sentiment.neutral + insights.sentiment.negative;
 
   return (
-    <Card className="border-slate-200 dark:border-slate-700 mb-8 hover-elevate">
-      <CardHeader className="pb-4">
+    <Card className="border-[#E2E7EF] mb-8 hover-elevate" style={{ borderRadius: '12px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+      <CardHeader className="pb-4 px-5 pt-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 flex-1">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <div className="w-8 h-8 rounded-[8px] flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: '#2F8FA5' }}>
               <Sparkles className="w-4 h-4 text-white" />
             </div>
             <div className="flex-1 min-w-0">
@@ -88,29 +88,27 @@ export default function AIInsightsCard({ insights, isLoading, error }: AIInsight
         </div>
       </CardHeader>
 
-      <div className="px-6 pb-4 space-y-4">
+      <div className="px-5 pb-4 space-y-4">
         {/* Sentiment Bars */}
         <div>
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Sentiment</p>
-          <div className="flex h-2 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700 gap-0.5">
+          <p className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: '#6A7789' }}>Sentiment</p>
+          <div className="flex h-2 rounded-full overflow-hidden gap-0.5" style={{ backgroundColor: '#E2E7EF' }}>
             {insights.sentiment.positive > 0 && (
               <div
-                className="bg-green-500"
-                style={{ width: `${(insights.sentiment.positive / sentimentTotal) * 100}%` }}
+                style={{ width: `${(insights.sentiment.positive / sentimentTotal) * 100}%`, backgroundColor: '#37C0A3' }}
                 title={`${insights.sentiment.positive}% Positive`}
               />
             )}
             {insights.sentiment.neutral > 0 && (
               <div
-                className="bg-slate-400 dark:bg-slate-500"
+                style={{ width: `${(insights.sentiment.neutral / sentimentTotal) * 100}%`, backgroundColor: '#A3D65C' }}
                 style={{ width: `${(insights.sentiment.neutral / sentimentTotal) * 100}%` }}
                 title={`${insights.sentiment.neutral}% Neutral`}
               />
             )}
             {insights.sentiment.negative > 0 && (
               <div
-                className="bg-red-500"
-                style={{ width: `${(insights.sentiment.negative / sentimentTotal) * 100}%` }}
+                style={{ width: `${(insights.sentiment.negative / sentimentTotal) * 100}%`, backgroundColor: '#2F8FA5' }}
                 title={`${insights.sentiment.negative}% Negative`}
               />
             )}
