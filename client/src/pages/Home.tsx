@@ -74,10 +74,9 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Connectors for desktop */}
-          <div className="hidden md:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-evalia-teal-200 via-evalia-teal-300 to-evalia-teal-200 -translate-y-24" style={{ maxWidth: '90%', marginLeft: '5%' }}></div>
-
-          <div className="grid md:grid-cols-3 gap-12 md:gap-16 max-w-6xl mx-auto relative z-10">
+          <div className="grid md:grid-cols-3 gap-12 md:gap-16 max-w-6xl mx-auto relative">
+            {/* Connectors for desktop - positioned to align with icons */}
+            <div className="hidden md:block absolute top-8 left-0 right-0 h-1 bg-gradient-to-r from-evalia-teal-200 via-evalia-teal-300 to-evalia-teal-200 pointer-events-none" style={{ maxWidth: '90%', marginLeft: '5%' }}></div>
             {/* Step 1 */}
             <div className="relative hover-elevate transition-all">
               <div className="flex items-center gap-4 mb-8">
