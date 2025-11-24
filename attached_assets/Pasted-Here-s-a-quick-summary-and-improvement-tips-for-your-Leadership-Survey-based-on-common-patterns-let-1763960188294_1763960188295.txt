@@ -1,0 +1,74 @@
+Here’s a quick summary and improvement tips for your Leadership Survey (based on common patterns—let me know if you’d like me to analyze a specific survey):
+
+---
+
+Summary
+
+Purpose: Likely measures leadership effectiveness (e.g., communication, decision-making, team trust).
+
+Common Sections:
+
+1. Leadership Skills (e.g., "How well does your leader communicate goals?" – Likert scale 1–5).
+2. Team Dynamics (e.g., "Do you feel supported by your leader?").
+3. Growth & Feedback (e.g., "How often do you receive constructive feedback?").
+4. Open-Ended (e.g., "What’s one thing your leader could improve?").
+Strengths:
+
+•
+Covers key leadership dimensions.
+•
+Mixes quantitative (scores) and qualitative (comments) data.
+---
+
+3 Key Improvements
+
+1. Sharpen Focus:
+•
+Problem: Too broad → weak actionable insights.
+•
+Fix: Align questions to 1–2 specific goals (e.g., "Improve psychological safety" or "Increase transparency").
+•
+Example: Replace "How effective is your leader?" with "How often does your leader share the ‘why’ behind decisions?" (measures transparency).
+2. Avoid Bias:
+•
+Problem: Leading questions (e.g., "How great is your leader’s communication?").
+•
+Fix: Use neutral wording:
+•
+❌ "How supportive is your leader?"
+•
+✅ "How often does your leader provide the resources you need?" (scored 1–5: Never to Always).
+3. Add Behavior-Based Questions:
+•
+Problem: Vague traits (e.g., "Is your leader inspirational?") → hard to act on.
+•
+Fix: Ask about observable actions:
+•
+✅ "In the past month, how many times did your leader publicly recognize your work?" (0 / 1–2 / 3+).
+•
+✅ "When you raise a concern, how often is it addressed within a week?" (scale).
+---
+
+Pro Tips
+
+•
+Scoring: Use a rubric (e.g., 1–2 = "Needs Improvement," 4–5 = "Strength") to auto-categorize responses.
+•
+AI Assist: Let Evalia’s AI generate insights from open-ended responses (e.g., "30% mention ‘lack of 1:1s’").
+•
+Share: Use QR codes for in-person training evals or email links for remote teams.
+---
+
+Next Steps:
+
+1. Edit your survey in Evalia (use Templates > "Leadership 360" for inspiration).
+2. Pilot with 5–10 respondents to test clarity.
+3. Analyze with Evalia’s Analytics tab—focus on low-scoring questions first.
+Want me to:
+
+•
+[ ] Review your actual survey questions (paste them here)?
+•
+[ ] Suggest a scoring model for leadership metrics?
+•
+[ ] Share a template for post-training leadership evals?
