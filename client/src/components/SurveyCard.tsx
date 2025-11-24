@@ -317,8 +317,8 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
                 disabled={survey.responseCount === 0}
                 className="flex-1 font-semibold text-sm"
                 style={{
-                  backgroundColor: survey.responseCount === 0 ? '#F0F2F5' : '#2F8FA5',
-                  color: survey.responseCount === 0 ? '#B0B8C2' : '#FFFFFF',
+                  backgroundColor: survey.responseCount === 0 ? 'rgba(47, 143, 165, 0.15)' : '#2F8FA5',
+                  color: survey.responseCount === 0 ? '#2F8FA5' : '#FFFFFF',
                   border: 'none'
                 }}
               >
@@ -328,7 +328,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
             </TooltipTrigger>
             {survey.responseCount === 0 && (
               <TooltipContent side="bottom" className="max-w-xs text-xs">
-                Collect responses first to analyze survey data
+                No responses yet. Start collecting responses to view analytics.
               </TooltipContent>
             )}
           </Tooltip>
