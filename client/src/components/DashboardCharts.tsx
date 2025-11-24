@@ -13,10 +13,10 @@ interface TrendData {
 }
 
 export function ResponseTrendsChart({ data }: { data: TrendData[] }) {
-  const primaryColor = '#4CB4A0';
-  const accentColor = '#C7F464';
-  const axisColor = '#475467';
-  const surfaceColor = getComputedStyle(document.documentElement).getPropertyValue('--color-surface').trim() || '#FFFFFF';
+  const primaryColor = '#37C0A3';
+  const accentColor = '#1F6F78';
+  const axisColor = '#6A7789';
+  const surfaceColor = '#FFFFFF';
   const borderColor = '#E2E7EF';
 
   return (
@@ -43,9 +43,9 @@ interface SurveyData {
 }
 
 export function CategoryBreakdownChart({ data }: { data: SurveyData[] }) {
-  const primaryColor = '#4CB4A0';
-  const axisColor = '#475467';
-  const surfaceColor = getComputedStyle(document.documentElement).getPropertyValue('--color-surface').trim() || '#FFFFFF';
+  const primaryColor = '#37C0A3';
+  const axisColor = '#6A7789';
+  const surfaceColor = '#FFFFFF';
   const borderColor = '#E2E7EF';
 
   return (
@@ -72,9 +72,9 @@ interface DistributionData {
 }
 
 export function DistributionChart({ data }: { data: DistributionData[] }) {
-  const primaryColor = '#4CB4A0';
-  const axisColor = '#475467';
-  const surfaceColor = getComputedStyle(document.documentElement).getPropertyValue('--color-surface').trim() || '#FFFFFF';
+  const primaryColor = '#37C0A3';
+  const axisColor = '#6A7789';
+  const surfaceColor = '#FFFFFF';
   const borderColor = '#E2E7EF';
 
   return (
@@ -101,9 +101,9 @@ interface ResponseVolumeData {
 }
 
 export function ResponseVolumeChart({ data }: { data: ResponseVolumeData[] }) {
-  const primaryColor = '#4CB4A0';
-  const axisColor = '#475467';
-  const surfaceColor = getComputedStyle(document.documentElement).getPropertyValue('--color-surface').trim() || '#FFFFFF';
+  const primaryColor = '#37C0A3';
+  const axisColor = '#6A7789';
+  const surfaceColor = '#FFFFFF';
   const borderColor = '#E2E7EF';
 
   return (

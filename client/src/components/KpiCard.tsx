@@ -18,9 +18,9 @@ export function KpiCard({
 }: KpiCardProps) {
   return (
     <Card className={`hover-elevate ${showBorder ? "border-l-4" : ""} h-full`} style={{
-      borderLeftColor: showBorder ? '#4CB4A0' : undefined,
+      borderLeftColor: showBorder ? '#2F8FA5' : undefined,
       backgroundColor: '#FFFFFF',
-      borderColor: '#E3E7EC',
+      borderColor: '#E2E7EF',
       boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
       borderRadius: '12px',
     }}>

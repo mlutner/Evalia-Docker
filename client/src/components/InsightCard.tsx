@@ -9,21 +9,21 @@ interface InsightCardProps {
 
 const typeStyles = {
   warning: {
-    bgColor: "#F7F9FA",
-    iconColor: "#4CB4A0",
-    borderColor: "#4CB4A0",
+    bgColor: "#F7F9FC",
+    iconColor: "#2F8FA5",
+    borderColor: "#2F8FA5",
     iconBgColor: "transparent",
   },
   info: {
-    bgColor: "#F7F9FA",
-    iconColor: "#4CB4A0",
-    borderColor: "#4CB4A0",
+    bgColor: "#F7F9FC",
+    iconColor: "#2F8FA5",
+    borderColor: "#2F8FA5",
     iconBgColor: "transparent",
   },
   neutral: {
-    bgColor: "#F7F9FA",
-    iconColor: "#4CB4A0",
-    borderColor: "#4CB4A0",
+    bgColor: "#F7F9FC",
+    iconColor: "#2F8FA5",
+    borderColor: "#2F8FA5",
     iconBgColor: "transparent",
   },
 };
