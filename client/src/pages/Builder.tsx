@@ -274,18 +274,18 @@ export default function Builder() {
 
         {/* Step 1: Start - Choose creation method */}
         {surveyState.currentWizardStep === 1 && (
-          <Step1Start
+          <SurveyStartFlow
             currentQuestions={surveyState.currentQuestions}
             currentSurveyTitle={surveyState.currentSurveyTitle}
             onSurveyTitleChange={surveyState.setCurrentSurveyTitle}
-            onUseTemplate={(template) => {
+            onUseTemplate={(template: SurveyTemplate) => {
               handleUseTemplate(template);
               if (surveyState.currentQuestions.length === 0) {
                 setTimeout(() => surveyState.setCurrentWizardStep(2), 100);
               }
             }}
             onFileSelect={handleFileSelect}
-            onGenerateFromPrompt={(prompt, includeScoringToggle, selectedFile) => {
+            onGenerateFromPrompt={(prompt: string, includeScoringToggle: boolean, selectedFile?: any) => {
               handleGenerateFromPrompt(prompt, includeScoringToggle, selectedFile);
             }}
             onPasteText={handlePasteText}

@@ -327,9 +327,17 @@ export default function SurveyStartFlow({
         </div>
 
         {/* Preview Modal */}
-        {previewTemplate && (
-          <TemplatePreviewModal template={previewTemplate} onClose={() => setPreviewTemplate(null)} />
-        )}
+        <TemplatePreviewModal 
+          template={previewTemplate} 
+          open={!!previewTemplate}
+          onOpenChange={(open) => !open && setPreviewTemplate(null)}
+          onUse={() => {
+            if (previewTemplate) {
+              onUseTemplate(previewTemplate);
+              setPreviewTemplate(null);
+            }
+          }}
+        />
       </div>
     </div>
   );
