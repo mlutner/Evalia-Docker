@@ -180,7 +180,7 @@ export default function ChatPanel({ messages, onSendMessage, isLoading = false, 
           >
             <Upload className="w-4 h-4" />
           </Button>
-          <Button type="submit" size="icon" disabled={(!input.trim() && !selectedFile) || isLoading} data-testid="button-send-message">
+          <Button type="submit" size="icon" disabled={(!input.trim() && !selectedFile) || isLoading} data-testid="button-send-message" style={{ backgroundColor: '#37C0A3', color: '#FFFFFF' }}>
             <Send className="w-4 h-4" />
           </Button>
         </div>

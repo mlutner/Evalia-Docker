@@ -360,6 +360,7 @@ export default function Builder() {
                 size="lg" 
                 onClick={handlePreviewSurvey}
                 data-testid="button-preview"
+                style={{ color: '#37C0A3', borderColor: '#37C0A3' }}
               >
                 Preview Survey
               </Button>
