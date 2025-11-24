@@ -70,8 +70,8 @@ export function DashboardOverview() {
                 <p className="text-3xl font-bold mt-2">{metrics.totalSurveys}</p>
                 <p className="text-xs text-muted-foreground mt-1">{metrics.activeSurveys} active</p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                <BarChart3 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <div className="w-10 h-10 rounded-lg bg-evalia-navy/20 flex items-center justify-center">
+                <BarChart3 className="w-5 h-5 text-evalia-lime" />
               </div>
             </div>
           </CardContent>
@@ -85,8 +85,8 @@ export function DashboardOverview() {
                 <p className="text-3xl font-bold mt-2">{metrics.avgScore}</p>
                 <p className="text-xs text-muted-foreground mt-1">out of 100</p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                <Award className="w-5 h-5 text-green-600 dark:text-green-400" />
+              <div className="w-10 h-10 rounded-lg bg-evalia-navy/20 flex items-center justify-center">
+                <Award className="w-5 h-5 text-evalia-lime" />
               </div>
             </div>
           </CardContent>
@@ -100,8 +100,8 @@ export function DashboardOverview() {
                 <p className="text-3xl font-bold mt-2">{metrics.responseRate}%</p>
                 <p className="text-xs text-muted-foreground mt-1">completion</p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+              <div className="w-10 h-10 rounded-lg bg-evalia-navy/20 flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-evalia-lime" />
               </div>
             </div>
           </CardContent>
@@ -115,8 +115,8 @@ export function DashboardOverview() {
                 <p className="text-3xl font-bold mt-2">{metrics.totalResponses}</p>
                 <p className="text-xs text-muted-foreground mt-1">collected</p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                <Users className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              <div className="w-10 h-10 rounded-lg bg-evalia-navy/20 flex items-center justify-center">
+                <Users className="w-5 h-5 text-evalia-lime" />
               </div>
             </div>
           </CardContent>
