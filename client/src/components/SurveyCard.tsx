@@ -326,11 +326,12 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
                 Analyze
               </Button>
             </TooltipTrigger>
-            {survey.responseCount === 0 && (
-              <TooltipContent side="bottom" className="max-w-xs text-xs">
-                No responses yet. Start collecting responses to view analytics.
-              </TooltipContent>
-            )}
+            <TooltipContent side="bottom" className="max-w-xs text-xs">
+              {survey.responseCount === 0 
+                ? "No responses yet. Start collecting responses to view analytics."
+                : "View detailed analytics and response breakdown"
+              }
+            </TooltipContent>
           </Tooltip>
         </div>
       </div>
