@@ -7,15 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import type { SurveyRespondent } from "@shared/schema";
 import { ResponseDetailModal } from "@/components/ResponseDetailModal";
 import AIInsightsCard from "@/components/AIInsightsCard";
-import { ArrowLeft, Users, FileText, Calendar, Download, Loader2, Trash2, AlertTriangle, TrendingUp, ChevronDown, Zap, Clock, Plus, Check, Upload, Info } from "lucide-react";
+import { ArrowLeft, Users, FileText, Calendar, Download, Loader2, Trash2, AlertTriangle, TrendingUp, ChevronDown, Zap, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useResponseAnalysis } from "@/hooks/useResponseAnalysis";
 import { useState, useMemo } from "react";
@@ -33,11 +27,6 @@ export default function AnalyticsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [selectedResponse, setSelectedResponse] = useState<SurveyResponse | null>(null);
-  const [inviteOpen, setInviteOpen] = useState(false);
-  const [csvData, setCsvData] = useState<Array<{ email: string; name?: string }>>([]);
-  const [preview, setPreview] = useState<string>("");
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [textInput, setTextInput] = useState("");
   const { toast } = useToast();
 
   const { data, isLoading, error } = useQuery<AnalyticsData>({
@@ -47,12 +36,6 @@ export default function AnalyticsPage() {
       const url = `/api/surveys/${id}/responses${searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : ""}`;
       return fetch(url).then(r => r.json());
     }
-  });
-
-  // Fetch respondents
-  const { data: respondents = [], isLoading: respondentsLoading, refetch: refetchRespondents } = useQuery<SurveyRespondent[]>({
-    queryKey: [`/api/surveys/${id}/respondents`],
-    enabled: !!id,
   });
 
   // Fetch AI insights when responses are available
@@ -357,14 +340,7 @@ export default function AnalyticsPage() {
           error={insightsError?.message}
         />
 
-        <Tabs defaultValue="responses" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
-            <TabsTrigger value="responses">Responses</TabsTrigger>
-            <TabsTrigger value="respondents">Respondents</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="responses">
-            {count === 0 ? (
+        {count === 0 ? (
               <Card>
                 <CardContent className="pt-6">
                   <div className="text-center py-12">
@@ -547,116 +523,19 @@ export default function AnalyticsPage() {
               })}
             </div>
           </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="respondents" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Invited</CardTitle>
-                  <Users className="w-4 h-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">{respondents.length}</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Completed</CardTitle>
-                  <Check className="w-4 h-4 text-green-600" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-green-600">{respondents.filter(r => r.submittedAt).length}</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
-                  <Clock className="w-4 h-4 text-blue-600" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-blue-600">{respondents.length > 0 ? Math.round((respondents.filter(r => r.submittedAt).length / respondents.length) * 100) : 0}%</div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card className="border-blue-200 bg-blue-50 dark:bg-blue-950">
-              <CardContent className="pt-6 flex gap-3">
-                <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-                <div className="text-sm text-blue-900 dark:text-blue-100">
-                  <strong>Privacy Protected:</strong> Emails are used only for sending invitations and are not stored in your database. Respondents are tracked by unique tokens only.
-                </div>
-              </CardContent>
-            </Card>
-
-            <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
-              <DialogTrigger asChild>
-                <Button className="w-full gap-2" data-testid="button-invite-respondents">
-                  <Plus className="w-4 h-4" />
-                  Import Respondents
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle>Import Respondents</DialogTitle>
-                  <DialogDescription>Paste or upload respondent email addresses</DialogDescription>
-                </DialogHeader>
-                <Textarea
-                  placeholder="Paste emails here (one per line or email | Name format)"
-                  value={textInput}
-                  onChange={(e) => setTextInput(e.target.value)}
-                  className="min-h-40"
-                  data-testid="textarea-paste-respondents"
-                />
-                {preview && <div className="p-3 bg-green-50 dark:bg-green-950 border border-green-200 rounded-lg text-sm text-green-900 dark:text-green-100" data-testid="text-csv-preview">✓ {preview}</div>}
-                <div className="flex gap-2 justify-end">
-                  <Button variant="outline" onClick={() => setInviteOpen(false)}>Cancel</Button>
-                  <Button onClick={() => { setCsvData(textInput.trim().split('\n').map(l => ({ email: l.trim(), name: undefined }))); setPreview(`Ready to invite ${textInput.trim().split('\n').length} respondent(s)`); }}>
-                    Parse & Continue
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Respondents ({respondents.length})</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {respondentsLoading ? (
-                  <div className="text-center py-8 text-muted-foreground">Loading respondents...</div>
-                ) : respondents.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">No respondents yet. Click "Import Respondents" to get started.</div>
-                ) : (
-                  <div className="space-y-2">
-                    {respondents.map((r) => (
-                      <div key={r.id} className="flex items-center justify-between p-3 border rounded-lg hover-elevate" data-testid={`row-respondent-${r.id}`}>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm">{r.name || "Anonymous"}</p>
-                          <p className="text-xs text-muted-foreground">Token: {r.respondentToken?.slice(0, 8)}...</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {r.submittedAt ? (
-                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 gap-1">
-                              <Check className="w-3 h-3" />
-                              Submitted
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 gap-1">
-                              <Clock className="w-3 h-3" />
-                              Pending
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        ) : (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center py-12">
+                <Users className="w-16 h-16 text-muted-foreground/50 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No Responses Yet</h3>
+                <p className="text-muted-foreground">
+                  Share your survey to start collecting responses
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </main>
     </div>
   );
