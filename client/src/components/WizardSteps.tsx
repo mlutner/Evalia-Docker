@@ -14,8 +14,8 @@ interface WizardStepsProps {
 
 export default function WizardSteps({ currentStep, steps }: WizardStepsProps) {
   return (
-    <div className="w-full mt-8 mb-8 md:mb-12 overflow-x-auto">
-      <div className="flex items-center justify-center gap-1.5 sm:gap-3 md:gap-6 lg:gap-8 min-w-min px-2">
+    <div className="w-full mt-16 md:mt-20 mb-16 md:mb-20 overflow-x-auto">
+      <div className="flex items-center justify-center gap-1.5 sm:gap-2 md:gap-3 lg:gap-4 min-w-min px-2">
         {steps.map((step, index) => (
           <div key={step.number} className="flex items-stretch gap-1.5 sm:gap-3 md:gap-6 lg:gap-8">
             {/* Step Circle and Label */}
@@ -60,7 +60,7 @@ export default function WizardSteps({ currentStep, steps }: WizardStepsProps) {
 
             {/* Connector Line (hidden for last step) */}
             {index < steps.length - 1 && (
-              <div className="flex items-start pt-1.5 sm:pt-2 md:pt-3 flex-grow max-w-12 sm:max-w-16 md:max-w-24">
+              <div className="flex items-start pt-1.5 sm:pt-2 md:pt-3 flex-1 min-w-12 sm:min-w-16 md:min-w-24">
                 <div
                   style={{
                     backgroundColor: currentStep > step.number ? theme.colors.primary : 'var(--color-border)',
