@@ -81,7 +81,7 @@
   --card-spacing-metadata: 8px;
 
   /* Tailwind CSS Variables - Evalia Brand Palette */
-  --background: 210 50% 98%;
+  --background: 210 16% 98.6%;
   --foreground: 216 27% 16%;
   --card: 0 0% 100%;
   --card-foreground: 216 27% 16%;
@@ -89,7 +89,7 @@
   --popover-foreground: 216 27% 16%;
   --primary: 197 57% 46%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 210 50% 97%;
+  --secondary: 210 16% 97.5%;
   --secondary-foreground: 216 27% 16%;
   --muted: 213 17% 92%;
   --muted-foreground: 214 13% 49%;
