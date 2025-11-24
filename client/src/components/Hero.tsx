@@ -1,5 +1,5 @@
 import { ArrowRightIcon } from 'lucide-react';
-import heroIllustration from '@assets/hero-illustration.png';
+import heroIllustration from '@assets/hero-feedback-illustration.png';
 
 export function Hero() {
   return (
@@ -71,9 +71,10 @@ export function Hero() {
             </p>
           </div>
 
-          {/* Right illustration */}
-          <div className="relative hidden lg:block">
-            <img src={heroIllustration} alt="Training feedback and ratings illustration" className="w-full h-auto" data-testid="img-hero-illustration" />
+          {/* Right illustration with background */}
+          <div className="relative hidden lg:flex items-center justify-center">
+            <div className="absolute inset-0 bg-gradient-to-br from-evalia-teal-100/40 to-evalia-mint/20 rounded-full blur-2xl" style={{ transform: 'scale(1.1)' }}></div>
+            <img src={heroIllustration} alt="Training feedback and ratings illustration" className="relative w-full h-auto" data-testid="img-hero-illustration" />
           </div>
         </div>
       </div>
