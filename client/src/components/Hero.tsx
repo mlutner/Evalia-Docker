@@ -4,7 +4,7 @@ import heroIllustration from '@assets/hero-illustration.png';
 export function Hero() {
   return (
     <section className="relative bg-evalia-teal-600 overflow-hidden pt-20">
-      <div className="relative max-w-7xl mx-auto px-6 py-13">
+      <div className="relative max-w-7xl mx-auto px-6 py-24">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left content */}
           <div className="text-white space-y-8">
