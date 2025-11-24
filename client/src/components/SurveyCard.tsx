@@ -219,12 +219,6 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
           </div>
         </div>
 
-        {/* No Respondents Notice */}
-        {(survey.respondentCount === undefined || survey.respondentCount === 0) && survey.responseCount === 0 && (
-          <div className="text-xs text-muted-foreground italic p-3 bg-gradient-to-r from-primary/5 via-primary/3 to-background rounded border border-primary/10">
-            Share survey or invite respondents to start collecting responses
-          </div>
-        )}
         
         {/* Feature Indicators */}
         <div className="flex flex-wrap gap-2 pt-2">
@@ -262,14 +256,21 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
         <Tooltip>
           <TooltipTrigger asChild>
             <Button 
-              className="flex-1"
               onClick={onAnalyze} 
               data-testid={`button-analyze-${index}`}
               disabled={survey.responseCount === 0}
-              style={{ backgroundColor: 'var(--color-primary)', color: '#FFFFFF' }}
+              style={{
+                backgroundColor: '#2F8FA5',
+                color: '#FFFFFF',
+                borderRadius: '8px',
+                padding: '10px 16px',
+                height: '40px',
+                width: '40px',
+                minWidth: '40px'
+              }}
+              className="flex items-center justify-center"
             >
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Analyze
+              <BarChart3 className="w-5 h-5" strokeWidth={1.5} />
             </Button>
           </TooltipTrigger>
           {survey.responseCount === 0 && (
@@ -279,6 +280,20 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
           )}
         </Tooltip>
       </CardFooter>
+
+      {/* Share Link Below Card */}
+      {(survey.respondentCount === undefined || survey.respondentCount === 0) && survey.responseCount === 0 && (
+        <div className="px-6 pb-4">
+          <button
+            onClick={() => setShareDialogOpen(true)}
+            style={{ color: '#6A7789', fontSize: '13px', fontWeight: 500 }}
+            className="hover:underline transition-all"
+            data-testid={`button-share-link-${survey.id}`}
+          >
+            Share survey to start collecting responses →
+          </button>
+        </div>
+      )}
 
       {/* Share Dialog */}
       <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
