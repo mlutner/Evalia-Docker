@@ -124,7 +124,7 @@ export default function SurveyStartFlow({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      <div className="max-w-7xl mx-auto px-4 py-6 md:py-10">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 lg:py-10">
         {/* Survey Type Selection */}
         <SurveyTypeSelector value={surveyType} onChange={handleSurveyTypeChange} />
 
@@ -174,7 +174,7 @@ export default function SurveyStartFlow({
         {/* Option Cards - Only show after type selection */}
         <AnimatePresence>
           {hasSelectedType && (
-            <div className="space-y-3 mb-8">
+            <div className="space-y-2 sm:space-y-3 md:space-y-4 mb-6 sm:mb-8">
           {OPTION_CARDS.map((option, index) => {
             const isExpanded = expandedOption === option.id;
             return (

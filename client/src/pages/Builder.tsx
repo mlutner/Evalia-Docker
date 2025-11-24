@@ -234,28 +234,28 @@ export default function Builder() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10">
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8">
         {/* Back to Dashboard Button */}
-        <div className="mb-8">
+        <div className="mb-4 sm:mb-6 md:mb-8">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setLocation("/dashboard")}
-            className="mb-4 text-muted-foreground hover:text-foreground"
+            className="mb-2 sm:mb-3 md:mb-4 text-muted-foreground hover:text-foreground text-xs sm:text-sm"
             data-testid="button-back-to-dashboard"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-3 sm:w-4 h-3 sm:h-4 mr-1.5 sm:mr-2" />
             Back to Dashboard
           </Button>
         </div>
 
-        <div className="mb-12 pb-8 border-b border-border/30">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-4xl font-semibold mb-2">
+        <div className="mb-6 sm:mb-8 md:mb-12 pb-4 sm:pb-6 md:pb-8 border-b border-border/30">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 md:gap-8 mb-4 sm:mb-6 md:mb-8">
+            <div className="min-w-0">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-1 sm:mb-2 line-clamp-2">
                 {isEditMode ? "Edit Survey" : "Create Survey"}
               </h1>
-              <p className="text-base text-muted-foreground">
+              <p className="text-xs sm:text-sm md:text-base text-muted-foreground line-clamp-2">
                 {surveyState.currentWizardStep === 1 && "Step 1 of 4: Choose survey or assessment"}
                 {surveyState.currentWizardStep === 2 && "Step 2 of 4: Choose how you'd like to create your survey"}
                 {surveyState.currentWizardStep === 3 && "Step 3 of 4: Build and refine your survey questions"}
@@ -263,9 +263,9 @@ export default function Builder() {
               </p>
             </div>
             {surveyState.lastAutoSave && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Save className="w-3 h-3" />
-                {surveyState.isAutoSaving ? "Saving..." : `Saved ${formatTimeAgo(surveyState.lastAutoSave)}`}
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground flex-shrink-0">
+                <Save className="w-3 h-3 flex-shrink-0" />
+                <span className="truncate">{surveyState.isAutoSaving ? "Saving..." : `Saved ${formatTimeAgo(surveyState.lastAutoSave)}`}</span>
               </div>
             )}
           </div>
