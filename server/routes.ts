@@ -941,9 +941,9 @@ EVALIA FEATURES:
 3. Surveys: Manage surveys (Draft/Live/Paused/Closed status), see response counts
 4. Respondent Groups: Manage and segment respondents
 5. Analytics: Analyze responses with charts, breakdowns, and AI-generated insights
-6. Scoring Models: Set up custom scoring rules
-7. Templates: Pre-built survey templates for training scenarios
-8. AI Assist: Generate surveys, analyze responses, extract insights
+6. Templates: Pre-built survey templates for training scenarios
+7. AI Assist: Generate surveys, analyze responses, extract insights
+8. Scoring Models: Set up custom scoring rules
 
 KEY CAPABILITIES:
 - Create surveys in minutes using AI or templates

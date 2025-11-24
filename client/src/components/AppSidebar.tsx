@@ -22,9 +22,9 @@ export function AppSidebar() {
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, href: "/dashboard", tooltip: "Overview and key metrics" },
     { id: "surveys", label: "Surveys", icon: BarChart3, href: "/surveys", tooltip: "Create, manage, and analyze surveys" },
     { id: "respondents", label: "Respondent Groups", icon: Users, href: "/respondents", tooltip: "Manage respondent lists and segments" },
-    { id: "scoring", label: "Scoring Models", icon: BookOpen, href: "/scoring", tooltip: "Set up scoring rules for questions" },
     { id: "templates", label: "Templates", icon: FileText, href: "/templates", tooltip: "Pre-built survey templates" },
     { id: "ai-assist", label: "AI Assist", icon: Zap, href: "/ai-assist", tooltip: "Generate surveys with AI" },
+    { id: "scoring", label: "Scoring Models", icon: BookOpen, href: "/scoring", tooltip: "Set up scoring rules for questions" },
     { id: "settings", label: "Settings", icon: Settings, href: "/settings", tooltip: "Account and workspace settings" },
   ];
 
