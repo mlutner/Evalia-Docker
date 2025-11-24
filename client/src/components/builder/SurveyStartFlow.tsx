@@ -30,21 +30,22 @@ const OPTION_CARDS = [
   {
     id: "templates",
     title: "Use a ready-made template",
-    description: "Browse professionally designed survey templates built for training and assessments. Start instantly with proven best practices.",
+    description: "Start fast with proven training-focused templates.",
     icon: Layers,
     color: PRIMARY_COLOR,
+    recommended: true,
   },
   {
     id: "ai",
     title: "Create with AI",
-    description: "Tell us what you want to measure. AI will generate custom survey questions based on your training needs and learning objectives.",
+    description: "Tell us your goals — AI builds your survey for you.",
     icon: Sparkles,
     color: PRIMARY_COLOR,
   },
   {
     id: "upload",
     title: "Import your content",
-    description: "Upload a document, PDF, or paste your existing questions. We'll help you build your survey from the content you already have.",
+    description: "Upload questions or documents to convert into a survey.",
     icon: FileUp,
     color: PRIMARY_COLOR,
   },
@@ -91,13 +92,13 @@ export default function SurveyStartFlow({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-20 md:mb-24"
+          className="text-center mb-8 md:mb-12"
         >
-          <h1 className="text-5xl md:text-6xl font-bold mb-6" style={{ color: '#1C2635' }}>
+          <h1 className="text-5xl md:text-6xl font-bold mb-4" style={{ color: '#1C2635' }}>
             How would you like to start?
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Select one of three methods below. Whichever you choose, you'll be able to refine your survey in the next step.
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-6">
+            Pick the option that matches how much structure you already have.
           </p>
         </motion.div>
 
@@ -126,14 +127,22 @@ export default function SurveyStartFlow({
         </AnimatePresence>
 
         {/* Option Cards */}
-        <div className="space-y-4 mb-12">
-          {OPTION_CARDS.map((option, index) => (
+        <div className="space-y-3 mb-8">
+          {OPTION_CARDS.map((option: any, index) => (
             <motion.div
               key={option.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
+              className={option.recommended ? "relative" : ""}
             >
+              {option.recommended && (
+                <div className="absolute -top-3 left-8">
+                  <span className="inline-block px-3 py-1 bg-primary text-white text-xs font-semibold rounded-full">
+                    Recommended for most
+                  </span>
+                </div>
+              )}
               <motion.button
                 onClick={() => setExpandedOption(expandedOption === option.id ? null : option.id)}
                 className="w-full text-left"
@@ -141,10 +150,10 @@ export default function SurveyStartFlow({
                 whileTap={{ y: 0 }}
               >
                 <div
-                  className="p-8 px-10 rounded-lg border-2 transition-all cursor-pointer group bg-white hover:shadow-md"
+                  className={`p-8 px-10 rounded-lg border-2 transition-all cursor-pointer group bg-white hover:shadow-md ${option.recommended ? "border-primary shadow-md" : ""}`}
                   style={{
-                    borderColor: expandedOption === option.id ? option.color : "#E5E7EB",
-                    backgroundColor: expandedOption === option.id ? `${option.color}08` : "white",
+                    borderColor: expandedOption === option.id ? option.color : (option.recommended ? option.color : "#D1D5DB"),
+                    backgroundColor: expandedOption === option.id ? `${option.color}08` : (option.recommended ? `${option.color}04` : "white"),
                   }}
                 >
                   <div className="flex items-start gap-8">
