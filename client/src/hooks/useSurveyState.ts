@@ -33,6 +33,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
   // Auto-save state
   const [lastAutoSave, setLastAutoSave] = useState<Date | null>(null);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
 
   // Create survey mutation
   const createSurveyMutation = useMutation({
@@ -52,6 +53,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       return apiRequest("POST", "/api/surveys", data);
     },
     onSuccess: (response) => {
+      setIsPublishing(false);
       toast({
         title: "Survey published!",
         description: "Your survey has been saved and is ready to share.",
@@ -62,6 +64,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       }, 800);
     },
     onError: (error: any) => {
+      setIsPublishing(false);
       toast({
         title: "Error",
         description: error.message || "Failed to create survey",
@@ -88,6 +91,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       return apiRequest("PUT", `/api/surveys/${surveyId}`, data);
     },
     onSuccess: () => {
+      setIsPublishing(false);
       toast({
         title: "Survey published!",
         description: "Your changes have been saved and published successfully.",
@@ -97,6 +101,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       }, 800);
     },
     onError: (error: any) => {
+      setIsPublishing(false);
       toast({
         title: "Error",
         description: error.message || "Failed to update survey",
@@ -149,7 +154,8 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
 
   // Auto-save effect
   useEffect(() => {
-    if (currentQuestions.length === 0 || currentWizardStep === 1) {
+    // Don't auto-save during publishing
+    if (isPublishing || currentQuestions.length === 0 || currentWizardStep === 1) {
       return;
     }
 
@@ -181,6 +187,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       }
     };
   }, [
+    isPublishing,
     currentQuestions,
     currentSurveyTitle,
     currentSurveyDescription,
@@ -274,6 +281,12 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       });
       return;
     }
+
+    // Clear auto-save timer and set publishing flag
+    if (autoSaveTimer.current) {
+      clearTimeout(autoSaveTimer.current);
+    }
+    setIsPublishing(true);
 
     const surveyData = {
       type: surveyType,
