@@ -62,7 +62,7 @@ export function DashboardOverview() {
     <div className="space-y-6">
       {/* Header with Time Filter */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Dashboard</h2>
+        <h2 className="text-3xl font-bold text-slate-900">Dashboard</h2>
         <button className="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg text-sm flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
           <span>Last 30 days</span>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,46 +73,46 @@ export function DashboardOverview() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="hover-elevate">
+        <Card className="hover-elevate border-l-4 border-l-[#1F8EFA]">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground font-medium">Surveys</p>
-                <p className="text-3xl font-bold mt-2">{metrics.totalSurveys}</p>
-                <p className="text-xs text-muted-foreground mt-1">{metrics.activeSurveys} active</p>
+                <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Created this month</p>
+                <p className="text-4xl font-bold mt-2">{metrics.totalSurveys}</p>
+                <p className="text-xs text-muted-foreground mt-2">{metrics.activeSurveys} active</p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-evalia-navy/20 flex items-center justify-center">
-                <BarChart3 className="w-5 h-5 text-evalia-lime" />
+              <div className="w-12 h-12 rounded-lg bg-[#1F8EFA]/10 flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-[#1F8EFA]" strokeWidth={1.5} />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="hover-elevate">
+        <Card className="hover-elevate border-l-4 border-l-[#1F8EFA]">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground font-medium">Avg. Score</p>
-                <p className="text-3xl font-bold mt-2">{metrics.avgScore}</p>
-                <p className="text-xs text-muted-foreground mt-1">out of 100</p>
+                <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Across all scoring models</p>
+                <p className="text-4xl font-bold mt-2">{metrics.avgScore}</p>
+                <p className="text-xs text-muted-foreground mt-2">out of 100</p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-evalia-navy/20 flex items-center justify-center">
-                <Award className="w-5 h-5 text-evalia-lime" />
+              <div className="w-12 h-12 rounded-lg bg-[#1F8EFA]/10 flex items-center justify-center">
+                <Award className="w-6 h-6 text-[#1F8EFA]" strokeWidth={1.5} />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="hover-elevate">
+        <Card className="hover-elevate border-l-4 border-l-[#1F8EFA]">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground font-medium">Response Rate</p>
-                <p className="text-3xl font-bold mt-2">{metrics.responseRate}%</p>
-                <p className="text-xs text-muted-foreground mt-1">completion</p>
+                <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Across all surveys</p>
+                <p className="text-4xl font-bold mt-2">{metrics.responseRate}%</p>
+                <p className="text-xs text-muted-foreground mt-2">completion</p>
               </div>
-              <div className="w-10 h-10 rounded-lg bg-evalia-navy/20 flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-evalia-lime" />
+              <div className="w-12 h-12 rounded-lg bg-[#1F8EFA]/10 flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-[#1F8EFA]" strokeWidth={1.5} />
               </div>
             </div>
           </CardContent>
@@ -127,7 +127,7 @@ export function DashboardOverview() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Response Trends</CardTitle>
+                <CardTitle className="text-base">How engagement changes over time</CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponseTrendsChart data={metrics.trends} />
@@ -136,7 +136,7 @@ export function DashboardOverview() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Category Breakdown</CardTitle>
+                <CardTitle className="text-base">Skills ratings across dimensions</CardTitle>
               </CardHeader>
               <CardContent>
                 <CategoryBreakdownChart data={[
@@ -188,48 +188,48 @@ export function DashboardOverview() {
             <CardHeader>
               <CardTitle className="text-base">AI Insights</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3">
               {/* Top Weak Areas */}
-              <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 hover-elevate cursor-pointer">
-                <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
-                  <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+              <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 hover-elevate cursor-pointer border-l-3 border-l-[#A8E05E]">
+                <div className="w-8 h-8 rounded-lg bg-[#A8E05E]/10 flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle className="w-4 h-4 text-[#A8E05E]" strokeWidth={1.5} />
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold">Top Weak Areas</p>
-                  <p className="text-xs text-muted-foreground mt-1">Communication skills ensured lower scores compared to other categories.</p>
+                  <p className="text-xs text-muted-foreground mt-1">Communication skills showed lower scores compared to other categories.</p>
                 </div>
               </div>
 
               {/* Top Strength */}
-              <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 hover-elevate cursor-pointer">
-                <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
-                  <Star className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 hover-elevate cursor-pointer border-l-3 border-l-[#1F8EFA]">
+                <div className="w-8 h-8 rounded-lg bg-[#1F8EFA]/10 flex items-center justify-center flex-shrink-0">
+                  <Star className="w-4 h-4 text-[#1F8EFA]" strokeWidth={1.5} />
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold">Top Strength</p>
-                  <p className="text-xs text-muted-foreground mt-1">Respondents rated knowledge to the strongest area.</p>
+                  <p className="text-xs text-muted-foreground mt-1">Knowledge was rated as the strongest area across all respondents.</p>
                 </div>
               </div>
 
               {/* Question Quality */}
-              <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 hover-elevate cursor-pointer">
-                <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center flex-shrink-0">
-                  <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 hover-elevate cursor-pointer border-l-3 border-l-[#1F8EFA]">
+                <div className="w-8 h-8 rounded-lg bg-[#1F8EFA]/10 flex items-center justify-center flex-shrink-0">
+                  <FileText className="w-4 h-4 text-[#1F8EFA]" strokeWidth={1.5} />
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold">Question Quality</p>
-                  <p className="text-xs text-muted-foreground mt-1">1 question may be unclear or irrelevant</p>
+                  <p className="text-xs text-muted-foreground mt-1">1 question may need clarification for better clarity.</p>
                 </div>
               </div>
 
               {/* Recommendations */}
-              <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 hover-elevate cursor-pointer">
-                <div className="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center flex-shrink-0">
-                  <CheckCircle className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+              <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 hover-elevate cursor-pointer border-l-3 border-l-[#0D1B2A]">
+                <div className="w-8 h-8 rounded-lg bg-[#0D1B2A]/10 flex items-center justify-center flex-shrink-0">
+                  <CheckCircle className="w-4 h-4 text-[#0D1B2A]" strokeWidth={1.5} />
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold">Recommendations</p>
-                  <p className="text-xs text-muted-foreground mt-1">Revise questions on communication and skills.</p>
+                  <p className="text-xs text-muted-foreground mt-1">Consider revising communication and skills questions for clarity.</p>
                 </div>
               </div>
             </CardContent>

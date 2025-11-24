@@ -1,0 +1,246 @@
+🎨 What’s Not Aligned With the Evalia Brand Yet
+1. The colour palette isn’t consistent with your hero / marketing
+
+Your branding uses:
+
+Deep Navy
+
+Teal / Aqua Blue
+
+Lime Green accent
+
+White / Light background
+
+Your dashboard uses:
+
+Dark navy sidebar (good)
+
+Random teal/blue for charts (fine but inconsistent)
+
+Pale yellow icons (not part of brand)
+
+Flat green for accents (not your lime)
+
+There’s no cohesive system linking marketing → dashboard → surveys.
+
+2. Iconography style is inconsistent
+
+You’re mixing:
+
+thin-line icons
+
+shadows with gradients
+
+flat monochrome icons
+
+Evalia needs:
+
+clean, thin-line icons
+
+a single 2-color system (navy + teal, or navy + lime)
+
+Right now icons feel “drop-in,” not unified.
+
+3. The AI Insights panel feels visually disconnected
+
+It feels like a browser extension, not part of the dashboard.
+
+Spacing, card height, and colour accents differ from the main grid.
+
+The brand voice of Evalia is:
+
+clarity
+
+intelligence
+
+calm competence
+
+The insights panel needs to visually reflect that.
+
+4. The charts aren’t on-brand
+
+Lines and bars are default colors.
+Evalia should use:
+
+Primary chart color: teal #1F8EFA
+Secondary chart color: navy #0D1B2A (muted)
+Highlight color: lime #A8E05E (sparingly)
+
+Your charts should feel like part of your identity, not template defaults.
+
+5. “Response Rate 100%” card feels visually flat
+
+It doesn’t have the same visual weight or brand feeling as the others.
+
+The KPIs should feel like one cohesive set.
+
+6. Typography should match your marketing site
+
+Your hero uses:
+
+Bold uppercase headline
+
+Rounded, generous line height
+
+Modern geometric sans-serif
+
+Your dashboard uses something more generic.
+
+Even small typography alignment changes help unify the experience.
+
+🟦 Now, here’s how to align it with Evalia branding (exact steps)
+① Apply a defined color system
+Primary Colors
+
+Navy: #0D1B2A
+
+Deep Blue: #1F3B58
+
+Teal Blue: #1F8EFA
+
+Accent
+
+Lime: #A8E05E (use sparingly)
+
+Greys
+
+Background: #F5F7FA
+
+Borders: #E7EBF0
+
+Text: #1C2B36
+
+Where to apply
+
+KPI icons: use the teal + navy
+
+Insight icons: use lime only for “warnings”
+
+Sidebar hover state: teal highlight
+
+Buttons: lime or teal (pick one for consistency)
+
+② Standardize icon style
+
+Use:
+
+Thin line
+
+2 px stroke
+
+Rounded corners
+
+No gradients
+
+No shadows
+
+Always teal or navy
+
+Make your iconography feel like a “kit,” not mix-and-match.
+
+③ Redesign the AI Insights panel to match the grid
+
+Right now it's too visually different.
+
+Make it:
+
+same card style (shadow, radius, padding)
+
+slightly narrower but aligned vertically
+
+teal-toned icons
+
+consistent typography
+
+no bright yellow
+
+If you want to keep warning colours, use:
+
+Lime = caution
+
+Teal = info
+
+Navy = neutral
+
+This matches your brand palette.
+
+④ Bring in brand elements subtly (not heavy)
+
+Examples:
+
+A thin teal vertical line on the left of KPI cards
+
+A subtle lime indicator dot on charts
+
+Very light gradient overlay (top right → bottom left)
+
+A soft teal shadow under highlight components
+
+Evalia’s brand shouldn’t scream — it should hum.
+
+⑤ Use your marketing typography
+
+Use a modern type like:
+
+Inter
+
+Satoshi
+
+Plus Jakarta Sans
+
+Manrope
+
+Keep:
+
+Headline in medium/bold
+
+Body text 16px
+
+KPI numbers at 28–32px
+
+Insights text 14–15px
+
+Sidebar text 14–15px, medium
+
+Typography consistency = brand consistency.
+
+⑥ Improve the “information architecture”
+
+Two changes:
+
+A. KPI cards
+
+Give each card a mini-label:
+
+“6 Surveys” → “Created this month”
+
+“Avg Score” → “Across all scoring models”
+
+“Response Rate” → “Across all surveys”
+
+Adds context and clarity.
+
+B. Chart titles
+
+Make them more human:
+
+“Response Trends” → “How engagement changes over time”
+
+“Category Breakdown” → “Skills ratings across dimensions”
+
+Evalia’s voice is clear, helpful, human.
+
+⑦ Add a soft background pattern
+
+Evalia’s branding uses:
+
+smooth curves
+
+subtle gradients
+
+soft patterns
+
+Add a very faint pattern to the “white” background
+(e.g., 2% teal gradient in top right).
+
+This helps the dashboard feel like part of the marketing website.

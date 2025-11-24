@@ -18,7 +18,7 @@ export function ResponseTrendsChart({ data }: { data: TrendData[] }) {
             border: "1px solid hsl(var(--border))",
           }}
         />
-        <Line type="monotone" dataKey="responses" stroke="#2BB4A0" strokeWidth={2} dot={{ fill: "#2BB4A0", r: 4 }} />
+        <Line type="monotone" dataKey="responses" stroke="#1F8EFA" strokeWidth={2} dot={{ fill: "#1F8EFA", r: 4 }} />
       </LineChart>
     </ResponsiveContainer>
   );
@@ -42,7 +42,7 @@ export function CategoryBreakdownChart({ data }: { data: SurveyData[] }) {
             border: "1px solid hsl(var(--border))",
           }}
         />
-        <Bar dataKey="count" fill="#2BB4A0" />
+        <Bar dataKey="count" fill="#1F8EFA" />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -66,7 +66,7 @@ export function DistributionChart({ data }: { data: DistributionData[] }) {
             border: "1px solid hsl(var(--border))",
           }}
         />
-        <Bar dataKey="count" fill="#4A5FC1" />
+        <Bar dataKey="count" fill="#0D1B2A" opacity={0.7} />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -90,7 +90,7 @@ export function ResponseVolumeChart({ data }: { data: ResponseVolumeData[] }) {
             border: "1px solid hsl(var(--border))",
           }}
         />
-        <Bar dataKey="responses" fill="#6B8DD6" />
+        <Bar dataKey="responses" fill="#0D1B2A" opacity={0.7} />
       </BarChart>
     </ResponsiveContainer>
   );

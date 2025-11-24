@@ -3,9 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --evalia-teal: #2BB4A0;
-  --evalia-lime: #CCFF00;
-  --evalia-navy: #071A32;
+  --evalia-navy: #0D1B2A;
+  --evalia-deep-blue: #1F3B58;
+  --evalia-teal: #1F8EFA;
+  --evalia-lime: #A8E05E;
+  --evalia-bg: #F5F7FA;
+  --evalia-border: #E7EBF0;
+  --evalia-text: #1C2B36;
 }
 
 .dark {
