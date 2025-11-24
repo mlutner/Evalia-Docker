@@ -131,13 +131,13 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
 
   return (
     <Card 
-      className="card-hover hover-elevate shadow-sm transition-all flex flex-col" 
-      style={{ height: '380px', display: 'flex', flexDirection: 'column' }}
+      className="card-hover hover-elevate transition-all flex flex-col" 
+      style={{ height: '380px', display: 'flex', flexDirection: 'column', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)', borderColor: '#E2E7EF', borderRadius: '12px' }}
       data-testid={`survey-card-${survey.id}`}
     >
-      <CardHeader className="flex flex-col pb-0 mb-2">
-        <div className="flex flex-row items-start justify-between gap-3 mb-3">
-          <h3 style={{ fontSize: '16px', fontWeight: 700, lineHeight: '1.3', color: '#1C2635', flex: 1 }} className="line-clamp-2 font-extrabold text-[17px]">{survey.title}</h3>
+      <CardHeader className="flex flex-col pb-4 border-b border-[#E2E7EF]">
+        <div className="flex flex-row items-start justify-between gap-3 mb-4">
+          <h3 style={{ fontSize: '18px', fontWeight: 700, lineHeight: '1.3', color: '#1C2635', flex: 1 }} className="line-clamp-2">{survey.title}</h3>
           <div className="flex gap-1 flex-shrink-0 items-center">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -195,13 +195,13 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
         </div>
         
         {survey.description && (
-          <p style={{ fontSize: '13px', color: '#6A7789', marginBottom: '6px', lineHeight: '1.4' }} className="line-clamp-2">{survey.description}</p>
+          <p style={{ fontSize: '13px', color: '#6A7789', marginBottom: '8px', lineHeight: '1.5' }} className="line-clamp-2">{survey.description}</p>
         )}
         {!survey.description && survey.questions && (
-          <p style={{ fontSize: '13px', color: '#6A7789', marginBottom: '6px', lineHeight: '1.4' }}>{generateSurveySummary(survey.questions)}</p>
+          <p style={{ fontSize: '13px', color: '#6A7789', marginBottom: '8px', lineHeight: '1.5' }}>{generateSurveySummary(survey.questions)}</p>
         )}
 
-        <div style={{ marginBottom: '12px' }} className="flex flex-col gap-0.5">
+        <div style={{ marginBottom: '12px' }} className="flex flex-col gap-1">
           {survey.trainerName && (
             <p style={{ fontSize: '12px', color: '#6A7789', fontWeight: 500 }}>
               <span style={{ fontWeight: 600 }}>Trainer:</span> {survey.trainerName}
@@ -246,9 +246,9 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
           </div>
         )}
       </CardHeader>
-      <CardContent className="flex-1 space-y-3">
+      <CardContent className="flex-1 space-y-4 pt-4">
         {/* Stats Section */}
-        <div className="flex gap-8">
+        <div className="flex gap-12">
           <div>
             <p style={{ fontSize: '11px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 600, letterSpacing: '0.5px' }}>Questions</p>
             <p style={{ fontSize: '18px', fontWeight: 700, color: '#1C2635', marginTop: '2px' }} data-testid="text-question-count">{survey.questionCount || 0}</p>
@@ -278,7 +278,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
           </div>
         )}
       </CardContent>
-      <CardFooter className="gap-3 mt-auto flex-col">
+      <CardFooter className="gap-3 mt-auto flex-col border-t border-[#E2E7EF] pt-4">
         <div className="flex w-full gap-3">
           <Button 
             variant="outline" 
@@ -297,11 +297,11 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
                 data-testid={`button-analyze-${index}`}
                 disabled={survey.responseCount === 0}
                 style={{
-                  backgroundColor: '#5AB3AB',
+                  backgroundColor: '#1F6F78',
                   color: '#FFFFFF',
-                  borderRadius: '6px'
+                  borderRadius: '8px'
                 }}
-                className="flex-1 h-11 font-semibold"
+                className="flex-1 h-10 font-semibold"
               >
                 <BarChart3 className="w-4 h-4 mr-2" strokeWidth={2} />
                 Analyze
