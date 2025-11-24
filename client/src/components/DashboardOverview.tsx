@@ -27,11 +27,21 @@ interface DashboardMetrics {
 export function DashboardOverview() {
   const [, setLocation] = useLocation();
   
-  const { data: metrics, isLoading } = useQuery<DashboardMetrics>({
+  const { data: metrics, isLoading, error } = useQuery<DashboardMetrics>({
     queryKey: ["/api/dashboard/metrics"],
   });
 
-  if (isLoading) {
+  if (error) {
+    return (
+      <Card className="border-red-200 bg-red-50 dark:bg-red-950/30 dark:border-red-900">
+        <CardContent className="pt-6">
+          <p className="text-red-700 dark:text-red-400">Failed to load dashboard metrics</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (isLoading || !metrics) {
     return (
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -47,8 +57,6 @@ export function DashboardOverview() {
       </div>
     );
   }
-
-  if (!metrics) return null;
 
   return (
     <div className="space-y-6">

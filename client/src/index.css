@@ -6,6 +6,33 @@
   --evalia-teal: #2BB4A0;
   --evalia-lime: #CCFF00;
   --evalia-navy: #071A32;
+  --sidebar-bg: #071A32;
+  --sidebar-fg: #ffffff;
+}
+
+.dark {
+  --sidebar-bg: #071A32;
+  --sidebar-fg: #ffffff;
+}
+
+/* Sidebar styling */
+[class*="sidebar"] {
+  background-color: var(--sidebar-bg) !important;
+  color: var(--sidebar-fg) !important;
+}
+
+[class*="sidebar"] * {
+  color: inherit;
+}
+
+[class*="sidebar"] button,
+[class*="sidebar"] a {
+  color: var(--sidebar-fg);
+}
+
+[class*="sidebar"] button:hover,
+[class*="sidebar"] a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 body {
