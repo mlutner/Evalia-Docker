@@ -131,11 +131,12 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
               value={answer as string}
               onChange={(e) => handleTextChange(e.target.value)}
               placeholder="Type your answer here..."
-              className="text-base h-11 sm:h-12 border border-border/60 focus:border-primary transition-colors bg-white dark:bg-slate-950"
+              className="text-base h-11 sm:h-12 border border-border/60 transition-colors bg-white"
+              style={{ borderColor: '#E2E7EF' }}
               data-testid="input-text-answer"
               autoFocus
             />
-            <p className="text-xs text-muted-foreground">Brief text response</p>
+            <p className="text-xs" style={{ color: '#6A7789' }}>Brief text response</p>
           </>
         )}
 
@@ -146,11 +147,12 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
               value={answer as string}
               onChange={(e) => handleTextChange(e.target.value)}
               placeholder="your@email.com"
-              className="text-base h-11 sm:h-12 border border-border/60 focus:border-primary transition-colors bg-white dark:bg-slate-950"
+              className="text-base h-11 sm:h-12 border border-border/60 transition-colors bg-white"
+              style={{ borderColor: '#E2E7EF' }}
               data-testid="input-email-answer"
               autoFocus
             />
-            <p className="text-xs text-muted-foreground">Enter a valid email address</p>
+            <p className="text-xs" style={{ color: '#6A7789' }}>Enter a valid email address</p>
           </>
         )}
 
@@ -161,7 +163,8 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
               value={answer as string}
               onChange={(e) => handleTextChange(e.target.value)}
               placeholder="Enter a number..."
-              className="text-base h-11 sm:h-12 border border-border/60 focus:border-primary transition-colors bg-white dark:bg-slate-950"
+              className="text-base h-11 sm:h-12 border border-border/60 transition-colors bg-white"
+              style={{ borderColor: '#E2E7EF' }}
               data-testid="input-number-answer"
               autoFocus
             />
@@ -189,9 +192,18 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
               {question.options.map((option, index) => (
                 <div 
                   key={index} 
-                  className="flex items-center space-x-4 p-3.5 rounded-lg hover-elevate active-elevate-2 border border-border/50 bg-card/30 hover:bg-primary/5 hover:border-primary/30 transition-all cursor-pointer" 
+                  className="flex items-center space-x-4 p-3.5 rounded-lg hover-elevate active-elevate-2 border transition-all cursor-pointer" 
+                  style={{ borderColor: '#E2E7EF', backgroundColor: '#F7F9FC' }}
                   data-testid={`option-${index}`}
                   onClick={() => handleMultipleChoice(option)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#F0F2F5';
+                    e.currentTarget.style.borderColor = '#2F8FA5';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#F7F9FC';
+                    e.currentTarget.style.borderColor = '#E2E7EF';
+                  }}
                 >
                   <RadioGroupItem value={option} id={`option-${index}`} className="w-4 h-4 shrink-0" />
                   <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer text-sm sm:text-base font-normal">
@@ -210,11 +222,20 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
               return (
                 <div 
                   key={index} 
-                  className="flex items-center space-x-4 p-3.5 rounded-lg hover-elevate active-elevate-2 border border-border/50 bg-card/30 hover:bg-primary/5 hover:border-primary/30 transition-all cursor-pointer" 
+                  className="flex items-center space-x-4 p-3.5 rounded-lg hover-elevate active-elevate-2 border transition-all cursor-pointer" 
+                  style={{ borderColor: '#E2E7EF', backgroundColor: '#F7F9FC' }}
                   data-testid={`checkbox-${index}`}
                   onClick={(e) => {
                     e.preventDefault();
                     handleCheckboxChange(option, !isChecked);
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#F0F2F5';
+                    e.currentTarget.style.borderColor = '#2F8FA5';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#F7F9FC';
+                    e.currentTarget.style.borderColor = '#E2E7EF';
                   }}
                 >
                   <Checkbox
