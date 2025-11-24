@@ -340,6 +340,7 @@ export default function Builder() {
             onPrivacyStatementChange={surveyState.setPrivacyStatement}
             onDataUsageStatementChange={surveyState.setDataUsageStatement}
             onQuestionsChange={surveyState.setCurrentQuestions}
+            onPreview={handlePreviewSurvey}
           />
         )}
 

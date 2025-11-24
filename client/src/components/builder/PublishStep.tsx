@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown, Clock, BookOpen, ChevronRight, Link2, Unlink2, FileText, BarChart3, GripVertical, HelpCircle, ArrowRight } from "lucide-react";
+import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown, Clock, BookOpen, ChevronRight, Link2, Unlink2, FileText, BarChart3, GripVertical, HelpCircle, ArrowRight, Eye } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -45,6 +45,7 @@ interface PublishStepProps {
   onPrivacyStatementChange?: (statement: string) => void;
   onDataUsageStatementChange?: (statement: string) => void;
   onQuestionsChange?: (questions: Question[]) => void;
+  onPreview?: () => void;
 }
 
 export default function PublishStep({
@@ -76,6 +77,7 @@ export default function PublishStep({
   onPrivacyStatementChange,
   onDataUsageStatementChange,
   onQuestionsChange,
+  onPreview,
 }: PublishStepProps) {
   const { toast } = useToast();
   const [tagInput, setTagInput] = useState("");
@@ -844,10 +846,34 @@ export default function PublishStep({
           </div>
         </div>
       </div>
-      <div className="bg-muted/50 border rounded-lg p-4">
-        <p className="text-sm text-muted-foreground text-center">
-          Ready to share? Click "Save & Publish" below to make your survey live!
-        </p>
+      <div className="space-y-4">
+        <div className="bg-muted/50 border rounded-lg p-4">
+          <p className="text-sm text-muted-foreground text-center">
+            Ready to preview? Check how your feedback tool looks before publishing.
+          </p>
+        </div>
+        
+        {/* Preview Section */}
+        {questions && questions.length > 0 && (
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={onPreview}
+              className="flex-1 sm:flex-initial"
+              data-testid="button-preview-online"
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              Preview Online
+            </Button>
+          </div>
+        )}
+        
+        <div className="bg-muted/50 border rounded-lg p-4">
+          <p className="text-sm text-muted-foreground text-center">
+            Ready to share? Click "Save & Publish" below to make your feedback tool live!
+          </p>
+        </div>
       </div>
     </div>
   );
