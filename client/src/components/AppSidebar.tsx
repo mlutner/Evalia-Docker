@@ -19,13 +19,13 @@ export function AppSidebar() {
   };
 
   const sidebarItems = [
-    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
-    { id: "surveys", label: "Surveys", icon: BarChart3, href: "/surveys" },
-    { id: "respondents", label: "Respondents", icon: Users, href: "/respondents" },
-    { id: "scoring", label: "Scoring Models", icon: BookOpen, href: "/scoring" },
-    { id: "templates", label: "Templates", icon: FileText, href: "/templates" },
-    { id: "ai-assist", label: "AI Assist", icon: Zap, href: "/ai-assist" },
-    { id: "settings", label: "Settings", icon: Settings, href: "/settings" },
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, href: "/dashboard", tooltip: "Overview and key metrics" },
+    { id: "surveys", label: "Surveys", icon: BarChart3, href: "/surveys", tooltip: "Create, manage, and analyze surveys" },
+    { id: "respondents", label: "Respondent Groups", icon: Users, href: "/respondents", tooltip: "Manage respondent lists and segments" },
+    { id: "scoring", label: "Scoring Models", icon: BookOpen, href: "/scoring", tooltip: "Set up scoring rules for questions" },
+    { id: "templates", label: "Templates", icon: FileText, href: "/templates", tooltip: "Pre-built survey templates" },
+    { id: "ai-assist", label: "AI Assist", icon: Zap, href: "/ai-assist", tooltip: "Generate surveys with AI" },
+    { id: "settings", label: "Settings", icon: Settings, href: "/settings", tooltip: "Account and workspace settings" },
   ];
 
   const isActive = (href: string) => location === href;
@@ -72,17 +72,21 @@ export function AppSidebar() {
             <button
               key={item.id}
               onClick={() => setLocation(item.href)}
-              className={`w-full flex items-center gap-4 px-4 py-3 rounded-[12px] text-sm font-medium transition-colors ${
+              className={`w-full flex items-center gap-4 px-4 py-3 rounded-[12px] text-sm font-medium transition-colors group ${
                 sidebarExpanded ? "" : "justify-center px-0"
               }`}
               style={{
                 color: '#6A7789',
               }}
               data-testid={`nav-${item.id}`}
-              title={!sidebarExpanded ? item.label : ""}
+              title={item.tooltip || item.label}
             >
               <Icon className="w-6 h-6 flex-shrink-0" style={{ color: active ? '#2F8FA5' : '#6A7789' }} strokeWidth={2} />
-              {sidebarExpanded && <span style={{ color: active ? '#2F8FA5' : '#6A7789' }}>{item.label}</span>}
+              {sidebarExpanded && (
+                <div className="flex flex-col flex-1">
+                  <span style={{ color: active ? '#2F8FA5' : '#6A7789' }}>{item.label}</span>
+                </div>
+              )}
             </button>
           );
         })}
