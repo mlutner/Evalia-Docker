@@ -5,14 +5,14 @@
 :root {
   --evalia-navy: #0D1B2A;
   --evalia-deep-blue: #1F3B58;
-  --evalia-teal: #1F8EFA;
+  --evalia-teal: #14B8A6;
   --evalia-lime: #A8E05E;
   --evalia-bg: #F5F7FA;
   --evalia-border: #E7EBF0;
   --evalia-text: #1C2B36;
   
-  /* Override all Tailwind/Recharts primary colors to use Evalia Teal */
-  --primary: 213.33 100% 54.9%;
+  /* Override all Tailwind/Recharts primary colors to use proper Teal */
+  --primary: 169 80% 40%;
   --primary-foreground: 0 0% 100%;
   --secondary: 210 12% 93%;
   --secondary-foreground: 222 47% 11%;
@@ -28,7 +28,7 @@
   --popover-foreground: 222 47% 11%;
   --border: 214 32% 91%;
   --input: 214 32% 91%;
-  --ring: 213.33 100% 54.9%;
+  --ring: 169 80% 40%;
   --background: 0 0% 97%;
   --foreground: 222 47% 11%;
 }
@@ -238,7 +238,7 @@ body {
 
   --sidebar-border: 220 9% 92%;
 
-  --sidebar-primary: 213.33 100% 54.9%;
+  --sidebar-primary: 169 80% 40%;
 
   --sidebar-primary-foreground: 0 0% 100%;
 
@@ -246,7 +246,7 @@ body {
 
   --sidebar-accent-foreground: 222 47% 11%;
 
-  --sidebar-ring: 213.33 100% 54.9%;
+  --sidebar-ring: 169 80% 40%;
 
   --popover: 0 0% 97%;
 
