@@ -21,36 +21,37 @@ export function AppSidebar() {
   const isActive = (href: string) => location === href;
 
   return (
-    <aside className={`bg-evalia-navy border-r border-slate-700 flex flex-col transition-all duration-300 ${
+    <aside className={`bg-[#0D1B2A] border-r border-[#1F3B58] flex flex-col transition-all duration-300 ${
       sidebarExpanded ? "w-56" : "w-20"
     }`}>
       {/* Header with Logo */}
-      <div className="p-4 pt-6 flex items-center justify-between bg-[#0e1729]">
+      <div className="p-6 flex items-center justify-between">
         {sidebarExpanded && (
           <img src={evaliaLogo} alt="Evalia" className="h-8 object-contain" />
         )}
         <button
           onClick={() => setSidebarExpanded(!sidebarExpanded)}
-          className="text-white hover:bg-white/10 p-1 rounded transition-colors"
+          className="text-[#1F8EFA] hover:bg-[#1F8EFA]/10 p-1 rounded transition-colors"
           data-testid="button-toggle-sidebar"
+          title={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
         >
-          {sidebarExpanded ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+          {sidebarExpanded ? <ChevronLeft className="w-6 h-6" strokeWidth={2} /> : <ChevronRight className="w-6 h-6" strokeWidth={2} />}
         </button>
       </div>
       {/* New Survey Button */}
-      <div className="px-3 py-8 bg-[#0e1729]">
+      <div className="px-4 py-6">
         <Button
           onClick={() => setLocation("/builder")}
-          className="w-full bg-evalia-lime hover:bg-evalia-lime/90 text-slate-900 border-0 font-semibold"
+          className="w-full bg-[#A8E05E] hover:bg-[#A8E05E]/90 text-[#0D1B2A] border-0 font-semibold"
           size={sidebarExpanded ? "default" : "icon"}
           data-testid="button-new-survey-sidebar"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-5 h-5" strokeWidth={2} />
           {sidebarExpanded && <span className="ml-2">New Survey</span>}
         </Button>
       </div>
       {/* Navigation */}
-      <nav className="flex-1 p-3 space-y-2 overflow-y-auto bg-[#0e1729]">
+      <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
         {sidebarItems.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.href);
@@ -59,15 +60,15 @@ export function AppSidebar() {
             <button
               key={item.id}
               onClick={() => setLocation(item.href)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all ${
+              className={`w-full flex items-center gap-4 px-4 py-3 rounded-md text-sm font-medium transition-all relative ${
                 active
-                  ? "text-white"
-                  : "text-slate-500 hover:text-slate-400"
-              } ${sidebarExpanded ? "" : "justify-center"}`}
+                  ? "text-[#1F8EFA] border-l-3 border-l-[#1F8EFA] bg-[#1F8EFA]/8"
+                  : "text-[#6B7785] hover:bg-[#1F8EFA]/8"
+              } ${sidebarExpanded ? "" : "justify-center px-0"}`}
               data-testid={`nav-${item.id}`}
               title={!sidebarExpanded ? item.label : ""}
             >
-              <Icon className="w-5 h-5 flex-shrink-0" />
+              <Icon className={`w-6 h-6 flex-shrink-0 ${active ? "text-[#1F8EFA]" : "text-[#0D1B2A]"}`} strokeWidth={2} />
               {sidebarExpanded && <span>{item.label}</span>}
             </button>
           );
