@@ -233,7 +233,7 @@ export default function QuestionsStep({
               />
               
               {/* AI Chat */}
-              <Card className="flex flex-col max-h-80">
+              <Card className="flex flex-col max-h-[432px]">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm flex items-center gap-2">
                     <Bot className="w-4 h-4" />
