@@ -25,7 +25,7 @@ export function AppSidebar() {
       sidebarExpanded ? "w-56" : "w-20"
     }`}>
       {/* Header with Logo */}
-      <div className="p-4 border-b border-slate-700 flex items-center justify-between">
+      <div className="p-4 border-b border-slate-700 flex items-center justify-between bg-[#0e1729]">
         {sidebarExpanded && (
           <img src={evaliaLogo} alt="Evalia" className="h-8 object-contain" />
         )}
