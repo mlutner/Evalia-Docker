@@ -103,25 +103,14 @@ export default function SurveysPage() {
 
       <main className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-950">
         <div className="container mx-auto px-4 py-6 md:py-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
-            <div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-2">Your Surveys</h1>
-              <p className="text-sm md:text-base text-muted-foreground">
-                {surveys.length === 0 
-                  ? "Create, manage, and analyze your training surveys"
-                  : `${surveys.length} ${surveys.length === 1 ? 'survey' : 'surveys'} created • ${surveys.filter(s => s.publishedAt).length} live • ${surveys.reduce((sum, s) => sum + (s.responseCount || 0), 0)} total responses`
-                }
-              </p>
-            </div>
-            <Button 
-              size="lg" 
-              onClick={() => setLocation("/builder")} 
-              data-testid="button-new-survey"
-              className="w-full sm:w-auto bg-evalia-lime hover:bg-evalia-lime/90 text-slate-900 border-0 font-semibold shadow-md hover:shadow-lg"
-            >
-              <Plus className="w-5 h-5" />
-              New Survey
-            </Button>
+          <div className="mb-6 md:mb-8">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-2">Your Surveys</h1>
+            <p className="text-sm md:text-base text-muted-foreground">
+              {surveys.length === 0 
+                ? "Create, manage, and analyze your training surveys"
+                : `${surveys.length} ${surveys.length === 1 ? 'survey' : 'surveys'} created • ${surveys.filter(s => s.publishedAt).length} live • ${surveys.reduce((sum, s) => sum + (s.responseCount || 0), 0)} total responses`
+              }
+            </p>
           </div>
 
           {isLoading ? (
@@ -135,17 +124,8 @@ export default function SurveysPage() {
               </div>
               <h3 className="text-xl md:text-2xl font-semibold mb-2 text-center">No surveys yet</h3>
               <p className="text-sm md:text-base text-muted-foreground mb-8 text-center max-w-md px-4">
-                Create your first AI-powered survey in minutes. Choose from templates, generate with AI, or upload a document.
+                Use the "New Survey" button in the sidebar to create your first AI-powered survey. Choose from templates, generate with AI, or upload a document.
               </p>
-              <Button 
-                size="lg" 
-                onClick={() => setLocation("/builder")} 
-                data-testid="button-create-first"
-                className="w-full sm:w-auto"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Create Your First Survey
-              </Button>
             </div>
           ) : (
             <div className="space-y-6">
