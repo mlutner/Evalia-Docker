@@ -278,7 +278,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
           </div>
         )}
       </CardContent>
-      <CardFooter className="gap-3 flex-col px-5 py-3">
+      <CardFooter className="gap-3 flex-col px-5 py-2">
         <div className="flex w-full gap-3">
           <Button 
             variant="outline" 
