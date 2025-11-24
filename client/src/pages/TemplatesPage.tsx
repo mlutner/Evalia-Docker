@@ -28,7 +28,7 @@ export default function TemplatesPage() {
   };
 
   return (
-    <main style={{ backgroundColor: theme.backgrounds.page }}>
+    <main style={{ backgroundColor: '#F7F9FC' }}>
       <div className="container mx-auto px-4 py-6 md:py-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <h1 className="heading-2">Survey Templates</h1>
@@ -56,15 +56,15 @@ export default function TemplatesPage() {
             {templates.map((template) => (
               <Card 
                 key={template.id} 
-                className="evalia-survey-card"
+                className="card-professional"
                 data-testid={`template-card-${template.id}`}
-                style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+                style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#FFFFFF', borderColor: 'var(--color-border)' }}
               >
                 {/* Header: Title + Question Count Badge */}
-                <div className="px-5 pt-4 pb-2">
+                <div className="px-6 pt-5 pb-3">
                   <div className="flex items-start justify-between gap-3">
-                    <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#1C2635', lineHeight: '1.3' }} className="line-clamp-2 flex-1">{template.title}</h3>
-                    <div style={{ backgroundColor: 'rgba(47, 143, 165, 0.08)', color: '#2F8FA5', borderColor: 'rgba(47, 143, 165, 0.3)', fontSize: '11px', padding: '4px 8px', display: 'flex', alignItems: 'center', gap: '4px', border: '1px solid rgba(47, 143, 165, 0.3)', borderRadius: '6px' }} className="flex-shrink-0">
+                    <h3 className="heading-4 flex-1">{template.title}</h3>
+                    <div className="badge-teal flex-shrink-0">
                       <FileText className="w-3 h-3" />
                       {template.questions.length}
                     </div>
@@ -72,20 +72,20 @@ export default function TemplatesPage() {
                 </div>
 
                 {/* Description */}
-                <div className="px-5 py-1">
-                  <p style={{ fontSize: '13px', color: '#6A7789', lineHeight: '1.4' }} className="line-clamp-2">{template.description}</p>
+                <div className="px-6 py-2">
+                  <p className="body-small line-clamp-2">{template.description}</p>
                 </div>
 
                 {/* Category */}
-                <div className="px-5 py-2 flex items-center gap-2">
-                  <Clock className="w-4 h-4" style={{ color: '#6A7789' }} />
-                  <span style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500, letterSpacing: '0.4px' }}>
+                <div className="px-6 py-3 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-gray-400" />
+                  <span className="text-tertiary uppercase tracking-wider">
                     {template.category}
                   </span>
                 </div>
 
                 {/* Buttons */}
-                <div className="px-5 py-4 gap-3 flex flex-col mt-auto">
+                <div className="px-6 py-5 gap-3 flex flex-col mt-auto">
                   <div className="flex w-full gap-3">
                     <Button
                       onClick={() => setPreviewTemplate(template)}
