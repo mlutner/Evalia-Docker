@@ -129,7 +129,7 @@ export default function Home() {
       </section>
 
       {/* CTA section */}
-      <section className="py-32 bg-evalia-teal-600">
+      <section className="py-16 bg-evalia-teal-600">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight" data-testid="text-cta-heading">
             Ready to improve your training?
