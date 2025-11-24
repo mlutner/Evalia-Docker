@@ -147,8 +147,8 @@ export default function SurveyStartFlow({
                 <div
                   className={`p-8 px-10 rounded-lg border-2 transition-all cursor-pointer group bg-white ${option.recommended ? "shadow-lg" : "hover:shadow-lg"}`}
                   style={{
-                    borderColor: expandedOption === option.id ? option.color : (option.recommended ? option.color : "#E5E7EB"),
-                    backgroundColor: expandedOption === option.id ? `${option.color}08` : (option.recommended ? `${option.color}05` : "white"),
+                    borderColor: expandedOption === option.id ? "#2F8FA5" : "#E5E7EB",
+                    backgroundColor: expandedOption === option.id ? "#2F8FA508" : "white",
                   }}
                 >
                   <div className="flex items-start gap-8">
@@ -162,8 +162,8 @@ export default function SurveyStartFlow({
                     <div
                       className="w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0 transition-all group-hover:scale-120"
                       style={{
-                        backgroundColor: expandedOption === option.id ? option.color : `${option.iconColor}15`,
-                        color: expandedOption === option.id ? "white" : option.iconColor,
+                        backgroundColor: expandedOption === option.id ? "#2F8FA5" : "#D1D5DB",
+                        color: expandedOption === option.id ? "white" : "#6B7280",
                       }}
                     >
                       <option.icon className="w-8 h-8" />
@@ -179,7 +179,7 @@ export default function SurveyStartFlow({
                       transition={{ duration: 0.3 }}
                       className="flex-shrink-0 ml-4"
                     >
-                      <ChevronDown className="w-6 h-6" style={{ color: option.color, opacity: expandedOption === option.id ? 1 : 0.5 }} />
+                      <ChevronDown className="w-6 h-6" style={{ color: expandedOption === option.id ? "#2F8FA5" : "#D1D5DB", opacity: 1 }} />
                     </motion.div>
                   </div>
                 </div>
@@ -195,7 +195,7 @@ export default function SurveyStartFlow({
                     transition={{ duration: 0.3 }}
                     className="overflow-hidden"
                   >
-                    <div className="p-8 bg-muted/40 rounded-b-lg border-l-2 border-r-2 border-b-2 border-muted mt-0" style={{ borderLeftColor: option.color, borderRightColor: option.color, borderBottomColor: option.color }}>
+                    <div className="p-8 bg-muted/40 rounded-b-lg border-l-2 border-r-2 border-b-2" style={{ borderLeftColor: "#2F8FA5", borderRightColor: "#2F8FA5", borderBottomColor: "#2F8FA5" }}>
                       {option.id === "templates" && (
                         <div className="space-y-6">
                           <p className="text-sm text-muted-foreground">Select a template to get started instantly:</p>
