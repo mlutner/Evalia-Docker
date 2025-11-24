@@ -166,7 +166,7 @@ export function useScoring(initialConfig?: SurveyScoreConfig) {
     };
   };
 
-  const handleUpdateScoreRange = (index: number, field: keyof ScoringRule, value: string | number) => {
+  const handleUpdateScoreRange = (index: number, field: string, value: any) => {
     const updated = [...scoreRanges];
     updated[index] = { ...updated[index], [field]: value };
     setScoreRanges(updated);
