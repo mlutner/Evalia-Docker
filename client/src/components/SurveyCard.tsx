@@ -138,18 +138,29 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
       <CardHeader className="flex flex-col pb-0 mb-2">
         <div className="flex flex-row items-start justify-between gap-2 mb-3">
           <h3 style={{ fontSize: '16px', fontWeight: 700, lineHeight: '1.3', color: '#1C2635', flex: 1 }} className="line-clamp-2">{survey.title}</h3>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                data-testid="button-menu"
-                style={{ color: '#6A7789', width: '32px', height: '32px', minWidth: '32px' }}
-                className="hover:text-[#1C2635] transition-colors flex-shrink-0"
-              >
-                <MoreVertical className="w-[18px] h-[18px]" />
-              </Button>
-            </DropdownMenuTrigger>
+          <div className="flex gap-1 flex-shrink-0">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setShareDialogOpen(true)}
+              data-testid={`button-share-header-${survey.id}`}
+              style={{ color: '#6A7789', width: '32px', height: '32px', minWidth: '32px' }}
+              className="hover:text-[#1C2635] transition-colors"
+            >
+              <Share2 className="w-[18px] h-[18px]" />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  data-testid="button-menu"
+                  style={{ color: '#6A7789', width: '32px', height: '32px', minWidth: '32px' }}
+                  className="hover:text-[#1C2635] transition-colors"
+                >
+                  <MoreVertical className="w-[18px] h-[18px]" />
+                </Button>
+              </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setShareDialogOpen(true)} data-testid="menu-share">
                 <Share2 className="w-4 h-4 mr-2" />
@@ -179,7 +190,8 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+            </DropdownMenu>
+          </div>
         </div>
         
         {survey.description && (
@@ -307,19 +319,6 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
         </div>
       </CardFooter>
 
-      {/* Share Link Below Card */}
-      {(survey.respondentCount === undefined || survey.respondentCount === 0) && survey.responseCount === 0 && (
-        <div className="px-6 pb-4">
-          <button
-            onClick={() => setShareDialogOpen(true)}
-            style={{ color: '#6A7789', fontSize: '13px', fontWeight: 500 }}
-            className="hover:underline transition-all"
-            data-testid={`button-share-link-${survey.id}`}
-          >
-            Share survey to start collecting responses →
-          </button>
-        </div>
-      )}
 
       {/* Share Dialog */}
       <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
