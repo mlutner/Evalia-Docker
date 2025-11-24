@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ChatPanel from "@/components/ChatPanel";
 import QuestionEditor from "@/components/QuestionEditor";
+import FloatingAIChat from "@/components/FloatingAIChat";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -75,7 +76,9 @@ export default function QuestionsStep({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
+      {/* Floating AI Chat Widget - Mobile Only */}
+      <FloatingAIChat onClick={() => setIsMobileChat(true)} isOpen={isMobileChat} />
       {/* Title Input */}
       <Card>
         <CardContent className="pt-6">
