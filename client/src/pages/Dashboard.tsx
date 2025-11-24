@@ -264,9 +264,9 @@ export default function Dashboard() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         <Header />
-        <main className="flex-1 overflow-auto bg-background">
+        <main className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-950">
           <div className="container mx-auto px-4 py-6 md:py-8">
-            {activeView === "overview" || activeView === "respondents" || activeView === "scoring" || activeView === "templates" || activeView === "ai" || activeView === "settings" ? (
+            {activeView === "overview" ? (
               <>
                 <div className="flex items-center justify-between mb-8">
                   <Button 
@@ -281,7 +281,7 @@ export default function Dashboard() {
                 </div>
                 <DashboardOverview />
               </>
-            ) : (
+            ) : activeView === "surveys" ? (
               <>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
                   <div>
@@ -396,6 +396,10 @@ export default function Dashboard() {
                   </div>
                 )}
               </>
+            ) : (
+              <div className="flex items-center justify-center py-20">
+                <p className="text-muted-foreground">Coming soon...</p>
+              </div>
             )}
           </div>
         </main>
