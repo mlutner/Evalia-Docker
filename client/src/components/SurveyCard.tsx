@@ -136,19 +136,9 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
       data-testid={`survey-card-${survey.id}`}
     >
       <CardHeader className="flex flex-col pb-0 mb-2">
-        <div className="flex flex-row items-start justify-between gap-2 mb-3">
+        <div className="flex flex-row items-start justify-between gap-3 mb-3">
           <h3 style={{ fontSize: '16px', fontWeight: 700, lineHeight: '1.3', color: '#1C2635', flex: 1 }} className="line-clamp-2">{survey.title}</h3>
           <div className="flex gap-1 flex-shrink-0">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => setShareDialogOpen(true)}
-              data-testid={`button-share-header-${survey.id}`}
-              style={{ color: '#6A7789', width: '32px', height: '32px', minWidth: '32px' }}
-              className="hover:text-[#1C2635] transition-colors"
-            >
-              <Share2 className="w-[18px] h-[18px]" />
-            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
@@ -191,6 +181,16 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
               </DropdownMenuItem>
             </DropdownMenuContent>
             </DropdownMenu>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setShareDialogOpen(true)}
+              data-testid={`button-share-header-${survey.id}`}
+              style={{ color: '#6A7789', width: '32px', height: '32px', minWidth: '32px' }}
+              className="hover:text-[#1C2635] transition-colors"
+            >
+              <Share2 className="w-[18px] h-[18px]" />
+            </Button>
           </div>
         </div>
         
