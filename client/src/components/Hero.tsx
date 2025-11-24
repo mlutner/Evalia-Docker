@@ -3,7 +3,7 @@ import heroIllustration from '@assets/hero-feedback-illustration.png';
 
 export function Hero() {
   return (
-    <section className="relative bg-gradient-to-br from-evalia-teal-600 via-evalia-teal-500 to-evalia-teal-700 overflow-hidden pt-4">
+    <section className="relative bg-gradient-to-br from-evalia-teal-600 via-evalia-teal-500 to-evalia-teal-700 overflow-hidden -mt-20 pt-20">
       {/* Decorative blobs - background layer */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Blob 1 - Top right */}
@@ -18,11 +18,21 @@ export function Hero() {
         {/* Blob 4 - Middle right (subtle) */}
         <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-evalia-teal-300/10 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-3000"></div>
 
-        {/* Decorative dots */}
-        <div className="absolute top-20 left-12 w-4 h-4 bg-evalia-yellow/60 rounded-full animate-float"></div>
-        <div className="absolute top-40 right-24 w-3 h-3 bg-evalia-coral/50 rounded-full animate-float animation-delay-1000"></div>
-        <div className="absolute bottom-32 right-10 w-2 h-2 bg-evalia-mint/70 rounded-full animate-float animation-delay-2000"></div>
-        <div className="absolute bottom-20 left-1/4 w-3 h-3 bg-evalia-teal-300/40 rounded-full animate-float animation-delay-3000"></div>
+        {/* Decorative dots - subtle and spread throughout */}
+        <div className="absolute top-8 left-8 w-2 h-2 bg-evalia-yellow/30 rounded-full animate-float"></div>
+        <div className="absolute top-16 right-20 w-2.5 h-2.5 bg-evalia-coral/25 rounded-full animate-float animation-delay-1000"></div>
+        <div className="absolute top-24 left-1/3 w-2 h-2 bg-evalia-teal-300/20 rounded-full animate-float animation-delay-2000"></div>
+        <div className="absolute top-32 right-1/4 w-1.5 h-1.5 bg-evalia-mint/25 rounded-full animate-float animation-delay-3000"></div>
+        
+        <div className="absolute top-40 left-12 w-2 h-2 bg-evalia-yellow/20 rounded-full animate-float animation-delay-1000"></div>
+        <div className="absolute top-48 right-1/3 w-2.5 h-2.5 bg-evalia-coral/20 rounded-full animate-float animation-delay-2000"></div>
+        <div className="absolute top-56 left-1/4 w-2 h-2 bg-evalia-teal-300/25 rounded-full animate-float animation-delay-3000"></div>
+        <div className="absolute top-64 right-12 w-1.5 h-1.5 bg-evalia-mint/20 rounded-full animate-float animation-delay-1000"></div>
+        
+        <div className="absolute top-1/2 left-1/3 w-2 h-2 bg-evalia-yellow/15 rounded-full animate-float animation-delay-2000"></div>
+        <div className="absolute top-3/4 right-1/4 w-2.5 h-2.5 bg-evalia-coral/15 rounded-full animate-float animation-delay-1000"></div>
+        <div className="absolute bottom-40 left-1/4 w-2 h-2 bg-evalia-teal-300/20 rounded-full animate-float animation-delay-3000"></div>
+        <div className="absolute bottom-32 right-20 w-1.5 h-1.5 bg-evalia-mint/25 rounded-full animate-float animation-delay-2000"></div>
       </div>
 
       {/* Content */}
