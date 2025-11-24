@@ -1,7 +1,7 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sparkles, AlertCircle, TrendingUp } from "lucide-react";
+import { Sparkles, AlertCircle, ChevronDown, Lightbulb, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 
 interface AIInsight {
@@ -25,15 +25,15 @@ export default function AIInsightsCard({ insights, isLoading, error }: AIInsight
 
   if (error) {
     return (
-      <Card className="border-yellow-200 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-800 mb-6">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
-            <CardTitle className="text-base">AI Analysis Unavailable</CardTitle>
+      <Card className="border-amber-200 bg-amber-50/50 dark:bg-amber-950/30 dark:border-amber-900 mb-8">
+        <CardHeader className="pb-3">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-500 flex-shrink-0" />
+            <CardTitle className="text-sm font-semibold">Analysis Unavailable</CardTitle>
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-yellow-700 dark:text-yellow-300">{error}</p>
+          <p className="text-sm text-amber-700 dark:text-amber-400">{error}</p>
         </CardContent>
       </Card>
     );
@@ -41,18 +41,18 @@ export default function AIInsightsCard({ insights, isLoading, error }: AIInsight
 
   if (isLoading) {
     return (
-      <Card className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950 dark:to-blue-950 border-purple-200 dark:border-purple-800 mb-6">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400 animate-spin" />
-            <CardTitle className="text-base">AI Analyzing Responses...</CardTitle>
+      <Card className="border-slate-200 dark:border-slate-700 mb-8">
+        <CardHeader className="pb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-5 h-5 rounded-full border-2 border-slate-300 border-t-slate-600 dark:border-t-slate-300 animate-spin" />
+            <CardTitle className="text-sm font-semibold">Analyzing Responses</CardTitle>
           </div>
-          <CardDescription>Extracting themes and insights</CardDescription>
+          <p className="text-xs text-muted-foreground mt-1">Extracting themes and patterns...</p>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            <div className="h-4 bg-purple-200 dark:bg-purple-700 rounded animate-pulse w-3/4" />
-            <div className="h-4 bg-purple-200 dark:bg-purple-700 rounded animate-pulse w-1/2" />
+          <div className="space-y-2">
+            <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full w-full" />
+            <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full w-5/6" />
           </div>
         </CardContent>
       </Card>
@@ -61,107 +61,143 @@ export default function AIInsightsCard({ insights, isLoading, error }: AIInsight
 
   if (!insights) return null;
 
+  const sentimentTotal = insights.sentiment.positive + insights.sentiment.neutral + insights.sentiment.negative;
+
   return (
-    <Card className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950 dark:to-blue-950 border-purple-200 dark:border-purple-800 mb-6">
-      <CardHeader>
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-            <CardTitle className="text-base">AI Insights</CardTitle>
+    <Card className="border-slate-200 dark:border-slate-700 mb-8 hover-elevate">
+      <CardHeader className="pb-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3 flex-1">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <CardTitle className="text-base font-semibold">AI Analysis</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{insights.summary}</p>
+            </div>
           </div>
           <Button
             variant="ghost"
-            size="sm"
+            size="icon"
             onClick={() => setExpanded(!expanded)}
             data-testid="button-toggle-insights"
+            className="h-8 w-8 flex-shrink-0"
           >
-            {expanded ? "Hide" : "Show"} Details
+            <ChevronDown className={`w-4 h-4 transition-transform ${expanded ? "rotate-180" : ""}`} />
           </Button>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-6">
-        {/* Summary */}
+      <div className="px-6 pb-4 space-y-4">
+        {/* Sentiment Bars */}
         <div>
-          <p className="text-sm font-semibold mb-2">Key Finding</p>
-          <p className="text-sm text-foreground">{insights.summary}</p>
-        </div>
-
-        {/* Sentiment Overview */}
-        <div>
-          <p className="text-sm font-semibold mb-3">Sentiment Breakdown</p>
-          <div className="flex gap-3">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Sentiment</p>
+          <div className="flex h-2 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-700 gap-0.5">
             {insights.sentiment.positive > 0 && (
-              <Badge variant="default" className="bg-green-600 hover:bg-green-700">
-                {insights.sentiment.positive}% Positive
-              </Badge>
+              <div
+                className="bg-green-500"
+                style={{ width: `${(insights.sentiment.positive / sentimentTotal) * 100}%` }}
+                title={`${insights.sentiment.positive}% Positive`}
+              />
             )}
             {insights.sentiment.neutral > 0 && (
-              <Badge variant="secondary" className="bg-slate-500 hover:bg-slate-600">
-                {insights.sentiment.neutral}% Neutral
-              </Badge>
+              <div
+                className="bg-slate-400 dark:bg-slate-500"
+                style={{ width: `${(insights.sentiment.neutral / sentimentTotal) * 100}%` }}
+                title={`${insights.sentiment.neutral}% Neutral`}
+              />
             )}
             {insights.sentiment.negative > 0 && (
-              <Badge variant="destructive" className="bg-red-600 hover:bg-red-700">
-                {insights.sentiment.negative}% Negative
-              </Badge>
+              <div
+                className="bg-red-500"
+                style={{ width: `${(insights.sentiment.negative / sentimentTotal) * 100}%` }}
+                title={`${insights.sentiment.negative}% Negative`}
+              />
+            )}
+          </div>
+          <div className="flex gap-4 mt-2 text-xs">
+            {insights.sentiment.positive > 0 && (
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-green-500" />
+                <span className="font-medium text-foreground">{insights.sentiment.positive}%</span>
+                <span className="text-muted-foreground">Positive</span>
+              </div>
+            )}
+            {insights.sentiment.neutral > 0 && (
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500" />
+                <span className="font-medium text-foreground">{insights.sentiment.neutral}%</span>
+                <span className="text-muted-foreground">Neutral</span>
+              </div>
+            )}
+            {insights.sentiment.negative > 0 && (
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-red-500" />
+                <span className="font-medium text-foreground">{insights.sentiment.negative}%</span>
+                <span className="text-muted-foreground">Negative</span>
+              </div>
             )}
           </div>
         </div>
 
         {/* Top Themes */}
-        <div>
-          <p className="text-sm font-semibold mb-3">Top Themes</p>
-          <div className="space-y-2">
-            {insights.themes.slice(0, 3).map((theme, idx) => (
-              <div key={idx} className="p-2 bg-white/60 dark:bg-slate-900/60 rounded border border-purple-200 dark:border-purple-800">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium">{theme.theme}</span>
-                  <Badge variant="outline">{theme.percentage}%</Badge>
-                </div>
-                {expanded && theme.exampleQuotes.length > 0 && (
-                  <p className="text-xs text-muted-foreground italic mt-2">
-                    "{theme.exampleQuotes[0]}"
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Pain Points */}
-        {expanded && insights.topPainPoints.length > 0 && (
+        {insights.themes.length > 0 && (
           <div>
-            <p className="text-sm font-semibold mb-2 flex items-center gap-2">
-              <TrendingUp className="w-4 h-4" />
-              Pain Points
-            </p>
-            <ul className="space-y-1">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Themes ({insights.themes.length})</p>
+            <div className="space-y-2">
+              {insights.themes.slice(0, expanded ? undefined : 3).map((theme, idx) => (
+                <div key={idx} className="group">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-medium text-foreground">{theme.theme}</span>
+                    <Badge variant="secondary" className="text-xs">{theme.percentage}%</Badge>
+                  </div>
+                  {theme.exampleQuotes.length > 0 && (
+                    <p className="text-xs text-muted-foreground italic leading-relaxed p-2 bg-slate-50 dark:bg-slate-950 rounded border border-slate-200 dark:border-slate-700">
+                      "{theme.exampleQuotes[0]}"
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Pain Points - Expandable */}
+        {expanded && insights.topPainPoints.length > 0 && (
+          <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-500" />
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Pain Points</p>
+            </div>
+            <ul className="space-y-1.5">
               {insights.topPainPoints.map((point, idx) => (
                 <li key={idx} className="text-sm text-foreground flex gap-2">
-                  <span className="text-purple-600 dark:text-purple-400">•</span>
-                  {point}
+                  <span className="text-amber-600 dark:text-amber-500 font-bold">−</span>
+                  <span>{point}</span>
                 </li>
               ))}
             </ul>
           </div>
         )}
 
-        {/* Recommendations */}
+        {/* Recommendations - Expandable */}
         {expanded && insights.recommendations.length > 0 && (
-          <div>
-            <p className="text-sm font-semibold mb-2">AI Recommendations</p>
-            <ul className="space-y-1">
+          <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+            <div className="flex items-center gap-2 mb-2">
+              <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-500" />
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Recommendations</p>
+            </div>
+            <ul className="space-y-1.5">
               {insights.recommendations.map((rec, idx) => (
                 <li key={idx} className="text-sm text-foreground flex gap-2">
-                  <span className="text-blue-600 dark:text-blue-400">→</span>
-                  {rec}
+                  <span className="text-green-600 dark:text-green-500 font-bold">✓</span>
+                  <span>{rec}</span>
                 </li>
               ))}
             </ul>
           </div>
         )}
-      </CardContent>
+      </div>
     </Card>
   );
 }

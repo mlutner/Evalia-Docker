@@ -340,27 +340,6 @@ export default function AnalyticsPage() {
           error={insightsError?.message}
         />
 
-        {keyInsights && keyInsights.length > 0 && (
-          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-blue-200 dark:border-blue-800 mb-8">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Zap className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                <CardTitle className="text-base">Key Insights</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {keyInsights.map((insight, idx) => (
-                  <div key={idx} className="p-3 bg-white/80 dark:bg-slate-900/80 rounded-lg border border-blue-100 dark:border-blue-800/50">
-                    <p className="text-xs text-muted-foreground font-medium mb-1 truncate">{insight.question}</p>
-                    <p className="font-semibold text-sm text-blue-700 dark:text-blue-300">{insight.insight}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {count === 0 ? (
           <Card>
             <CardContent className="pt-6">

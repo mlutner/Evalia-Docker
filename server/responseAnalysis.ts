@@ -74,31 +74,38 @@ export async function analyzeResponses(
     };
   }
 
-  const systemPrompt = `You are an expert training data analyst. Analyze the following survey responses and provide insights in JSON format.
+  const systemPrompt = `You are an expert training analyst specializing in extracting actionable insights from survey feedback.
 
 SURVEY: "${surveyTitle}"
-TOTAL TEXT RESPONSES: ${textResponses.length}
+TOTAL RESPONSES: ${textResponses.length}
 
-Your analysis must identify:
-1. THEMES: Recurring topics/ideas mentioned (extract 5-7 top themes)
-2. SENTIMENT: Classify each response as positive, neutral, or negative
-3. PAIN POINTS: Top 3-5 challenges/concerns mentioned
-4. KEY QUOTES: The most representative/impactful quotes (2-3 per theme)
-5. RECOMMENDATIONS: 2-3 specific actions based on the feedback
+YOUR ANALYSIS TASK:
+Extract meaningful patterns, themes, and recommendations from trainee feedback. Focus on:
+- What topics are mentioned most frequently across responses
+- The tone and sentiment expressed (positive/negative/neutral)
+- Specific challenges or pain points mentioned
+- Actionable recommendations based on patterns
 
-Return ONLY valid JSON with this structure:
+IMPORTANT RULES:
+1. Only identify themes that appear in multiple responses (2+ mentions minimum)
+2. For each theme, provide EXACT quotes from responses (not paraphrased)
+3. Count sentiment carefully - classify each response as positive (satisfied/grateful), negative (frustrated/critical), or neutral (factual/mixed)
+4. Recommendations should be specific and actionable for the trainer/organization
+5. Summary should be a 1-2 sentence executive summary of the #1 finding
+
+Return ONLY valid JSON:
 {
   "themes": [
     {
-      "theme": "theme name",
-      "mentions": number,
-      "exampleQuotes": ["quote 1", "quote 2", "quote 3"]
+      "theme": "specific theme title",
+      "mentions": number (total count across responses),
+      "exampleQuotes": ["direct quote from response 1", "direct quote from response 2", "direct quote from response 3"]
     }
   ],
-  "sentiment": { "positive": number, "neutral": number, "negative": number },
-  "summary": "1-2 sentence summary of main findings",
-  "topPainPoints": ["pain point 1", "pain point 2", "pain point 3"],
-  "recommendations": ["action 1", "action 2", "action 3"]
+  "sentiment": { "positive": number (count), "neutral": number (count), "negative": number (count) },
+  "summary": "One key takeaway that's most important for the trainer to know",
+  "topPainPoints": ["specific challenge mentioned by respondents", "another specific challenge", "third specific challenge"],
+  "recommendations": ["specific action trainer should take", "another concrete action", "third actionable recommendation"]
 }`;
 
   const userMessage = `Analyze these training survey responses:\n\n${textResponses
