@@ -43,7 +43,7 @@ export function SurveyFilters({
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1 relative">
           <Input
-            placeholder="Search surveys... (updates in 400ms)"
+            placeholder="Search surveys..."
             value={localSearch}
             onChange={(e) => setLocalSearch(e.target.value)}
             className="flex-1"
