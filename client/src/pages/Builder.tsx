@@ -93,7 +93,7 @@ export default function Builder() {
       ]);
       surveyState.setHasLoadedSurvey(true);
     }
-  }, [existingSurvey, isEditMode, surveyState.hasLoadedSurvey]);
+  }, [existingSurvey, isEditMode, surveyState.hasLoadedSurvey, surveyState.currentWizardStep]);
 
   // Handlers for file processing
   const handleFileSelect = async (file: File) => {
