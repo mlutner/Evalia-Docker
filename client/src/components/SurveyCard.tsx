@@ -138,7 +138,20 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
       <CardHeader className="flex flex-col pb-0 mb-2">
         <div className="flex flex-row items-start justify-between gap-3 mb-3">
           <h3 style={{ fontSize: '16px', fontWeight: 700, lineHeight: '1.3', color: '#1C2635', flex: 1 }} className="line-clamp-2 text-[18px] font-extrabold">{survey.title}</h3>
-          <div className="flex gap-1 flex-shrink-0">
+          <div className="flex gap-1 flex-shrink-0 items-center">
+            {survey.scoreConfig?.enabled && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge variant="outline" style={{ backgroundColor: 'rgba(47, 143, 165, 0.08)', color: theme.colors.primary, borderColor: 'rgba(47, 143, 165, 0.3)' }} className="gap-1 text-xs cursor-help" data-testid={`badge-scoring-${survey.id}`}>
+                    <Gauge className="w-3 h-3" />
+                    Scoring
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs text-xs">
+                  This survey has scoring enabled
+                </TooltipContent>
+              </Tooltip>
+            )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
@@ -252,23 +265,6 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
           </div>
         </div>
 
-        
-        {/* Feature Indicators */}
-        <div className="flex flex-wrap gap-2 pt-1">
-          {survey.scoreConfig?.enabled && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Badge variant="outline" style={{ backgroundColor: 'rgba(47, 143, 165, 0.08)', color: theme.colors.primary, borderColor: 'rgba(47, 143, 165, 0.3)' }} className="gap-1 text-xs cursor-help" data-testid={`badge-scoring-${survey.id}`}>
-                  <Gauge className="w-3 h-3" />
-                  Scoring
-                </Badge>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="max-w-xs text-xs">
-                This survey has scoring enabled
-              </TooltipContent>
-            </Tooltip>
-          )}
-        </div>
         
         {survey.tags && survey.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 pt-2">
