@@ -118,10 +118,10 @@ export default function Account() {
             </CardHeader>
             <CardContent className="space-y-6">
               {!hasApiKey && (
-                <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <div className="bg-secondary dark:bg-secondary border border-border dark:border-border rounded-lg p-4">
                   <div className="flex gap-3">
-                    <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-                    <div className="text-sm text-blue-900 dark:text-blue-100">
+                    <AlertCircle className="w-5 h-5 text-primary-teal dark:text-icon-teal flex-shrink-0 mt-0.5" />
+                    <div className="text-sm text-neutral-text-primary dark:text-neutral-surface">
                       <p className="font-medium mb-2">How to Set Up Resend Email Service</p>
                       <ol className="space-y-2 list-decimal list-inside">
                         <li>Visit <a href="https://resend.com" target="_blank" rel="noopener noreferrer" className="underline font-medium hover:no-underline">resend.com</a></li>

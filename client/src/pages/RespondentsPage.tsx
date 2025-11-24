@@ -257,20 +257,20 @@ export default function RespondentsPage() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
-                <Clock className="w-4 h-4 text-blue-600" />
+                <Clock className="w-4 h-4 text-primary-teal" />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-blue-600">{completionRate}%</div>
+                <div className="text-3xl font-bold text-primary-teal">{completionRate}%</div>
               </CardContent>
             </Card>
           </div>
         )}
 
         {/* Privacy Notice */}
-        <Card className="border-blue-200 bg-blue-50 dark:bg-blue-950">
+        <Card className="border-border bg-secondary dark:bg-secondary">
           <CardContent className="pt-6 flex gap-3">
-            <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-blue-900 dark:text-blue-100">
+            <Info className="w-5 h-5 text-primary-teal dark:text-icon-teal flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-neutral-text-primary dark:text-neutral-surface">
               <strong>Privacy Protected:</strong> Emails are used only for sending invitations and are not stored in your database. Respondents are tracked by unique tokens only.
             </div>
           </CardContent>
@@ -442,7 +442,7 @@ export default function RespondentsPage() {
                           Submitted
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 gap-1" data-testid={`badge-pending-${r.id}`}>
+                        <Badge variant="outline" className="bg-secondary text-primary-teal border-border gap-1" data-testid={`badge-pending-${r.id}`}>
                           <Clock className="w-3 h-3" />
                           Pending
                         </Badge>
