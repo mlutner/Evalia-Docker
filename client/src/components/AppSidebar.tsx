@@ -32,7 +32,7 @@ export function AppSidebar() {
         <button
           onClick={() => setSidebarExpanded(!sidebarExpanded)}
           style={{ color: 'var(--color-primary)' }}
-          className="hover:bg-[var(--color-primary)]/10 p-1 rounded transition-colors"
+          className="hover:bg-[var(--color-primary)]/10 p-1 rounded-[12px] transition-colors"
           data-testid="button-toggle-sidebar"
           title={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
         >
@@ -62,7 +62,7 @@ export function AppSidebar() {
             <button
               key={item.id}
               onClick={() => setLocation(item.href)}
-              className={`w-full flex items-center gap-4 px-4 py-3 rounded-md text-sm font-medium transition-all relative border-l-3 ${
+              className={`w-full flex items-center gap-4 px-4 py-3 rounded-[12px] text-sm font-medium transition-all relative border-l-3 ${
                 active ? "border-l-3" : "border-l-3 border-l-transparent"
               } ${sidebarExpanded ? "" : "justify-center px-0"}`}
               style={{
