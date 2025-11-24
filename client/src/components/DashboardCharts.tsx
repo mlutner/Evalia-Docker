@@ -10,8 +10,8 @@ export function ResponseTrendsChart({ data }: { data: TrendData[] }) {
     <ResponsiveContainer width="100%" height={250}>
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground)/.2)" />
-        <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" />
-        <YAxis stroke="hsl(var(--muted-foreground))" />
+        <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 12, fontWeight: 500 }} />
+        <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 12, fontWeight: 500 }} />
         <Tooltip 
           contentStyle={{
             backgroundColor: "hsl(var(--background))",
@@ -34,8 +34,8 @@ export function CategoryBreakdownChart({ data }: { data: SurveyData[] }) {
     <ResponsiveContainer width="100%" height={250}>
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground)/.2)" />
-        <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" />
-        <YAxis stroke="hsl(var(--muted-foreground))" />
+        <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 12, fontWeight: 500 }} />
+        <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 12, fontWeight: 500 }} />
         <Tooltip 
           contentStyle={{
             backgroundColor: "hsl(var(--background))",
@@ -58,8 +58,8 @@ export function DistributionChart({ data }: { data: DistributionData[] }) {
     <ResponsiveContainer width="100%" height={250}>
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground)/.2)" />
-        <XAxis dataKey="rating" stroke="hsl(var(--muted-foreground))" />
-        <YAxis stroke="hsl(var(--muted-foreground))" />
+        <XAxis dataKey="rating" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 12, fontWeight: 500 }} />
+        <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 12, fontWeight: 500 }} />
         <Tooltip 
           contentStyle={{
             backgroundColor: "hsl(var(--background))",
@@ -82,8 +82,8 @@ export function ResponseVolumeChart({ data }: { data: ResponseVolumeData[] }) {
     <ResponsiveContainer width="100%" height={250}>
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground)/.2)" />
-        <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" />
-        <YAxis stroke="hsl(var(--muted-foreground))" />
+        <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 12, fontWeight: 500 }} />
+        <YAxis stroke="hsl(var(--muted-foreground))" tick={{ fontSize: 12, fontWeight: 500 }} />
         <Tooltip 
           contentStyle={{
             backgroundColor: "hsl(var(--background))",

@@ -62,7 +62,7 @@ export function DashboardOverview() {
     <div className="space-y-6">
       {/* Header with Time Filter */}
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-slate-900">Dashboard</h2>
+        <h2 className="text-[24px] font-bold text-slate-900">Dashboard</h2>
         <button className="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg text-sm flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
           <span>Last 30 days</span>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,7 +78,7 @@ export function DashboardOverview() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Created this month</p>
-                <p className="text-4xl font-bold mt-2">{metrics.totalSurveys}</p>
+                <p className="text-[30px] font-bold mt-2">{metrics.totalSurveys}</p>
                 <p className="text-xs text-muted-foreground mt-2">{metrics.activeSurveys} active</p>
               </div>
               <div className="w-12 h-12 rounded-lg bg-[#1F8EFA]/10 flex items-center justify-center">
@@ -93,7 +93,7 @@ export function DashboardOverview() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Across all scoring models</p>
-                <p className="text-4xl font-bold mt-2">{metrics.avgScore}</p>
+                <p className="text-[30px] font-bold mt-2">{metrics.avgScore}</p>
                 <p className="text-xs text-muted-foreground mt-2">out of 100</p>
               </div>
               <div className="w-12 h-12 rounded-lg bg-[#1F8EFA]/10 flex items-center justify-center">
@@ -108,7 +108,7 @@ export function DashboardOverview() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Across all surveys</p>
-                <p className="text-4xl font-bold mt-2">{metrics.responseRate}%</p>
+                <p className="text-[30px] font-bold mt-2">{metrics.responseRate}%</p>
                 <p className="text-xs text-muted-foreground mt-2">completion</p>
               </div>
               <div className="w-12 h-12 rounded-lg bg-[#1F8EFA]/10 flex items-center justify-center">
@@ -127,7 +127,7 @@ export function DashboardOverview() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">How engagement changes over time</CardTitle>
+                <CardTitle className="text-base font-semibold">How engagement changes over time</CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponseTrendsChart data={metrics.trends} />
@@ -136,7 +136,7 @@ export function DashboardOverview() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Skills ratings across dimensions</CardTitle>
+                <CardTitle className="text-base font-semibold">Skills ratings across dimensions</CardTitle>
               </CardHeader>
               <CardContent className="bg-[#0D1B2A]/5">
                 <CategoryBreakdownChart data={[
@@ -153,7 +153,7 @@ export function DashboardOverview() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Distribution of Ratings</CardTitle>
+                <CardTitle className="text-base font-semibold">Distribution of Ratings</CardTitle>
               </CardHeader>
               <CardContent>
                 <DistributionChart data={[
@@ -168,7 +168,7 @@ export function DashboardOverview() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Response Volume</CardTitle>
+                <CardTitle className="text-base font-semibold">Response Volume</CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponseVolumeChart data={[
@@ -186,7 +186,7 @@ export function DashboardOverview() {
         <div>
           <Card className="h-full">
             <CardHeader>
-              <CardTitle className="text-base">AI Insights</CardTitle>
+              <CardTitle className="text-base font-semibold">AI Insights</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {/* Top Weak Areas */}
@@ -241,7 +241,7 @@ export function DashboardOverview() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base">Recent Surveys</CardTitle>
+            <CardTitle className="text-base font-semibold">Recent Surveys</CardTitle>
             <Button variant="ghost" size="sm" onClick={() => setLocation("/dashboard?tab=all")} data-testid="button-view-all">
               View All <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
