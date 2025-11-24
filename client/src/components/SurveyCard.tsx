@@ -6,6 +6,7 @@ import { MoreVertical, Eye, BarChart3, Download, Share2, Check, Copy, Edit3, Use
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState, memo } from "react";
+import { theme } from "@/theme";
 import type { Question, SurveyWithCounts } from "@shared/schema";
 
 // Generate a brief summary from survey questions
@@ -230,7 +231,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
           {survey.scoreConfig?.enabled && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 gap-1 text-xs cursor-help" data-testid={`badge-scoring-${survey.id}`}>
+                <Badge variant="outline" style={{ backgroundColor: 'rgba(47, 143, 165, 0.08)', color: theme.colors.primary, borderColor: 'rgba(47, 143, 165, 0.3)' }} className="gap-1 text-xs cursor-help" data-testid={`badge-scoring-${survey.id}`}>
                   <Gauge className="w-3 h-3" />
                   Scoring
                 </Badge>

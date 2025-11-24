@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import { theme } from "@/theme";
 
 interface WizardStepsProps {
   currentStep: number;
@@ -20,13 +21,12 @@ export default function WizardSteps({ currentStep, steps }: WizardStepsProps) {
               <div className="flex items-center w-full">
                 <div className="flex items-center justify-center">
                   <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold text-lg transition-all duration-300 ${
-                      currentStep > step.number
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : currentStep === step.number
-                        ? "bg-primary text-primary-foreground ring-4 ring-primary/20 shadow-md scale-110"
-                        : "bg-muted text-muted-foreground"
-                    }`}
+                    style={{
+                      backgroundColor: currentStep >= step.number ? theme.colors.primary : 'var(--color-border)',
+                      color: currentStep >= step.number ? '#FFFFFF' : theme.text.secondary,
+                      transform: currentStep === step.number ? 'scale(1.1)' : 'scale(1)',
+                    }}
+                    className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold text-lg transition-all duration-300 shadow-sm`}
                     data-testid={`wizard-step-${step.number}`}
                   >
                     {currentStep > step.number ? (
@@ -39,11 +39,10 @@ export default function WizardSteps({ currentStep, steps }: WizardStepsProps) {
                 {index < steps.length - 1 && (
                   <div className="flex-1 h-0.5 mx-2">
                     <div
-                      className={`h-full transition-all ${
-                        currentStep > step.number
-                          ? "bg-primary"
-                          : "bg-muted"
-                      }`}
+                      style={{
+                        backgroundColor: currentStep > step.number ? theme.colors.primary : 'var(--color-border)',
+                      }}
+                      className={`h-full transition-all`}
                     />
                   </div>
                 )}
