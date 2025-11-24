@@ -304,6 +304,7 @@ export default function Builder() {
         {surveyState.currentWizardStep === 3 && (
           <QuestionsStep
             questions={surveyState.currentQuestions}
+            title={surveyState.currentSurveyTitle}
             messages={aiChat.messages}
             isProcessing={aiChat.isProcessing}
             onSendMessage={handleSendMessage}
@@ -311,6 +312,7 @@ export default function Builder() {
             onDeleteQuestion={surveyState.handleDeleteQuestion}
             onAddQuestion={surveyState.handleAddQuestion}
             onReorderQuestions={surveyState.setCurrentQuestions}
+            onTitleChange={surveyState.setCurrentSurveyTitle}
             onPreview={handlePreviewSurvey}
             onNext={surveyState.handleNextStep}
           />

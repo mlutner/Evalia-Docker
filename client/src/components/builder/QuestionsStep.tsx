@@ -2,6 +2,7 @@ import { useState } from "react";
 import ChatPanel from "@/components/ChatPanel";
 import QuestionEditor from "@/components/QuestionEditor";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Plus, MessageSquare, FileQuestion, ChevronLeft, ChevronRight, Eye } from "lucide-react";
@@ -25,6 +26,7 @@ import {
 
 interface QuestionsStepProps {
   questions: Question[];
+  title: string;
   messages: Message[];
   isProcessing: boolean;
   onSendMessage: (message: string) => void;
@@ -32,12 +34,14 @@ interface QuestionsStepProps {
   onDeleteQuestion: (index: number) => void;
   onAddQuestion: () => void;
   onReorderQuestions: (questions: Question[]) => void;
+  onTitleChange: (title: string) => void;
   onPreview?: () => void;
   onNext?: () => void;
 }
 
 export default function QuestionsStep({
   questions,
+  title,
   messages,
   isProcessing,
   onSendMessage,
@@ -45,6 +49,7 @@ export default function QuestionsStep({
   onDeleteQuestion,
   onAddQuestion,
   onReorderQuestions,
+  onTitleChange,
   onPreview,
   onNext,
 }: QuestionsStepProps) {
@@ -72,6 +77,23 @@ export default function QuestionsStep({
 
   return (
     <div className="space-y-6">
+      {/* Title Input */}
+      <Card>
+        <CardContent className="pt-6">
+          <label className="text-xs sm:text-sm font-semibold mb-2 block text-foreground">
+            Collection Title <span className="text-destructive">*</span>
+          </label>
+          <Input
+            value={title}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onTitleChange(e.target.value)}
+            placeholder="Enter a title for your collection..."
+            className="text-sm md:text-base"
+            data-testid="input-survey-title-step3"
+          />
+          <p className="text-xs text-muted-foreground mt-2">This will be the name respondents see when they start</p>
+        </CardContent>
+      </Card>
+
       {/* Header with Question Count and Actions */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
