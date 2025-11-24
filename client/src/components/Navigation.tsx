@@ -25,14 +25,14 @@ export function Navigation() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 gap-2">
             <button onClick={handleGetStarted} className="hidden md:block text-white/90 hover:text-white transition-colors text-base font-medium" data-testid="button-log-in">
               Log in
             </button>
-            <button onClick={handleGetStarted} className="bg-white text-evalia-teal-600 px-7 py-3 rounded-full hover:bg-gray-50 transition-colors font-semibold text-base shadow-sm" data-testid="button-start-trial">
+            <button onClick={handleGetStarted} className="bg-white text-evalia-teal-600 px-6 py-2 rounded-full hover:bg-gray-50 transition-all hover:shadow-md font-semibold text-base shadow-sm" data-testid="button-start-trial">
               Start free trial
             </button>
-            <button className="md:hidden text-white" data-testid="button-menu">
+            <button className="md:hidden text-white hover:text-white/80 transition-colors" data-testid="button-menu">
               <MenuIcon className="w-6 h-6" />
             </button>
           </div>

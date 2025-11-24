@@ -34,22 +34,25 @@ export default function Home() {
       <Hero />
 
       {/* Social Proof Section */}
-      <section className="py-16 bg-white border-b border-gray-100">
+      <section className="py-20 bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6">
-          <p className="text-center text-sm font-medium text-gray-500 mb-8 uppercase tracking-wide" data-testid="text-trusted-by">
+          <p className="text-center text-sm font-medium text-gray-600 mb-10 uppercase tracking-wider" data-testid="text-trusted-by">
             Trusted by leading organizations
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-12 opacity-40">
-            <div className="text-2xl font-bold text-gray-400">Company Logo</div>
-            <div className="text-2xl font-bold text-gray-400">Company Logo</div>
-            <div className="text-2xl font-bold text-gray-400">Company Logo</div>
-            <div className="text-2xl font-bold text-gray-400">Company Logo</div>
+          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
+            <div className="text-gray-600 font-semibold text-sm md:text-base">Learning & Development Teams</div>
+            <div className="w-1 h-6 bg-gray-200"></div>
+            <div className="text-gray-600 font-semibold text-sm md:text-base">Corporate Trainers</div>
+            <div className="w-1 h-6 bg-gray-200"></div>
+            <div className="text-gray-600 font-semibold text-sm md:text-base">HR Professionals</div>
+            <div className="w-1 h-6 bg-gray-200"></div>
+            <div className="text-gray-600 font-semibold text-sm md:text-base">Training Facilitators</div>
           </div>
         </div>
       </section>
 
       {/* How It Works Section */}
-      <section className="relative py-32 bg-evalia-teal-50 overflow-hidden">
+      <section className="relative py-32 md:py-40 bg-evalia-teal-50 overflow-hidden">
         {/* Background blobs */}
         <div className="absolute inset-0 pointer-events-none">
           {/* Blob 1 - Top left */}
@@ -60,18 +63,18 @@ export default function Home() {
         </div>
 
         <div className="relative max-w-7xl mx-auto px-6 z-10">
-          <div className="text-center mb-20">
+          <div className="text-center mb-16 md:mb-20">
             <h2 className="text-4xl lg:text-5xl font-bold text-evalia-navy mb-6 leading-tight" data-testid="text-how-it-works">
               Create better training feedback in three steps
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
               From creation to insights, Evalia makes the entire process
-              seamless.
+              seamless and efficient.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-16 max-w-6xl mx-auto">
-            <div className="relative">
+          <div className="grid md:grid-cols-3 gap-12 md:gap-16 max-w-6xl mx-auto">
+            <div className="relative hover-elevate transition-all">
               <div className="text-7xl font-bold text-evalia-teal-100 mb-6">
                 01
               </div>
@@ -79,13 +82,13 @@ export default function Home() {
               <h3 className="text-xl font-bold text-evalia-navy mb-3" data-testid="text-step-1-title">
                 Create with AI
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-600 leading-relaxed text-base">
                 Upload your training materials or describe your session. Our AI
                 generates relevant survey questions instantly.
               </p>
             </div>
 
-            <div className="relative">
+            <div className="relative hover-elevate transition-all">
               <div className="text-7xl font-bold text-evalia-teal-100 mb-6">
                 02
               </div>
@@ -93,13 +96,13 @@ export default function Home() {
               <h3 className="text-xl font-bold text-evalia-navy mb-3" data-testid="text-step-2-title">
                 Share & Collect
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-600 leading-relaxed text-base">
                 Send your survey via link, email, or QR code. Mobile-friendly
                 design ensures high response rates.
               </p>
             </div>
 
-            <div className="relative">
+            <div className="relative hover-elevate transition-all">
               <div className="text-7xl font-bold text-evalia-teal-100 mb-6">
                 03
               </div>
@@ -107,7 +110,7 @@ export default function Home() {
               <h3 className="text-xl font-bold text-evalia-navy mb-3" data-testid="text-step-3-title">
                 Analyze & Improve
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-600 leading-relaxed text-base">
                 Get instant insights with beautiful visualizations. Identify
                 what works and what needs improvement.
               </p>
@@ -117,13 +120,13 @@ export default function Home() {
       </section>
 
       {/* Features section */}
-      <section className="py-32 bg-gray-50">
+      <section className="py-32 md:py-40 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-20">
+          <div className="text-center mb-16 md:mb-20">
             <h2 className="text-4xl lg:text-5xl font-bold text-evalia-navy mb-6 leading-tight" data-testid="text-features-heading">
               Everything you need for better training
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
               Powerful features that help you create, distribute, and analyze
               training feedback effortlessly.
             </p>
@@ -138,38 +141,38 @@ export default function Home() {
       </section>
 
       {/* CTA section */}
-      <section className="py-32 bg-evalia-teal-600">
+      <section className="py-32 md:py-40 bg-gradient-to-br from-evalia-teal-600 to-evalia-teal-700">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight" data-testid="text-cta-heading">
+          <h2 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-6 leading-tight" data-testid="text-cta-heading">
             Ready to improve your training?
           </h2>
-          <p className="text-xl text-white/90 mb-12 max-w-2xl mx-auto" data-testid="text-cta-description">
+          <p className="text-lg lg:text-xl text-white/90 mb-12 max-w-2xl mx-auto leading-relaxed" data-testid="text-cta-description">
             Join thousands of trainers who are creating better learning
             experiences with Evalia.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <button onClick={handleGetStarted} className="bg-white text-evalia-teal-600 px-10 py-4 rounded-full font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2 shadow-lg" data-testid="button-get-started-cta">
+            <button onClick={handleGetStarted} className="bg-white text-evalia-teal-600 px-10 py-3 rounded-full font-semibold hover:bg-gray-50 transition-all hover:shadow-xl flex items-center justify-center space-x-2 shadow-lg" data-testid="button-get-started-cta">
               <span>Get started free</span>
               <ArrowRightIcon className="w-5 h-5" />
             </button>
-            <button className="border-2 border-white text-white px-10 py-4 rounded-full font-semibold hover:bg-white/10 transition-colors" data-testid="button-schedule-demo">
+            <button className="border-2 border-white text-white px-10 py-3 rounded-full font-semibold hover:bg-white/10 transition-colors" data-testid="button-schedule-demo">
               Schedule a demo
             </button>
           </div>
 
           {/* Trust signals */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-white/80 text-sm">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-white/90 text-sm font-medium">
             <div className="flex items-center gap-2">
-              <CheckCircle2Icon className="w-5 h-5" />
+              <CheckCircle2Icon className="w-5 h-5 text-evalia-yellow" />
               <span>No credit card required</span>
             </div>
             <div className="flex items-center gap-2">
-              <CheckCircle2Icon className="w-5 h-5" />
+              <CheckCircle2Icon className="w-5 h-5 text-evalia-yellow" />
               <span>Free 14-day trial</span>
             </div>
             <div className="flex items-center gap-2">
-              <CheckCircle2Icon className="w-5 h-5" />
+              <CheckCircle2Icon className="w-5 h-5 text-evalia-yellow" />
               <span>Cancel anytime</span>
             </div>
           </div>

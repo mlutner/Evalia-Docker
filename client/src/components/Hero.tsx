@@ -40,13 +40,13 @@ export function Hero() {
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left content */}
           <div className="text-white space-y-8">
-            <div className="inline-block">
-              <span className="text-sm font-medium tracking-wide uppercase bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm">
+            <div className="inline-block animate-fade-in" style={{ animationDelay: '0.1s' }}>
+              <span className="text-sm font-medium tracking-wide uppercase bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm hover:bg-white/30 transition-colors">
                 Training Feedback Platform
               </span>
             </div>
 
-            <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
+            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight" style={{ animationDelay: '0.2s' }}>
               Collect{' '}
               <span className="relative inline-block">
                 <span className="relative z-10">training feedback</span>
@@ -59,25 +59,24 @@ export function Hero() {
               </span>
             </h1>
 
-            <p className="text-xl text-white/90 leading-relaxed max-w-xl">
+            <p className="text-lg lg:text-xl text-white/90 leading-relaxed max-w-xl" style={{ animationDelay: '0.3s' }}>
               Give trainers ready-made templates, AI-powered question creation,
               and instant reporting — so you can design better sessions and
               measure what matters.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 pt-2">
-              <button className="bg-white text-evalia-teal-600 px-8 py-4 rounded-full font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2 shadow-lg" data-testid="button-get-started-hero">
+            <div className="flex flex-col sm:flex-row gap-4 pt-6" style={{ animationDelay: '0.4s' }}>
+              <button className="bg-white text-evalia-teal-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-50 transition-all hover:shadow-xl flex items-center justify-center space-x-2 shadow-lg" data-testid="button-get-started-hero">
                 <span>Get started free</span>
                 <ArrowRightIcon className="w-5 h-5" />
               </button>
-              <button className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold hover:bg-white/10 transition-colors" data-testid="button-browse-templates-hero">
+              <button className="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white/10 transition-colors" data-testid="button-browse-templates-hero">
                 Browse templates
               </button>
             </div>
 
-            <p className="text-sm text-white/70 pt-2">
-              Trusted by trainers, facilitators, HR teams, and L&D professionals
-              worldwide.
+            <p className="text-sm text-white/70 pt-4 max-w-md">
+              ✓ No credit card required  ✓ Free 14-day trial  ✓ Cancel anytime
             </p>
           </div>
 
