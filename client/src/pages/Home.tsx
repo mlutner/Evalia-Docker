@@ -1,28 +1,23 @@
-import { useEffect, useState } from "react";
-import { useLocation } from "wouter";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import Header from "@/components/Header";
-import { useAuth } from "@/hooks/useAuth";
-import { Sparkles, BarChart3, Zap } from "lucide-react";
-import evaliaLogo from "@assets/Heading (300 x 50 px) (1000 x 250 px) (2)_1762359727994.png";
-
-import ChatGPT_Image_Nov_21__2025__06_18_52_PM from "@assets/ChatGPT Image Nov 21, 2025, 06_18_52 PM.png";
+import { useEffect } from 'react';
+import { useLocation } from 'wouter';
+import { useAuth } from '@/hooks/useAuth';
+import { Navigation } from '@/components/Navigation';
+import { Hero } from '@/components/Hero';
+import { FeatureCard } from '@/components/FeatureCard';
+import { ArrowRightIcon, CheckCircle2Icon } from 'lucide-react';
 
 export default function Home() {
   const [, setLocation] = useLocation();
   const { user, isLoading } = useAuth();
-  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     if (!isLoading && user) {
-      setLocation("/dashboard");
+      setLocation('/dashboard');
     }
   }, [user, isLoading, setLocation]);
 
-  const handleLogin = () => {
-    window.location.href = "/api/login";
+  const handleGetStarted = () => {
+    window.location.href = '/api/login';
   };
 
   if (isLoading) {
@@ -34,157 +29,217 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 flex flex-col">
-      <Header />
-      
-      {/* Hero Section */}
-      <main className="container mx-auto px-6 flex items-start justify-center -mt-14">
-        <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-12 w-full max-w-7xl">
-          {/* Left Side Content */}
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <h1 className="font-bold text-5xl md:text-6xl lg:text-[72px] leading-tight text-foreground dark:text-white">
-                Collect training feedback that actually improves training
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground dark:text-slate-300 leading-relaxed max-w-2xl">
-                Evalia gives trainers ready-made templates, AI-powered question creation, and instant reporting – so you can design better sessions and measure what matters.
-              </p>
-            </div>
+    <div className="min-h-screen bg-white">
+      <Navigation />
+      <Hero />
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button
-                size="lg"
-                onClick={() => setShowLoginModal(true)}
-                className="py-3"
-                data-testid="button-get-started"
-              >
-                Get started free
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={() => setShowLoginModal(true)}
-                className="py-3"
-                data-testid="button-browse-templates"
-              >
-                Browse templates
-              </Button>
-            </div>
-
-            {/* Trust Statement */}
-            <p className="text-sm md:text-base text-muted-foreground dark:text-slate-400">
-              Trusted by trainers, facilitators, HR teams, and L&D professionals worldwide.
-            </p>
-          </div>
-
-          {/* Right Side - Image */}
-          <div className="hidden lg:flex items-center justify-center h-full">
-            <div className="relative w-full max-w-2xl">
-              <img
-                src={ChatGPT_Image_Nov_21__2025__06_18_52_PM}
-                alt="Survey illustration"
-                className="w-full h-auto object-contain dark:opacity-90"
-              />
-            </div>
-          </div>
-        </div>
-      </main>
-
-      {/* Features Section */}
-      <section className="container mx-auto px-6 py-20 max-w-7xl">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Feature 1 */}
-          <div className="space-y-4 p-6 rounded-lg bg-card border border-border dark:bg-slate-800/50 dark:border-slate-700">
-            <div className="flex items-center justify-center w-12 h-12 rounded-lg" style={{ backgroundColor: '#071a32' }}>
-              <Sparkles className="w-6 h-6" style={{ color: '#ccff00' }} />
-            </div>
-            <h3 className="text-xl font-semibold text-foreground dark:text-white">AI-Powered Creation</h3>
-            <p className="text-muted-foreground dark:text-slate-300">
-              Generate survey questions instantly with AI. Upload documents, paste text, or describe your training topic.
-            </p>
-          </div>
-
-          {/* Feature 2 */}
-          <div className="space-y-4 p-6 rounded-lg bg-card border border-border dark:bg-slate-800/50 dark:border-slate-700">
-            <div className="flex items-center justify-center w-12 h-12 rounded-lg" style={{ backgroundColor: '#071a32' }}>
-              <BarChart3 className="w-6 h-6" style={{ color: '#ccff00' }} />
-            </div>
-            <h3 className="text-xl font-semibold text-foreground dark:text-white">Instant Analytics</h3>
-            <p className="text-muted-foreground dark:text-slate-300">
-              Get real-time insights on survey responses with beautiful visualizations and detailed reports.
-            </p>
-          </div>
-
-          {/* Feature 3 */}
-          <div className="space-y-4 p-6 rounded-lg bg-card border border-border dark:bg-slate-800/50 dark:border-slate-700">
-            <div className="flex items-center justify-center w-12 h-12 rounded-lg" style={{ backgroundColor: '#071a32' }}>
-              <Zap className="w-6 h-6" style={{ color: '#ccff00' }} />
-            </div>
-            <h3 className="text-xl font-semibold text-foreground dark:text-white">Fast & Simple</h3>
-            <p className="text-muted-foreground dark:text-slate-300">
-              Create, publish, and share surveys in minutes. No training needed. Mobile-friendly for all respondents.
-            </p>
+      {/* Social Proof Section */}
+      <section className="py-16 bg-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-6">
+          <p className="text-center text-sm font-medium text-gray-500 mb-8 uppercase tracking-wide" data-testid="text-trusted-by">
+            Trusted by leading organizations
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-12 opacity-40">
+            <div className="text-2xl font-bold text-gray-400">Company Logo</div>
+            <div className="text-2xl font-bold text-gray-400">Company Logo</div>
+            <div className="text-2xl font-bold text-gray-400">Company Logo</div>
+            <div className="text-2xl font-bold text-gray-400">Company Logo</div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="container mx-auto px-6 py-20 max-w-7xl text-center space-y-8">
-        <div className="space-y-4">
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground dark:text-white">
+      {/* How It Works Section */}
+      <section className="py-32 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl lg:text-5xl font-bold text-evalia-navy mb-6 leading-tight" data-testid="text-how-it-works">
+              Create better training feedback in three steps
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              From creation to insights, Evalia makes the entire process
+              seamless.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-16 max-w-6xl mx-auto">
+            <div className="relative">
+              <div className="text-7xl font-bold text-evalia-teal-100 mb-6">
+                01
+              </div>
+              <div className="absolute top-0 left-0 w-2 h-16 bg-evalia-teal-500 rounded-full"></div>
+              <h3 className="text-xl font-bold text-evalia-navy mb-3" data-testid="text-step-1-title">
+                Create with AI
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                Upload your training materials or describe your session. Our AI
+                generates relevant survey questions instantly.
+              </p>
+            </div>
+
+            <div className="relative">
+              <div className="text-7xl font-bold text-evalia-teal-100 mb-6">
+                02
+              </div>
+              <div className="absolute top-0 left-0 w-2 h-16 bg-evalia-teal-600 rounded-full"></div>
+              <h3 className="text-xl font-bold text-evalia-navy mb-3" data-testid="text-step-2-title">
+                Share & Collect
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                Send your survey via link, email, or QR code. Mobile-friendly
+                design ensures high response rates.
+              </p>
+            </div>
+
+            <div className="relative">
+              <div className="text-7xl font-bold text-evalia-teal-100 mb-6">
+                03
+              </div>
+              <div className="absolute top-0 left-0 w-2 h-16 bg-evalia-mint rounded-full"></div>
+              <h3 className="text-xl font-bold text-evalia-navy mb-3" data-testid="text-step-3-title">
+                Analyze & Improve
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                Get instant insights with beautiful visualizations. Identify
+                what works and what needs improvement.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features section */}
+      <section className="py-32 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl lg:text-5xl font-bold text-evalia-navy mb-6 leading-tight" data-testid="text-features-heading">
+              Everything you need for better training
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Powerful features that help you create, distribute, and analyze
+              training feedback effortlessly.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <FeatureCard accentColor="bg-evalia-teal-500" title="AI-Powered Creation" description="Generate survey questions instantly with AI. Upload documents, paste text, or describe your training topic." testId="card-feature-ai" />
+            <FeatureCard accentColor="bg-evalia-teal-600" title="Instant Analytics" description="Get real-time insights on survey responses with beautiful visualizations and detailed reports." testId="card-feature-analytics" />
+            <FeatureCard accentColor="bg-evalia-mint" title="Fast & Simple" description="Create, publish, and share surveys in minutes. No training needed. Mobile-friendly for all respondents." testId="card-feature-simple" />
+          </div>
+        </div>
+      </section>
+
+      {/* CTA section */}
+      <section className="py-32 bg-evalia-teal-600">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight" data-testid="text-cta-heading">
             Ready to improve your training?
           </h2>
-          <p className="text-lg text-muted-foreground dark:text-slate-300 max-w-2xl mx-auto">
-            Start creating surveys with AI-powered suggestions and get actionable feedback from your trainees today.
+          <p className="text-xl text-white/90 mb-12 max-w-2xl mx-auto" data-testid="text-cta-description">
+            Join thousands of trainers who are creating better learning
+            experiences with Evalia.
           </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <button onClick={handleGetStarted} className="bg-white text-evalia-teal-600 px-10 py-4 rounded-full font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2 shadow-lg" data-testid="button-get-started-cta">
+              <span>Get started free</span>
+              <ArrowRightIcon className="w-5 h-5" />
+            </button>
+            <button className="border-2 border-white text-white px-10 py-4 rounded-full font-semibold hover:bg-white/10 transition-colors" data-testid="button-schedule-demo">
+              Schedule a demo
+            </button>
+          </div>
+
+          {/* Trust signals */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-white/80 text-sm">
+            <div className="flex items-center gap-2">
+              <CheckCircle2Icon className="w-5 h-5" />
+              <span>No credit card required</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2Icon className="w-5 h-5" />
+              <span>Free 14-day trial</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2Icon className="w-5 h-5" />
+              <span>Cancel anytime</span>
+            </div>
+          </div>
         </div>
-        <Button
-          size="lg"
-          onClick={() => setShowLoginModal(true)}
-          className="py-3"
-          data-testid="button-final-cta"
-        >
-          Get started free
-        </Button>
       </section>
 
-      {/* Login Modal */}
-      <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
-        <DialogContent className="max-w-md">
-          <DialogHeader className="space-y-4">
-            <div className="flex justify-center mb-2">
-              <img src={evaliaLogo} alt="Evalia" className="h-12" />
-            </div>
-            <DialogTitle>Get started with Evalia</DialogTitle>
-            <DialogDescription>
-              Sign in to create and manage your training surveys
-            </DialogDescription>
-          </DialogHeader>
-          <Card className="border-0 shadow-none">
-            <CardContent className="pt-6">
-              <Button
-                onClick={handleLogin}
-                className="w-full py-3"
-                size="lg"
-                data-testid="button-modal-sign-in"
-              >
-                Sign in
-              </Button>
-              <p className="text-xs text-muted-foreground text-center mt-4">
-                You'll be able to choose Google, Email, or other sign-in options
-              </p>
-            </CardContent>
-          </Card>
-        </DialogContent>
-      </Dialog>
-
       {/* Footer */}
-      <footer className="border-t border-border dark:border-slate-700 mt-20">
-        <div className="container mx-auto px-6 py-8 max-w-7xl">
-          <p className="text-sm text-muted-foreground dark:text-slate-400 text-center">
-            © 2025 Evalia. All rights reserved. Built for trainers, by trainers.
-          </p>
+      <footer className="bg-evalia-navy text-white py-16">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid md:grid-cols-4 gap-12 mb-12">
+            <div>
+              <h3 className="font-semibold mb-4 text-white">Evalia</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Better training feedback for better learning outcomes.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4 text-white">Product</h4>
+              <ul className="space-y-3 text-sm text-gray-400">
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Features
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Pricing
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Templates
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4 text-white">Company</h4>
+              <ul className="space-y-3 text-sm text-gray-400">
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    About
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Blog
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Contact
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4 text-white">Legal</h4>
+              <ul className="space-y-3 text-sm text-gray-400">
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Privacy
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Terms
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
+            © 2024 Evalia. All rights reserved.
+          </div>
         </div>
       </footer>
     </div>

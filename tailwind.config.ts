@@ -21,6 +21,23 @@ export default {
         "neutral-border": "#E2E7EF",
         "neutral-text-primary": "#1C2635",
         "neutral-text-secondary": "#6A7789",
+        // HOME PAGE BRAND COLORS
+        'evalia-teal': {
+          50: '#f0fafa',
+          100: '#d9f2f2',
+          200: '#b3e5e5',
+          300: '#7dd3c0',
+          400: '#5ba5a5',
+          500: '#4a9b9b',
+          600: '#3d8080',
+          700: '#336666',
+          800: '#2a5252',
+          900: '#234444',
+        },
+        'evalia-coral': '#ff8b6a',
+        'evalia-yellow': '#f5c563',
+        'evalia-mint': '#7dd3c0',
+        'evalia-navy': '#1e293b',
         // Flat / base colors (regular buttons)
         background: "hsl(var(--background) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",
