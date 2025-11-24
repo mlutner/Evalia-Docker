@@ -163,80 +163,80 @@ export function AiChatbot() {
             </div>
           ) : (
             <div className="space-y-4">
-            <>
-            {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-              >
+              {messages.map((msg) => (
                 <div
-                  className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
-                    msg.role === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-white border border-border"
-                  }`}
+                  key={msg.id}
+                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  <div className="text-sm leading-relaxed break-words space-y-3">
-                    {msg.content.split('\n\n').map((paragraph, idx) => {
-                      const cleanParagraph = paragraph
-                        .replace(/^#+\s*/gm, '')
-                        .replace(/\*\*(.+?)\*\*/g, '$1')
-                        .replace(/\*(.+?)\*/g, '$1')
-                        .replace(/__(.+?)__/g, '$1')
-                        .replace(/_(.+?)_/g, '$1')
-                        .replace(/`(.+?)`/g, '$1')
-                        .trim();
+                  <div
+                    className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
+                      msg.role === "user"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-white border border-border"
+                    }`}
+                  >
+                    <div className="text-sm leading-relaxed break-words space-y-3">
+                      {msg.content.split('\n\n').map((paragraph, idx) => {
+                        const cleanParagraph = paragraph
+                          .replace(/^#+\s*/gm, '')
+                          .replace(/\*\*(.+?)\*\*/g, '$1')
+                          .replace(/\*(.+?)\*/g, '$1')
+                          .replace(/__(.+?)__/g, '$1')
+                          .replace(/_(.+?)_/g, '$1')
+                          .replace(/`(.+?)`/g, '$1')
+                          .trim();
 
-                      return (
-                        <div key={idx} className="space-y-2">
-                          {cleanParagraph.split('\n').map((line, lineIdx) => {
-                            const trimmed = line.trim();
-                            if (trimmed.startsWith('- ')) {
-                              return (
-                                <div key={lineIdx} className="flex gap-2 ml-2">
-                                  <span className="text-primary font-bold">•</span>
-                                  <span>{trimmed.substring(2)}</span>
-                                </div>
-                              );
-                            }
-                            if (trimmed.startsWith('* ')) {
-                              return (
-                                <div key={lineIdx} className="flex gap-2 ml-2">
-                                  <span className="text-primary font-bold">•</span>
-                                  <span>{trimmed.substring(2)}</span>
-                                </div>
-                              );
-                            }
-                            if (/^\d+\./.test(trimmed)) {
-                              return (
-                                <div key={lineIdx} className="ml-2">
-                                  <span className="text-primary font-semibold">{trimmed.split(' ')[0]}</span>
-                                  <span> {trimmed.substring(trimmed.indexOf(' ')).trim()}</span>
-                                </div>
-                              );
-                            }
-                            return trimmed ? (
-                              <p key={lineIdx}>{trimmed}</p>
-                            ) : null;
-                          })}
-                        </div>
-                      );
-                    })}
+                        return (
+                          <div key={idx} className="space-y-2">
+                            {cleanParagraph.split('\n').map((line, lineIdx) => {
+                              const trimmed = line.trim();
+                              if (trimmed.startsWith('- ')) {
+                                return (
+                                  <div key={lineIdx} className="flex gap-2 ml-2">
+                                    <span className="text-primary font-bold">•</span>
+                                    <span>{trimmed.substring(2)}</span>
+                                  </div>
+                                );
+                              }
+                              if (trimmed.startsWith('* ')) {
+                                return (
+                                  <div key={lineIdx} className="flex gap-2 ml-2">
+                                    <span className="text-primary font-bold">•</span>
+                                    <span>{trimmed.substring(2)}</span>
+                                  </div>
+                                );
+                              }
+                              if (/^\d+\./.test(trimmed)) {
+                                return (
+                                  <div key={lineIdx} className="ml-2">
+                                    <span className="text-primary font-semibold">{trimmed.split(' ')[0]}</span>
+                                    <span> {trimmed.substring(trimmed.indexOf(' ')).trim()}</span>
+                                  </div>
+                                );
+                              }
+                              return trimmed ? (
+                                <p key={lineIdx}>{trimmed}</p>
+                              ) : null;
+                            })}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-            <div className="flex justify-start">
-                <div className="bg-white border border-border px-4 py-3 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <Loader className="w-4 h-4 animate-spin" style={{ color: "#2F8FA5" }} />
-                    <span className="text-sm text-muted-foreground">Thinking...</span>
+              ))}
+              {isLoading && (
+                <div className="flex justify-start">
+                  <div className="bg-white border border-border px-4 py-3 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Loader className="w-4 h-4 animate-spin" style={{ color: "#2F8FA5" }} />
+                      <span className="text-sm text-muted-foreground">Thinking...</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-            </>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
           )}
         </CardContent>
 
