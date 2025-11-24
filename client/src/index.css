@@ -80,40 +80,40 @@
   --card-spacing-title: 16px;
   --card-spacing-metadata: 8px;
 
-  /* Tailwind CSS Variables - Updated to Evalia Palette */
+  /* Tailwind CSS Variables - Evalia Brand Palette */
   --background: 0 0% 98.5%;
-  --foreground: 214 15% 11%;
+  --foreground: 216 27% 16%;
   --card: 0 0% 100%;
-  --card-foreground: 214 15% 11%;
+  --card-foreground: 216 27% 16%;
   --popover: 0 0% 100%;
-  --popover-foreground: 214 15% 11%;
-  --primary: 198 55% 42%;
+  --popover-foreground: 216 27% 16%;
+  --primary: 197 57% 46%;
   --primary-foreground: 0 0% 100%;
   --secondary: 197 61% 95%;
-  --secondary-foreground: 214 15% 11%;
+  --secondary-foreground: 216 27% 16%;
   --muted: 213 17% 92%;
-  --muted-foreground: 215 16% 46.9%;
-  --accent: 164 100% 49%;
-  --accent-foreground: 0 0% 100%;
+  --muted-foreground: 214 13% 49%;
+  --accent: 75 64% 60%;
+  --accent-foreground: 216 27% 16%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
   --border: 213 17% 92%;
   --input: 213 17% 92%;
-  --ring: 198 55% 42%;
-  --chart-1: 198 55% 42%;
-  --chart-2: 164 100% 49%;
-  --chart-3: 155 100% 40%;
-  --chart-4: 36 100% 50%;
-  --chart-5: 340 82% 52%;
+  --ring: 197 57% 46%;
+  --chart-1: 197 57% 46%;
+  --chart-2: 164 53% 50%;
+  --chart-3: 193 59% 30%;
+  --chart-4: 75 64% 60%;
+  --chart-5: 0 84% 60%;
 
-  --sidebar: 217 50% 30%;
+  --sidebar: 193 59% 30%;
   --sidebar-foreground: 0 0% 100%;
-  --sidebar-primary: 198 55% 42%;
+  --sidebar-primary: 197 57% 46%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 164 100% 49%;
-  --sidebar-accent-foreground: 214 15% 11%;
+  --sidebar-accent: 75 64% 60%;
+  --sidebar-accent-foreground: 216 27% 16%;
   --sidebar-border: 213 17% 92%;
-  --sidebar-ring: 198 55% 42%;
+  --sidebar-ring: 197 57% 46%;
 
   --font-sans: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-serif: 'EB Garamond', serif;

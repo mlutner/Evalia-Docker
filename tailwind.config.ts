@@ -11,10 +11,11 @@ export default {
         sm: ".1875rem", /* 3px */
       },
       colors: {
-        // EVALIA MINIMAL COLOR SYSTEM - 8 Colors Only
-        "primary-blue": "#3A8DFF",
-        "accent-lime": "#A4E65A",
-        "dark-navy": "#0D1B2A",
+        // EVALIA BRAND COLOR SYSTEM
+        "primary-teal": "#2F8FA5",
+        "icon-teal": "#37C0A3",
+        "dark-teal": "#1F6F78",
+        "accent-lime": "#A3D65C",
         "neutral-bg": "#F7F9FC",
         "neutral-surface": "#FFFFFF",
         "neutral-border": "#E2E7EF",
