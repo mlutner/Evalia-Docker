@@ -29,7 +29,6 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col w-full lg:w-auto">
-        <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} sidebarOpen={sidebarOpen} />
         {children}
       </div>
     </div>
