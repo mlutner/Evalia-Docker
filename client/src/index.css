@@ -3,21 +3,21 @@
 @tailwind utilities;
 
 :root {
-  /* EVALIA MINIMAL COLOR SYSTEM - 8 Colors Only */
+  /* EVALIA FINAL PALETTE - 8 Colors (Corrected & Cohesive) */
   
-  /* Primary Blue - Buttons, icons, charts, links */
-  --color-primary: #3A8DFF;
+  /* Primary Accent - Evalia Blue-Teal */
+  --color-primary: #2F8FA5;
   
-  /* Lime - "New Survey" button, success, highlights */
-  --color-accent-lime: #A4E65A;
+  /* Primary Lime */
+  --color-accent-lime: #A3D65C;
   
-  /* Dark Navy - Sidebar background only */
+  /* Navy - Sidebar background only */
   --color-dark-navy: #0D1B2A;
   
-  /* Light Background - Page background */
+  /* Background */
   --color-bg-light: #F7F9FC;
   
-  /* Card Surface - Card backgrounds */
+  /* Card Surface */
   --color-surface: #FFFFFF;
   
   /* Border/Dividers */
@@ -27,7 +27,7 @@
   --color-text-primary: #1C2635;
   --color-text-secondary: #6A7789;
 
-  /* Tailwind CSS Variables - Updated to match minimal system */
+  /* Tailwind CSS Variables */
   --background: 0 0% 97.3%;
   --foreground: 217 33% 17%;
   --card: 0 0% 100%;
@@ -112,7 +112,7 @@ body {
   width: 51px;
   height: 51px;
   border-radius: 50%;
-  background: rgba(58, 141, 255, 0.08);
+  background: rgba(47, 143, 165, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
