@@ -94,16 +94,16 @@ export function ScoringConfiguration({
       {/* Enable Scoring Toggle */}
       <div className="flex items-start justify-between">
         <div>
-          <h3 className="text-sm font-semibold">Enable Scoring</h3>
-          <p className="text-xs text-muted-foreground mt-1">
+          <h3 className="text-sm font-semibold" style={{ color: '#1C2635' }}>Enable Scoring</h3>
+          <p className="text-xs mt-1" style={{ color: '#6A7789' }}>
             Respondents will see their assessment results
             {questions?.some(q => q.sectionId) && categories.length === 0 && (
-              <span className="block mt-1 text-primary font-medium">
+              <span className="block mt-1 font-medium" style={{ color: '#37C0A3' }}>
                 💡 Survey sections will auto-populate as scoring categories
               </span>
             )}
             {nonScorableQuestions.length > 0 && isEnabled && (
-              <span className="block mt-1 text-amber-600 dark:text-amber-500 font-medium">
+              <span className="block mt-1 font-medium" style={{ color: '#A3D65C' }}>
                 ℹ️ {nonScorableQuestions.length} question(s) won't be scored (text, email, date fields aren't scorable)
               </span>
             )}
@@ -115,8 +115,8 @@ export function ScoringConfiguration({
       {isEnabled && (
         <div className="space-y-4 pt-2">
           {/* AI Auto-Generate */}
-          <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
-            <p className="text-xs font-medium text-primary mb-2">Quick Setup</p>
+          <div className="p-3 rounded-lg border" style={{ backgroundColor: '#F0F2F5', borderColor: '#E2E7EF' }}>
+            <p className="text-xs font-medium mb-2" style={{ color: '#2F8FA5' }}>Quick Setup</p>
             <Button
               onClick={onAutoGenerateScoring}
               disabled={isAutoGenerating || questions.length === 0}

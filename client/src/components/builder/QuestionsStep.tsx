@@ -75,8 +75,8 @@ export default function QuestionsStep({
       {/* Header with Question Count and Actions */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <p className="font-medium text-lg">{questions.length} {questions.length === 1 ? 'question' : 'questions'} created</p>
-          <p className="text-sm text-muted-foreground">Edit your questions and refine with AI</p>
+          <p className="font-medium text-lg" style={{ color: '#1C2635' }}>{questions.length} {questions.length === 1 ? 'question' : 'questions'} created</p>
+          <p className="text-sm" style={{ color: '#6A7789' }}>Edit your questions and refine with AI</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           {onNext && (

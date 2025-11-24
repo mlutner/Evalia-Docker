@@ -80,14 +80,15 @@ export default function QuestionEditor({
       <div 
         {...attributes}
         {...listeners}
-        className="absolute left-2 top-4 cursor-move text-muted-foreground hover:text-foreground touch-none"
+        className="absolute left-2 top-4 cursor-move touch-none"
+        style={{ color: '#A3D65C' }}
       >
         <GripVertical className="w-5 h-5" />
       </div>
       
       <CardHeader className="pl-12 pr-4 pb-4">
         <div className="flex items-start gap-3">
-          <span className="text-sm font-medium text-muted-foreground shrink-0 mt-2">
+          <span className="text-sm font-medium shrink-0 mt-2" style={{ color: '#6A7789' }}>
             {index + 1}.
           </span>
           <div className="flex-1 space-y-4">

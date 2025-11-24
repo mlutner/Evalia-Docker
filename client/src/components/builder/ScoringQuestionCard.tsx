@@ -34,13 +34,22 @@ export function ScoringQuestionCard({
   return (
     <div
       ref={setNodeRef}
-      className="p-3 bg-background rounded border text-xs group hover:bg-muted/40 transition-colors"
+      className="p-3 rounded border text-xs group transition-colors"
+      style={{ backgroundColor: '#F7F9FC', borderColor: '#E2E7EF' }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = '#F0F2F5';
+        e.currentTarget.style.borderColor = '#2F8FA5';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = '#F7F9FC';
+        e.currentTarget.style.borderColor = '#E2E7EF';
+      }}
       data-testid={`question-card-${question.id}`}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
-          <p className="truncate font-medium text-sm">{question.question}</p>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="truncate font-medium text-sm" style={{ color: '#1C2635' }}>{question.question}</p>
+          <p className="text-xs mt-0.5" style={{ color: '#6A7789' }}>
             {getQuestionTypeLabel(question.type)} • {getMaxPointsForQuestion(question)}pt
           </p>
         </div>
@@ -65,7 +74,7 @@ export function ScoringQuestionCard({
               <SelectContent align="end">
                 {otherCategories.length > 0 && (
                   <>
-                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Move to Category</div>
+                    <div className="px-2 py-1.5 text-xs font-semibold" style={{ color: '#6A7789' }}>Move to Category</div>
                     {otherCategories.map((cat) => (
                       <SelectItem key={cat.id} value={cat.id}>
                         {cat.name}
