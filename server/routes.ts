@@ -886,14 +886,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AI Chat endpoint using Mistral directly
+  // AI Chat endpoint using Mistral directly with dynamic user data context
   app.post("/api/ai-chat", isAuthenticated, async (req: any, res) => {
     try {
       const { message, history = [], context } = req.body;
+      const userId = req.user?.id;
 
       if (!message || typeof message !== "string") {
         return res.status(400).json({ error: "Message is required" });
       }
+
+      if (!userId) {
+        return res.status(401).json({ error: "User not authenticated" });
+      }
+
+      // Fetch user's real data for context
+      const userSurveys = await storage.getAllSurveys(userId);
+      const allTemplates = await storage.getAllTemplates();
+      
+      let surveyStatsContext = "";
+      if (userSurveys.length > 0) {
+        surveyStatsContext = `\n\nUSER'S SURVEYS:\n`;
+        for (const survey of userSurveys.slice(0, 5)) {
+          const responseCount = await storage.getResponseCount(survey.id);
+          surveyStatsContext += `- "${survey.title}" (${survey.status}): ${responseCount} responses, ${survey.questions.length} questions\n`;
+        }
+        if (userSurveys.length > 5) {
+          surveyStatsContext += `... and ${userSurveys.length - 5} more surveys`;
+        }
+      }
+
+      let templatesContext = "";
+      if (allTemplates.length > 0) {
+        templatesContext = `\n\nAVAILABLE TEMPLATES:\n`;
+        for (const template of allTemplates.slice(0, 5)) {
+          templatesContext += `- "${template.title}" (${template.category}): ${template.questions.length} questions\n`;
+        }
+      }
+
+      const enrichedContext = context || `You are a helpful AI assistant for Evalia, a survey and training feedback platform. 
+
+EVALIA FEATURES:
+1. Survey Creation: Create surveys from scratch, use templates, or generate with AI
+2. Dashboard: View key metrics like total surveys, average scores, response rates, and trends
+3. Surveys: Manage surveys (Draft/Live/Paused/Closed status), see response counts
+4. Respondent Groups: Manage and segment respondents
+5. Analytics: Analyze responses with charts, breakdowns, and AI-generated insights
+6. Scoring Models: Set up custom scoring rules
+7. Templates: Pre-built survey templates (Training Feedback, Employee Satisfaction, Product Feedback, Assessments, Event Feedback)
+8. AI Assist: Generate surveys, analyze responses, extract insights
+
+KEY CAPABILITIES:
+- Create surveys in minutes using AI or templates
+- Share surveys via link or QR code
+- Collect responses and analyze in real-time
+- Export data to CSV or JSON
+- AI-powered insights about survey responses
+- Respondent management and segmentation
+- Custom scoring for training evaluations${surveyStatsContext}${templatesContext}
+
+HELP USERS WITH:
+- Creating and managing their surveys
+- Sharing and collecting responses
+- Analyzing and interpreting results
+- Using scoring models
+- Leveraging AI features
+- Navigation and app usage
+
+Be concise, helpful, and guide users toward their goals. When possible, reference their actual surveys and data.`;
 
       const conversationHistory = history.map((m: any) => ({
         role: m.role as "user" | "assistant",
@@ -909,7 +969,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         body: JSON.stringify({
           model: "mistral-medium-latest",
           messages: [
-            { role: "system", content: context || "You are a helpful assistant." },
+            { role: "system", content: enrichedContext },
             ...conversationHistory,
             { role: "user", content: message },
           ],
