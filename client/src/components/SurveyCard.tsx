@@ -258,9 +258,10 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
         <div className="flex w-full gap-3">
           <Button 
             variant="outline" 
-            className="flex-1 h-10 font-semibold text-sm"
+            className="flex-1 font-semibold text-sm"
             onClick={onEdit} 
             data-testid={`button-edit-${index}`}
+            style={{ color: '#2F8FA5', borderColor: '#E2E7EF' }}
           >
             <Edit3 className="w-4 h-4 mr-2" />
             Edit
@@ -271,10 +272,11 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
                 onClick={onAnalyze} 
                 data-testid={`button-analyze-${index}`}
                 disabled={survey.responseCount === 0}
-                className="flex-1 h-10 font-semibold text-sm"
+                className="flex-1 font-semibold text-sm"
                 style={{
-                  backgroundColor: survey.responseCount === 0 ? '#F0F2F5' : '#1F6F78',
+                  backgroundColor: survey.responseCount === 0 ? '#F0F2F5' : '#2F8FA5',
                   color: survey.responseCount === 0 ? '#B0B8C2' : '#FFFFFF',
+                  border: 'none'
                 }}
               >
                 <BarChart3 className="w-4 h-4 mr-2" strokeWidth={2} />
