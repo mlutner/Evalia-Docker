@@ -125,6 +125,7 @@ export default function FileUploadZone({
           <Button
             onClick={() => document.getElementById('file-input')?.click()}
             data-testid="button-browse"
+            style={{ backgroundColor: '#2F8FA5', color: '#FFFFFF' }}
           >
             Browse Files
           </Button>

@@ -371,6 +371,7 @@ export default function Builder() {
                 onClick={surveyState.handleNextStep}
                 disabled={surveyState.currentWizardStep === 1 && (!surveyState.currentSurveyTitle.trim() || surveyState.currentQuestions.length === 0)}
                 data-testid="button-next-step"
+                style={{ backgroundColor: '#2F8FA5', color: '#FFFFFF' }}
               >
                 Next
                 <ArrowRight className="w-4 h-4 ml-2" />
@@ -381,6 +382,7 @@ export default function Builder() {
                 onClick={surveyState.handleSaveSurvey}
                 disabled={surveyState.createSurveyMutation.isPending || surveyState.updateSurveyMutation.isPending || !surveyState.currentSurveyTitle.trim()}
                 data-testid="button-save-survey"
+                style={{ backgroundColor: '#2F8FA5', color: '#FFFFFF' }}
               >
                 {surveyState.createSurveyMutation.isPending || surveyState.updateSurveyMutation.isPending
                   ? "Saving..."

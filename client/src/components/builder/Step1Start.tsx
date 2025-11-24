@@ -241,7 +241,7 @@ export default function Step1Start({
                     <Upload className="w-4 h-4 mr-2" />
                     Attach File
                   </Button>
-                  <Button size="lg" onClick={handleGenerateClick} disabled={(!prompt.trim() && !selectedFileForAI) || isProcessing} className="flex-1" data-testid="button-generate">
+                  <Button size="lg" onClick={handleGenerateClick} disabled={(!prompt.trim() && !selectedFileForAI) || isProcessing} className="flex-1" data-testid="button-generate" style={{ backgroundColor: '#2F8FA5', color: '#FFFFFF' }}>
                     <Sparkles className="w-5 h-5 mr-2" />
                     Generate Survey
                   </Button>
@@ -309,7 +309,7 @@ export default function Step1Start({
                   data-testid="textarea-paste-text"
                 />
               </div>
-              <Button size="lg" onClick={handlePasteClick} disabled={!parsedText.trim() || isProcessing} className="w-full" data-testid="button-process-text">
+              <Button size="lg" onClick={handlePasteClick} disabled={!parsedText.trim() || isProcessing} className="w-full" data-testid="button-process-text" style={{ backgroundColor: '#2F8FA5', color: '#FFFFFF' }}>
                 <Sparkles className="w-5 h-5 mr-2" />
                 Process Text & Generate Survey
               </Button>
