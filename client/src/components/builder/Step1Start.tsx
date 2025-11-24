@@ -161,7 +161,7 @@ export default function Step1Start({
 
           {/* Templates Tab */}
           <TabsContent value="templates" className="space-y-10 pt-8">
-            <div className="rounded-lg p-6 md:p-8 border" style={{ backgroundColor: 'rgba(47, 143, 165, 0.08)', borderColor: 'rgba(47, 143, 165, 0.3)', borderLeft: '4px solid #2F8FA5' }}>
+            <div className="rounded-lg p-6 md:p-8 border" style={{ backgroundColor: '#FFFFFF', borderColor: '#E2E7EF', borderLeft: '4px solid #2F8FA5' }}>
               <h3 className="text-lg font-semibold mb-3" style={{ color: '#1C2635' }}>Professional Training Templates</h3>
               <p className="leading-relaxed" style={{ color: '#6A7789' }}>
                 Start with proven survey frameworks designed for trainers. Browse templates below, preview them to see all questions, and click "Use Template" to get started.
@@ -181,7 +181,7 @@ export default function Step1Start({
 
           {/* AI Tab */}
           <TabsContent value="ai" className="space-y-10 pt-8">
-            <div className="rounded-lg p-6 md:p-8 border" style={{ backgroundColor: 'rgba(47, 143, 165, 0.08)', borderColor: 'rgba(47, 143, 165, 0.3)', borderLeft: '4px solid #2F8FA5' }}>
+            <div className="rounded-lg p-6 md:p-8 border" style={{ backgroundColor: '#FFFFFF', borderColor: '#E2E7EF', borderLeft: '4px solid #2F8FA5' }}>
               <h3 className="text-lg font-semibold mb-3" style={{ color: '#1C2635' }}>Generate with AI</h3>
               <p className="leading-relaxed" style={{ color: '#6A7789' }}>
                 Describe what your survey is about and what you want to measure. AI will generate custom questions tailored to your needs.
