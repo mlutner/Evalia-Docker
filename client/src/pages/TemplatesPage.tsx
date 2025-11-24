@@ -94,7 +94,7 @@ export default function TemplatesPage() {
                     </Button>
                     <Button 
                       onClick={() => handleUseTemplate(template)}
-                      className="flex-1 bg-evalia-primary hover:bg-evalia-primary/90 text-evalia-lime font-semibold"
+                      className="flex-1 bg-[#0e1729] hover:bg-evalia-primary/90 text-evalia-lime font-semibold"
                       data-testid={`button-use-template-${template.id}`}
                     >
                       Use Template
