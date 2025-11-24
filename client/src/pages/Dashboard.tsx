@@ -248,7 +248,7 @@ export default function Dashboard() {
                 onClick={() => setActiveView(item.id as any)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all ${
                   isActive
-                    ? "bg-evalia-lime/20 text-evalia-lime"
+                    ? "bg-slate-300 dark:bg-slate-700 text-slate-900 dark:text-white"
                     : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
                 } ${sidebarExpanded ? "" : "justify-center"}`}
                 data-testid={`nav-${item.id}`}
