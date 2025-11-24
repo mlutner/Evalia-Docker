@@ -35,17 +35,17 @@ export function Hero() {
         <div className="absolute bottom-32 right-20 w-1.5 h-1.5 bg-evalia-mint/25 rounded-full animate-float animation-delay-2000"></div>
       </div>
       {/* Content */}
-      <div className="relative max-w-7xl mx-auto px-6 py-40 z-10">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-20 sm:py-32 lg:py-40 z-10">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
           {/* Left content */}
-          <div className="text-white space-y-8">
+          <div className="text-white space-y-6 sm:space-y-8">
             <div className="inline-block animate-fade-in" style={{ animationDelay: '0.1s' }}>
-              <span className="text-sm font-medium tracking-wide uppercase bg-white/20 px-4 py-2 rounded-full backdrop-blur-sm hover:bg-white/30 transition-colors">
+              <span className="text-xs sm:text-sm font-medium tracking-wide uppercase bg-white/20 px-3 sm:px-4 py-2 rounded-full backdrop-blur-sm hover:bg-white/30 transition-colors">
                 Training Feedback Platform
               </span>
             </div>
 
-            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight" style={{ animationDelay: '0.2s' }}>
+            <h1 className="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-bold leading-tight" style={{ animationDelay: '0.2s' }}>
               Collect{' '}
               <span className="relative inline-block">
                 <span className="relative z-10">training feedback</span>
@@ -58,7 +58,7 @@ export function Hero() {
               </span>
             </h1>
 
-            <p className="text-lg lg:text-xl text-white/90 leading-relaxed max-w-xl" style={{ animationDelay: '0.3s' }}>Give trainers ready-made templates, AI-powered question creation, and instant reporting so you can design better sessions and measure what matters.</p>
+            <p className="text-base sm:text-lg lg:text-xl text-white/90 leading-relaxed max-w-xl" style={{ animationDelay: '0.3s' }}>Give trainers ready-made templates, AI-powered question creation, and instant reporting so you can design better sessions and measure what matters.</p>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-6" style={{ animationDelay: '0.4s' }}>
               <button className="bg-white text-evalia-teal-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-50 transition-all hover:shadow-xl flex items-center justify-center space-x-2 shadow-lg" data-testid="button-get-started-hero">

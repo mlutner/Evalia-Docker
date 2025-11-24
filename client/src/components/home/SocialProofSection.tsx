@@ -7,12 +7,12 @@ const socialProofItems = [
 
 export function SocialProofSection() {
   return (
-    <section className="py-24 bg-gradient-to-b from-white via-evalia-teal-50/30 to-white border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-6">
-        <h2 className="text-center text-3xl lg:text-4xl font-bold text-evalia-navy mb-12 opacity-0 animate-fade-in" style={{ animationDuration: '0.6s', animationFillMode: 'forwards' }} data-testid="text-trusted-by">
+    <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-b from-white via-evalia-teal-50/30 to-white border-b border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <h2 className="text-center text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-evalia-navy mb-8 sm:mb-12 opacity-0 animate-fade-in" style={{ animationDuration: '0.6s', animationFillMode: 'forwards' }} data-testid="text-trusted-by">
           Trusted by training professionals worldwide
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 max-w-6xl mx-auto">
           {socialProofItems.map((item, idx) => (
             <div 
               key={item.title} 

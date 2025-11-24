@@ -29,24 +29,24 @@ const steps = [
 
 export function HowItWorksSection() {
   return (
-    <section className="relative py-32 md:py-40 bg-evalia-teal-50 overflow-hidden">
+    <section className="relative py-16 sm:py-24 md:py-32 lg:py-40 bg-evalia-teal-50 overflow-hidden">
       {/* Background blobs */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-evalia-teal-100/30 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-        <div className="absolute bottom-0 right-0 w-80 h-80 bg-evalia-mint/10 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div className="absolute top-0 left-0 w-64 sm:w-80 md:w-96 h-64 sm:h-80 md:h-96 bg-evalia-teal-100/30 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+        <div className="absolute bottom-0 right-0 w-56 sm:w-72 md:w-80 h-56 sm:h-72 md:h-80 bg-evalia-mint/10 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-6 z-10">
-        <div className="text-center mb-16 md:mb-20 opacity-0 animate-fade-in" style={{ animationDuration: '0.6s', animationFillMode: 'forwards' }}>
-          <h2 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-evalia-navy to-evalia-teal-600 bg-clip-text text-transparent mb-6 leading-tight" data-testid="text-how-it-works">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 z-10">
+        <div className="text-center mb-12 sm:mb-16 md:mb-20 opacity-0 animate-fade-in" style={{ animationDuration: '0.6s', animationFillMode: 'forwards' }}>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold bg-gradient-to-r from-evalia-navy to-evalia-teal-600 bg-clip-text text-transparent mb-4 sm:mb-6 leading-tight px-2" data-testid="text-how-it-works">
             Create better training feedback in three steps
           </h2>
-          <p className="text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base lg:text-lg xl:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed px-2">
             From creation to insights, Evalia makes the entire process seamless and efficient.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-12 md:gap-16 max-w-6xl mx-auto relative">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 md:gap-12 lg:gap-16 max-w-6xl mx-auto relative">
           {/* Connector line */}
           <div className="hidden md:block absolute top-8 left-0 right-0 h-1 bg-gradient-to-r from-evalia-teal-200 via-evalia-teal-300 to-evalia-teal-200 pointer-events-none z-0" style={{ maxWidth: '90%', marginLeft: '5%' }}></div>
 

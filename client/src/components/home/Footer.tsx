@@ -19,21 +19,21 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="bg-evalia-navy text-white py-16">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid md:grid-cols-4 gap-12 mb-12">
+    <footer className="bg-evalia-navy text-white py-12 sm:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-12 mb-8 sm:mb-12">
           {/* Brand */}
-          <div>
-            <img src={evaliaLogo} alt="Evalia" className="h-8 w-auto mb-4" data-testid="img-footer-logo" />
-            <p className="text-gray-400 text-sm leading-relaxed">
+          <div className="col-span-2 sm:col-span-1">
+            <img src={evaliaLogo} alt="Evalia" className="h-6 sm:h-8 w-auto mb-3 sm:mb-4" data-testid="img-footer-logo" />
+            <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
               Better training feedback for better learning outcomes.
             </p>
           </div>
 
           {/* Product Links */}
           <div>
-            <h4 className="font-semibold mb-4 text-white">Product</h4>
-            <ul className="space-y-3 text-sm text-gray-400">
+            <h4 className="font-semibold mb-3 sm:mb-4 text-white text-xs sm:text-base">Product</h4>
+            <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-gray-400">
               {footerLinks.product.map((link) => (
                 <li key={link.label}>
                   <a href={link.href} className="hover:text-white transition-colors">
@@ -46,8 +46,8 @@ export function Footer() {
 
           {/* Company Links */}
           <div>
-            <h4 className="font-semibold mb-4 text-white">Company</h4>
-            <ul className="space-y-3 text-sm text-gray-400">
+            <h4 className="font-semibold mb-3 sm:mb-4 text-white text-xs sm:text-base">Company</h4>
+            <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-gray-400">
               {footerLinks.company.map((link) => (
                 <li key={link.label}>
                   <a href={link.href} className="hover:text-white transition-colors">
@@ -60,8 +60,8 @@ export function Footer() {
 
           {/* Legal Links */}
           <div>
-            <h4 className="font-semibold mb-4 text-white">Legal</h4>
-            <ul className="space-y-3 text-sm text-gray-400">
+            <h4 className="font-semibold mb-3 sm:mb-4 text-white text-xs sm:text-base">Legal</h4>
+            <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-gray-400">
               {footerLinks.legal.map((link) => (
                 <li key={link.label}>
                   <a href={link.href} className="hover:text-white transition-colors">
@@ -73,7 +73,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
+        <div className="border-t border-gray-800 pt-6 sm:pt-8 text-center text-xs sm:text-sm text-gray-400">
           © 2024 Evalia. All rights reserved.
         </div>
       </div>

@@ -12,16 +12,16 @@ export function FeatureCard({
   testId,
 }: FeatureCardProps) {
   return (
-    <div className="bg-white rounded-2xl p-10 shadow-sm border border-gray-100 relative overflow-hidden" data-testid={testId}>
+    <div className="bg-white rounded-2xl p-6 sm:p-8 lg:p-10 shadow-sm border border-gray-100 relative overflow-hidden" data-testid={testId}>
       {/* Subtle decorative accent */}
-      <div className={`absolute top-0 left-0 w-1 h-16 ${accentColor} rounded-r-full`}></div>
+      <div className={`absolute top-0 left-0 w-1 h-12 sm:h-16 ${accentColor} rounded-r-full`}></div>
 
       <div className="relative">
-        <h3 className="text-2xl font-bold text-evalia-navy mb-4 leading-tight">
+        <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-evalia-navy mb-3 sm:mb-4 leading-tight">
           {title}
         </h3>
 
-        <p className="text-gray-600 leading-relaxed text-base">{description}</p>
+        <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{description}</p>
       </div>
     </div>
   );
