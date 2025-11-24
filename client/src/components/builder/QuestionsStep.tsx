@@ -99,20 +99,11 @@ export default function QuestionsStep({
           <p className="font-medium text-lg" style={{ color: '#1C2635' }}>{questions.length} {questions.length === 1 ? 'question' : 'questions'} created</p>
           <p className="text-sm" style={{ color: '#6A7789' }}>Edit your questions and refine with AI</p>
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          {onNext && (
-            <Button
-              onClick={onNext}
-              data-testid="button-next-step-top"
-            >
-              Next
-              <ChevronRight className="w-4 h-4 ml-2" />
-            </Button>
-          )}
-          {/* Mobile: AI Chat Sheet */}
+        <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
+          {/* Mobile: AI Chat Button */}
           <Sheet open={isMobileChat} onOpenChange={setIsMobileChat}>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="outline" data-testid="button-open-chat-mobile">
+            <SheetTrigger asChild>
+              <Button variant="outline" data-testid="button-open-chat-mobile" className="md:hidden flex-1 sm:flex-none">
                 <MessageSquare className="w-4 h-4 mr-2" />
                 AI Chat
               </Button>
@@ -133,6 +124,17 @@ export default function QuestionsStep({
               </div>
             </SheetContent>
           </Sheet>
+
+          {onNext && (
+            <Button
+              onClick={onNext}
+              data-testid="button-next-step-top"
+              className="flex-1 sm:flex-none"
+            >
+              Next
+              <ChevronRight className="w-4 h-4 ml-2" />
+            </Button>
+          )}
 
           {/* Desktop: Toggle Chat Panel */}
           <Button
