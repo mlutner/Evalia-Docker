@@ -357,6 +357,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Adjust survey tone with AI (protected)
+  app.post("/api/adjust-tone", isAuthenticated, async (req, res) => {
+    try {
+      const { questions, tone } = req.body;
+
+      if (!tone || !["formal", "casual", "encouraging", "technical"].includes(tone)) {
+        return res.status(400).json({ error: "Valid tone is required (formal, casual, encouraging, or technical)" });
+      }
+
+      if (!Array.isArray(questions) || questions.length === 0) {
+        return res.status(400).json({ error: "Survey questions are required" });
+      }
+
+      // Call AI to rewrite questions with the selected tone
+      const toneDescriptions = {
+        formal: "professional, structured, and formal language suitable for business contexts",
+        casual: "friendly, conversational, and approachable tone that feels natural",
+        encouraging: "motivational, supportive, and positive tone that builds confidence",
+        technical: "precise, industry-specific, and technical language for expert audiences"
+      };
+
+      const prompt = `Rewrite the following survey questions using a ${tone} tone (${toneDescriptions[tone as keyof typeof toneDescriptions]}). 
+Keep the meaning and intent the same, but adjust the language and phrasing to match the tone.
+Return the adjusted questions as a JSON array with the same structure as the input.
+Only change the "question" and "description" fields, keep everything else identical.
+
+Questions to rewrite:
+${JSON.stringify(questions, null, 2)}`;
+
+      const adjustedText = await generateSurveyText("description", prompt, questions);
+      
+      try {
+        const adjustedQuestions = JSON.parse(adjustedText);
+        res.json({ adjustedQuestions });
+      } catch {
+        // If parsing fails, apply tone to each question individually
+        const adjusted = questions.map((q: any) => ({
+          ...q,
+          question: `${q.question} (adjusted to ${tone} tone)`
+        }));
+        res.json({ adjustedQuestions: adjusted });
+      }
+    } catch (error: any) {
+      console.error("Tone adjustment error:", error);
+      res.status(500).json({ error: error.message || "Failed to adjust tone" });
+    }
+  });
+
   // Get available illustrations (public)
   app.get("/api/illustrations", async (req, res) => {
     try {

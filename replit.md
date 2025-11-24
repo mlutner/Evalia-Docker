@@ -162,7 +162,28 @@ The email service is configured to use **Resend** for sending survey invitations
 - Related to type inference in useMutation hooks
 - App works correctly despite these warnings
 
-## Next Priority Features
+## Recently Completed (Nov 24, 2025)
+1. **✅ Live Preview** - Real-time device preview (Desktop/Mobile/Tablet) in builder sidebar
+2. **✅ AI Tone Adjuster** - One-click tone adjustment (Formal/Casual/Encouraging/Technical) for all questions
+3. **✅ Command Center Widgets** - Dashboard with "At a Glance" insights, Goal Tracking, and AI Recommendations
+
+## Phase 2: Future Enhancements
+### Visual Conditional Logic Flowchart (Planned)
+- **Goal**: Replace dropdown-based skip logic with visual flowchart interface
+- **Implementation**:
+  - Install `reactflow` library for node-edge visualization
+  - Create `VisualLogicBuilder.tsx` component with draggable nodes (questions) and connectors
+  - Build logic validator to detect circular dependencies
+  - Add condition editor for each edge (question → condition → target question)
+  - Mobile-responsive flowchart with zoom/pan controls
+- **Files to Create**:
+  - `client/src/components/VisualLogicBuilder.tsx` - Main flowchart component
+  - `client/src/hooks/useFlowLogic.ts` - State management for flow logic
+  - `client/src/utils/flowValidator.ts` - Circular dependency detection
+- **Timeline**: 3-4 days (requires new library integration)
+- **Team Notes**: Low priority but high perceived value for advanced users
+
+## Next Priority Features (Current)
 1. **Chart Visualizations** - Use Recharts for response analytics (component already installed)
 2. **Response Filtering/Sorting** - Add UI controls for date range, completion status
 3. **Email Reminders** - Send follow-up emails to non-completed respondents

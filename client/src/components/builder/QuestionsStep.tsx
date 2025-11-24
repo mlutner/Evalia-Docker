@@ -47,6 +47,8 @@ interface QuestionsStepProps {
 export default function QuestionsStep({
   questions,
   title,
+  description,
+  welcomeMessage,
   messages,
   isProcessing,
   onSendMessage,
@@ -55,6 +57,7 @@ export default function QuestionsStep({
   onAddQuestion,
   onReorderQuestions,
   onTitleChange,
+  onUpdateQuestions,
   onNext,
 }: QuestionsStepProps) {
   const [chatOpen, setChatOpen] = useState(true);
@@ -223,10 +226,21 @@ export default function QuestionsStep({
           )}
         </div>
 
-        {/* AI Chat Panel - Desktop Side Panel */}
+        {/* AI Tools Panel - Desktop Side Panel */}
         {chatOpen && (
           <div className="hidden md:block">
-            <div className="sticky top-20 h-[calc(100vh-8rem)]">
+            <div className="sticky top-20 h-[calc(100vh-8rem)] overflow-y-auto space-y-4">
+              {/* Live Preview */}
+              <LivePreviewPanel survey={{ title, description, welcomeMessage, questions }} />
+              
+              {/* Tone Adjuster */}
+              <ToneAdjuster 
+                questions={questions} 
+                onApplyTone={onUpdateQuestions}
+                disabled={questions.length === 0}
+              />
+              
+              {/* AI Chat */}
               <Card className="h-full flex flex-col">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm flex items-center gap-2">

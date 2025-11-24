@@ -321,6 +321,8 @@ export default function Builder() {
           <QuestionsStep
             questions={surveyState.currentQuestions}
             title={surveyState.currentSurveyTitle}
+            description={surveyState.currentSurveyDescription}
+            welcomeMessage={surveyState.welcomeMessage}
             messages={aiChat.messages}
             isProcessing={aiChat.isProcessing}
             onSendMessage={handleSendMessage}
@@ -329,6 +331,7 @@ export default function Builder() {
             onAddQuestion={surveyState.handleAddQuestion}
             onReorderQuestions={surveyState.setCurrentQuestions}
             onTitleChange={surveyState.setCurrentSurveyTitle}
+            onUpdateQuestions={surveyState.setCurrentQuestions}
             onNext={surveyState.handleNextStep}
           />
         )}
