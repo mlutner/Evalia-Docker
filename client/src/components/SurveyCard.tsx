@@ -225,9 +225,24 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
               <span style={{ fontWeight: 600 }}>Training Date:</span> {new Date(survey.trainingDate).toLocaleDateString()}
             </p>
           )}
-          <p style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500 }}>
-            Created {new Date(survey.createdAt).toLocaleDateString()}
-          </p>
+          <div className="flex items-center gap-2">
+            <p style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500 }}>
+              Created {new Date(survey.createdAt).toLocaleDateString()}
+            </p>
+            {survey.scoreConfig?.enabled && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge variant="outline" style={{ backgroundColor: 'rgba(47, 143, 165, 0.08)', color: theme.colors.primary, borderColor: 'rgba(47, 143, 165, 0.3)' }} className="gap-1 text-xs cursor-help" data-testid={`badge-scoring-${survey.id}`}>
+                    <Gauge className="w-3 h-3" />
+                    Scoring
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs text-xs">
+                  This survey has scoring enabled
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
         </div>
 
         {statusDisplay.badge && (
@@ -280,7 +295,8 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
         <div className="flex w-full gap-3">
           <Button 
             variant="outline" 
-            className="flex-1 h-11"
+            size="sm"
+            className="flex-1"
             onClick={onEdit} 
             data-testid={`button-edit-${index}`}
           >
