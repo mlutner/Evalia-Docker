@@ -62,13 +62,11 @@ export function AppSidebar() {
             <button
               key={item.id}
               onClick={() => setLocation(item.href)}
-              className={`w-full flex items-center gap-4 px-4 py-3 rounded-[12px] text-sm font-medium transition-all relative border-l-3 ${
-                active ? "border-l-3" : "border-l-3 border-l-transparent"
-              } ${sidebarExpanded ? "" : "justify-center px-0"}`}
+              className={`w-full flex items-center gap-4 px-4 py-3 rounded-[12px] text-sm font-medium transition-colors ${
+                sidebarExpanded ? "" : "justify-center px-0"
+              }`}
               style={{
-                color: active ? '#2F8FA5' : '#6A7789',
-                backgroundColor: active ? 'rgba(47, 143, 165, 0.12)' : 'transparent',
-                borderLeftColor: active ? '#2F8FA5' : 'transparent',
+                color: '#6A7789',
               }}
               data-testid={`nav-${item.id}`}
               title={!sidebarExpanded ? item.label : ""}
