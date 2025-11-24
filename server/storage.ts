@@ -653,6 +653,15 @@ export class DbStorage implements IStorage {
     const result = await db.delete(surveyRespondents).where(eq(surveyRespondents.id, id)).returning();
     return result.length > 0;
   }
+
+  async getAllTemplates(): Promise<Template[]> {
+    return db.select().from(templates).orderBy(sql`${templates.createdAt} DESC`);
+  }
+
+  async getTemplate(id: string): Promise<Template | undefined> {
+    const result = await db.select().from(templates).where(eq(templates.id, id)).limit(1);
+    return result[0];
+  }
 }
 
 export const storage = new DbStorage();
