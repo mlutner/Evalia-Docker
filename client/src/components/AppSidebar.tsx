@@ -43,8 +43,8 @@ export function AppSidebar() {
       <div className="px-4 py-6">
         <Button
           onClick={() => setLocation("/builder")}
-          className="w-full font-semibold"
-          style={{ backgroundColor: 'var(--color-accent-lime)', color: 'var(--color-dark-navy)' }}
+          className="w-full font-semibold transition-colors hover:bg-[#C7F464] active:bg-[#C7F464]"
+          style={{ backgroundColor: '#4CB4A0', color: '#0E1B2C' }}
           size={sidebarExpanded ? "default" : "icon"}
           data-testid="button-new-survey-sidebar"
         >
@@ -66,14 +66,14 @@ export function AppSidebar() {
                 active ? "border-l-3" : "border-l-3 border-l-transparent"
               } ${sidebarExpanded ? "" : "justify-center px-0"}`}
               style={{
-                color: active ? 'var(--color-primary)' : 'var(--color-text-secondary)',
-                backgroundColor: active ? 'rgba(58, 141, 255, 0.08)' : 'transparent',
-                borderLeftColor: active ? 'var(--color-primary)' : 'transparent',
+                color: active ? '#4CB4A0' : 'var(--color-text-secondary)',
+                backgroundColor: active ? 'rgba(76, 180, 160, 0.16)' : 'transparent',
+                borderLeftColor: active ? '#4CB4A0' : 'transparent',
               }}
               data-testid={`nav-${item.id}`}
               title={!sidebarExpanded ? item.label : ""}
             >
-              <Icon className="w-6 h-6 flex-shrink-0" style={{ color: active ? 'var(--color-primary)' : 'var(--color-text-primary)' }} strokeWidth={2} />
+              <Icon className="w-6 h-6 flex-shrink-0" style={{ color: active ? '#4CB4A0' : '#617485' }} strokeWidth={2} />
               {sidebarExpanded && <span>{item.label}</span>}
             </button>
           );

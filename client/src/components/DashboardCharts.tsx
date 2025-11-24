@@ -21,7 +21,7 @@ export function ResponseTrendsChart({ data }: { data: TrendData[] }) {
 
   return (
     <ResponsiveContainer width="100%" height={250}>
-      <LineChart data={data}>
+      <LineChart data={data} radius={4}>
         <CartesianGrid strokeDasharray="3 3" stroke={borderColor} />
         <XAxis dataKey="month" stroke={axisColor} tick={{ fontSize: 12, fontWeight: 500 }} />
         <YAxis stroke={axisColor} tick={{ fontSize: 12, fontWeight: 500 }} />
@@ -31,7 +31,7 @@ export function ResponseTrendsChart({ data }: { data: TrendData[] }) {
             border: `1px solid ${borderColor}`,
           }}
         />
-        <Line type="monotone" dataKey="responses" stroke={primaryColor} strokeWidth={2} dot={{ fill: accentColor, r: 4 }} isAnimationActive={false} />
+        <Line type="monotone" dataKey="responses" stroke={primaryColor} strokeWidth={2.5} dot={{ fill: accentColor, r: 4 }} isAnimationActive={false} />
       </LineChart>
     </ResponsiveContainer>
   );
@@ -50,7 +50,7 @@ export function CategoryBreakdownChart({ data }: { data: SurveyData[] }) {
 
   return (
     <ResponsiveContainer width="100%" height={250}>
-      <BarChart data={data}>
+      <BarChart data={data} radius={[4, 4, 0, 0]}>
         <CartesianGrid strokeDasharray="3 3" stroke={borderColor} />
         <XAxis dataKey="name" stroke={axisColor} tick={{ fontSize: 12, fontWeight: 500 }} />
         <YAxis stroke={axisColor} tick={{ fontSize: 12, fontWeight: 500 }} />
@@ -60,7 +60,7 @@ export function CategoryBreakdownChart({ data }: { data: SurveyData[] }) {
             border: `1px solid ${borderColor}`,
           }}
         />
-        <Bar dataKey="count" fill={primaryColor} isAnimationActive={false} />
+        <Bar dataKey="count" fill={primaryColor} isAnimationActive={false} radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -79,7 +79,7 @@ export function DistributionChart({ data }: { data: DistributionData[] }) {
 
   return (
     <ResponsiveContainer width="100%" height={250}>
-      <BarChart data={data}>
+      <BarChart data={data} radius={[4, 4, 0, 0]}>
         <CartesianGrid strokeDasharray="3 3" stroke={borderColor} />
         <XAxis dataKey="rating" stroke={axisColor} tick={{ fontSize: 12, fontWeight: 500 }} />
         <YAxis stroke={axisColor} tick={{ fontSize: 12, fontWeight: 500 }} />
@@ -89,7 +89,7 @@ export function DistributionChart({ data }: { data: DistributionData[] }) {
             border: `1px solid ${borderColor}`,
           }}
         />
-        <Bar dataKey="count" fill={primaryColor} isAnimationActive={false} />
+        <Bar dataKey="count" fill={primaryColor} isAnimationActive={false} radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -108,7 +108,7 @@ export function ResponseVolumeChart({ data }: { data: ResponseVolumeData[] }) {
 
   return (
     <ResponsiveContainer width="100%" height={250}>
-      <BarChart data={data}>
+      <BarChart data={data} radius={[4, 4, 0, 0]}>
         <CartesianGrid strokeDasharray="3 3" stroke={borderColor} />
         <XAxis dataKey="day" stroke={axisColor} tick={{ fontSize: 12, fontWeight: 500 }} />
         <YAxis stroke={axisColor} tick={{ fontSize: 12, fontWeight: 500 }} />
@@ -118,7 +118,7 @@ export function ResponseVolumeChart({ data }: { data: ResponseVolumeData[] }) {
             border: `1px solid ${borderColor}`,
           }}
         />
-        <Bar dataKey="responses" fill={primaryColor} isAnimationActive={false} />
+        <Bar dataKey="responses" fill={primaryColor} isAnimationActive={false} radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

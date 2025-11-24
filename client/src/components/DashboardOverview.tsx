@@ -61,7 +61,7 @@ export function DashboardOverview() {
   }
 
   return (
-    <div className="space-y-8 pt-8">
+    <div className="space-y-7 pt-8">
       {/* Header with Time Filter */}
       <div className="flex items-center justify-between pr-6">
         <h2 className="text-[24px] font-bold" style={{ color: 'var(--color-neutral-text-primary)' }}>Dashboard</h2>
@@ -73,7 +73,7 @@ export function DashboardOverview() {
         </button>
       </div>
       {/* KPI Cards - 12 Column Grid */}
-      <div className="grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-12 gap-6 mb-1">
         <div className="col-span-12 md:col-span-4">
           <KpiCard
             label="Created this month"
@@ -106,22 +106,22 @@ export function DashboardOverview() {
           {/* Response Trends & Category Breakdown */}
           <div className="grid grid-cols-12 gap-6">
             <div className="col-span-12 md:col-span-6">
-              <Card className="rounded-md" style={{ backgroundColor: 'var(--color-neutral-surface)', borderColor: 'var(--color-neutral-border)' }}>
-                <CardHeader className="p-6 pb-3">
+              <Card className="rounded-[12px]" style={{ backgroundColor: 'var(--color-neutral-surface)', borderColor: 'var(--color-neutral-border)', boxShadow: '0 2px 8px rgba(14, 27, 44, 0.06)' }}>
+                <CardHeader className="p-5 pb-3">
                   <CardTitle className="text-[16px] font-semibold" style={{ color: 'var(--color-neutral-text-primary)' }}>How engagement changes over time</CardTitle>
                 </CardHeader>
-                <CardContent className="p-6">
+                <CardContent className="p-5">
                   <ResponseTrendsChart data={metrics.trends} />
                 </CardContent>
               </Card>
             </div>
 
             <div className="col-span-12 md:col-span-6">
-              <Card className="rounded-md" style={{ backgroundColor: 'var(--color-neutral-surface)', borderColor: 'var(--color-neutral-border)' }}>
-                <CardHeader className="p-6 pb-3">
+              <Card className="rounded-[12px]" style={{ backgroundColor: 'var(--color-neutral-surface)', borderColor: 'var(--color-neutral-border)', boxShadow: '0 2px 8px rgba(14, 27, 44, 0.06)' }}>
+                <CardHeader className="p-5 pb-3">
                   <CardTitle className="text-[16px] font-semibold" style={{ color: 'var(--color-neutral-text-primary)' }}>Skills ratings across dimensions</CardTitle>
                 </CardHeader>
-                <CardContent className="p-6">
+                <CardContent className="p-5">
                   <CategoryBreakdownChart data={[
                     { name: "Communication", count: 8 },
                     { name: "Engagement", count: 6 },
@@ -136,11 +136,11 @@ export function DashboardOverview() {
           {/* Distribution & Response Volume */}
           <div className="grid grid-cols-12 gap-6">
             <div className="col-span-12 md:col-span-6">
-              <Card className="rounded-md" style={{ backgroundColor: 'var(--color-neutral-surface)', borderColor: 'var(--color-neutral-border)' }}>
-                <CardHeader className="p-6 pb-3">
+              <Card className="rounded-[12px]" style={{ backgroundColor: 'var(--color-neutral-surface)', borderColor: 'var(--color-neutral-border)', boxShadow: '0 2px 8px rgba(14, 27, 44, 0.06)' }}>
+                <CardHeader className="p-5 pb-3">
                   <CardTitle className="text-[16px] font-semibold" style={{ color: 'var(--color-neutral-text-primary)' }}>Distribution of Ratings</CardTitle>
                 </CardHeader>
-                <CardContent className="p-6">
+                <CardContent className="p-5">
                   <DistributionChart data={[
                     { rating: "1", count: 1 },
                     { rating: "2", count: 2 },
@@ -153,11 +153,11 @@ export function DashboardOverview() {
             </div>
 
             <div className="col-span-12 md:col-span-6">
-              <Card className="rounded-md" style={{ backgroundColor: 'var(--color-neutral-surface)', borderColor: 'var(--color-neutral-border)' }}>
-                <CardHeader className="p-6 pb-3">
+              <Card className="rounded-[12px]" style={{ backgroundColor: 'var(--color-neutral-surface)', borderColor: 'var(--color-neutral-border)', boxShadow: '0 2px 8px rgba(14, 27, 44, 0.06)' }}>
+                <CardHeader className="p-5 pb-3">
                   <CardTitle className="text-[16px] font-semibold" style={{ color: 'var(--color-neutral-text-primary)' }}>Response Volume</CardTitle>
                 </CardHeader>
-                <CardContent className="p-6">
+                <CardContent className="p-5">
                   <ResponseVolumeChart data={[
                     { day: "1", responses: 4 },
                     { day: "2", responses: 3 },
@@ -172,11 +172,11 @@ export function DashboardOverview() {
 
         {/* AI Insights Column: 4 columns */}
         <div className="col-span-12 lg:col-span-4">
-          <Card className="rounded-md h-full" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
-            <CardHeader className="p-6 pb-4">
+          <Card className="rounded-[12px] h-full" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)', boxShadow: '0 2px 8px rgba(14, 27, 44, 0.06)' }}>
+            <CardHeader className="p-5 pb-4">
               <CardTitle className="text-[16px] font-semibold" style={{ color: 'var(--color-text-primary)' }}>AI Insights</CardTitle>
             </CardHeader>
-            <CardContent className="p-6 space-y-4">
+            <CardContent className="p-5 space-y-4">
               <InsightCard
                 icon={AlertTriangle}
                 title="Top Weak Areas"
@@ -206,8 +206,8 @@ export function DashboardOverview() {
         </div>
       </div>
       {/* Recent Surveys Table - Full Width */}
-      <Card className="rounded-md" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
-        <CardHeader className="p-6 pb-3">
+      <Card className="rounded-[12px]" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)', boxShadow: '0 2px 8px rgba(14, 27, 44, 0.06)' }}>
+        <CardHeader className="p-5 pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-[16px] font-semibold" style={{ color: 'var(--color-text-primary)' }}>Recent Surveys</CardTitle>
             <Button variant="ghost" size="sm" onClick={() => setLocation("/dashboard?tab=all")} data-testid="button-view-all">
@@ -215,7 +215,7 @@ export function DashboardOverview() {
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent className="p-5">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
