@@ -52,19 +52,14 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       return apiRequest("POST", "/api/surveys", data);
     },
     onSuccess: (response) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/surveys"] });
       toast({
         title: "Survey published!",
         description: "Your survey has been saved and is ready to share.",
       });
 
-      response.json().then((data: any) => {
-        if (data.id) {
-          setTimeout(() => {
-            window.location.href = "/dashboard";
-          }, 1000);
-        }
-      });
+      setTimeout(() => {
+        window.location.pathname = "/dashboard";
+      }, 800);
     },
     onError: (error: any) => {
       toast({
@@ -93,15 +88,13 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       return apiRequest("PUT", `/api/surveys/${surveyId}`, data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/surveys"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/surveys", surveyId] });
       toast({
         title: "Survey published!",
         description: "Your changes have been saved and published successfully.",
       });
       setTimeout(() => {
-        window.location.href = "/dashboard";
-      }, 1000);
+        window.location.pathname = "/dashboard";
+      }, 800);
     },
     onError: (error: any) => {
       toast({
