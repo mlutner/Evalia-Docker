@@ -851,7 +851,7 @@ export default function PublishStep({
       <div className="space-y-4">
         <div className="bg-muted/50 border rounded-lg p-4">
           <p className="text-sm text-muted-foreground text-center">
-            Ready to preview? Check how your feedback tool looks before publishing.
+            Ready to preview? Check how your questionnaire type looks before publishing.
           </p>
         </div>
         
@@ -883,7 +883,7 @@ export default function PublishStep({
         
         <div className="bg-muted/50 border rounded-lg p-4">
           <p className="text-sm text-muted-foreground text-center">
-            Ready to share? Click "Save & Publish" below to make your feedback tool live!
+            Ready to share? Click "Save & Publish" below to make your questionnaire type live!
           </p>
         </div>
       </div>
