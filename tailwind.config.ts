@@ -11,6 +11,10 @@ export default {
         sm: ".1875rem", /* 3px */
       },
       colors: {
+        // Evalia brand colors
+        "evalia-lime": "#CCFF00",
+        "evalia-navy": "#071A32",
+        "evalia-teal": "#2BB4A0",
         // Flat / base colors (regular buttons)
         background: "hsl(var(--background) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",
