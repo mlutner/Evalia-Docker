@@ -135,7 +135,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
       style={{ height: '320px', display: 'flex', flexDirection: 'column' }}
       data-testid={`survey-card-${survey.id}`}
     >
-      <CardHeader className="flex flex-col pb-4">
+      <CardHeader className="flex flex-col pb-0">
         <div className="flex flex-row items-start justify-between gap-2 mb-2">
           <h3 style={{ fontSize: '15px', fontWeight: 600, lineHeight: '1.3', color: '#1C2635', flex: 1 }} className="line-clamp-2">{survey.title}</h3>
           <DropdownMenu>
@@ -150,37 +150,61 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
                 <MoreVertical className="w-[18px] h-[18px]" />
               </Button>
             </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setShareDialogOpen(true)} data-testid="menu-share">
-              <Share2 className="w-4 h-4 mr-2" />
-              Share Survey
-            </DropdownMenuItem>
-            {onManageRespondents && (
-              <DropdownMenuItem onClick={onManageRespondents} data-testid="menu-respondents">
-                <Users className="w-4 h-4 mr-2" />
-                Manage Respondents
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setShareDialogOpen(true)} data-testid="menu-share">
+                <Share2 className="w-4 h-4 mr-2" />
+                Share Survey
               </DropdownMenuItem>
-            )}
-            <DropdownMenuItem onClick={onView} data-testid="menu-view">
-              <Eye className="w-4 h-4 mr-2" />
-              Preview
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={onExport} data-testid="menu-export">
-              <Download className="w-4 h-4 mr-2" />
-              Export Data
-            </DropdownMenuItem>
-            {onDuplicate && (
-              <DropdownMenuItem onClick={onDuplicate} data-testid="menu-duplicate">
-                <Copy className="w-4 h-4 mr-2" />
-                Duplicate Survey
+              {onManageRespondents && (
+                <DropdownMenuItem onClick={onManageRespondents} data-testid="menu-respondents">
+                  <Users className="w-4 h-4 mr-2" />
+                  Manage Respondents
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem onClick={onView} data-testid="menu-view">
+                <Eye className="w-4 h-4 mr-2" />
+                Preview
               </DropdownMenuItem>
-            )}
-            <DropdownMenuItem onClick={onDelete} className="text-destructive" data-testid="menu-delete">
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <DropdownMenuItem onClick={onExport} data-testid="menu-export">
+                <Download className="w-4 h-4 mr-2" />
+                Export Data
+              </DropdownMenuItem>
+              {onDuplicate && (
+                <DropdownMenuItem onClick={onDuplicate} data-testid="menu-duplicate">
+                  <Copy className="w-4 h-4 mr-2" />
+                  Duplicate Survey
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem onClick={onDelete} className="text-destructive" data-testid="menu-delete">
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
+        
+        {survey.description && (
+          <p style={{ fontSize: '13px', color: '#6A7789', marginBottom: '8px', lineHeight: '1.4' }} className="line-clamp-2">{survey.description}</p>
+        )}
+        {!survey.description && survey.questions && (
+          <p style={{ fontSize: '13px', color: '#6A7789', marginBottom: '8px', lineHeight: '1.4' }}>{generateSurveySummary(survey.questions)}</p>
+        )}
+
+        <div style={{ marginBottom: '16px' }} className="flex flex-col gap-1">
+          {survey.trainerName && (
+            <p style={{ fontSize: '12px', color: '#6A7789', fontWeight: 500 }}>
+              <span style={{ fontWeight: 600 }}>Trainer:</span> {survey.trainerName}
+            </p>
+          )}
+          {survey.trainingDate && (
+            <p style={{ fontSize: '12px', color: '#6A7789', fontWeight: 500 }}>
+              <span style={{ fontWeight: 600 }}>Training Date:</span> {new Date(survey.trainingDate).toLocaleDateString()}
+            </p>
+          )}
+          <p style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500 }}>
+            Created {new Date(survey.createdAt).toLocaleDateString()}
+          </p>
+        </div>
+
         {statusDisplay.badge && (
           <div className="flex items-center gap-2">
             <span style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500 }}>Status:</span>
