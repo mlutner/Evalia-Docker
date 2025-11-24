@@ -35,6 +35,19 @@
   /* Highlight Icon Colors */
   --color-icon-lime: #C3F33C;
   --color-icon-teal: #37C0A3;
+  
+  /* Button Colors */
+  --button-primary-teal: #1F6F78;
+  --button-primary-teal-hover: #155A62;
+  --button-primary-teal-active: #0F4A51;
+  --button-primary-lime: #C3F33C;
+  --button-primary-lime-hover: #A8D92F;
+  --button-primary-lime-active: #8FBF2A;
+  --button-secondary-bg: #FFFFFF;
+  --button-secondary-border: #E2E7EF;
+  --button-secondary-text: #1C3B5A;
+  --button-secondary-hover: #F7F9FC;
+  --button-ghost-text: #2F8FA5;
 
   /* Tailwind CSS Variables */
   --background: 0 0% 97.3%;

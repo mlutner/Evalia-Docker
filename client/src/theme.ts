@@ -36,24 +36,37 @@ export const theme = {
   },
   
   buttons: {
-    primary: {
-      bg: 'var(--color-primary)',
+    // PRIMARY BUTTON - Option B: Teal-first (Enterprise SaaS) - DEFAULT
+    primaryTeal: {
+      bg: 'var(--button-primary-teal)',      // #1F6F78
+      bgHex: '#1F6F78',
       text: '#FFFFFF',
-      hover: 'rgba(47, 143, 165, 0.9)',
+      hover: 'var(--button-primary-teal-hover)',  // #155A62
+      active: 'var(--button-primary-teal-active)', // #0F4A51
     },
-    lime: {
-      bg: 'var(--color-accent-lime)',
-      text: 'var(--color-dark-navy)',
-      hover: 'rgba(163, 214, 92, 0.9)',
+
+    // PRIMARY BUTTON - Option A: Lime-first (Modern/Energetic)
+    primaryLime: {
+      bg: 'var(--button-primary-lime)',       // #C3F33C
+      bgHex: '#C3F33C',
+      text: 'var(--color-dark-navy)',        // #0A1A2F
+      hover: 'var(--button-primary-lime-hover)',  // #A8D92F
+      active: 'var(--button-primary-lime-active)', // #8FBF2A
     },
-    outline: {
-      bg: 'transparent',
-      border: 'var(--color-border)',
-      text: 'var(--color-text-primary)',
+
+    // SECONDARY BUTTON
+    secondary: {
+      bg: 'var(--button-secondary-bg)',       // #FFFFFF
+      border: 'var(--button-secondary-border)', // #E2E7EF
+      text: 'var(--button-secondary-text)',   // #1C3B5A
+      hover: 'var(--button-secondary-hover)', // #F7F9FC
     },
+
+    // GHOST BUTTON
     ghost: {
       bg: 'transparent',
-      text: 'var(--color-text-secondary)',
+      text: 'var(--button-ghost-text)',      // #2F8FA5
+      hoverEffect: 'underline',
     },
   },
 
@@ -86,7 +99,7 @@ export const getThemeStyle = (property: keyof typeof theme.colors) => ({
 export const getButtonStyle = (variant: keyof typeof theme.buttons) => {
   const btn = theme.buttons[variant];
   return {
-    backgroundColor: btn.bg,
+    backgroundColor: (btn as any).bg,
     color: (btn as any).text,
     borderColor: (btn as any).border,
   };
