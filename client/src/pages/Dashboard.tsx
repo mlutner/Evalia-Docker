@@ -223,14 +223,22 @@ export default function Dashboard() {
             
             if (item.id === "respondents" || item.id === "scoring" || item.id === "templates" || item.id === "ai" || item.id === "settings") {
               return (
-                <div
+                <button
                   key={item.id}
-                  className="flex items-center gap-3 px-3 py-2 text-sm cursor-not-allowed rounded opacity-40 transition-all text-[#fafafa]"
-                  title="Coming soon"
+                  onClick={() => {
+                    toast({
+                      title: "Coming Soon",
+                      description: `${item.label} is coming soon to Evalia`,
+                    });
+                  }}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-700/30 ${
+                    sidebarExpanded ? "" : "justify-center"
+                  }`}
+                  title={item.label}
                 >
                   <Icon className="w-5 h-5 flex-shrink-0" />
                   {sidebarExpanded && <span className="text-xs">{item.label}</span>}
-                </div>
+                </button>
               );
             }
 
@@ -256,9 +264,9 @@ export default function Dashboard() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         <Header />
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto bg-background">
           <div className="container mx-auto px-4 py-6 md:py-8">
-            {activeView === "overview" ? (
+            {activeView === "overview" || activeView === "respondents" || activeView === "scoring" || activeView === "templates" || activeView === "ai" || activeView === "settings" ? (
               <>
                 <div className="flex items-center justify-between mb-8">
                   <Button 
