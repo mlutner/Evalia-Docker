@@ -137,7 +137,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
     >
       <CardHeader className="flex flex-col pb-0 mb-2">
         <div className="flex flex-row items-start justify-between gap-3 mb-3">
-          <h3 style={{ fontSize: '16px', fontWeight: 700, lineHeight: '1.3', color: '#1C2635', flex: 1 }} className="line-clamp-2">{survey.title}</h3>
+          <h3 style={{ fontSize: '16px', fontWeight: 700, lineHeight: '1.3', color: '#1C2635', flex: 1 }} className="line-clamp-2 text-[18px] font-extrabold">{survey.title}</h3>
           <div className="flex gap-1 flex-shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -231,7 +231,6 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
           </div>
         )}
       </CardHeader>
-
       <CardContent className="flex-1 space-y-3">
         {/* Stats Section */}
         <div className="flex gap-8">
@@ -281,7 +280,6 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
           </div>
         )}
       </CardContent>
-
       <CardFooter className="gap-3 mt-auto flex-col">
         <div className="flex w-full gap-3">
           <Button 
@@ -318,8 +316,6 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
           </Tooltip>
         </div>
       </CardFooter>
-
-
       {/* Share Dialog */}
       <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
         <DialogContent data-testid="dialog-share">
