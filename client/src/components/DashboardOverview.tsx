@@ -86,7 +86,7 @@ export function DashboardOverview() {
         </div>
       </div>
       {/* KPI Cards - 12 Column Grid */}
-      <div className="grid grid-cols-12 gap-4 md:gap-6 mb-1 px-4 md:px-0">
+      <div className="grid grid-cols-12 gap-4 md:gap-6 mb-1 px-4 md:px-0" data-testid="dashboard-kpi-cards">
         <div className="col-span-12 md:col-span-4">
           <KpiCard
             label="Created this month"

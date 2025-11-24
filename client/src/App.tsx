@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { useUpdateChecker } from "@/hooks/useUpdateChecker";
 import UpdateNotification from "@/components/UpdateNotification";
+import OnboardingTour from "@/components/OnboardingTour";
 import { AppLayout } from "@/layouts/AppLayout";
 import Home from "@/pages/Home";
 import DashboardPage from "@/pages/DashboardPage";
@@ -117,6 +118,7 @@ function App() {
           onDismiss={dismissUpdate}
           onReload={reloadApp}
         />
+        <OnboardingTour />
         <Toaster />
         <Router />
       </TooltipProvider>
