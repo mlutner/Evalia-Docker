@@ -61,13 +61,14 @@ export function DashboardOverview() {
   }
 
   return (
-    <div className="space-y-7 pt-8">
+    <div className="space-y-7 pt-4 md:pt-8">
       {/* Header with Time Filter and Start Survey Button */}
-      <div className="flex items-center justify-between pr-6 pb-4 gap-3">
-        <h2 className="heading-2">Dashboard</h2>
-        <div className="flex items-center gap-3">
-          <button className="px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-2 transition-smooth" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)', backgroundColor: 'rgba(47, 143, 165, 0.05)', border: '1px solid var(--color-border)' }} data-testid="button-date-filter">
-            <span>Last 30 days</span>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-3 pb-4 px-4 md:px-0 md:pr-6">
+        <h2 className="heading-2 text-2xl md:text-3xl">Dashboard</h2>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+          <button className="px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-2 transition-smooth whitespace-nowrap" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)', backgroundColor: 'rgba(47, 143, 165, 0.05)', border: '1px solid var(--color-border)' }} data-testid="button-date-filter">
+            <span className="hidden sm:inline">Last 30 days</span>
+            <span className="sm:hidden">30 days</span>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
@@ -79,12 +80,13 @@ export function DashboardOverview() {
             data-testid="button-start-survey-dashboard"
           >
             <Plus className="w-4 h-4 mr-2" strokeWidth={2} />
-            Start Survey
+            <span className="hidden sm:inline">Start Survey</span>
+            <span className="sm:hidden">New</span>
           </Button>
         </div>
       </div>
       {/* KPI Cards - 12 Column Grid */}
-      <div className="grid grid-cols-12 gap-6 mb-1">
+      <div className="grid grid-cols-12 gap-4 md:gap-6 mb-1 px-4 md:px-0">
         <div className="col-span-12 md:col-span-4">
           <KpiCard
             label="Created this month"
@@ -114,7 +116,7 @@ export function DashboardOverview() {
         </div>
       </div>
       {/* Charts Grid + AI Insights - 12 Column Layout */}
-      <div className="grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-12 gap-4 md:gap-6 px-4 md:px-0">
         {/* Charts Column: 8 columns */}
         <div className="col-span-12 lg:col-span-8 space-y-6">
           {/* Response Trends & Category Breakdown */}

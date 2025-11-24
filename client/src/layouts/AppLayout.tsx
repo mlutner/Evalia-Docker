@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { AppSidebar } from "@/components/AppSidebar";
 import Header from "@/components/Header";
 import { theme } from "@/theme";
@@ -8,11 +8,28 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
-    <div style={{ backgroundColor: theme.backgrounds.page }} className="min-h-screen flex">
-      <AppSidebar />
-      <div className="flex-1 flex flex-col">
-        <Header />
+    <div style={{ backgroundColor: theme.backgrounds.page }} className="min-h-screen flex flex-col lg:flex-row">
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 lg:hidden z-30"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <div className={`fixed lg:relative left-0 top-0 h-full z-40 transform lg:transform-none transition-transform duration-300 ${
+        sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+      }`}>
+        <AppSidebar onNavigate={() => setSidebarOpen(false)} />
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col w-full lg:w-auto">
+        <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} sidebarOpen={sidebarOpen} />
         {children}
       </div>
     </div>

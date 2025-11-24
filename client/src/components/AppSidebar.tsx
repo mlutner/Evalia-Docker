@@ -7,11 +7,20 @@ import { queryClient } from "@/lib/queryClient";
 import type { User as UserType } from "@shared/schema";
 import evaliaLogo from "@assets/Heading (300 x 50 px) (1000 x 250 px) (3)_1763943705026.png";
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  onNavigate?: () => void;
+}
+
+export function AppSidebar({ onNavigate }: AppSidebarProps) {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [location, setLocation] = useLocation();
   const { user } = useAuth();
   const typedUser = user as UserType | null | undefined;
+
+  const handleNavigation = (href: string) => {
+    setLocation(href);
+    onNavigate?.();
+  };
 
   const handleLogout = () => {
     queryClient.clear();
@@ -52,7 +61,7 @@ export function AppSidebar() {
       {/* New Survey Button */}
       <div className="px-4 py-6">
         <Button
-          onClick={() => setLocation("/builder")}
+          onClick={() => handleNavigation("/builder")}
           className="w-full font-semibold transition-colors hover:bg-[#37C0A3] active:bg-[#1F6F78] border-0 outline-none"
           style={{ backgroundColor: '#2F8FA5', color: '#FFFFFF' }}
           size={sidebarExpanded ? "default" : "icon"}
@@ -71,7 +80,7 @@ export function AppSidebar() {
           return (
             <button
               key={item.id}
-              onClick={() => setLocation(item.href)}
+              onClick={() => handleNavigation(item.href)}
               className={`w-full flex items-center gap-4 px-4 py-3 rounded-[12px] text-sm font-medium transition-colors group ${
                 sidebarExpanded ? "" : "justify-center px-0"
               }`}
@@ -95,7 +104,7 @@ export function AppSidebar() {
       {typedUser && (
         <div className="sticky bottom-0 z-10 px-3 py-4 space-y-2 border-t border-[rgba(255,255,255,0.1)] mt-auto" style={{ backgroundColor: 'var(--color-dark-navy)' }}>
           <Button
-            onClick={() => setLocation("/account")}
+            onClick={() => handleNavigation("/account")}
             variant="ghost"
             className="w-full justify-start text-sm h-10"
             data-testid="button-account-sidebar"
