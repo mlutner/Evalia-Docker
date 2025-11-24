@@ -80,7 +80,7 @@ export function DashboardOverview() {
             data-testid="button-start-survey-dashboard"
           >
             <Plus className="w-4 h-4 mr-2" strokeWidth={2} />
-            <span className="hidden sm:inline">Start Survey</span>
+            <span className="hidden sm:inline">New Questionnaire</span>
             <span className="sm:hidden">New</span>
           </Button>
         </div>
