@@ -6,6 +6,8 @@ import { BarChart3, TrendingUp, Users, Award, ChevronRight, AlertTriangle, Star,
 import { useLocation } from "wouter";
 import { ResponseTrendsChart, CategoryBreakdownChart, DistributionChart, ResponseVolumeChart } from "./DashboardCharts";
 import { Skeleton } from "@/components/ui/skeleton";
+import { KpiCard } from "./KpiCard";
+import { InsightCard } from "./InsightCard";
 
 interface DashboardMetrics {
   totalSurveys: number;
@@ -71,177 +73,146 @@ export function DashboardOverview() {
         </button>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="hover-elevate border-l-4 border-l-[#1F8EFA]">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-[#6B7785] font-semibold uppercase tracking-wider">Created this month</p>
-                <p className="text-[30px] font-bold mt-2 text-[#0D1B2A]">{metrics.totalSurveys}</p>
-                <p className="text-xs text-[#6B7785] mt-2">{metrics.activeSurveys} active</p>
-              </div>
-              <div className="w-12 h-12 rounded-lg bg-[#1F8EFA]/10 flex items-center justify-center flex-shrink-0">
-                <BarChart3 className="w-6 h-6 text-[#1F8EFA]" strokeWidth={2} />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover-elevate border-l-4 border-l-[#1F8EFA]">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-[#6B7785] font-semibold uppercase tracking-wider">Across all scoring models</p>
-                <p className="text-[30px] font-bold mt-2 text-[#0D1B2A]">{metrics.avgScore}</p>
-                <p className="text-xs text-[#6B7785] mt-2">out of 100</p>
-              </div>
-              <div className="w-12 h-12 rounded-lg bg-[#1F8EFA]/10 flex items-center justify-center flex-shrink-0">
-                <Award className="w-6 h-6 text-[#1F8EFA]" strokeWidth={2} />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover-elevate border-l-4 border-l-[#1F8EFA]">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-[#6B7785] font-semibold uppercase tracking-wider">Across all surveys</p>
-                <p className="text-[30px] font-bold mt-2 text-[#0D1B2A]">{metrics.responseRate}%</p>
-                <p className="text-xs text-[#6B7785] mt-2">completion</p>
-              </div>
-              <div className="w-12 h-12 rounded-lg bg-[#1F8EFA]/10 flex items-center justify-center flex-shrink-0">
-                <TrendingUp className="w-6 h-6 text-[#1F8EFA]" strokeWidth={2} />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* KPI Cards - 12 Column Grid */}
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 md:col-span-4">
+          <KpiCard
+            label="Created this month"
+            value={metrics.totalSurveys}
+            subtext={`${metrics.activeSurveys} active`}
+            icon={BarChart3}
+          />
+        </div>
+        <div className="col-span-12 md:col-span-4">
+          <KpiCard
+            label="Across all scoring models"
+            value={metrics.avgScore}
+            subtext="out of 100"
+            icon={Award}
+          />
+        </div>
+        <div className="col-span-12 md:col-span-4">
+          <KpiCard
+            label="Across all surveys"
+            value={`${metrics.responseRate}%`}
+            subtext="completion"
+            icon={TrendingUp}
+          />
+        </div>
       </div>
 
-      {/* Charts Grid + AI Insights */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: Charts */}
-        <div className="lg:col-span-2 space-y-6">
+      {/* Charts Grid + AI Insights - 12 Column Layout */}
+      <div className="grid grid-cols-12 gap-6">
+        {/* Charts Column: 8 columns */}
+        <div className="col-span-12 lg:col-span-8 space-y-6">
           {/* Response Trends & Category Breakdown */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6" data-testid="chart-grid">
-            <Card>
-              <CardHeader className="p-6 pb-3">
-                <CardTitle className="text-base font-semibold">How engagement changes over time</CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <ResponseTrendsChart data={metrics.trends} />
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-12 gap-6">
+            <div className="col-span-12 md:col-span-6">
+              <Card className="rounded-md">
+                <CardHeader className="p-6 pb-3">
+                  <CardTitle className="text-[16px] font-semibold text-[#1C2B36]">How engagement changes over time</CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <ResponseTrendsChart data={metrics.trends} />
+                </CardContent>
+              </Card>
+            </div>
 
-            <Card>
-              <CardHeader className="p-6 pb-3">
-                <CardTitle className="text-base font-semibold">Skills ratings across dimensions</CardTitle>
-              </CardHeader>
-              <CardContent className="p-6 bg-[#F5F7FA]">
-                <CategoryBreakdownChart data={[
-                  { name: "Communication", count: 8 },
-                  { name: "Engagement", count: 6 },
-                  { name: "Skills", count: 7 },
-                  { name: "Knowledge", count: 5 }
-                ]} />
-              </CardContent>
-            </Card>
+            <div className="col-span-12 md:col-span-6">
+              <Card className="rounded-md">
+                <CardHeader className="p-6 pb-3">
+                  <CardTitle className="text-[16px] font-semibold text-[#1C2B36]">Skills ratings across dimensions</CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <CategoryBreakdownChart data={[
+                    { name: "Communication", count: 8 },
+                    { name: "Engagement", count: 6 },
+                    { name: "Skills", count: 7 },
+                    { name: "Knowledge", count: 5 }
+                  ]} />
+                </CardContent>
+              </Card>
+            </div>
           </div>
 
           {/* Distribution & Response Volume */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader className="p-6 pb-3">
-                <CardTitle className="text-base font-semibold">Distribution of Ratings</CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <DistributionChart data={[
-                  { rating: "1", count: 1 },
-                  { rating: "2", count: 2 },
-                  { rating: "3", count: 3 },
-                  { rating: "4", count: 2 },
-                  { rating: "5", count: 2 }
-                ]} />
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-12 gap-6">
+            <div className="col-span-12 md:col-span-6">
+              <Card className="rounded-md">
+                <CardHeader className="p-6 pb-3">
+                  <CardTitle className="text-[16px] font-semibold text-[#1C2B36]">Distribution of Ratings</CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <DistributionChart data={[
+                    { rating: "1", count: 1 },
+                    { rating: "2", count: 2 },
+                    { rating: "3", count: 3 },
+                    { rating: "4", count: 2 },
+                    { rating: "5", count: 2 }
+                  ]} />
+                </CardContent>
+              </Card>
+            </div>
 
-            <Card>
-              <CardHeader className="p-6 pb-3">
-                <CardTitle className="text-base font-semibold">Response Volume</CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <ResponseVolumeChart data={[
-                  { day: "1", responses: 4 },
-                  { day: "2", responses: 3 },
-                  { day: "3", responses: 2 },
-                  { day: "5", responses: 1 }
-                ]} />
-              </CardContent>
-            </Card>
+            <div className="col-span-12 md:col-span-6">
+              <Card className="rounded-md">
+                <CardHeader className="p-6 pb-3">
+                  <CardTitle className="text-[16px] font-semibold text-[#1C2B36]">Response Volume</CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <ResponseVolumeChart data={[
+                    { day: "1", responses: 4 },
+                    { day: "2", responses: 3 },
+                    { day: "3", responses: 2 },
+                    { day: "5", responses: 1 }
+                  ]} />
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
 
-        {/* Right Column: AI Insights */}
-        <div>
-          <Card className="h-full">
+        {/* AI Insights Column: 4 columns */}
+        <div className="col-span-12 lg:col-span-4">
+          <Card className="rounded-md h-full">
             <CardHeader className="p-6 pb-4">
-              <CardTitle className="text-base font-semibold">AI Insights</CardTitle>
+              <CardTitle className="text-[16px] font-semibold text-[#1C2B36]">AI Insights</CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
-              {/* Top Weak Areas */}
-              <div className="flex gap-4 p-4 rounded-lg bg-[#F5F7FA] dark:bg-[#0D1B2A]/50 hover-elevate cursor-pointer border-l-3 border-l-[#A8E05E]">
-                <div className="w-10 h-10 rounded-lg bg-[#A8E05E]/10 flex items-center justify-center flex-shrink-0">
-                  <AlertTriangle className="w-6 h-6 text-[#A8E05E]" strokeWidth={2} />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-[#1C2B36]">Top Weak Areas</p>
-                  <p className="text-xs text-[#6B7785] mt-1">Communication skills showed lower scores compared to other categories.</p>
-                </div>
-              </div>
-
-              {/* Top Strength */}
-              <div className="flex gap-4 p-4 rounded-lg bg-[#F5F7FA] dark:bg-[#0D1B2A]/50 hover-elevate cursor-pointer border-l-3 border-l-[#1F8EFA]">
-                <div className="w-10 h-10 rounded-lg bg-[#1F8EFA]/10 flex items-center justify-center flex-shrink-0">
-                  <Star className="w-6 h-6 text-[#1F8EFA]" strokeWidth={2} />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-[#1C2B36]">Top Strength</p>
-                  <p className="text-xs text-[#6B7785] mt-1">Knowledge was rated as the strongest area across all respondents.</p>
-                </div>
-              </div>
-
-              {/* Question Quality */}
-              <div className="flex gap-4 p-4 rounded-lg bg-[#F5F7FA] dark:bg-[#0D1B2A]/50 hover-elevate cursor-pointer border-l-3 border-l-[#1F8EFA]">
-                <div className="w-10 h-10 rounded-lg bg-[#1F8EFA]/10 flex items-center justify-center flex-shrink-0">
-                  <FileText className="w-6 h-6 text-[#1F8EFA]" strokeWidth={2} />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-[#1C2B36]">Question Quality</p>
-                  <p className="text-xs text-[#6B7785] mt-1">1 question may need clarification for better clarity.</p>
-                </div>
-              </div>
-
-              {/* Recommendations */}
-              <div className="flex gap-4 p-4 rounded-lg bg-[#F5F7FA] dark:bg-[#0D1B2A]/50 hover-elevate cursor-pointer border-l-3 border-l-[#0D1B2A]">
-                <div className="w-10 h-10 rounded-lg bg-[#0D1B2A]/10 flex items-center justify-center flex-shrink-0">
-                  <CheckCircle className="w-6 h-6 text-[#0D1B2A]" strokeWidth={2} />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-[#1C2B36]">Recommendations</p>
-                  <p className="text-xs text-[#6B7785] mt-1">Consider revising communication and skills questions for clarity.</p>
-                </div>
-              </div>
+              <InsightCard
+                icon={AlertTriangle}
+                title="Top Weak Areas"
+                description="Communication skills showed lower scores compared to other categories."
+                type="warning"
+              />
+              <InsightCard
+                icon={Star}
+                title="Top Strength"
+                description="Knowledge was rated as the strongest area across all respondents."
+                type="info"
+              />
+              <InsightCard
+                icon={FileText}
+                title="Question Quality"
+                description="1 question may need clarification for better clarity."
+                type="info"
+              />
+              <InsightCard
+                icon={CheckCircle}
+                title="Recommendations"
+                description="Consider revising communication and skills questions for clarity."
+                type="neutral"
+              />
             </CardContent>
           </Card>
         </div>
       </div>
 
-      {/* Recent Surveys Table */}
-      <Card>
+      {/* Recent Surveys Table - Full Width */}
+      <Card className="rounded-md">
         <CardHeader className="p-6 pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-semibold">Recent Surveys</CardTitle>
+            <CardTitle className="text-[16px] font-semibold text-[#1C2B36]">Recent Surveys</CardTitle>
             <Button variant="ghost" size="sm" onClick={() => setLocation("/dashboard?tab=all")} data-testid="button-view-all">
               View All <ChevronRight className="w-6 h-6 ml-1" strokeWidth={2} />
             </Button>
