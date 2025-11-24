@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
-import { BarChart3, TrendingUp, Users, Award, ChevronRight, AlertTriangle, Star, FileText, CheckCircle } from "lucide-react";
+import { BarChart3, TrendingUp, Users, Award, ChevronRight, AlertTriangle, Star, FileText, CheckCircle, Plus } from "lucide-react";
 import { useLocation } from "wouter";
 import { ResponseTrendsChart, CategoryBreakdownChart, DistributionChart, ResponseVolumeChart } from "./DashboardCharts";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -62,15 +62,26 @@ export function DashboardOverview() {
 
   return (
     <div className="space-y-7 pt-8">
-      {/* Header with Time Filter */}
-      <div className="flex items-center justify-between pr-6 pb-4">
+      {/* Header with Time Filter and Start Survey Button */}
+      <div className="flex items-center justify-between pr-6 pb-4 gap-3">
         <h2 className="heading-2">Dashboard</h2>
-        <button className="px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-2 transition-smooth" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)', backgroundColor: 'rgba(47, 143, 165, 0.05)', border: '1px solid var(--color-border)' }} data-testid="button-date-filter">
-          <span>Last 30 days</span>
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
-        </button>
+        <div className="flex items-center gap-3">
+          <button className="px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-2 transition-smooth" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)', backgroundColor: 'rgba(47, 143, 165, 0.05)', border: '1px solid var(--color-border)' }} data-testid="button-date-filter">
+            <span>Last 30 days</span>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </button>
+          <Button 
+            onClick={() => setLocation("/builder")}
+            className="font-semibold text-sm"
+            style={{ backgroundColor: '#2F8FA5', color: '#FFFFFF' }}
+            data-testid="button-start-survey-dashboard"
+          >
+            <Plus className="w-4 h-4 mr-2" strokeWidth={2} />
+            Start Survey
+          </Button>
+        </div>
       </div>
       {/* KPI Cards - 12 Column Grid */}
       <div className="grid grid-cols-12 gap-6 mb-1">
