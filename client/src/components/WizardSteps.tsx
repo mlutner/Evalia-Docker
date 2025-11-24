@@ -14,7 +14,7 @@ interface WizardStepsProps {
 
 export default function WizardSteps({ currentStep, steps }: WizardStepsProps) {
   return (
-    <div className="w-full mb-8 md:mb-12 overflow-x-auto">
+    <div className="w-full mt-8 mb-8 md:mb-12 overflow-x-auto">
       <div className="flex items-center justify-center gap-1.5 sm:gap-3 md:gap-6 lg:gap-8 min-w-min px-2">
         {steps.map((step, index) => (
           <div key={step.number} className="flex flex-col items-center flex-shrink-0">
