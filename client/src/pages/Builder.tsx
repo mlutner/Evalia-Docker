@@ -80,7 +80,10 @@ export default function Builder() {
       surveyState.setEstimatedMinutes(existingSurvey.estimatedMinutes ?? undefined);
       surveyState.setPrivacyStatement(existingSurvey.privacyStatement || "");
       surveyState.setDataUsageStatement(existingSurvey.dataUsageStatement || "");
-      surveyState.setCurrentWizardStep(2);
+      // Only set wizard step to 2 if we're at step 1, otherwise preserve current step
+      if (surveyState.currentWizardStep === 1) {
+        surveyState.setCurrentWizardStep(2);
+      }
       aiChat.setMessages([
         {
           id: "1",
