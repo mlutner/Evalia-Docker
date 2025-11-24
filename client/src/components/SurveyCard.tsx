@@ -282,7 +282,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
               data-testid={`button-analyze-${index}`}
               disabled={survey.responseCount === 0}
               style={{
-                backgroundColor: '#2F8FA5',
+                backgroundColor: '#5AB3AB',
                 color: '#FFFFFF',
                 borderRadius: '8px',
                 padding: '10px 16px',
@@ -290,7 +290,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
                 width: '40px',
                 minWidth: '40px'
               }}
-              className="flex items-center justify-center"
+              className="flex items-center justify-center hover:opacity-90 transition-opacity"
             >
               <BarChart3 className="w-5 h-5" strokeWidth={1.5} />
             </Button>
