@@ -3,8 +3,8 @@ import heroIllustration from '@assets/hero-illustration.png';
 
 export function Hero() {
   return (
-    <section className="relative bg-gradient-to-br from-evalia-teal-600 via-evalia-teal-500 to-evalia-teal-700 overflow-hidden pt-20">
-      {/* Decorative blobs */}
+    <section className="relative bg-gradient-to-br from-evalia-teal-600 via-evalia-teal-500 to-evalia-teal-700 overflow-hidden pt-24">
+      {/* Decorative blobs - background layer */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Blob 1 - Top right */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-evalia-teal-400/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
@@ -14,6 +14,9 @@ export function Hero() {
         
         {/* Blob 3 - Top left */}
         <div className="absolute top-10 left-10 w-72 h-72 bg-evalia-yellow/10 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+
+        {/* Blob 4 - Middle right (subtle) */}
+        <div className="absolute top-1/2 right-1/3 w-64 h-64 bg-evalia-teal-300/10 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-3000"></div>
 
         {/* Decorative dots */}
         <div className="absolute top-20 left-12 w-4 h-4 bg-evalia-yellow/60 rounded-full animate-float"></div>
@@ -73,6 +76,14 @@ export function Hero() {
             <img src={heroIllustration} alt="Training feedback and ratings illustration" className="w-full h-auto" data-testid="img-hero-illustration" />
           </div>
         </div>
+      </div>
+
+      {/* Decorative wave shape at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 z-20">
+        <svg className="w-full h-auto" viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,50 Q360,0 720,50 T1440,50 L1440,100 L0,100 Z" fill="white" opacity="0.95"/>
+          <path d="M0,60 Q360,10 720,60 T1440,60 L1440,100 L0,100 Z" fill="white" opacity="0.05"/>
+        </svg>
       </div>
     </section>
   );

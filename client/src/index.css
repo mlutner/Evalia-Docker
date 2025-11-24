@@ -1012,5 +1012,37 @@ html, body {
   .animation-delay-4000 {
     animation-delay: 4s;
   }
+
+  /* ===== SUBTLE BACKGROUND BLOBS ===== */
+  .bg-with-subtle-blobs {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bg-with-subtle-blobs::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: 5%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(61, 128, 128, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(40px);
+    z-index: 0;
+  }
+
+  .bg-with-subtle-blobs::after {
+    content: '';
+    position: absolute;
+    bottom: -15%;
+    right: 5%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(125, 211, 192, 0.05) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(40px);
+    z-index: 0;
+  }
 }
 

@@ -7,7 +7,7 @@ export function Navigation() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-evalia-teal-600 shadow-sm">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-evalia-teal-600/80 to-transparent backdrop-blur-md transition-all duration-300 hover:from-evalia-teal-600/90">
       <div className="max-w-7xl mx-auto px-6 py-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-10">
