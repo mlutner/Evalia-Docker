@@ -5,6 +5,7 @@ import { Navigation } from '@/components/Navigation';
 import { Hero } from '@/components/Hero';
 import { FeatureCard } from '@/components/FeatureCard';
 import { ArrowRightIcon, CheckCircle2Icon } from 'lucide-react';
+import evaliaLogo from '@assets/evalia-logo.png';
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -184,7 +185,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-4 gap-12 mb-12">
             <div>
-              <h3 className="font-semibold mb-4 text-white">Evalia</h3>
+              <img src={evaliaLogo} alt="Evalia" className="h-8 w-auto mb-4" data-testid="img-footer-logo" />
               <p className="text-gray-400 text-sm leading-relaxed">
                 Better training feedback for better learning outcomes.
               </p>
