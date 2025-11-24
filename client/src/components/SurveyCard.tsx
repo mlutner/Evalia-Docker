@@ -66,8 +66,25 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
   const [templateTitle, setTemplateTitle] = useState(survey.title);
   const [templateDescription, setTemplateDescription] = useState(survey.description || "");
   const [templateCategory, setTemplateCategory] = useState("General");
+  const [shortUrl, setShortUrl] = useState<string | null>(null);
+  const [loadingShortUrl, setLoadingShortUrl] = useState(false);
   
   const shareUrl = `${window.location.origin}/survey/${survey.id}`;
+
+  const generateShortUrl = async () => {
+    if (shortUrl) return;
+    setLoadingShortUrl(true);
+    try {
+      const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(shareUrl)}`);
+      const data = await response.text();
+      setShortUrl(data);
+    } catch (err) {
+      console.error("Failed to shorten URL:", err);
+      setShortUrl(shareUrl);
+    } finally {
+      setLoadingShortUrl(false);
+    }
+  };
   
   const badgeStyle = {
     backgroundColor: '#F7F9FC',
@@ -379,7 +396,12 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
       </Dialog>
 
       {/* Share Dialog */}
-      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+      <Dialog open={shareDialogOpen} onOpenChange={(open) => {
+        setShareDialogOpen(open);
+        if (open && !shortUrl && !loadingShortUrl) {
+          generateShortUrl();
+        }
+      }}>
         <DialogContent data-testid="dialog-share">
           <DialogHeader>
             <DialogTitle>Share Survey</DialogTitle>
@@ -428,17 +450,26 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
               </div>
             </div>
 
-            {/* Copy Link Section */}
+            {/* Copy Link Section - Shortened */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <input
                   type="text"
-                  value={shareUrl}
+                  value={shortUrl || (loadingShortUrl ? "Shortening..." : shareUrl)}
                   readOnly
                   className="flex-1 px-3 py-2 border rounded-md bg-muted text-sm"
                   data-testid="input-share-url"
                 />
-                <Button onClick={handleCopyLink} variant="outline" data-testid="button-copy-link">
+                <Button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(shortUrl || shareUrl);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }} 
+                  variant="outline" 
+                  data-testid="button-copy-link"
+                  disabled={loadingShortUrl}
+                >
                   {copied ? (
                     <>
                       <Check className="w-4 h-4 mr-2" />
@@ -453,7 +484,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Anyone with this link can submit a response to your survey.
+                {shortUrl ? `Short link (${shortUrl.length} characters)` : "Generating short link..."} • Anyone with this link can submit a response
               </p>
             </div>
           </div>
