@@ -174,9 +174,9 @@ export function DashboardOverview() {
 
         {/* AI Insights Column: 4 columns */}
         <div className="col-span-12 lg:col-span-4">
-          <Card className="rounded-md h-full bg-[#FFFFFF] border-[#E7EBF0]">
+          <Card className="rounded-md h-full" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
             <CardHeader className="p-6 pb-4">
-              <CardTitle className="text-[16px] font-semibold text-[#1C2B36]">AI Insights</CardTitle>
+              <CardTitle className="text-[16px] font-semibold" style={{ color: 'var(--color-text-primary)' }}>AI Insights</CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
               <InsightCard
@@ -209,10 +209,10 @@ export function DashboardOverview() {
       </div>
 
       {/* Recent Surveys Table - Full Width */}
-      <Card className="rounded-md bg-[#FFFFFF] border-[#E7EBF0]">
+      <Card className="rounded-md" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
         <CardHeader className="p-6 pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-[16px] font-semibold text-[#1C2B36]">Recent Surveys</CardTitle>
+            <CardTitle className="text-[16px] font-semibold" style={{ color: 'var(--color-text-primary)' }}>Recent Surveys</CardTitle>
             <Button variant="ghost" size="sm" onClick={() => setLocation("/dashboard?tab=all")} data-testid="button-view-all">
               View All <ChevronRight className="w-6 h-6 ml-1" strokeWidth={2} />
             </Button>

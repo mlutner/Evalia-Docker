@@ -9,22 +9,22 @@ interface InsightCardProps {
 
 const typeStyles = {
   warning: {
-    bgColor: "rgba(164, 230, 90, 0.08)",
+    bgColor: "rgba(163, 214, 92, 0.08)",
     iconColor: "var(--color-accent-lime)",
     borderColor: "var(--color-accent-lime)",
-    iconBgColor: "rgba(164, 230, 90, 0.1)",
+    iconBgColor: "rgba(163, 214, 92, 0.1)",
   },
   info: {
-    bgColor: "rgba(58, 141, 255, 0.08)",
+    bgColor: "rgba(47, 143, 165, 0.08)",
     iconColor: "var(--color-primary)",
     borderColor: "var(--color-primary)",
-    iconBgColor: "rgba(58, 141, 255, 0.1)",
+    iconBgColor: "rgba(47, 143, 165, 0.1)",
   },
   neutral: {
-    bgColor: "var(--color-neutral-bg)",
-    iconColor: "var(--color-neutral-text-primary)",
-    borderColor: "var(--color-neutral-text-primary)",
-    iconBgColor: "rgba(13, 27, 42, 0.1)",
+    bgColor: "var(--color-bg-light)",
+    iconColor: "var(--color-text-primary)",
+    borderColor: "var(--color-text-primary)",
+    iconBgColor: "rgba(28, 38, 53, 0.1)",
   },
 };
 

@@ -13,10 +13,10 @@ interface TrendData {
 }
 
 export function ResponseTrendsChart({ data }: { data: TrendData[] }) {
-  const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#3A8DFF';
-  const textColor = getComputedStyle(document.documentElement).getPropertyValue('--color-neutral-text-secondary').trim() || '#6A7789';
-  const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-neutral-border').trim() || '#E2E7EF';
-  const surfaceColor = getComputedStyle(document.documentElement).getPropertyValue('--color-neutral-surface').trim() || '#FFFFFF';
+  const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#2F8FA5';
+  const textColor = getComputedStyle(document.documentElement).getPropertyValue('--color-text-secondary').trim() || '#6A7789';
+  const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-border').trim() || '#E2E7EF';
+  const surfaceColor = getComputedStyle(document.documentElement).getPropertyValue('--color-surface').trim() || '#FFFFFF';
 
   return (
     <ResponsiveContainer width="100%" height={250}>
@@ -42,10 +42,10 @@ interface SurveyData {
 }
 
 export function CategoryBreakdownChart({ data }: { data: SurveyData[] }) {
-  const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#3A8DFF';
-  const textColor = getComputedStyle(document.documentElement).getPropertyValue('--color-neutral-text-secondary').trim() || '#6A7789';
-  const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-neutral-border').trim() || '#E2E7EF';
-  const surfaceColor = getComputedStyle(document.documentElement).getPropertyValue('--color-neutral-surface').trim() || '#FFFFFF';
+  const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#2F8FA5';
+  const textColor = getComputedStyle(document.documentElement).getPropertyValue('--color-text-secondary').trim() || '#6A7789';
+  const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-border').trim() || '#E2E7EF';
+  const surfaceColor = getComputedStyle(document.documentElement).getPropertyValue('--color-surface').trim() || '#FFFFFF';
 
   return (
     <ResponsiveContainer width="100%" height={250}>
@@ -71,10 +71,10 @@ interface DistributionData {
 }
 
 export function DistributionChart({ data }: { data: DistributionData[] }) {
-  const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#3A8DFF';
-  const textColor = getComputedStyle(document.documentElement).getPropertyValue('--color-neutral-text-secondary').trim() || '#6A7789';
-  const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-neutral-border').trim() || '#E2E7EF';
-  const surfaceColor = getComputedStyle(document.documentElement).getPropertyValue('--color-neutral-surface').trim() || '#FFFFFF';
+  const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#2F8FA5';
+  const textColor = getComputedStyle(document.documentElement).getPropertyValue('--color-text-secondary').trim() || '#6A7789';
+  const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-border').trim() || '#E2E7EF';
+  const surfaceColor = getComputedStyle(document.documentElement).getPropertyValue('--color-surface').trim() || '#FFFFFF';
 
   return (
     <ResponsiveContainer width="100%" height={250}>
@@ -100,10 +100,10 @@ interface ResponseVolumeData {
 }
 
 export function ResponseVolumeChart({ data }: { data: ResponseVolumeData[] }) {
-  const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#3A8DFF';
-  const textColor = getComputedStyle(document.documentElement).getPropertyValue('--color-neutral-text-secondary').trim() || '#6A7789';
-  const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-neutral-border').trim() || '#E2E7EF';
-  const surfaceColor = getComputedStyle(document.documentElement).getPropertyValue('--color-neutral-surface').trim() || '#FFFFFF';
+  const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#2F8FA5';
+  const textColor = getComputedStyle(document.documentElement).getPropertyValue('--color-text-secondary').trim() || '#6A7789';
+  const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-border').trim() || '#E2E7EF';
+  const surfaceColor = getComputedStyle(document.documentElement).getPropertyValue('--color-surface').trim() || '#FFFFFF';
 
   return (
     <ResponsiveContainer width="100%" height={250}>

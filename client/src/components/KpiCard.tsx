@@ -29,7 +29,7 @@ export function KpiCard({
             <p className="text-[32px] font-bold mt-2" style={{ color: 'var(--color-neutral-text-primary)' }}>{value}</p>
             <p className="text-[13px] mt-2" style={{ color: 'var(--color-neutral-text-secondary)' }}>{subtext}</p>
           </div>
-          <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ml-4" style={{ backgroundColor: 'rgba(58, 141, 255, 0.1)' }}>
+          <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ml-4" style={{ backgroundColor: 'rgba(47, 143, 165, 0.1)' }}>
             <Icon className="w-6 h-6" strokeWidth={2} style={{ color: 'var(--color-primary)' }} />
           </div>
         </div>
