@@ -959,4 +959,58 @@ html, body {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
   }
+
+  /* ===== BLOB ANIMATIONS FOR HERO SECTIONS ===== */
+  @keyframes blob {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+      opacity: 0.7;
+    }
+    25% {
+      transform: translate(20px, -50px) scale(1.1);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translate(-20px, 20px) scale(0.9);
+      opacity: 0.6;
+    }
+    75% {
+      transform: translate(50px, 50px) scale(1.05);
+      opacity: 0.4;
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  .animate-blob {
+    animation: blob 7s infinite;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animation-delay-1000 {
+    animation-delay: 1s;
+  }
+
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+
+  .animation-delay-3000 {
+    animation-delay: 3s;
+  }
+
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
 }
+

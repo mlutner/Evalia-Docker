@@ -3,8 +3,27 @@ import heroIllustration from '@assets/hero-illustration.png';
 
 export function Hero() {
   return (
-    <section className="relative bg-evalia-teal-600 overflow-hidden pt-20">
-      <div className="relative max-w-7xl mx-auto px-6 py-40">
+    <section className="relative bg-gradient-to-br from-evalia-teal-600 via-evalia-teal-500 to-evalia-teal-700 overflow-hidden pt-20">
+      {/* Decorative blobs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Blob 1 - Top right */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-evalia-teal-400/20 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+        
+        {/* Blob 2 - Bottom left */}
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-evalia-mint/15 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+        
+        {/* Blob 3 - Top left */}
+        <div className="absolute top-10 left-10 w-72 h-72 bg-evalia-yellow/10 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+
+        {/* Decorative dots */}
+        <div className="absolute top-20 left-12 w-4 h-4 bg-evalia-yellow/60 rounded-full animate-float"></div>
+        <div className="absolute top-40 right-24 w-3 h-3 bg-evalia-coral/50 rounded-full animate-float animation-delay-1000"></div>
+        <div className="absolute bottom-32 right-10 w-2 h-2 bg-evalia-mint/70 rounded-full animate-float animation-delay-2000"></div>
+        <div className="absolute bottom-20 left-1/4 w-3 h-3 bg-evalia-teal-300/40 rounded-full animate-float animation-delay-3000"></div>
+      </div>
+
+      {/* Content */}
+      <div className="relative max-w-7xl mx-auto px-6 py-40 z-10">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left content */}
           <div className="text-white space-y-8">
