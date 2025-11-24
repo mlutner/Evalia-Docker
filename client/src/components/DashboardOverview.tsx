@@ -241,7 +241,8 @@ export function DashboardOverview() {
                     <td className="py-3 px-4">
                       <Badge 
                         variant={survey.status === "Active" ? undefined : "secondary"}
-                        style={survey.status === "Active" ? { backgroundColor: 'var(--color-primary)', color: 'white' } : undefined}
+                        style={survey.status === "Active" ? { backgroundColor: '#2f8fa5', color: '#FFFFFF' } : undefined}
+                        className={survey.status === "Active" ? "bg-[#2f8fa5] text-white" : ""}
                       >
                         {survey.status}
                       </Badge>

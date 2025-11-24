@@ -7,8 +7,11 @@
 export const theme = {
   colors: {
     primary: 'var(--color-primary)',        // #2F8FA5 - Primary Blue-Teal
+    primaryHex: '#2F8FA5',                  // Hex version for direct use
     lime: 'var(--color-accent-lime)',       // #A3D65C - Primary Lime
+    limeHex: '#A3D65C',                     // Hex version for direct use
     navy: 'var(--color-dark-navy)',         // #0D1B2A - Navy (Sidebar)
+    navyHex: '#0D1B2A',                     // Hex version for direct use
     bg: 'var(--color-bg-light)',            // #F7F9FC - Page Background
     surface: 'var(--color-surface)',        // #FFFFFF - Card Surface
     border: 'var(--color-border)',          // #E2E7EF - Borders
