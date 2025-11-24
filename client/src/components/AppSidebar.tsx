@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Plus, LayoutDashboard, BarChart3, Users, BookOpen, FileText, Zap, Settings, Menu, X } from "lucide-react";
+import { Plus, LayoutDashboard, BarChart3, Users, BookOpen, FileText, Zap, Settings, ChevronLeft, ChevronRight } from "lucide-react";
 import evaliaLogo from "@assets/Heading (300 x 50 px) (1000 x 250 px) (3)_1763943705026.png";
 
 export function AppSidebar() {
@@ -25,7 +25,7 @@ export function AppSidebar() {
       sidebarExpanded ? "w-56" : "w-20"
     }`}>
       {/* Header with Logo */}
-      <div className="p-4 flex items-center justify-between bg-[#0e1729]">
+      <div className="p-4 pt-6 flex items-center justify-between bg-[#0e1729]">
         {sidebarExpanded && (
           <img src={evaliaLogo} alt="Evalia" className="h-8 object-contain" />
         )}
@@ -34,7 +34,7 @@ export function AppSidebar() {
           className="text-white hover:bg-white/10 p-1 rounded transition-colors"
           data-testid="button-toggle-sidebar"
         >
-          {sidebarExpanded ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          {sidebarExpanded ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
         </button>
       </div>
       {/* New Survey Button */}
