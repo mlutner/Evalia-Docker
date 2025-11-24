@@ -132,7 +132,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
   return (
     <Card 
       className="card-hover hover-elevate shadow-sm transition-all flex flex-col" 
-      style={{ height: '320px', display: 'flex', flexDirection: 'column' }}
+      style={{ height: '440px', display: 'flex', flexDirection: 'column' }}
       data-testid={`survey-card-${survey.id}`}
     >
       <CardHeader className="flex flex-col pb-0">
@@ -220,7 +220,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
         )}
       </CardHeader>
 
-      <CardContent className="flex-1 space-y-4 overflow-y-auto">
+      <CardContent className="flex-1 space-y-4">
         {/* Stats Section */}
         <div className="flex gap-6">
           <div>
