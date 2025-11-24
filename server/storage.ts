@@ -38,6 +38,7 @@ export interface IStorage {
   // Template operations
   getAllTemplates(): Promise<Template[]>;
   getTemplate(id: string): Promise<Template | undefined>;
+  saveAsTemplate(survey: Survey, title: string, description: string, category: string): Promise<Template>;
 }
 
 export class MemStorage implements IStorage {
@@ -205,6 +206,21 @@ export class MemStorage implements IStorage {
 
   async getTemplate(id: string): Promise<Template | undefined> {
     return this.templates.get(id);
+  }
+
+  async saveAsTemplate(survey: Survey, title: string, description: string, category: string): Promise<Template> {
+    const templateId = `custom_${randomUUID()}`;
+    const template: Template = {
+      id: templateId,
+      title,
+      description,
+      category,
+      questions: survey.questions,
+      scoreConfig: survey.scoreConfig,
+      createdAt: new Date(),
+    };
+    this.templates.set(templateId, template);
+    return template;
   }
 
   async getUser(id: string): Promise<User | undefined> {

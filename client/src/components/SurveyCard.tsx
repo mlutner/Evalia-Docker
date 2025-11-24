@@ -55,10 +55,11 @@ interface SurveyCardProps {
   onDuplicate?: () => void;
   onManageRespondents?: () => void;
   onShare?: () => void;
+  onSaveAsTemplate?: () => void;
   index?: number;
 }
 
-const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport, onDelete, onDuplicate, onManageRespondents, index = 0 }: SurveyCardProps) {
+const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport, onDelete, onDuplicate, onManageRespondents, onSaveAsTemplate, index = 0 }: SurveyCardProps) {
   const [copied, setCopied] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   
