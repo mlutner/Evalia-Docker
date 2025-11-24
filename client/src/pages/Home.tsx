@@ -79,16 +79,16 @@ export default function Home() {
             <div className="hidden md:block absolute top-8 left-0 right-0 h-1 bg-gradient-to-r from-evalia-teal-200 via-evalia-teal-300 to-evalia-teal-200 pointer-events-none z-0" style={{ maxWidth: '90%', marginLeft: '5%' }}></div>
             {/* Step 1 */}
             <div className="relative hover-elevate transition-all z-10">
-              <div className="flex items-center gap-4 mb-8">
+              <div className="flex flex-col items-center mb-8">
                 <div className="flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-br from-evalia-teal-500 to-evalia-teal-600 flex items-center justify-center shadow-lg">
                   <Wand2 className="w-8 h-8 text-white" />
                 </div>
-                <div className="text-6xl font-bold text-evalia-teal-100/60 relative z-20">01</div>
+                <div className="text-4xl font-bold text-evalia-teal-100/40 mt-3">01</div>
               </div>
-              <h3 className="text-2xl font-bold text-evalia-navy mb-3" data-testid="text-step-1-title">
+              <h3 className="text-2xl font-bold text-evalia-navy mb-3 text-center" data-testid="text-step-1-title">
                 Create with AI
               </h3>
-              <p className="text-gray-600 leading-relaxed text-base">
+              <p className="text-gray-600 leading-relaxed text-base text-center">
                 Upload your training materials or describe your session. Our AI
                 generates relevant survey questions instantly.
               </p>
@@ -96,16 +96,16 @@ export default function Home() {
 
             {/* Step 2 */}
             <div className="relative hover-elevate transition-all z-10">
-              <div className="flex items-center gap-4 mb-8">
+              <div className="flex flex-col items-center mb-8">
                 <div className="flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-br from-evalia-teal-600 to-evalia-mint flex items-center justify-center shadow-lg">
                   <Share2 className="w-8 h-8 text-white" />
                 </div>
-                <div className="text-6xl font-bold text-evalia-teal-100/60 relative z-20">02</div>
+                <div className="text-4xl font-bold text-evalia-teal-100/40 mt-3">02</div>
               </div>
-              <h3 className="text-2xl font-bold text-evalia-navy mb-3" data-testid="text-step-2-title">
+              <h3 className="text-2xl font-bold text-evalia-navy mb-3 text-center" data-testid="text-step-2-title">
                 Share & Collect
               </h3>
-              <p className="text-gray-600 leading-relaxed text-base">
+              <p className="text-gray-600 leading-relaxed text-base text-center">
                 Send your survey via link, email, or QR code. Mobile-friendly
                 design ensures high response rates.
               </p>
@@ -113,16 +113,16 @@ export default function Home() {
 
             {/* Step 3 */}
             <div className="relative hover-elevate transition-all z-10">
-              <div className="flex items-center gap-4 mb-8">
+              <div className="flex flex-col items-center mb-8">
                 <div className="flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-br from-evalia-mint to-evalia-teal-400 flex items-center justify-center shadow-lg">
                   <BarChart3 className="w-8 h-8 text-white" />
                 </div>
-                <div className="text-6xl font-bold text-evalia-teal-100/60 relative z-20">03</div>
+                <div className="text-4xl font-bold text-evalia-teal-100/40 mt-3">03</div>
               </div>
-              <h3 className="text-2xl font-bold text-evalia-navy mb-3" data-testid="text-step-3-title">
+              <h3 className="text-2xl font-bold text-evalia-navy mb-3 text-center" data-testid="text-step-3-title">
                 Analyze & Improve
               </h3>
-              <p className="text-gray-600 leading-relaxed text-base">
+              <p className="text-gray-600 leading-relaxed text-base text-center">
                 Get instant insights with beautiful visualizations. Identify
                 what works and what needs improvement.
               </p>
