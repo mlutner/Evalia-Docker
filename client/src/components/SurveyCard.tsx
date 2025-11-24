@@ -134,155 +134,130 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
       className="evalia-survey-card"
       data-testid={`survey-card-${survey.id}`}
     >
-      <CardHeader className="flex flex-col pb-3 px-5 pt-4">
-        <div className="flex flex-row items-start justify-between gap-3 mb-3">
-          <h3 style={{ fontSize: '16px', fontWeight: 700, lineHeight: '1.3', color: '#1C2635', flex: 1 }} className="line-clamp-2">{survey.title}</h3>
-          <div className="flex gap-1 flex-shrink-0 items-center">
+      {/* Header: Title + Menu */}
+      <CardHeader className="px-5 pt-5 pb-3">
+        <div className="flex items-start justify-between gap-3">
+          <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#1C2635' }} className="line-clamp-2 flex-1">{survey.title}</h3>
+          <div className="flex gap-1 flex-shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   data-testid="button-menu"
-                  style={{ color: '#6A7789', width: '32px', height: '32px', minWidth: '32px' }}
-                  className="hover:text-[#1C2635] transition-colors"
+                  className="evalia-button-icon"
                 >
-                  <MoreVertical className="w-[18px] h-[18px]" />
+                  <MoreVertical className="w-5 h-5" />
                 </Button>
               </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setShareDialogOpen(true)} data-testid="menu-share">
-                <Share2 className="w-4 h-4 mr-2" />
-                Share Survey
-              </DropdownMenuItem>
-              {onManageRespondents && (
-                <DropdownMenuItem onClick={onManageRespondents} data-testid="menu-respondents">
-                  <Users className="w-4 h-4 mr-2" />
-                  Manage Respondents
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setShareDialogOpen(true)} data-testid="menu-share">
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Share Survey
                 </DropdownMenuItem>
-              )}
-              <DropdownMenuItem onClick={onView} data-testid="menu-view">
-                <Eye className="w-4 h-4 mr-2" />
-                Preview
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={onExport} data-testid="menu-export">
-                <Download className="w-4 h-4 mr-2" />
-                Export Data
-              </DropdownMenuItem>
-              {onDuplicate && (
-                <DropdownMenuItem onClick={onDuplicate} data-testid="menu-duplicate">
-                  <Copy className="w-4 h-4 mr-2" />
-                  Duplicate Survey
+                {onManageRespondents && (
+                  <DropdownMenuItem onClick={onManageRespondents} data-testid="menu-respondents">
+                    <Users className="w-4 h-4 mr-2" />
+                    Manage Respondents
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onClick={onView} data-testid="menu-view">
+                  <Eye className="w-4 h-4 mr-2" />
+                  Preview
                 </DropdownMenuItem>
-              )}
-              <DropdownMenuItem onClick={onDelete} className="text-destructive" data-testid="menu-delete">
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
+                <DropdownMenuItem onClick={onExport} data-testid="menu-export">
+                  <Download className="w-4 h-4 mr-2" />
+                  Export Data
+                </DropdownMenuItem>
+                {onDuplicate && (
+                  <DropdownMenuItem onClick={onDuplicate} data-testid="menu-duplicate">
+                    <Copy className="w-4 h-4 mr-2" />
+                    Duplicate Survey
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onClick={onDelete} className="text-destructive" data-testid="menu-delete">
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
             </DropdownMenu>
             <Button 
               variant="ghost" 
               size="icon" 
               onClick={() => setShareDialogOpen(true)}
               data-testid={`button-share-header-${survey.id}`}
-              style={{ color: '#6A7789', width: '32px', height: '32px', minWidth: '32px' }}
-              className="hover:text-[#1C2635] transition-colors"
+              className="evalia-button-icon"
             >
-              <Share2 className="w-[18px] h-[18px]" />
+              <Share2 className="w-5 h-5" />
             </Button>
           </div>
         </div>
-        
+      </CardHeader>
+
+      {/* Description */}
+      <CardContent className="px-5 py-0 pb-3">
         {survey.description && (
-          <p style={{ fontSize: '13px', color: '#6A7789', marginBottom: '6px', lineHeight: '1.5' }} className="line-clamp-2">{survey.description}</p>
+          <p style={{ fontSize: '14px', color: '#6A7789' }} className="line-clamp-1">{survey.description}</p>
         )}
         {!survey.description && survey.questions && (
-          <p style={{ fontSize: '13px', color: '#6A7789', marginBottom: '6px', lineHeight: '1.5' }}>{generateSurveySummary(survey.questions)}</p>
+          <p style={{ fontSize: '14px', color: '#6A7789' }} className="line-clamp-1">{generateSurveySummary(survey.questions)}</p>
         )}
+      </CardContent>
 
-        <div style={{ marginBottom: '0' }} className="flex flex-col gap-0.5 space-y-1">
-          {survey.trainerName && (
-            <p style={{ fontSize: '12px', color: '#6A7789', fontWeight: 500 }}>
-              <span style={{ fontWeight: 600 }}>Trainer:</span> {survey.trainerName}
-            </p>
-          )}
-          {survey.trainingDate && (
-            <p style={{ fontSize: '12px', color: '#6A7789', fontWeight: 500 }}>
-              <span style={{ fontWeight: 600 }}>Training Date:</span> {new Date(survey.trainingDate).toLocaleDateString()}
-            </p>
-          )}
+      {/* Metadata Row: Created + Scoring Badge */}
+      <CardContent className="px-5 py-2 flex items-center justify-between">
+        <p style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500, letterSpacing: '0.5px' }}>
+          Created {new Date(survey.createdAt).toLocaleDateString()}
+        </p>
+        {survey.scoreConfig?.enabled && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge variant="outline" style={{ backgroundColor: 'rgba(47, 143, 165, 0.08)', color: '#2F8FA5', borderColor: 'rgba(47, 143, 165, 0.3)' }} className="gap-1 text-xs cursor-help" data-testid={`badge-scoring-${survey.id}`}>
+                <Gauge className="w-3 h-3" />
+                Scoring
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="max-w-xs text-xs">
+              This survey has scoring enabled
+            </TooltipContent>
+          </Tooltip>
+        )}
+      </CardContent>
+
+      {/* Status Badge Row */}
+      {statusDisplay.badge && (
+        <CardContent className="px-5 py-2">
           <div className="flex items-center gap-2">
-            <p style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500 }}>
-              Created {new Date(survey.createdAt).toLocaleDateString()}
-            </p>
-            {survey.scoreConfig?.enabled && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Badge variant="outline" style={{ backgroundColor: 'rgba(47, 143, 165, 0.08)', color: theme.colors.primary, borderColor: 'rgba(47, 143, 165, 0.3)' }} className="gap-1 text-xs cursor-help" data-testid={`badge-scoring-${survey.id}`}>
-                    <Gauge className="w-3 h-3" />
-                    Scoring
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="max-w-xs text-xs">
-                  This survey has scoring enabled
-                </TooltipContent>
-              </Tooltip>
-            )}
-          </div>
-        </div>
-
-        {statusDisplay.badge && (
-          <div className="flex items-center gap-2 mt-1">
-            <span style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500 }}>Status:</span>
+            <span style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500, letterSpacing: '0.5px' }}>Status:</span>
             <Tooltip>
               <TooltipTrigger asChild>
                 {statusDisplay.badge}
               </TooltipTrigger>
-              <TooltipContent side="bottom" className="max-w-xs">
+              <TooltipContent side="bottom" className="max-w-xs text-xs">
                 {statusDisplay.tooltip}
               </TooltipContent>
             </Tooltip>
           </div>
-        )}
-      </CardHeader>
-      <CardContent className="flex-1 flex flex-col px-5 py-3">
-        {/* Stats Section */}
-        <div className="flex gap-8">
-          <div>
-            <p style={{ fontSize: '11px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 600, letterSpacing: '0.5px' }}>Questions</p>
-            <p style={{ fontSize: '18px', fontWeight: 700, color: '#1C2635', marginTop: '4px' }} data-testid="text-question-count">{survey.questionCount || 0}</p>
-          </div>
-          <div>
-            <p style={{ fontSize: '11px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 600, letterSpacing: '0.5px' }}>Responses</p>
-            <div className="flex items-center gap-2" style={{ marginTop: '4px' }}>
-              <p style={{ fontSize: '18px', fontWeight: 700, color: '#1C2635' }} data-testid="text-response-count">{survey.responseCount ?? 0}</p>
-              {survey.respondentCount !== undefined && survey.respondentCount > 0 && (
-                <div style={{ fontSize: '11px', color: '#6A7789' }}>
-                  <span>/ {survey.respondentCount}</span>
-                  <span className="block font-semibold">{Math.round((survey.responseCount / Math.max(1, survey.respondentCount)) * 100)}%</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        </CardContent>
+      )}
 
-        
-        {survey.tags && survey.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-2">
-            {survey.tags.map((tag) => (
-              <Badge key={tag} variant="secondary" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        )}
+      {/* Stats Row: Questions + Responses */}
+      <CardContent className="px-5 py-3 flex gap-12">
+        <div>
+          <p className="evalia-kpi-label">Questions</p>
+          <p style={{ fontSize: '28px', fontWeight: 700, color: '#1C2635', marginTop: '4px' }} data-testid="text-question-count">{survey.questionCount || 0}</p>
+        </div>
+        <div>
+          <p className="evalia-kpi-label">Responses</p>
+          <p style={{ fontSize: '28px', fontWeight: 700, color: '#1C2635', marginTop: '4px' }} data-testid="text-response-count">{survey.responseCount ?? 0}</p>
+        </div>
       </CardContent>
-      <CardFooter className="gap-3 flex-col px-5 py-5">
+
+      {/* Buttons */}
+      <CardFooter className="px-5 py-5 gap-3 flex-col">
         <div className="flex w-full gap-3">
           <Button 
             variant="outline" 
-            size="sm"
-            className="flex-1"
+            className="flex-1 h-11 font-semibold"
             onClick={onEdit} 
             data-testid={`button-edit-${index}`}
           >
@@ -295,12 +270,11 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
                 onClick={onAnalyze} 
                 data-testid={`button-analyze-${index}`}
                 disabled={survey.responseCount === 0}
+                className="flex-1 h-11 font-semibold"
                 style={{
-                  backgroundColor: '#1F6F78',
-                  color: '#FFFFFF',
-                  borderRadius: '8px'
+                  backgroundColor: survey.responseCount === 0 ? '#F0F2F5' : '#1F6F78',
+                  color: survey.responseCount === 0 ? '#B0B8C2' : '#FFFFFF',
                 }}
-                className="flex-1 h-10 font-semibold"
               >
                 <BarChart3 className="w-4 h-4 mr-2" strokeWidth={2} />
                 Analyze
