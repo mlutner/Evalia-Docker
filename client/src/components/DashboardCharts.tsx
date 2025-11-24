@@ -18,7 +18,7 @@ export function ResponseTrendsChart({ data }: { data: TrendData[] }) {
             border: "1px solid #E7EBF0",
           }}
         />
-        <Line type="monotone" dataKey="responses" stroke="#1F8EFA" strokeWidth={2} dot={{ fill: "#1F8EFA", r: 4 }} />
+        <Line type="monotone" dataKey="responses" stroke="#1F8EFA" strokeWidth={2} dot={{ fill: "#1F8EFA", r: 4, style: { fill: "#1F8EFA" } }} isAnimationActive={false} />
       </LineChart>
     </ResponsiveContainer>
   );
@@ -42,7 +42,7 @@ export function CategoryBreakdownChart({ data }: { data: SurveyData[] }) {
             border: "1px solid #E7EBF0",
           }}
         />
-        <Bar dataKey="count" fill="#1F8EFA" />
+        <Bar dataKey="count" fill="#1F8EFA" isAnimationActive={false} shape={{ style: { fill: "#1F8EFA" } }} />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -66,7 +66,7 @@ export function DistributionChart({ data }: { data: DistributionData[] }) {
             border: "1px solid #E7EBF0",
           }}
         />
-        <Bar dataKey="count" fill="#1F8EFA" />
+        <Bar dataKey="count" fill="#1F8EFA" isAnimationActive={false} shape={{ style: { fill: "#1F8EFA" } }} />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -90,7 +90,7 @@ export function ResponseVolumeChart({ data }: { data: ResponseVolumeData[] }) {
             border: "1px solid #E7EBF0",
           }}
         />
-        <Bar dataKey="responses" fill="#1F8EFA" />
+        <Bar dataKey="responses" fill="#1F8EFA" isAnimationActive={false} shape={{ style: { fill: "#1F8EFA" } }} />
       </BarChart>
     </ResponsiveContainer>
   );
