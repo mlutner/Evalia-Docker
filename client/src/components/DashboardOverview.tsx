@@ -8,6 +8,7 @@ import { ResponseTrendsChart, CategoryBreakdownChart, DistributionChart, Respons
 import { Skeleton } from "@/components/ui/skeleton";
 import { KpiCard } from "./KpiCard";
 import { InsightCard } from "./InsightCard";
+import { CommandCenter } from "./CommandCenterWidgets";
 
 interface DashboardMetrics {
   totalSurveys: number;
@@ -273,6 +274,11 @@ export function DashboardOverview() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Command Center - Actionable Insights Section */}
+      <div className="px-4 md:px-0">
+        <CommandCenter showRecommendations={true} />
+      </div>
     </div>
   );
 }
