@@ -67,11 +67,11 @@ export default function ChatPanel({ messages, onSendMessage, isLoading = false, 
   return (
     <div className="flex flex-col h-full border rounded-xl bg-card">
       {showHeader && (
-        <div className="p-4 border-b">
+        <div className="p-4 border-b" style={{ borderColor: '#E2E7EF' }}>
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-primary" />
-              <h3 className="font-semibold">AI Assistant</h3>
+              <Sparkles className="w-5 h-5" style={{ color: '#37C0A3' }} />
+              <h3 className="font-semibold" style={{ color: '#1C2635' }}>AI Assistant</h3>
             </div>
             {onToggleExpand && (
               <Button
@@ -90,7 +90,7 @@ export default function ChatPanel({ messages, onSendMessage, isLoading = false, 
               </Button>
             )}
           </div>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm mt-1" style={{ color: '#6A7789' }}>
             Refine your survey with natural language
           </p>
         </div>
@@ -100,10 +100,10 @@ export default function ChatPanel({ messages, onSendMessage, isLoading = false, 
         <div className="space-y-4">
           {messages.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-muted-foreground text-sm">
+              <p className="text-sm" style={{ color: '#6A7789' }}>
                 Start a conversation to refine your survey
               </p>
-              <div className="mt-4 space-y-2 text-xs text-muted-foreground">
+              <div className="mt-4 space-y-2 text-xs" style={{ color: '#6A7789' }}>
                 <p>Try: "Add 3 open-ended questions"</p>
                 <p>Try: "Make it more focused on feedback"</p>
               </div>
@@ -116,24 +116,27 @@ export default function ChatPanel({ messages, onSendMessage, isLoading = false, 
                 data-testid={`message-${message.role}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-2xl px-4 py-3 ${
-                    message.role === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-foreground"
-                  }`}
+                  style={{
+                    maxWidth: '85%',
+                    borderRadius: '12px',
+                    padding: '12px 16px',
+                    backgroundColor: message.role === "user" ? '#2F8FA5' : '#F7F9FC',
+                    color: message.role === "user" ? 'white' : '#1C2635',
+                    border: message.role === "user" ? 'none' : '1px solid #E2E7EF'
+                  }}
                 >
-                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  <p className="text-sm whitespace-pre-wrap" style={{ color: message.role === "user" ? 'white' : '#1C2635' }}>{message.content}</p>
                 </div>
               </div>
             ))
           )}
           {isLoading && (
             <div className="flex justify-start">
-              <div className="bg-muted rounded-2xl px-4 py-3">
+              <div style={{ backgroundColor: '#F7F9FC', borderRadius: '12px', padding: '12px 16px', border: '1px solid #E2E7EF' }}>
                 <div className="flex gap-1">
-                  <div className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <div className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <div className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#A3D65C', animationDelay: '0ms' }} />
+                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#A3D65C', animationDelay: '150ms' }} />
+                  <div className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: '#A3D65C', animationDelay: '300ms' }} />
                 </div>
               </div>
             </div>
@@ -143,8 +146,8 @@ export default function ChatPanel({ messages, onSendMessage, isLoading = false, 
 
       <form onSubmit={handleSubmit} className="p-4 border-t">
         {selectedFile && (
-          <div className="mb-3 p-2 bg-muted rounded-lg flex items-center justify-between">
-            <span className="text-sm text-muted-foreground truncate">{selectedFile.name}</span>
+          <div className="mb-3 p-2 rounded-lg flex items-center justify-between" style={{ backgroundColor: '#F7F9FC', border: '1px solid #E2E7EF' }}>
+            <span className="text-sm truncate" style={{ color: '#6A7789' }}>{selectedFile.name}</span>
             <Button
               type="button"
               variant="ghost"

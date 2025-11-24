@@ -120,7 +120,7 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
       </h2>
 
       {question.description && (
-        <p className="text-muted-foreground text-sm mt-2 mb-4" data-testid="text-question-description">{question.description}</p>
+        <p className="text-sm mt-2 mb-4" style={{ color: '#6A7789' }} data-testid="text-question-description">{question.description}</p>
       )}
 
       <div className="space-y-6">
@@ -250,7 +250,7 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
                 </div>
               );
             })}
-            <p className="text-xs text-muted-foreground mt-2">Select one or more options</p>
+            <p className="text-xs mt-2" style={{ color: '#6A7789' }}>Select one or more options</p>
           </div>
         )}
 
@@ -275,11 +275,13 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
                     className="transition-transform active-elevate-2"
                   >
                     <Star
-                      className={`w-12 h-12 transition-all ${
-                        isSelected || isHovered
-                          ? "fill-amber-400 stroke-amber-400 scale-110"
-                          : "fill-muted-foreground/20 stroke-muted-foreground/40 hover:scale-105"
-                      }`}
+                      style={{
+                        fill: isSelected || isHovered ? '#37C0A3' : '#E2E7EF',
+                        stroke: isSelected || isHovered ? '#37C0A3' : '#A3D65C',
+                        transform: (isSelected || isHovered) ? 'scale(1.1)' : 'scale(1)',
+                        transition: 'all 0.2s ease'
+                      }}
+                      className="w-12 h-12"
                     />
                   </button>
                 );
@@ -287,19 +289,19 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
             </div>
 
             {/* Labels below stars */}
-            <div className="flex items-center justify-center gap-2 text-xs font-medium text-muted-foreground">
+            <div className="flex items-center justify-center gap-2 text-xs font-medium" style={{ color: '#6A7789' }}>
               <span>Not at all</span>
-              <span className="text-muted-foreground/40">•</span>
+              <span style={{ color: '#A3D65C' }}>•</span>
               <span>Very much</span>
             </div>
 
             {/* Selected rating display */}
             {answer && (
-              <div className="text-center p-3 rounded-lg bg-primary/8 border border-primary/20">
-                <div className="text-sm font-medium text-primary">
+              <div className="text-center p-3 rounded-lg" style={{ backgroundColor: '#F0F2F5', border: '1px solid #E2E7EF' }}>
+                <div className="text-sm font-medium" style={{ color: '#37C0A3' }}>
                   {['', 'Not at all', 'Slightly', 'Moderately', 'Mostly', 'Very much'][parseInt(answer as string)]}
                 </div>
-                <div className="text-xs text-muted-foreground mt-1">
+                <div className="text-xs mt-1" style={{ color: '#6A7789' }}>
                   {answer} out of 5
                 </div>
               </div>
@@ -311,8 +313,8 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
           <>
             <div className="flex flex-col space-y-4">
               <div className="flex justify-between items-center gap-1">
-                <span className="text-xs font-medium text-muted-foreground">Not likely</span>
-                <span className="text-xs font-medium text-muted-foreground">Extremely likely</span>
+                <span className="text-xs font-medium" style={{ color: '#6A7789' }}>Not likely</span>
+                <span className="text-xs font-medium" style={{ color: '#6A7789' }}>Extremely likely</span>
               </div>
               <div className="grid grid-cols-6 gap-1">
                 {Array.from({ length: 11 }).map((_, i) => (
@@ -324,18 +326,25 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
                       onAnswer(val);
                     }}
                     data-testid={`button-nps-${i}`}
-                    className={`h-10 rounded-lg border transition-all text-sm font-medium ${
-                      answer === i.toString()
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border/50 bg-card/30 hover:bg-primary/5 hover:border-primary/30"
-                    } hover-elevate active-elevate-2`}
+                    style={{
+                      height: '40px',
+                      borderRadius: '8px',
+                      border: answer === i.toString() ? '2px solid #1F6F78' : '1px solid #E2E7EF',
+                      backgroundColor: answer === i.toString() ? '#2F8FA5' : '#F7F9FC',
+                      color: answer === i.toString() ? 'white' : '#1C2635',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    className="hover-elevate active-elevate-2"
                   >
                     {i}
                   </button>
                 ))}
               </div>
             </div>
-            <p className="text-xs text-muted-foreground">How likely are you to recommend this training? (0 = Not likely, 10 = Extremely likely)</p>
+            <p className="text-xs" style={{ color: '#6A7789' }}>How likely are you to recommend this training? (0 = Not likely, 10 = Extremely likely)</p>
           </>
         )}
 
@@ -345,28 +354,34 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
               <table className="w-full border-collapse text-sm">
                 <thead>
                   <tr>
-                    <th className="border p-2 text-left font-medium bg-muted/50 min-w-[120px]"></th>
+                    <th className="border p-2 text-left font-medium min-w-[120px]" style={{ backgroundColor: '#F7F9FC', borderColor: '#E2E7EF' }}></th>
                     {question.colLabels?.map((col) => (
-                      <th key={col} className="border p-2 text-center font-medium bg-muted/50 min-w-[80px]">{col}</th>
+                      <th key={col} className="border p-2 text-center font-medium min-w-[80px]" style={{ backgroundColor: '#F7F9FC', borderColor: '#E2E7EF', color: '#1C2635' }}>{col}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {question.rowLabels?.map((row) => (
                     <tr key={row}>
-                      <td className="border p-2 font-medium text-left">{row}</td>
+                      <td className="border p-2 font-medium text-left" style={{ borderColor: '#E2E7EF', color: '#1C2635' }}>{row}</td>
                       {question.colLabels?.map((col) => {
                         const isSelected = answer === `${row}|${col}`;
                         return (
-                          <td key={`${row}-${col}`} className="border p-2 text-center">
+                          <td key={`${row}-${col}`} className="border p-2 text-center" style={{ borderColor: '#E2E7EF' }}>
                             <button
                               onClick={() => handleMatrixChange(row, col)}
                               data-testid={`button-matrix-${row}-${col}`}
-                              className={`w-6 h-6 mx-auto rounded-full border-2 transition-all ${
-                                isSelected
-                                  ? "border-primary bg-primary"
-                                  : "border-border/50 hover:border-primary/50"
-                              }`}
+                              style={{
+                                width: '24px',
+                                height: '24px',
+                                margin: '0 auto',
+                                borderRadius: '50%',
+                                border: isSelected ? '2px solid #1F6F78' : '2px solid #E2E7EF',
+                                backgroundColor: isSelected ? '#2F8FA5' : 'transparent',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease'
+                              }}
+                              className="transition-all"
                             />
                           </td>
                         );
@@ -376,7 +391,7 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
                 </tbody>
               </table>
             </div>
-            <p className="text-xs text-muted-foreground">Select one response per row</p>
+            <p className="text-xs" style={{ color: '#6A7789' }}>Select one response per row</p>
           </>
         )}
 
@@ -386,17 +401,26 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
               {question.options?.map((option, idx) => (
                 <div 
                   key={option} 
-                  className="flex items-center gap-3 p-3 border rounded-lg bg-card/30 hover:bg-primary/5 hover-elevate active-elevate-2"
+                  className="flex items-center gap-3 p-3 border rounded-lg hover-elevate active-elevate-2"
+                  style={{ borderColor: '#E2E7EF', backgroundColor: '#F7F9FC' }}
                   data-testid={`ranking-item-${idx}`}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#F0F2F5';
+                    e.currentTarget.style.borderColor = '#2F8FA5';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#F7F9FC';
+                    e.currentTarget.style.borderColor = '#E2E7EF';
+                  }}
                 >
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-bold text-primary">{idx + 1}</span>
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#E2E7EF' }}>
+                    <span className="text-sm font-bold" style={{ color: '#2F8FA5' }}>{idx + 1}</span>
                   </div>
-                  <span className="text-sm flex-1">{option}</span>
+                  <span className="text-sm flex-1" style={{ color: '#1C2635' }}>{option}</span>
                 </div>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground">Items are ranked from most to least important</p>
+            <p className="text-xs" style={{ color: '#6A7789' }}>Items are ranked from most to least important</p>
           </>
         )}
 
@@ -406,11 +430,12 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
               type="date"
               value={answer as string}
               onChange={(e) => handleTextChange(e.target.value)}
-              className="text-base h-11 sm:h-12 border border-border/60 focus:border-primary transition-colors bg-white dark:bg-slate-950"
+              className="text-base h-11 sm:h-12 border border-border/60 transition-colors bg-white"
+              style={{ borderColor: '#E2E7EF' }}
               data-testid="input-date-answer"
               autoFocus
             />
-            <p className="text-xs text-muted-foreground">Select a date</p>
+            <p className="text-xs" style={{ color: '#6A7789' }}>Select a date</p>
           </>
         )}
       </div>
