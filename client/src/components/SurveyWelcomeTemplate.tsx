@@ -1,5 +1,4 @@
 import { useState } from "react";
-import logoImage from "@assets/Untitled design (3)_1763764996441.png";
 import { Clock, BookOpen, Shield } from "lucide-react";
 import {
   Dialog,
@@ -170,12 +169,6 @@ export default function SurveyWelcomeTemplate({
     <>
       {/* Header */}
       <header className="survey-header mt-[0px] mb-[0px] pt-[29px] pb-[16px]">
-        <img 
-          src={logoImage} 
-          alt="Survey logo" 
-          data-testid="icon-survey-logo"
-          className="survey-logo-img"
-        />
         <h1
           id="survey-title"
           data-testid="text-survey-title"
