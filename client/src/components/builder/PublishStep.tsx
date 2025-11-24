@@ -46,6 +46,7 @@ interface PublishStepProps {
   onDataUsageStatementChange?: (statement: string) => void;
   onQuestionsChange?: (questions: Question[]) => void;
   onPreview?: () => void;
+  onTestPreview?: () => void;
 }
 
 export default function PublishStep({
@@ -78,6 +79,7 @@ export default function PublishStep({
   onDataUsageStatementChange,
   onQuestionsChange,
   onPreview,
+  onTestPreview,
 }: PublishStepProps) {
   const { toast } = useToast();
   const [tagInput, setTagInput] = useState("");
@@ -865,6 +867,16 @@ export default function PublishStep({
             >
               <Eye className="w-4 h-4 mr-2" />
               Preview Online
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={onTestPreview}
+              className="flex-1 sm:flex-initial"
+              data-testid="button-preview-test"
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              Preview Test
             </Button>
           </div>
         )}

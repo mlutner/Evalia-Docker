@@ -209,6 +209,10 @@ export default function Builder() {
     setShowPreview(true);
   };
 
+  const handleTestPreviewSurvey = () => {
+    setShowPreview(true);
+  };
+
   const handleGenerateText = async (fieldType: "description" | "welcomeMessage" | "thankYouMessage") => {
     const generatedText = await aiChat.handleGenerateText(fieldType, surveyState.currentSurveyTitle, surveyState.currentQuestions);
 
@@ -341,6 +345,7 @@ export default function Builder() {
             onDataUsageStatementChange={surveyState.setDataUsageStatement}
             onQuestionsChange={surveyState.setCurrentQuestions}
             onPreview={handlePreviewSurvey}
+            onTestPreview={handleTestPreviewSurvey}
           />
         )}
 
