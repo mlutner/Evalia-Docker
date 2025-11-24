@@ -65,14 +65,13 @@ export function DashboardOverview() {
       {/* Header with Time Filter */}
       <div className="flex items-center justify-between pr-6">
         <h2 className="text-[24px] font-bold" style={{ color: 'var(--color-neutral-text-primary)' }}>Dashboard</h2>
-        <button className="px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-2 transition-colors" style={{ borderColor: 'var(--color-neutral-border)', color: 'var(--color-neutral-text-secondary)', backgroundColor: 'rgba(58, 141, 255, 0.08)', border: '1px solid var(--color-neutral-border)' }} data-testid="button-date-filter">
+        <button className="px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-2 transition-colors text-[#2f8fa5] bg-[#f8fcf3]" style={{ borderColor: 'var(--color-neutral-border)', color: 'var(--color-neutral-text-secondary)', backgroundColor: 'rgba(58, 141, 255, 0.08)', border: '1px solid var(--color-neutral-border)' }} data-testid="button-date-filter">
           <span>Last 30 days</span>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
         </button>
       </div>
-
       {/* KPI Cards - 12 Column Grid */}
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-12 md:col-span-4">
@@ -100,7 +99,6 @@ export function DashboardOverview() {
           />
         </div>
       </div>
-
       {/* Charts Grid + AI Insights - 12 Column Layout */}
       <div className="grid grid-cols-12 gap-6">
         {/* Charts Column: 8 columns */}
@@ -207,7 +205,6 @@ export function DashboardOverview() {
           </Card>
         </div>
       </div>
-
       {/* Recent Surveys Table - Full Width */}
       <Card className="rounded-md" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
         <CardHeader className="p-6 pb-3">
