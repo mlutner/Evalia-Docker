@@ -73,7 +73,7 @@ export default function Builder() {
       surveyState.setThankYouMessage(existingSurvey.thankYouMessage || "");
       surveyState.setIllustrationUrl(existingSurvey.illustrationUrl || "");
       surveyState.setCurrentQuestions(existingSurvey.questions);
-      surveyState.setEstimatedMinutes(existingSurvey.estimatedMinutes);
+      surveyState.setEstimatedMinutes(existingSurvey.estimatedMinutes ?? undefined);
       surveyState.setPrivacyStatement(existingSurvey.privacyStatement || "");
       surveyState.setDataUsageStatement(existingSurvey.dataUsageStatement || "");
       surveyState.setCurrentWizardStep(2);
