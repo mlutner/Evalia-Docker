@@ -33,9 +33,9 @@ export function DashboardOverview() {
 
   if (error) {
     return (
-      <Card className="border-red-200 bg-red-50 dark:bg-red-950/30 dark:border-red-900">
+      <Card className="border-[#E7EBF0] bg-[#FFFFFF] dark:bg-[#1F3B58]/30 dark:border-[#1F3B58]">
         <CardContent className="pt-6">
-          <p className="text-red-700 dark:text-red-400">Failed to load dashboard metrics</p>
+          <p className="text-[#1C2B36] dark:text-[#A8E05E]">Failed to load dashboard metrics</p>
         </CardContent>
       </Card>
     );
@@ -62,8 +62,8 @@ export function DashboardOverview() {
     <div className="space-y-6">
       {/* Header with Time Filter */}
       <div className="flex items-center justify-between">
-        <h2 className="text-[24px] font-bold text-slate-900">Dashboard</h2>
-        <button className="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg text-sm flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+        <h2 className="text-[24px] font-bold text-[#1C2B36]">Dashboard</h2>
+        <button className="px-4 py-2 border border-[#E7EBF0] dark:border-[#1F3B58] rounded-lg text-sm flex items-center gap-2 hover:bg-[#F5F7FA] dark:hover:bg-[#0D1B2A]/50 transition-colors">
           <span>Last 30 days</span>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
@@ -77,9 +77,9 @@ export function DashboardOverview() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Created this month</p>
-                <p className="text-[30px] font-bold mt-2">{metrics.totalSurveys}</p>
-                <p className="text-xs text-muted-foreground mt-2">{metrics.activeSurveys} active</p>
+                <p className="text-xs text-[#6B7785] font-semibold uppercase tracking-wider">Created this month</p>
+                <p className="text-[30px] font-bold mt-2 text-[#0D1B2A]">{metrics.totalSurveys}</p>
+                <p className="text-xs text-[#6B7785] mt-2">{metrics.activeSurveys} active</p>
               </div>
               <div className="w-12 h-12 rounded-lg bg-[#1F8EFA]/10 flex items-center justify-center">
                 <BarChart3 className="w-6 h-6 text-[#1F8EFA]" strokeWidth={1.5} />
@@ -92,9 +92,9 @@ export function DashboardOverview() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Across all scoring models</p>
-                <p className="text-[30px] font-bold mt-2">{metrics.avgScore}</p>
-                <p className="text-xs text-muted-foreground mt-2">out of 100</p>
+                <p className="text-xs text-[#6B7785] font-semibold uppercase tracking-wider">Across all scoring models</p>
+                <p className="text-[30px] font-bold mt-2 text-[#0D1B2A]">{metrics.avgScore}</p>
+                <p className="text-xs text-[#6B7785] mt-2">out of 100</p>
               </div>
               <div className="w-12 h-12 rounded-lg bg-[#1F8EFA]/10 flex items-center justify-center">
                 <Award className="w-6 h-6 text-[#1F8EFA]" strokeWidth={1.5} />
@@ -107,9 +107,9 @@ export function DashboardOverview() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Across all surveys</p>
-                <p className="text-[30px] font-bold mt-2">{metrics.responseRate}%</p>
-                <p className="text-xs text-muted-foreground mt-2">completion</p>
+                <p className="text-xs text-[#6B7785] font-semibold uppercase tracking-wider">Across all surveys</p>
+                <p className="text-[30px] font-bold mt-2 text-[#0D1B2A]">{metrics.responseRate}%</p>
+                <p className="text-xs text-[#6B7785] mt-2">completion</p>
               </div>
               <div className="w-12 h-12 rounded-lg bg-[#1F8EFA]/10 flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-[#1F8EFA]" strokeWidth={1.5} />
@@ -138,7 +138,7 @@ export function DashboardOverview() {
               <CardHeader>
                 <CardTitle className="text-base font-semibold">Skills ratings across dimensions</CardTitle>
               </CardHeader>
-              <CardContent className="bg-[#0D1B2A]/5">
+              <CardContent className="bg-[#F5F7FA]">
                 <CategoryBreakdownChart data={[
                   { name: "Communication", count: 8 },
                   { name: "Engagement", count: 6 },
@@ -190,46 +190,46 @@ export function DashboardOverview() {
             </CardHeader>
             <CardContent className="space-y-3">
               {/* Top Weak Areas */}
-              <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 hover-elevate cursor-pointer border-l-3 border-l-[#A8E05E]">
+              <div className="flex gap-3 p-3 rounded-lg bg-[#F5F7FA] dark:bg-[#0D1B2A]/50 hover-elevate cursor-pointer border-l-3 border-l-[#A8E05E]">
                 <div className="w-8 h-8 rounded-lg bg-[#A8E05E]/10 flex items-center justify-center flex-shrink-0">
                   <AlertTriangle className="w-4 h-4 text-[#A8E05E]" strokeWidth={1.5} />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold">Top Weak Areas</p>
-                  <p className="text-xs text-muted-foreground mt-1">Communication skills showed lower scores compared to other categories.</p>
+                  <p className="text-sm font-semibold text-[#1C2B36]">Top Weak Areas</p>
+                  <p className="text-xs text-[#6B7785] mt-1">Communication skills showed lower scores compared to other categories.</p>
                 </div>
               </div>
 
               {/* Top Strength */}
-              <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 hover-elevate cursor-pointer border-l-3 border-l-[#1F8EFA]">
+              <div className="flex gap-3 p-3 rounded-lg bg-[#F5F7FA] dark:bg-[#0D1B2A]/50 hover-elevate cursor-pointer border-l-3 border-l-[#1F8EFA]">
                 <div className="w-8 h-8 rounded-lg bg-[#1F8EFA]/10 flex items-center justify-center flex-shrink-0">
                   <Star className="w-4 h-4 text-[#1F8EFA]" strokeWidth={1.5} />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold">Top Strength</p>
-                  <p className="text-xs text-muted-foreground mt-1">Knowledge was rated as the strongest area across all respondents.</p>
+                  <p className="text-sm font-semibold text-[#1C2B36]">Top Strength</p>
+                  <p className="text-xs text-[#6B7785] mt-1">Knowledge was rated as the strongest area across all respondents.</p>
                 </div>
               </div>
 
               {/* Question Quality */}
-              <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 hover-elevate cursor-pointer border-l-3 border-l-[#1F8EFA]">
+              <div className="flex gap-3 p-3 rounded-lg bg-[#F5F7FA] dark:bg-[#0D1B2A]/50 hover-elevate cursor-pointer border-l-3 border-l-[#1F8EFA]">
                 <div className="w-8 h-8 rounded-lg bg-[#1F8EFA]/10 flex items-center justify-center flex-shrink-0">
                   <FileText className="w-4 h-4 text-[#1F8EFA]" strokeWidth={1.5} />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold">Question Quality</p>
-                  <p className="text-xs text-muted-foreground mt-1">1 question may need clarification for better clarity.</p>
+                  <p className="text-sm font-semibold text-[#1C2B36]">Question Quality</p>
+                  <p className="text-xs text-[#6B7785] mt-1">1 question may need clarification for better clarity.</p>
                 </div>
               </div>
 
               {/* Recommendations */}
-              <div className="flex gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 hover-elevate cursor-pointer border-l-3 border-l-[#0D1B2A]">
+              <div className="flex gap-3 p-3 rounded-lg bg-[#F5F7FA] dark:bg-[#0D1B2A]/50 hover-elevate cursor-pointer border-l-3 border-l-[#0D1B2A]">
                 <div className="w-8 h-8 rounded-lg bg-[#0D1B2A]/10 flex items-center justify-center flex-shrink-0">
                   <CheckCircle className="w-4 h-4 text-[#0D1B2A]" strokeWidth={1.5} />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold">Recommendations</p>
-                  <p className="text-xs text-muted-foreground mt-1">Consider revising communication and skills questions for clarity.</p>
+                  <p className="text-sm font-semibold text-[#1C2B36]">Recommendations</p>
+                  <p className="text-xs text-[#6B7785] mt-1">Consider revising communication and skills questions for clarity.</p>
                 </div>
               </div>
             </CardContent>
@@ -251,30 +251,30 @@ export function DashboardOverview() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-200 dark:border-slate-800">
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">Survey Name</th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">Status</th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">Responses</th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">Avg. Score</th>
-                  <th className="text-left py-3 px-4 font-medium text-muted-foreground">Completion Rate</th>
+                <tr className="border-b border-[#E7EBF0] dark:border-[#1F3B58]">
+                  <th className="text-left py-3 px-4 font-medium text-[#6B7785]">Survey Name</th>
+                  <th className="text-left py-3 px-4 font-medium text-[#6B7785]">Status</th>
+                  <th className="text-left py-3 px-4 font-medium text-[#6B7785]">Responses</th>
+                  <th className="text-left py-3 px-4 font-medium text-[#6B7785]">Avg. Score</th>
+                  <th className="text-left py-3 px-4 font-medium text-[#6B7785]">Completion Rate</th>
                 </tr>
               </thead>
               <tbody>
                 {metrics.recentSurveys.map(survey => (
                   <tr 
                     key={survey.id} 
-                    className="border-b border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors cursor-pointer"
+                    className="border-b border-[#E7EBF0] dark:border-[#1F3B58] hover:bg-[#F5F7FA] dark:hover:bg-[#0D1B2A]/50 transition-colors cursor-pointer"
                     onClick={() => setLocation(`/analytics/${survey.id}`)}
                   >
-                    <td className="py-3 px-4 font-medium">{survey.title}</td>
+                    <td className="py-3 px-4 font-medium text-[#1C2B36]">{survey.title}</td>
                     <td className="py-3 px-4">
                       <Badge variant={survey.status === "Active" ? "default" : "secondary"}>
                         {survey.status}
                       </Badge>
                     </td>
-                    <td className="py-3 px-4">{survey.responseCount}</td>
-                    <td className="py-3 px-4">{survey.avgScore}</td>
-                    <td className="py-3 px-4">{survey.completionRate}%</td>
+                    <td className="py-3 px-4 text-[#6B7785]">{survey.responseCount}</td>
+                    <td className="py-3 px-4 text-[#6B7785]">{survey.avgScore}</td>
+                    <td className="py-3 px-4 text-[#6B7785]">{survey.completionRate}%</td>
                   </tr>
                 ))}
               </tbody>

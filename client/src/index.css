@@ -20,7 +20,7 @@ body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
     "Segoe UI", sans-serif;
-  background: linear-gradient(135deg, #f6f7f9 0%, #f0f3f7 100%);
+  background: linear-gradient(135deg, #F5F7FA 0%, #F5F7FA 100%);
   min-height: 100vh;
 }
 
@@ -30,7 +30,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 40px 16px;
-  background: linear-gradient(135deg, #f6f7f9 0%, #f0f3f7 100%);
+  background: linear-gradient(135deg, #F5F7FA 0%, #F5F7FA 100%);
 }
 
 .survey-card {
