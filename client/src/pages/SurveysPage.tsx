@@ -8,6 +8,7 @@ import { SurveyFilters } from "@/components/SurveyFilters";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { theme } from "@/theme";
 import type { SurveyWithCounts } from "@shared/schema";
 
 export default function SurveysPage() {
@@ -101,7 +102,7 @@ export default function SurveysPage() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <main className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-950">
+      <main style={{ backgroundColor: theme.backgrounds.page }} className="flex-1 overflow-auto">
         <div className="container mx-auto px-4 py-6 md:py-8">
           <div className="mb-6 md:mb-8">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-2">Your Surveys</h1>

@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Settings } from "lucide-react";
+import { theme } from "@/theme";
 
 export default function SettingsPage() {
   return (
-    <main className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-950">
+    <main style={{ backgroundColor: theme.backgrounds.page }} className="flex-1 overflow-auto">
       <div className="container mx-auto px-4 py-6 md:py-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
