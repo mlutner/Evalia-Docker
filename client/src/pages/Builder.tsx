@@ -197,6 +197,7 @@ export default function Builder() {
   const handleUseTemplate = (template: SurveyTemplate) => {
     surveyState.setCurrentSurveyTitle(template.title);
     surveyState.setCurrentQuestions(template.questions);
+    surveyState.setCurrentWizardStep(3);
     setViewMode("chat");
     aiChat.setMessages([
       {
