@@ -7,6 +7,7 @@ interface WizardStepsProps {
     number: number;
     title: string;
     description: string;
+    detailedDescription?: string;
     isOptional?: boolean;
   }[];
 }
@@ -32,7 +33,7 @@ export default function WizardSteps({ currentStep, steps }: WizardStepsProps) {
                 step.number
               )}
             </div>
-            <div className="mt-4 text-center">
+            <div className="mt-4 text-center max-w-xs">
               <div
                 className={`text-sm font-semibold transition-all ${
                   currentStep === step.number
@@ -42,8 +43,13 @@ export default function WizardSteps({ currentStep, steps }: WizardStepsProps) {
               >
                 {step.title}
               </div>
+              {step.detailedDescription && (
+                <div className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                  {step.detailedDescription}
+                </div>
+              )}
               {step.isOptional && (
-                <span className="text-xs font-medium px-2 py-1 rounded-full bg-muted text-muted-foreground mt-1">
+                <span className="text-xs font-medium px-2 py-1 rounded-full bg-muted text-muted-foreground mt-2">
                   Optional
                 </span>
               )}
