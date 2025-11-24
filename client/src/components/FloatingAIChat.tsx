@@ -58,7 +58,7 @@ export default function FloatingAIChat({ onClick, isOpen = false }: FloatingAICh
                 }}
                 transition={{ duration: 0.3 }}
               >
-                <Bot className="w-8 h-8" style={{ color: "#FFFFFF" }} />
+                <Bot className="w-10 h-10" style={{ color: "#FFFFFF" }} />
               </motion.div>
             </Button>
           </motion.div>
