@@ -81,12 +81,12 @@ export default function QuestionsStep({
       <Card>
         <CardContent className="pt-6">
           <label className="text-xs sm:text-sm font-semibold mb-2 block text-foreground">
-            Collection Title <span className="text-destructive">*</span>
+            Feedback Tool Title <span className="text-destructive">*</span>
           </label>
           <Input
             value={title}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => onTitleChange(e.target.value)}
-            placeholder="Enter a title for your collection..."
+            placeholder="Enter a title for your feedback tool..."
             className="text-sm md:text-base"
             data-testid="input-survey-title-step3"
           />
