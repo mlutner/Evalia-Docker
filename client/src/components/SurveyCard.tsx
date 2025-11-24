@@ -246,7 +246,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
           </div>
         )}
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col justify-between px-5 py-3">
+      <CardContent className="flex-1 flex flex-col px-5 py-3">
         {/* Stats Section */}
         <div className="flex gap-8">
           <div>
@@ -269,7 +269,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
 
         
         {survey.tags && survey.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-auto">
+          <div className="flex flex-wrap gap-2 mt-2">
             {survey.tags.map((tag) => (
               <Badge key={tag} variant="secondary" className="text-xs">
                 {tag}
