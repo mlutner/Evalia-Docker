@@ -886,7 +886,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AI Chat endpoint using Mistral
+  // AI Chat endpoint using Mistral directly
   app.post("/api/ai-chat", isAuthenticated, async (req: any, res) => {
     try {
       const { message, history = [], context } = req.body;
@@ -900,16 +900,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         content: m.content,
       }));
 
-      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      const response = await fetch("https://api.mistral.ai/v1/chat/completions", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Authorization": `Bearer ${process.env.MISTRAL_API_KEY}`,
           "Content-Type": "application/json",
-          "HTTP-Referer": process.env.OPENROUTER_REFERRER || "https://evalia.io",
-          "X-Title": "Evalia"
         },
         body: JSON.stringify({
-          model: "mistralai/mistral-medium:latest",
+          model: "mistral-medium-latest",
           messages: [
             { role: "system", content: context || "You are a helpful assistant." },
             ...conversationHistory,
@@ -922,7 +920,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (!response.ok) {
         const error = await response.text();
-        console.error("OpenRouter API error:", error);
+        console.error("Mistral API error:", error);
         return res.status(500).json({ message: "Failed to get AI response" });
       }
 
