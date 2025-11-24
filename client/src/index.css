@@ -3,31 +3,36 @@
 @tailwind utilities;
 
 :root {
-  /* Primary Blue - Main UI Color */
-  --primary-blue: #3A8DFF;
-  --primary-blue-dark: #1B3B66;
-  --primary-blue-soft: #E8F2FF;
-  --primary-blue-vibrant: #1F6FFF;
+  /* UNIFIED COLOR SYSTEM - All colors defined here */
+  
+  /* Primary Color - Main UI (Blue) */
+  --color-primary: #3A8DFF;
+  --color-primary-dark: #1B3B66;
+  --color-primary-soft: #E8F2FF;
+  --color-primary-vibrant: #1F6FFF;
 
-  /* Accent Lime - Warnings & Highlights */
-  --accent-lime: #A4E65A;
-  --accent-lime-dark: #6FA63B;
-  --accent-lime-soft: #F3FBE8;
-  --accent-lime-glow: #C8F995;
+  /* Accent Colors - Warnings & Highlights */
+  --color-accent-lime: #A4E65A;
+  --color-accent-lime-dark: #6FA63B;
+  --color-accent-lime-soft: #F3FBE8;
+  --color-accent-lime-glow: #C8F995;
 
-  /* Neutral Colors - Backgrounds & Text */
-  --neutral-bg: #F7F9FC;
-  --neutral-surface: #FFFFFF;
-  --neutral-border: #E2E7EF;
-  --neutral-text-primary: #1C2635;
-  --neutral-text-secondary: #6A7789;
+  /* Secondary Accents */
+  --color-secondary-indigo: #5A6BFF;
+  --color-secondary-aqua: #3FC7E4;
+  --color-secondary-lavender: #EEF0FF;
 
-  /* Accent Colors - Supported Elements */
-  --accent-indigo: #5A6BFF;
-  --accent-aqua: #3FC7E4;
-  --accent-lavender: #EEF0FF;
+  /* Neutral Colors - Backgrounds, Borders, Text */
+  --color-neutral-bg: #F7F9FC;
+  --color-neutral-surface: #FFFFFF;
+  --color-neutral-border: #E2E7EF;
+  --color-neutral-text-primary: #1C2635;
+  --color-neutral-text-secondary: #6A7789;
 
-  /* Tailwind CSS Variables for Shadcn */
+  /* Status Colors */
+  --color-status-destructive: #FF4D4D;
+
+  /* Tailwind CSS Variables - Map to our unified colors */
   --background: 0 0% 97.3%;
   --foreground: 217 33% 17%;
   --card: 0 0% 100%;
@@ -74,9 +79,8 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-    "Segoe UI", sans-serif;
-  background: linear-gradient(135deg, #F7F9FC 0%, #F7F9FC 100%);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  background: var(--color-neutral-bg);
   min-height: 100vh;
 }
 
@@ -86,7 +90,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 40px 16px;
-  background: linear-gradient(135deg, #F7F9FC 0%, #F7F9FC 100%);
+  background: var(--color-neutral-bg);
 }
 
 .survey-card {
@@ -94,8 +98,8 @@ body {
   width: 100%;
   padding: 48px 40px 32px;
   border-radius: 16px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--color-neutral-surface);
+  border: 1px solid var(--color-neutral-border);
   box-shadow: 0 20px 50px rgba(7, 26, 50, 0.15);
 }
 
@@ -113,7 +117,7 @@ body {
   width: 51px;
   height: 51px;
   border-radius: 50%;
-  background: rgba(43, 180, 160, 0.08);
+  background: rgba(58, 141, 255, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -132,14 +136,14 @@ body {
   font-size: 32px;
   font-weight: 800;
   letter-spacing: -0.01em;
-  color: #071a32;
+  color: var(--color-neutral-text-primary);
   margin: 0;
 }
 
 .survey-progress {
   margin: 0;
   font-size: 13px;
-  color: #6b7280;
+  color: var(--color-neutral-text-secondary);
 }
 
 .survey-body {
@@ -148,7 +152,7 @@ body {
 
 .question-label-type {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--color-neutral-text-secondary);
   margin-bottom: 8px;
 }
 
@@ -156,19 +160,19 @@ body {
   font-size: 18px;
   line-height: 1.4;
   font-weight: 600;
-  color: #071a32;
+  color: var(--color-neutral-text-primary);
   margin: 0 0 12px;
 }
 
 .required {
-  color: #dc2626;
+  color: var(--color-status-destructive);
 }
 
 .question-textarea {
   width: 100%;
   min-height: 140px;
   border-radius: 12px;
-  border: 2px solid #d1d9e6;
+  border: 2px solid var(--color-neutral-border);
   padding: 12px 14px;
   font-size: 15px;
   line-height: 1.5;
@@ -177,8 +181,8 @@ body {
 }
 
 .question-textarea:focus {
-  border-color: #071a32;
-  box-shadow: 0 0 0 1px #071a32;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
 }
 
 .survey-footer {
@@ -191,7 +195,7 @@ body {
 .survey-exit-link {
   background: none;
   border: none;
-  color: #6b7280;
+  color: var(--color-neutral-text-secondary);
   font-size: 12px;
   cursor: pointer;
   padding: 0;
@@ -200,25 +204,16 @@ body {
 }
 
 .survey-exit-link:hover {
-  color: #071a32;
+  color: var(--color-neutral-text-primary);
 }
 
 /* LIGHT MODE */
 :root {
-  --button-outline: rgba(0,0,0, .10);
-  --badge-outline: rgba(0,0,0, .05);
-
-  /* Automatic computation of border around primary / danger buttons */
-  --opaque-button-border-intensity: -8; /* In terms of percentages */
-
-  /* Backgrounds applied on top of other backgrounds when hovered/active */
-  --elevate-1: rgba(0,0,0, .03);
-  --elevate-2: rgba(0,0,0, .08);
-
-  --font-sans: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-serif: 'EB Garamond', serif;
-  --font-mono: 'Fira Code', monospace;
-  --radius: 0.75rem; /* 8px */
+  --button-outline: rgba(0, 0, 0, 0.1);
+  --badge-outline: rgba(0, 0, 0, 0.05);
+  --opaque-button-border-intensity: -8;
+  --elevate-1: rgba(0, 0, 0, 0.03);
+  --elevate-2: rgba(0, 0, 0, 0.08);
   --shadow-2xs: 0px 1px 2px 0px hsl(220 13% 11% / 0.05);
   --shadow-xs: 0px 1px 3px 0px hsl(220 13% 11% / 0.08);
   --shadow-sm: 0px 2px 4px 0px hsl(220 13% 11% / 0.06), 0px 1px 2px -1px hsl(220 13% 11% / 0.04);
@@ -229,48 +224,21 @@ body {
   --shadow-2xl: 0px 30px 50px -15px hsl(220 13% 11% / 0.18);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
-
-  /* Automatically computed borders - intensity can be controlled by the user by the --opaque-button-border-intensity setting */
-
-  /* Fallback for older browsers */
   --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-  --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-
-  /* Fallback for older browsers */
   --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-  --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-
-  /* Fallback for older browsers */
   --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-  --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-
-  /* Fallback for older browsers */
   --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-  --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-
-  /* Fallback for older browsers */
   --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-  --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-
-  /* Fallback for older browsers */
   --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-  --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-
-  /* Fallback for older browsers */
-  --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
   --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 }
 
 .dark {
-  --button-outline: rgba(255,255,255, .10);
-  --badge-outline: rgba(255,255,255, .05);
-
-  --opaque-button-border-intensity: 9;  /* In terms of percentages */
-
-  /* Backgrounds applied on top of other backgrounds when hovered/active */
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .09);
-
+  --button-outline: rgba(255, 255, 255, 0.1);
+  --badge-outline: rgba(255, 255, 255, 0.05);
+  --opaque-button-border-intensity: 9;
+  --elevate-1: rgba(255, 255, 255, 0.04);
+  --elevate-2: rgba(255, 255, 255, 0.09);
   --shadow-2xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.30);
   --shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.35);
   --shadow-sm: 0px 2px 4px 0px hsl(0 0% 0% / 0.30), 0px 1px 2px -1px hsl(0 0% 0% / 0.25);
@@ -279,35 +247,12 @@ body {
   --shadow-lg: 0px 10px 20px -5px hsl(0 0% 0% / 0.45), 0px 6px 10px -5px hsl(0 0% 0% / 0.35);
   --shadow-xl: 0px 20px 30px -10px hsl(0 0% 0% / 0.50), 0px 10px 15px -10px hsl(0 0% 0% / 0.40);
   --shadow-2xl: 0px 30px 50px -15px hsl(0 0% 0% / 0.55);
-
-  /* Automatically computed borders - intensity can be controlled by the user by the --opaque-button-border-intensity setting */
-  
-  /* Fallback for older browsers */
   --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-  --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-
-  /* Fallback for older browsers */
   --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-  --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-
-  /* Fallback for older browsers */
   --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-  --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-
-  /* Fallback for older browsers */
   --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-  --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-
-  /* Fallback for older browsers */
   --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-  --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-
-  /* Fallback for older browsers */
   --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-  --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
-
-  /* Fallback for older browsers */
-  --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
   --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 }
 
@@ -322,24 +267,19 @@ body {
 }
 
 @layer utilities {
-
-  /* Hide ugly search cancel button in Chrome until we can style it properly */
   input[type="search"]::-webkit-search-cancel-button {
     @apply hidden;
   }
 
-  /* Placeholder styling for contentEditable div */
   [contenteditable][data-placeholder]:empty::before {
     content: attr(data-placeholder);
     color: hsl(var(--muted-foreground));
     pointer-events: none;
   }
 
-  /* Elevation utilities for interactions */
   .no-default-hover-elevate {}
   .no-default-active-elevate {}
 
-  /* Toggle elevation system */
   .toggle-elevate::before,
   .toggle-elevate-2::before {
     content: "";
@@ -354,7 +294,6 @@ body {
     background-color: var(--elevate-2);
   }
 
-  /* Hover elevation */
   .hover-elevate {
     position: relative;
   }
@@ -363,7 +302,6 @@ body {
     background-color: var(--elevate-1);
   }
 
-  /* Active elevation */
   .active-elevate-2 {
     position: relative;
   }
@@ -371,25 +309,4 @@ body {
   .active-elevate-2:active {
     background-color: var(--elevate-2);
   }
-}
-
-/* Force Recharts bar color to Primary Blue */
-.recharts-bar-rectangle {
-  fill: #3A8DFF !important;
-}
-
-.recharts-bar {
-  fill: #3A8DFF !important;
-}
-
-rect[fill="#1F8EFA"],
-rect[fill="#0070F3"],
-rect[fill="0D6EFD"],
-rect[fill="#217EFF"] {
-  fill: #3A8DFF !important;
-}
-
-/* Line color */
-.recharts-curve {
-  stroke: #3A8DFF !important;
 }

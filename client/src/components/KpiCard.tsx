@@ -17,16 +17,20 @@ export function KpiCard({
   showBorder = true
 }: KpiCardProps) {
   return (
-    <Card className={`hover-elevate ${showBorder ? "border-l-2 border-l-[#1F8EFA]" : ""} h-full bg-[#FFFFFF] border-[#E7EBF0]`}>
+    <Card className={`hover-elevate ${showBorder ? "border-l-2" : ""} h-full`} style={{
+      borderLeftColor: showBorder ? 'var(--color-primary)' : undefined,
+      backgroundColor: 'var(--color-neutral-surface)',
+      borderColor: 'var(--color-neutral-border)',
+    }}>
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <p className="text-[11px] text-[#6B7785] font-semibold uppercase tracking-wider">{label}</p>
-            <p className="text-[32px] font-bold mt-2 text-[#0D1B2A]">{value}</p>
-            <p className="text-[13px] text-[#6B7785] mt-2">{subtext}</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-neutral-text-secondary)' }}>{label}</p>
+            <p className="text-[32px] font-bold mt-2" style={{ color: 'var(--color-neutral-text-primary)' }}>{value}</p>
+            <p className="text-[13px] mt-2" style={{ color: 'var(--color-neutral-text-secondary)' }}>{subtext}</p>
           </div>
-          <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ml-4" style={{ backgroundColor: "rgba(31, 142, 250, 0.1)" }}>
-            <Icon className="w-6 h-6" strokeWidth={2} style={{ color: "#1F8EFA" }} />
+          <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ml-4" style={{ backgroundColor: 'rgba(58, 141, 255, 0.1)' }}>
+            <Icon className="w-6 h-6" strokeWidth={2} style={{ color: 'var(--color-primary)' }} />
           </div>
         </div>
       </CardContent>

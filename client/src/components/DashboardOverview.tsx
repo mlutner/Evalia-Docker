@@ -35,9 +35,9 @@ export function DashboardOverview() {
 
   if (error) {
     return (
-      <Card className="border-[#E7EBF0] bg-[#FFFFFF]">
+      <Card style={{ backgroundColor: 'var(--color-neutral-surface)', borderColor: 'var(--color-neutral-border)' }}>
         <CardContent className="pt-6">
-          <p className="text-[#1C2B36]">Failed to load dashboard metrics</p>
+          <p style={{ color: 'var(--color-neutral-text-primary)' }}>Failed to load dashboard metrics</p>
         </CardContent>
       </Card>
     );
@@ -48,7 +48,7 @@ export function DashboardOverview() {
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map(i => (
-            <Card key={i} className="bg-[#FFFFFF] border-[#E7EBF0]">
+            <Card key={i} style={{ backgroundColor: 'var(--color-neutral-surface)', borderColor: 'var(--color-neutral-border)' }}>
               <CardContent className="pt-6">
                 <Skeleton className="h-8 w-12 mb-2" />
                 <Skeleton className="h-4 w-20" />
@@ -64,8 +64,8 @@ export function DashboardOverview() {
     <div className="space-y-8 pt-8">
       {/* Header with Time Filter */}
       <div className="flex items-center justify-between pr-6">
-        <h2 className="text-[24px] font-bold text-[#1C2B36]">Dashboard</h2>
-        <button className="px-3 py-1.5 border border-[#E7EBF0] rounded-md text-sm font-medium text-[#6B7785] flex items-center gap-2 transition-colors" style={{ backgroundColor: "rgba(31, 142, 250, 0.08)" }} data-testid="button-date-filter">
+        <h2 className="text-[24px] font-bold" style={{ color: 'var(--color-neutral-text-primary)' }}>Dashboard</h2>
+        <button className="px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-2 transition-colors" style={{ borderColor: 'var(--color-neutral-border)', color: 'var(--color-neutral-text-secondary)', backgroundColor: 'rgba(58, 141, 255, 0.08)', border: '1px solid var(--color-neutral-border)' }} data-testid="button-date-filter">
           <span>Last 30 days</span>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
@@ -108,9 +108,9 @@ export function DashboardOverview() {
           {/* Response Trends & Category Breakdown */}
           <div className="grid grid-cols-12 gap-6">
             <div className="col-span-12 md:col-span-6">
-              <Card className="rounded-md bg-[#FFFFFF] border-[#E7EBF0]">
+              <Card className="rounded-md" style={{ backgroundColor: 'var(--color-neutral-surface)', borderColor: 'var(--color-neutral-border)' }}>
                 <CardHeader className="p-6 pb-3">
-                  <CardTitle className="text-[16px] font-semibold text-[#1C2B36]">How engagement changes over time</CardTitle>
+                  <CardTitle className="text-[16px] font-semibold" style={{ color: 'var(--color-neutral-text-primary)' }}>How engagement changes over time</CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
                   <ResponseTrendsChart data={metrics.trends} />
@@ -119,9 +119,9 @@ export function DashboardOverview() {
             </div>
 
             <div className="col-span-12 md:col-span-6">
-              <Card className="rounded-md bg-[#FFFFFF] border-[#E7EBF0]">
+              <Card className="rounded-md" style={{ backgroundColor: 'var(--color-neutral-surface)', borderColor: 'var(--color-neutral-border)' }}>
                 <CardHeader className="p-6 pb-3">
-                  <CardTitle className="text-[16px] font-semibold text-[#1C2B36]">Skills ratings across dimensions</CardTitle>
+                  <CardTitle className="text-[16px] font-semibold" style={{ color: 'var(--color-neutral-text-primary)' }}>Skills ratings across dimensions</CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
                   <CategoryBreakdownChart data={[
@@ -138,9 +138,9 @@ export function DashboardOverview() {
           {/* Distribution & Response Volume */}
           <div className="grid grid-cols-12 gap-6">
             <div className="col-span-12 md:col-span-6">
-              <Card className="rounded-md bg-[#FFFFFF] border-[#E7EBF0]">
+              <Card className="rounded-md" style={{ backgroundColor: 'var(--color-neutral-surface)', borderColor: 'var(--color-neutral-border)' }}>
                 <CardHeader className="p-6 pb-3">
-                  <CardTitle className="text-[16px] font-semibold text-[#1C2B36]">Distribution of Ratings</CardTitle>
+                  <CardTitle className="text-[16px] font-semibold" style={{ color: 'var(--color-neutral-text-primary)' }}>Distribution of Ratings</CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
                   <DistributionChart data={[
@@ -155,9 +155,9 @@ export function DashboardOverview() {
             </div>
 
             <div className="col-span-12 md:col-span-6">
-              <Card className="rounded-md bg-[#FFFFFF] border-[#E7EBF0]">
+              <Card className="rounded-md" style={{ backgroundColor: 'var(--color-neutral-surface)', borderColor: 'var(--color-neutral-border)' }}>
                 <CardHeader className="p-6 pb-3">
-                  <CardTitle className="text-[16px] font-semibold text-[#1C2B36]">Response Volume</CardTitle>
+                  <CardTitle className="text-[16px] font-semibold" style={{ color: 'var(--color-neutral-text-primary)' }}>Response Volume</CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
                   <ResponseVolumeChart data={[

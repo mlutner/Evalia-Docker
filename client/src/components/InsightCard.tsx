@@ -9,21 +9,21 @@ interface InsightCardProps {
 
 const typeStyles = {
   warning: {
-    bgColor: "rgba(168, 224, 94, 0.08)",
-    iconColor: "#A8E05E",
-    borderColor: "#A8E05E",
-    iconBgColor: "rgba(168, 224, 94, 0.1)",
+    bgColor: "rgba(164, 230, 90, 0.08)",
+    iconColor: "var(--color-accent-lime)",
+    borderColor: "var(--color-accent-lime)",
+    iconBgColor: "rgba(164, 230, 90, 0.1)",
   },
   info: {
-    bgColor: "rgba(31, 142, 250, 0.08)",
-    iconColor: "#1F8EFA",
-    borderColor: "#1F8EFA",
-    iconBgColor: "rgba(31, 142, 250, 0.1)",
+    bgColor: "rgba(58, 141, 255, 0.08)",
+    iconColor: "var(--color-primary)",
+    borderColor: "var(--color-primary)",
+    iconBgColor: "rgba(58, 141, 255, 0.1)",
   },
   neutral: {
-    bgColor: "#F5F7FA",
-    iconColor: "#0D1B2A",
-    borderColor: "#0D1B2A",
+    bgColor: "var(--color-neutral-bg)",
+    iconColor: "var(--color-neutral-text-primary)",
+    borderColor: "var(--color-neutral-text-primary)",
     iconBgColor: "rgba(13, 27, 42, 0.1)",
   },
 };
@@ -48,8 +48,8 @@ export function InsightCard({
         <Icon className="w-6 h-6" strokeWidth={2} style={{ color: styles.iconColor }} />
       </div>
       <div className="min-w-0">
-        <p className="text-sm font-semibold text-[#1C2B36]">{title}</p>
-        <p className="text-xs text-[#6B7785] mt-1">{description}</p>
+        <p className="text-sm font-semibold" style={{ color: 'var(--color-neutral-text-primary)' }}>{title}</p>
+        <p className="text-xs mt-1" style={{ color: 'var(--color-neutral-text-secondary)' }}>{description}</p>
       </div>
     </div>
   );
