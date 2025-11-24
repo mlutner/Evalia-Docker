@@ -25,6 +25,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
   const [estimatedMinutes, setEstimatedMinutes] = useState<number | undefined>(undefined);
   const [privacyStatement, setPrivacyStatement] = useState("");
   const [dataUsageStatement, setDataUsageStatement] = useState("");
+  const [tone, setTone] = useState<"formal" | "casual" | "encouraging" | "technical">("casual");
 
   // Wizard state
   const [currentWizardStep, setCurrentWizardStep] = useState(1);
@@ -49,6 +50,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       estimatedMinutes?: number;
       privacyStatement?: string;
       dataUsageStatement?: string;
+      tone?: string;
     }) => {
       return apiRequest("POST", "/api/surveys", data);
     },
@@ -87,6 +89,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       estimatedMinutes?: number;
       privacyStatement?: string;
       dataUsageStatement?: string;
+      tone?: string;
     }) => {
       return apiRequest("PUT", `/api/surveys/${surveyId}`, data);
     },
@@ -123,6 +126,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       estimatedMinutes?: number;
       privacyStatement?: string;
       dataUsageStatement?: string;
+      tone?: string;
     }) => {
       if (isEditMode) {
         return apiRequest("PUT", `/api/surveys/${surveyId}`, data);
