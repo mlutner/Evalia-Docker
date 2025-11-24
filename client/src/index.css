@@ -10,6 +10,27 @@
   --evalia-bg: #F5F7FA;
   --evalia-border: #E7EBF0;
   --evalia-text: #1C2B36;
+  
+  /* Override all Tailwind/Recharts primary colors to use Evalia Teal */
+  --primary: 213.33 100% 54.9%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 12% 93%;
+  --secondary-foreground: 222 47% 11%;
+  --accent: 100 86% 54%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --muted: 210 12% 93%;
+  --muted-foreground: 217 33% 46%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 213.33 100% 54.9%;
+  --background: 0 0% 97%;
+  --foreground: 222 47% 11%;
 }
 
 .dark {
