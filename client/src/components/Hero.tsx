@@ -56,7 +56,7 @@ export function Hero() {
               </span>
             </h1>
 
-            <p className="text-base sm:text-lg lg:text-xl text-white/90 leading-relaxed max-w-xl" style={{ animationDelay: '0.3s' }}>Give trainers ready-made templates, AI-powered question creation, and instant reporting so you can design better sessions and measure what matters.</p>
+            <p className="text-base sm:text-lg lg:text-xl text-white/90 leading-relaxed max-w-xl" style={{ animationDelay: '0.3s' }}>Get ready-made templates, AI-generated questions, and instant insights so you can design better sessions and measure what actually matters.</p>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-6" style={{ animationDelay: '0.4s' }}>
               <button className="bg-white text-evalia-teal-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-50 transition-all hover:shadow-xl flex items-center justify-center space-x-2 shadow-lg" data-testid="button-get-started-hero">
