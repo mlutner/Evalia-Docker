@@ -24,11 +24,6 @@ export default function Header({ showActions = true }: HeaderProps) {
     <header className="sticky top-0 z-50 w-full backdrop-blur supports-[backdrop-filter]:bg-[var(--color-surface)]/60" style={{ backgroundColor: 'var(--color-surface)', borderBottomColor: 'var(--color-border)', borderBottomWidth: '1px' }}>
       <div className="flex h-14 items-center justify-end pr-6 gap-3">
         {typedUser && (
-          <span className="hidden md:inline text-sm font-medium" style={{ color: 'var(--color-text-secondary)' }} data-testid="text-username">
-            {typedUser.email || `${typedUser.firstName || ''} ${typedUser.lastName || ''}`.trim() || 'User'}
-          </span>
-        )}
-        {typedUser && (
           <>
             <Button
               variant="ghost"
