@@ -3,19 +3,24 @@
 ## Project Overview
 Evalia is an AI-powered survey builder for trainers to create, manage, and analyze surveys with a Typeform-inspired conversational interface. Features AI-assisted generation from documents, one-question-at-a-time UI, comprehensive analytics, and respondent tracking.
 
-## Current Status (Nov 22, 2025)
+## Current Status (Nov 24, 2025)
 - ✅ Core survey builder with AI assistance
 - ✅ Response analytics with visual breakdown
 - ✅ Respondent tracking system
 - ✅ Response detail modal (click responses to view all answers)
 - ✅ Email invitation infrastructure in place
+- ✅ Comprehensive testing suite (Vitest + Playwright)
+- ✅ API documentation (Swagger/OpenAPI)
 - ⏳ Email sending: Configured to use Resend (awaiting API key setup)
 
 ## Recent Accomplishments
-1. **Response Detail Modal** - Users can now click any response to view all answers in a modal
-2. **Respondent Storage Fix** - Implemented full respondent persistence in MemStorage
-3. **Email Service Infrastructure** - Added Resend email integration to invitation flow
-4. **Code Refactoring** - Extracted ResponseDetailModal component, improved code reusability
+1. **Comprehensive Testing Suite** - Implemented Vitest for unit tests and Playwright for E2E tests
+2. **Swagger API Documentation** - Added OpenAPI/Swagger documentation for all API endpoints
+3. **Testing Guide** - Created detailed testing guide with examples and best practices
+4. **Floating AI Chat Widget** - Enhanced with larger icon, green background (#A3D65C), white icon
+5. **Dashboard Button** - Updated "Start Survey" to "New Questionnaire" for clarity
+6. **Response Detail Modal** - Users can click any response to view all answers in a modal
+7. **Email Service Infrastructure** - Added Resend email integration to invitation flow
 
 ## Architecture
 
@@ -57,6 +62,59 @@ Evalia is an AI-powered survey builder for trainers to create, manage, and analy
 - `POST /api/surveys/:id/invite` - Invite respondents
 - `GET /api/surveys/:id/respondents` - Get all respondents
 - `DELETE /api/surveys/:id/respondents/:respondentId` - Remove respondent
+
+## Testing Infrastructure
+
+### Testing Framework
+- **Unit Testing**: Vitest + React Testing Library
+- **E2E Testing**: Playwright
+- **Coverage**: V8 coverage reporting
+
+### Running Tests
+
+```bash
+# Unit tests
+npm run test                 # Run all tests once
+npm run test:watch         # Run in watch mode
+npm run test:ui            # Visual UI dashboard
+npm run test:coverage      # Generate coverage report
+
+# End-to-End tests
+npm run test:e2e           # Run E2E tests
+npm run test:e2e:headed    # See browser while running
+npm run test:e2e:debug     # Debug mode
+npm run test:e2e:report    # View report
+```
+
+### Test Files
+- Unit tests: `client/src/test/components/*.test.tsx`
+- E2E tests: `client/src/test/e2e/*.spec.ts`
+- Setup: `client/src/test/setup.ts`
+
+For detailed testing guidance, see `TESTING_GUIDE.md`
+
+## API Documentation
+
+### Swagger UI
+Access full API documentation and test endpoints:
+```
+http://localhost:5000/api-docs
+```
+
+The API documentation includes:
+- All endpoints (surveys, responses, dashboard, etc.)
+- Request/response schemas
+- Authentication requirements
+- Error responses
+- Example payloads
+
+### Key API Endpoints
+- `GET /api/surveys` - List all surveys
+- `POST /api/surveys` - Create survey
+- `GET /api/surveys/:id` - Get survey details
+- `POST /api/surveys/:id/responses` - Submit response
+- `GET /api/surveys/:id/responses` - Get analytics
+- `GET /api/dashboard/metrics` - Get dashboard metrics
 
 ## Email Integration (NEEDS SETUP)
 

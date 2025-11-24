@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Button } from '@/components/ui/button';
@@ -10,8 +10,7 @@ describe('Button Component', () => {
   });
 
   it('handles click events', async () => {
-    const handleClick = () => {};
-    const spy = vi.fn(handleClick);
+    const spy = vi.fn();
     render(<Button onClick={spy}>Click</Button>);
     
     await userEvent.click(screen.getByRole('button'));
@@ -19,7 +18,7 @@ describe('Button Component', () => {
   });
 
   it('renders with different variants', () => {
-    const { rerender } = render(<Button variant="primary">Primary</Button>);
+    const { rerender } = render(<Button variant="default">Default</Button>);
     expect(screen.getByRole('button')).toBeInTheDocument();
     
     rerender(<Button variant="outline">Outline</Button>);

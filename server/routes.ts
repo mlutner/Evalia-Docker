@@ -13,6 +13,8 @@ import multer from "multer";
 import mammoth from "mammoth";
 import { PDFParse } from "pdf-parse";
 import { emailService } from "./email";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./swagger";
 import "./types";
 
 // Pool of survey illustrations - rotated across surveys
@@ -43,6 +45,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Serve static assets from attached_assets directory
   const assetsPath = path.resolve(import.meta.dirname, "..", "attached_assets");
   app.use("/attached_assets", express.static(assetsPath));
+  
+  // Setup Swagger API documentation
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    swaggerOptions: {
+      persistAuthorization: true,
+      docExpansion: "list",
+      filter: true,
+      showRequestHeaders: true,
+      supportedSubmitMethods: ["get", "post", "put", "delete", "patch"],
+    },
+  }));
   
   // Setup Replit Auth (supports Google + Email/Password)
   await setupAuth(app);
