@@ -40,9 +40,7 @@ export function Hero() {
           {/* Left content */}
           <div className="text-white space-y-6 sm:space-y-8">
             <div className="inline-block animate-fade-in" style={{ animationDelay: '0.1s' }}>
-              <span className="text-xs sm:text-sm font-medium tracking-wide uppercase bg-white/20 px-3 sm:px-4 py-2 rounded-full backdrop-blur-sm hover:bg-white/30 transition-colors">
-                Training Feedback Platform
-              </span>
+              <span className="text-xs sm:text-sm font-medium tracking-wide uppercase bg-white/20 px-3 sm:px-4 py-2 rounded-full backdrop-blur-sm hover:bg-white/30 transition-colors">AI Training Feedback Platform</span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-bold leading-tight" style={{ animationDelay: '0.2s' }}>
