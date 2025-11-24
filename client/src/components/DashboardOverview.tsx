@@ -80,6 +80,7 @@ export function DashboardOverview() {
             value={metrics.totalSurveys}
             subtext={`${metrics.activeSurveys} active`}
             icon={BarChart3}
+            borderColor="#2F8FA5"
           />
         </div>
         <div className="col-span-12 md:col-span-4">
@@ -88,6 +89,7 @@ export function DashboardOverview() {
             value={metrics.avgScore}
             subtext="out of 100"
             icon={Award}
+            borderColor="#37C0A3"
           />
         </div>
         <div className="col-span-12 md:col-span-4">
@@ -96,6 +98,7 @@ export function DashboardOverview() {
             value={`${metrics.responseRate}%`}
             subtext="completion"
             icon={TrendingUp}
+            borderColor="#A3D65C"
           />
         </div>
       </div>

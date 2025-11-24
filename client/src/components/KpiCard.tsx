@@ -7,6 +7,7 @@ interface KpiCardProps {
   subtext: string;
   icon: LucideIcon;
   showBorder?: boolean;
+  borderColor?: string;
 }
 
 export function KpiCard({
@@ -14,11 +15,12 @@ export function KpiCard({
   value,
   subtext,
   icon: Icon,
-  showBorder = true
+  showBorder = true,
+  borderColor = '#2F8FA5'
 }: KpiCardProps) {
   return (
     <Card className={`hover-elevate ${showBorder ? "border-l-4" : ""} h-full`} style={{
-      borderLeftColor: showBorder ? '#2F8FA5' : undefined,
+      borderLeftColor: showBorder ? borderColor : undefined,
       backgroundColor: '#FFFFFF',
       borderColor: '#E2E7EF',
       boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',

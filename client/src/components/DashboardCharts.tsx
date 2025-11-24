@@ -14,7 +14,7 @@ interface TrendData {
 
 export function ResponseTrendsChart({ data }: { data: TrendData[] }) {
   const primaryColor = '#37C0A3';
-  const accentColor = '#1F6F78';
+  const accentColor = '#37C0A3';
   const axisColor = '#6A7789';
   const surfaceColor = '#FFFFFF';
   const borderColor = '#E2E7EF';
@@ -43,7 +43,7 @@ interface SurveyData {
 }
 
 export function CategoryBreakdownChart({ data }: { data: SurveyData[] }) {
-  const primaryColor = '#37C0A3';
+  const primaryColor = '#1F6F78';
   const axisColor = '#6A7789';
   const surfaceColor = '#FFFFFF';
   const borderColor = '#E2E7EF';
@@ -72,7 +72,7 @@ interface DistributionData {
 }
 
 export function DistributionChart({ data }: { data: DistributionData[] }) {
-  const primaryColor = '#37C0A3';
+  const primaryColor = '#A3D65C';
   const axisColor = '#6A7789';
   const surfaceColor = '#FFFFFF';
   const borderColor = '#E2E7EF';
@@ -101,7 +101,7 @@ interface ResponseVolumeData {
 }
 
 export function ResponseVolumeChart({ data }: { data: ResponseVolumeData[] }) {
-  const primaryColor = '#37C0A3';
+  const primaryColor = '#2F8FA5';
   const axisColor = '#6A7789';
   const surfaceColor = '#FFFFFF';
   const borderColor = '#E2E7EF';

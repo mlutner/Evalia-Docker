@@ -10,8 +10,8 @@ interface InsightCardProps {
 const typeStyles = {
   warning: {
     bgColor: "#F7F9FC",
-    iconColor: "#2F8FA5",
-    borderColor: "#2F8FA5",
+    iconColor: "#A3D65C",
+    borderColor: "#A3D65C",
     iconBgColor: "transparent",
   },
   info: {
@@ -22,8 +22,8 @@ const typeStyles = {
   },
   neutral: {
     bgColor: "#F7F9FC",
-    iconColor: "#2F8FA5",
-    borderColor: "#2F8FA5",
+    iconColor: "#37C0A3",
+    borderColor: "#37C0A3",
     iconBgColor: "transparent",
   },
 };
