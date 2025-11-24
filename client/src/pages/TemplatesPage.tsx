@@ -31,17 +31,14 @@ export default function TemplatesPage() {
     <main style={{ backgroundColor: theme.backgrounds.page }}>
       <div className="container mx-auto px-4 py-6 md:py-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-semibold mb-2">Survey Templates</h1>
-            <p style={{ color: theme.text.secondary }}>Choose from pre-built templates or create a new one</p>
-          </div>
+          <h1 className="heading-2">Survey Templates</h1>
           <Button 
             size="lg" 
             onClick={() => setLocation("/builder")} 
             data-testid="button-new-template"
             style={{ 
-              backgroundColor: '#C3F33C',
-              color: '#0A1A2F',
+              backgroundColor: '#2F8FA5',
+              color: '#FFFFFF',
               fontWeight: '600'
             }}
           >
