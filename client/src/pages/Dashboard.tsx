@@ -176,8 +176,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-background dark:bg-slate-950 flex flex-col">
-      <Header />
+    <div className="min-h-screen bg-background dark:bg-slate-950 flex">
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!deleteConfirm} onOpenChange={(open) => !open && setDeleteConfirm(null)}>
         <AlertDialogContent>
@@ -200,30 +199,24 @@ export default function Dashboard() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <div className="flex flex-1">
-        {/* Sidebar */}
-        <aside className={`bg-evalia-navy border-r border-slate-700 flex flex-col transition-all duration-300 ${
-          sidebarExpanded ? "w-56" : "w-20"
-        }`}>
-          <div className="p-4 border-b border-slate-700 flex items-center justify-between bg-[#032643]">
-            {sidebarExpanded && (
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded bg-evalia-lime/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-evalia-lime font-bold text-sm">E</span>
-                </div>
-                <span className="text-white font-semibold text-sm">Evalia</span>
-              </div>
-            )}
-            <button
-              onClick={() => setSidebarExpanded(!sidebarExpanded)}
-              className="text-evalia-lime hover:bg-white/10 p-1 rounded transition-colors"
-              data-testid="button-toggle-sidebar"
-            >
-              {sidebarExpanded ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
+      {/* Sidebar */}
+      <aside className={`bg-evalia-navy border-r border-slate-700 flex flex-col transition-all duration-300 ${
+        sidebarExpanded ? "w-56" : "w-20"
+      }`}>
+        <div className="p-4 border-b border-slate-700 flex items-center justify-between">
+          {sidebarExpanded && (
+            <img src={evaliaLogo} alt="Evalia" className="h-8 object-contain" />
+          )}
+          <button
+            onClick={() => setSidebarExpanded(!sidebarExpanded)}
+            className="text-evalia-lime hover:bg-white/10 p-1 rounded transition-colors"
+            data-testid="button-toggle-sidebar"
+          >
+            {sidebarExpanded ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
 
-          <nav className="flex-1 p-3 space-y-2 bg-[#022643] text-[#fafafa]">
+        <nav className="flex-1 p-3 space-y-2">
             {sidebarItems.map((item) => {
               const isActive = activeView === item.id || (item.id === "surveys" && activeView === "surveys");
               const Icon = item.icon;
@@ -232,9 +225,7 @@ export default function Dashboard() {
                 return (
                   <div
                     key={item.id}
-                    className={`flex items-center gap-3 px-3 py-2 text-slate-600 text-sm cursor-not-allowed rounded opacity-40 transition-all ${
-                      sidebarExpanded ? "" : "justify-center"
-                    }`}
+                    className="flex items-center gap-3 px-3 py-2 text-sm cursor-not-allowed rounded opacity-40 transition-all text-[#fafafa]"
                     title="Coming soon"
                   >
                     <Icon className="w-5 h-5 flex-shrink-0" />
@@ -260,10 +251,12 @@ export default function Dashboard() {
                 </button>
               );
             })}
-          </nav>
-        </aside>
+        </nav>
+      </aside>
 
-        {/* Main Content */}
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        <Header />
         <main className="flex-1 overflow-auto">
           <div className="container mx-auto px-4 py-6 md:py-8">
             {activeView === "overview" ? (
