@@ -35,7 +35,6 @@ interface QuestionsStepProps {
   onAddQuestion: () => void;
   onReorderQuestions: (questions: Question[]) => void;
   onTitleChange: (title: string) => void;
-  onPreview?: () => void;
   onNext?: () => void;
 }
 
@@ -50,7 +49,6 @@ export default function QuestionsStep({
   onAddQuestion,
   onReorderQuestions,
   onTitleChange,
-  onPreview,
   onNext,
 }: QuestionsStepProps) {
   const [chatOpen, setChatOpen] = useState(true);
@@ -108,17 +106,6 @@ export default function QuestionsStep({
             >
               Next
               <ChevronRight className="w-4 h-4 ml-2" />
-            </Button>
-          )}
-          {onPreview && questions.length > 0 && (
-            <Button
-              variant="outline"
-              onClick={onPreview}
-              data-testid="button-preview-survey"
-            >
-              <Eye className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Preview Survey</span>
-              <span className="sm:hidden">Preview</span>
             </Button>
           )}
           {/* Mobile: AI Chat Sheet */}
