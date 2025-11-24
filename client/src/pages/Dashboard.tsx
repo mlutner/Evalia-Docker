@@ -203,21 +203,21 @@ export default function Dashboard() {
 
       <div className="flex flex-1">
         {/* Sidebar */}
-        <aside className={`bg-gradient-to-b from-evalia-navy to-slate-900 border-r border-slate-700 flex flex-col transition-all duration-300 ${
+        <aside className={`bg-evalia-navy border-r border-slate-700 flex flex-col transition-all duration-300 ${
           sidebarExpanded ? "w-56" : "w-20"
         }`}>
           <div className="p-4 border-b border-slate-700 flex items-center justify-between">
             {sidebarExpanded && (
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded bg-white/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-bold text-sm">E</span>
+                <div className="w-8 h-8 rounded bg-evalia-lime/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-evalia-lime font-bold text-sm">E</span>
                 </div>
                 <span className="text-white font-semibold text-sm">Evalia</span>
               </div>
             )}
             <button
               onClick={() => setSidebarExpanded(!sidebarExpanded)}
-              className="text-white hover:bg-white/10 p-1 rounded transition-colors"
+              className="text-evalia-lime hover:bg-white/10 p-1 rounded transition-colors"
               data-testid="button-toggle-sidebar"
             >
               {sidebarExpanded ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -233,7 +233,7 @@ export default function Dashboard() {
                 return (
                   <div
                     key={item.id}
-                    className={`flex items-center gap-3 px-3 py-2 text-slate-500 text-sm cursor-not-allowed rounded opacity-50 transition-all ${
+                    className={`flex items-center gap-3 px-3 py-2 text-slate-600 text-sm cursor-not-allowed rounded opacity-40 transition-all ${
                       sidebarExpanded ? "" : "justify-center"
                     }`}
                     title="Coming soon"
@@ -250,13 +250,13 @@ export default function Dashboard() {
                   onClick={() => setActiveView(item.id as any)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all ${
                     isActive
-                      ? "bg-white/20 text-white"
-                      : "text-slate-300 hover:bg-white/10 hover:text-white"
+                      ? "bg-evalia-lime/20 text-evalia-lime"
+                      : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
                   } ${sidebarExpanded ? "" : "justify-center"}`}
                   data-testid={`nav-${item.id}`}
                   title={!sidebarExpanded ? item.label : ""}
                 >
-                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? "text-evalia-lime" : ""}`} />
                   {sidebarExpanded && <span>{item.label}</span>}
                 </button>
               );
