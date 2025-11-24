@@ -3,7 +3,7 @@ import heroIllustration from '@assets/hero-feedback-illustration.png';
 
 export function Hero() {
   return (
-    <section className="relative bg-gradient-to-br from-evalia-teal-600 via-evalia-teal-500 to-evalia-teal-700 overflow-hidden pt-24">
+    <section className="relative bg-gradient-to-br from-evalia-teal-600 via-evalia-teal-500 to-evalia-teal-700 overflow-hidden pt-4">
       {/* Decorative blobs - background layer */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Blob 1 - Top right */}
