@@ -38,7 +38,7 @@ export function AppSidebar() {
         </button>
       </div>
       {/* New Survey Button */}
-      <div className="px-3 py-3 bg-[#0e1729]">
+      <div className="px-3 py-8 bg-[#0e1729]">
         <Button
           onClick={() => setLocation("/builder")}
           className="w-full bg-evalia-lime hover:bg-evalia-lime/90 text-slate-900 border-0 font-semibold"
@@ -61,13 +61,13 @@ export function AppSidebar() {
               onClick={() => setLocation(item.href)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all ${
                 active
-                  ? "bg-slate-300 dark:bg-slate-700 text-slate-900 dark:text-white"
-                  : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
+                  ? "text-white"
+                  : "text-slate-500 hover:text-slate-400"
               } ${sidebarExpanded ? "" : "justify-center"}`}
               data-testid={`nav-${item.id}`}
               title={!sidebarExpanded ? item.label : ""}
             >
-              <Icon className={`w-5 h-5 flex-shrink-0 ${active ? "text-evalia-lime" : ""}`} />
+              <Icon className="w-5 h-5 flex-shrink-0" />
               {sidebarExpanded && <span>{item.label}</span>}
             </button>
           );
