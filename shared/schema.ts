@@ -326,3 +326,23 @@ export function calculateSurveyScores(
 
   return results;
 }
+
+// Templates table
+export const templates = pgTable("templates", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  description: text("description"),
+  category: varchar("category").notNull(), // e.g., "Training Feedback", "Assessment", "Satisfaction"
+  questions: jsonb("questions").notNull().$type<Question[]>(),
+  scoreConfig: jsonb("score_config").$type<SurveyScoreConfig>(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export type Template = typeof templates.$inferSelect;
+
+export const insertTemplateSchema = createInsertSchema(templates).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertTemplate = z.infer<typeof insertTemplateSchema>;

@@ -1,4 +1,4 @@
-import { type User, type UpsertUser, type Survey, type InsertSurvey, users, surveys, surveyResponses, surveyRespondents, type SurveyResponse, type SurveyRespondent, type InsertSurveyRespondent } from "@shared/schema";
+import { type User, type UpsertUser, type Survey, type InsertSurvey, users, surveys, surveyResponses, surveyRespondents, type SurveyResponse, type SurveyRespondent, type InsertSurveyRespondent, templates, type Template, type InsertTemplate } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
 import { eq, sql } from "drizzle-orm";
@@ -34,6 +34,10 @@ export interface IStorage {
   deleteResponsesBulk(ids: string[]): Promise<number>;
   searchResponses(surveyId: string, searchTerm: string): Promise<SurveyResponse[]>;
   detectDuplicates(surveyId: string): Promise<SurveyResponse[][]>;
+
+  // Template operations
+  getAllTemplates(): Promise<Template[]>;
+  getTemplate(id: string): Promise<Template | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -41,12 +45,166 @@ export class MemStorage implements IStorage {
   private surveys: Map<string, Survey>;
   private responses: Map<string, SurveyResponse>;
   private respondents: Map<string, SurveyRespondent>;
+  private templates: Map<string, Template>;
 
   constructor() {
     this.users = new Map();
     this.surveys = new Map();
     this.responses = new Map();
     this.respondents = new Map();
+    this.templates = new Map();
+    this.initializeTemplates();
+  }
+
+  private initializeTemplates() {
+    const defaultTemplates: Template[] = [
+      {
+        id: "1",
+        title: "Training Session Feedback",
+        description: "Collect feedback on training effectiveness, content, and delivery",
+        category: "Training Feedback",
+        questions: [
+          { id: "q1", type: "rating", question: "How relevant was the training content to your role?", ratingScale: 5, required: true },
+          { id: "q2", type: "rating", question: "How effective was the trainer?", ratingScale: 5, required: true },
+          { id: "q3", type: "textarea", question: "What were the most valuable takeaways?", required: false },
+          { id: "q4", type: "textarea", question: "What could be improved?", required: false }
+        ],
+        scoreConfig: undefined,
+        createdAt: new Date(),
+      },
+      {
+        id: "2",
+        title: "Employee Satisfaction Survey",
+        description: "Measure employee engagement and workplace satisfaction",
+        category: "Satisfaction",
+        questions: [
+          { id: "q1", type: "rating", question: "How satisfied are you with your current role?", ratingScale: 5, required: true },
+          { id: "q2", type: "rating", question: "How well do you feel supported by your manager?", ratingScale: 5, required: true },
+          { id: "q3", type: "rating", question: "How would you rate your work-life balance?", ratingScale: 5, required: true },
+          { id: "q4", type: "multiple_choice", question: "What would most improve your work experience?", options: ["More flexibility", "Better tools", "Career development", "Other"], required: true }
+        ],
+        scoreConfig: undefined,
+        createdAt: new Date(),
+      },
+      {
+        id: "3",
+        title: "Product Feedback Form",
+        description: "Gather user feedback on product features and usability",
+        category: "Product Feedback",
+        questions: [
+          { id: "q1", type: "rating", question: "How user-friendly is the product?", ratingScale: 5, required: true },
+          { id: "q2", type: "rating", question: "How well does the product meet your needs?", ratingScale: 5, required: true },
+          { id: "q3", type: "checkbox", question: "Which features do you use most?", options: ["Feature A", "Feature B", "Feature C", "Feature D"], required: false },
+          { id: "q4", type: "textarea", question: "What features would you like to see added?", required: false }
+        ],
+        scoreConfig: undefined,
+        createdAt: new Date(),
+      },
+      {
+        id: "4",
+        title: "Course Completion Assessment",
+        description: "Evaluate learner comprehension and course effectiveness",
+        category: "Assessment",
+        questions: [
+          { id: "q1", type: "multiple_choice", question: "What was the main topic covered?", options: ["Option 1", "Option 2", "Option 3", "Option 4"], required: true },
+          { id: "q2", type: "rating", question: "Rate your understanding of the material", ratingScale: 5, required: true },
+          { id: "q3", type: "textarea", question: "How will you apply what you learned?", required: false }
+        ],
+        scoreConfig: undefined,
+        createdAt: new Date(),
+      },
+      {
+        id: "5",
+        title: "Event Feedback Survey",
+        description: "Collect feedback from event attendees",
+        category: "Event Feedback",
+        questions: [
+          { id: "q1", type: "rating", question: "How would you rate the overall event?", ratingScale: 5, required: true },
+          { id: "q2", type: "rating", question: "How relevant was the content?", ratingScale: 5, required: true },
+          { id: "q3", type: "rating", question: "How well was the event organized?", ratingScale: 5, required: true },
+          { id: "q4", type: "textarea", question: "What topics would you like to see at future events?", required: false }
+        ],
+        scoreConfig: undefined,
+        createdAt: new Date(),
+      },
+      {
+        id: "6",
+        title: "Customer Service Quality",
+        description: "Measure customer satisfaction with support services",
+        category: "Customer Service",
+        questions: [
+          { id: "q1", type: "rating", question: "How quickly was your issue resolved?", ratingScale: 5, required: true },
+          { id: "q2", type: "rating", question: "Was the support representative helpful?", ratingScale: 5, required: true },
+          { id: "q3", type: "nps", question: "How likely are you to recommend us to others?", required: true },
+          { id: "q4", type: "textarea", question: "Additional comments", required: false }
+        ],
+        scoreConfig: undefined,
+        createdAt: new Date(),
+      },
+      {
+        id: "7",
+        title: "Website Usability Test",
+        description: "Evaluate website user experience and navigation",
+        category: "Usability",
+        questions: [
+          { id: "q1", type: "rating", question: "How easy was it to find what you needed?", ratingScale: 5, required: true },
+          { id: "q2", type: "rating", question: "How intuitive was the navigation?", ratingScale: 5, required: true },
+          { id: "q3", type: "textarea", question: "What was confusing or difficult?", required: false }
+        ],
+        scoreConfig: undefined,
+        createdAt: new Date(),
+      },
+      {
+        id: "8",
+        title: "Program Evaluation",
+        description: "Comprehensive program assessment and impact measurement",
+        category: "Program Evaluation",
+        questions: [
+          { id: "q1", type: "rating", question: "Did the program meet your expectations?", ratingScale: 5, required: true },
+          { id: "q2", type: "rating", question: "How applicable is the knowledge to your work?", ratingScale: 5, required: true },
+          { id: "q3", type: "rating", question: "Would you recommend this program to others?", ratingScale: 5, required: true },
+          { id: "q4", type: "textarea", question: "How will you apply what you learned?", required: false }
+        ],
+        scoreConfig: undefined,
+        createdAt: new Date(),
+      },
+      {
+        id: "9",
+        title: "Onboarding Experience",
+        description: "Assess new employee onboarding effectiveness",
+        category: "Onboarding",
+        questions: [
+          { id: "q1", type: "rating", question: "How well were you prepared for your role?", ratingScale: 5, required: true },
+          { id: "q2", type: "rating", question: "How effective was the onboarding process?", ratingScale: 5, required: true },
+          { id: "q3", type: "textarea", question: "What could improve the onboarding experience?", required: false }
+        ],
+        scoreConfig: undefined,
+        createdAt: new Date(),
+      },
+      {
+        id: "10",
+        title: "Skills Assessment",
+        description: "Evaluate proficiency in key competencies",
+        category: "Assessment",
+        questions: [
+          { id: "q1", type: "rating", question: "Communication skills", ratingScale: 5, required: true },
+          { id: "q2", type: "rating", question: "Problem-solving ability", ratingScale: 5, required: true },
+          { id: "q3", type: "rating", question: "Technical knowledge", ratingScale: 5, required: true },
+          { id: "q4", type: "rating", question: "Teamwork and collaboration", ratingScale: 5, required: true }
+        ],
+        scoreConfig: undefined,
+        createdAt: new Date(),
+      },
+    ];
+    defaultTemplates.forEach(t => this.templates.set(t.id, t));
+  }
+
+  async getAllTemplates(): Promise<Template[]> {
+    return Array.from(this.templates.values());
+  }
+
+  async getTemplate(id: string): Promise<Template | undefined> {
+    return this.templates.get(id);
   }
 
   async getUser(id: string): Promise<User | undefined> {
