@@ -35,9 +35,9 @@ export function DashboardOverview() {
 
   if (error) {
     return (
-      <Card className="border-[#E7EBF0] bg-[#FFFFFF] dark:bg-[#1F3B58]/30 dark:border-[#1F3B58]">
+      <Card className="border-[#E7EBF0] bg-[#FFFFFF]">
         <CardContent className="pt-6">
-          <p className="text-[#1C2B36] dark:text-[#A8E05E]">Failed to load dashboard metrics</p>
+          <p className="text-[#1C2B36]">Failed to load dashboard metrics</p>
         </CardContent>
       </Card>
     );
@@ -48,7 +48,7 @@ export function DashboardOverview() {
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map(i => (
-            <Card key={i}>
+            <Card key={i} className="bg-[#FFFFFF] border-[#E7EBF0]">
               <CardContent className="pt-6">
                 <Skeleton className="h-8 w-12 mb-2" />
                 <Skeleton className="h-4 w-20" />
@@ -65,7 +65,7 @@ export function DashboardOverview() {
       {/* Header with Time Filter */}
       <div className="flex items-center justify-between pr-6">
         <h2 className="text-[24px] font-bold text-[#1C2B36]">Dashboard</h2>
-        <button className="px-3 py-1.5 border border-[#E7EBF0] dark:border-[#1F3B58] rounded-md text-sm font-medium text-[#6B7785] flex items-center gap-2 hover:bg-[#1F8EFA]/8 dark:hover:bg-[#1F8EFA]/8 transition-colors" data-testid="button-date-filter">
+        <button className="px-3 py-1.5 border border-[#E7EBF0] rounded-md text-sm font-medium text-[#6B7785] flex items-center gap-2 transition-colors" style={{ backgroundColor: "rgba(31, 142, 250, 0.08)" }} data-testid="button-date-filter">
           <span>Last 30 days</span>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
@@ -108,7 +108,7 @@ export function DashboardOverview() {
           {/* Response Trends & Category Breakdown */}
           <div className="grid grid-cols-12 gap-6">
             <div className="col-span-12 md:col-span-6">
-              <Card className="rounded-md">
+              <Card className="rounded-md bg-[#FFFFFF] border-[#E7EBF0]">
                 <CardHeader className="p-6 pb-3">
                   <CardTitle className="text-[16px] font-semibold text-[#1C2B36]">How engagement changes over time</CardTitle>
                 </CardHeader>
@@ -119,7 +119,7 @@ export function DashboardOverview() {
             </div>
 
             <div className="col-span-12 md:col-span-6">
-              <Card className="rounded-md">
+              <Card className="rounded-md bg-[#FFFFFF] border-[#E7EBF0]">
                 <CardHeader className="p-6 pb-3">
                   <CardTitle className="text-[16px] font-semibold text-[#1C2B36]">Skills ratings across dimensions</CardTitle>
                 </CardHeader>
@@ -138,7 +138,7 @@ export function DashboardOverview() {
           {/* Distribution & Response Volume */}
           <div className="grid grid-cols-12 gap-6">
             <div className="col-span-12 md:col-span-6">
-              <Card className="rounded-md">
+              <Card className="rounded-md bg-[#FFFFFF] border-[#E7EBF0]">
                 <CardHeader className="p-6 pb-3">
                   <CardTitle className="text-[16px] font-semibold text-[#1C2B36]">Distribution of Ratings</CardTitle>
                 </CardHeader>
@@ -155,7 +155,7 @@ export function DashboardOverview() {
             </div>
 
             <div className="col-span-12 md:col-span-6">
-              <Card className="rounded-md">
+              <Card className="rounded-md bg-[#FFFFFF] border-[#E7EBF0]">
                 <CardHeader className="p-6 pb-3">
                   <CardTitle className="text-[16px] font-semibold text-[#1C2B36]">Response Volume</CardTitle>
                 </CardHeader>
@@ -174,7 +174,7 @@ export function DashboardOverview() {
 
         {/* AI Insights Column: 4 columns */}
         <div className="col-span-12 lg:col-span-4">
-          <Card className="rounded-md h-full">
+          <Card className="rounded-md h-full bg-[#FFFFFF] border-[#E7EBF0]">
             <CardHeader className="p-6 pb-4">
               <CardTitle className="text-[16px] font-semibold text-[#1C2B36]">AI Insights</CardTitle>
             </CardHeader>
@@ -209,7 +209,7 @@ export function DashboardOverview() {
       </div>
 
       {/* Recent Surveys Table - Full Width */}
-      <Card className="rounded-md">
+      <Card className="rounded-md bg-[#FFFFFF] border-[#E7EBF0]">
         <CardHeader className="p-6 pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-[16px] font-semibold text-[#1C2B36]">Recent Surveys</CardTitle>
@@ -222,7 +222,7 @@ export function DashboardOverview() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-[#E7EBF0] dark:border-[#1F3B58]">
+                <tr className="border-b border-[#E7EBF0]">
                   <th className="text-left py-3 px-4 font-medium text-[#6B7785]">Survey Name</th>
                   <th className="text-left py-3 px-4 font-medium text-[#6B7785]">Status</th>
                   <th className="text-left py-3 px-4 font-medium text-[#6B7785]">Responses</th>
@@ -234,7 +234,10 @@ export function DashboardOverview() {
                 {metrics.recentSurveys.map(survey => (
                   <tr 
                     key={survey.id} 
-                    className="border-b border-[#E7EBF0] dark:border-[#1F3B58] hover:bg-[#F5F7FA] dark:hover:bg-[#0D1B2A]/50 transition-colors cursor-pointer"
+                    className="border-b border-[#E7EBF0] transition-colors cursor-pointer"
+                    style={{ backgroundColor: "transparent" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(31, 142, 250, 0.04)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
                     onClick={() => setLocation(`/analytics/${survey.id}`)}
                   >
                     <td className="py-3 px-4 font-medium text-[#1C2B36]">{survey.title}</td>

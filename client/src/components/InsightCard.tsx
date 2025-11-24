@@ -12,16 +12,19 @@ const typeStyles = {
     bgColor: "rgba(168, 224, 94, 0.08)",
     iconColor: "#A8E05E",
     borderColor: "#A8E05E",
+    iconBgColor: "rgba(168, 224, 94, 0.1)",
   },
   info: {
     bgColor: "rgba(31, 142, 250, 0.08)",
     iconColor: "#1F8EFA",
     borderColor: "#1F8EFA",
+    iconBgColor: "rgba(31, 142, 250, 0.1)",
   },
   neutral: {
     bgColor: "#F5F7FA",
     iconColor: "#0D1B2A",
     borderColor: "#0D1B2A",
+    iconBgColor: "rgba(13, 27, 42, 0.1)",
   },
 };
 
@@ -41,7 +44,7 @@ export function InsightCard({
         borderLeftColor: styles.borderColor,
       }}
     >
-      <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${styles.iconColor}15` }}>
+      <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: styles.iconBgColor }}>
         <Icon className="w-6 h-6" strokeWidth={2} style={{ color: styles.iconColor }} />
       </div>
       <div className="min-w-0">
