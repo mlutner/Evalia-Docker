@@ -44,7 +44,7 @@ export default function AIInsightsCard({ insights, isLoading, error }: AIInsight
       <Card className="border-[#E2E7EF] mb-8" style={{ borderRadius: '12px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
         <CardHeader className="pb-3 px-5 pt-4">
           <div className="flex items-center gap-3">
-            <div className="w-5 h-5 rounded-full border-2" style={{ borderColor: '#E2E7EF', borderTopColor: '#2F8FA5' }} className="animate-spin" />
+            <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: '#E2E7EF', borderTopColor: '#2F8FA5' }} />
             <CardTitle className="text-sm font-semibold">Analyzing Responses</CardTitle>
           </div>
           <p className="text-xs" style={{ color: '#6A7789', marginTop: '4px' }}>Extracting themes and patterns...</p>
@@ -73,7 +73,7 @@ export default function AIInsightsCard({ insights, isLoading, error }: AIInsight
             </div>
             <div className="flex-1 min-w-0">
               <CardTitle className="text-base font-semibold">AI Analysis</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{insights.summary}</p>
+              <p className="text-sm mt-1 leading-relaxed" style={{ color: '#6A7789' }}>{insights.summary}</p>
             </div>
           </div>
           <Button
@@ -102,7 +102,6 @@ export default function AIInsightsCard({ insights, isLoading, error }: AIInsight
             {insights.sentiment.neutral > 0 && (
               <div
                 style={{ width: `${(insights.sentiment.neutral / sentimentTotal) * 100}%`, backgroundColor: '#A3D65C' }}
-                style={{ width: `${(insights.sentiment.neutral / sentimentTotal) * 100}%` }}
                 title={`${insights.sentiment.neutral}% Neutral`}
               />
             )}
@@ -116,23 +115,23 @@ export default function AIInsightsCard({ insights, isLoading, error }: AIInsight
           <div className="flex gap-4 mt-2 text-xs">
             {insights.sentiment.positive > 0 && (
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 rounded-full bg-green-500" />
-                <span className="font-medium text-foreground">{insights.sentiment.positive}%</span>
-                <span className="text-muted-foreground">Positive</span>
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#37C0A3' }} />
+                <span className="font-medium" style={{ color: '#1C2635' }}>{insights.sentiment.positive}%</span>
+                <span style={{ color: '#6A7789' }}>Positive</span>
               </div>
             )}
             {insights.sentiment.neutral > 0 && (
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500" />
-                <span className="font-medium text-foreground">{insights.sentiment.neutral}%</span>
-                <span className="text-muted-foreground">Neutral</span>
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#A3D65C' }} />
+                <span className="font-medium" style={{ color: '#1C2635' }}>{insights.sentiment.neutral}%</span>
+                <span style={{ color: '#6A7789' }}>Neutral</span>
               </div>
             )}
             {insights.sentiment.negative > 0 && (
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 rounded-full bg-red-500" />
-                <span className="font-medium text-foreground">{insights.sentiment.negative}%</span>
-                <span className="text-muted-foreground">Negative</span>
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#2F8FA5' }} />
+                <span className="font-medium" style={{ color: '#1C2635' }}>{insights.sentiment.negative}%</span>
+                <span style={{ color: '#6A7789' }}>Negative</span>
               </div>
             )}
           </div>
@@ -141,16 +140,16 @@ export default function AIInsightsCard({ insights, isLoading, error }: AIInsight
         {/* Top Themes */}
         {insights.themes.length > 0 && (
           <div>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Themes ({insights.themes.length})</p>
+            <p className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: '#6A7789' }}>Themes ({insights.themes.length})</p>
             <div className="space-y-2">
               {insights.themes.slice(0, expanded ? undefined : 3).map((theme, idx) => (
                 <div key={idx} className="group">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-foreground">{theme.theme}</span>
+                    <span className="text-sm font-medium" style={{ color: '#1C2635' }}>{theme.theme}</span>
                     <Badge variant="secondary" className="text-xs">{theme.percentage}%</Badge>
                   </div>
                   {theme.exampleQuotes.length > 0 && (
-                    <p className="text-xs text-muted-foreground italic leading-relaxed p-2 bg-slate-50 dark:bg-slate-950 rounded border border-slate-200 dark:border-slate-700">
+                    <p className="text-xs italic leading-relaxed p-2 rounded" style={{ color: '#6A7789', backgroundColor: '#F7F9FC', border: '1px solid #E2E7EF' }}>
                       "{theme.exampleQuotes[0]}"
                     </p>
                   )}
@@ -162,15 +161,15 @@ export default function AIInsightsCard({ insights, isLoading, error }: AIInsight
 
         {/* Pain Points - Expandable */}
         {expanded && insights.topPainPoints.length > 0 && (
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+          <div className="pt-2" style={{ borderTop: '1px solid #E2E7EF' }}>
             <div className="flex items-center gap-2 mb-2">
-              <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-500" />
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Pain Points</p>
+              <AlertTriangle className="w-4 h-4" style={{ color: '#A3D65C' }} />
+              <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: '#6A7789' }}>Pain Points</p>
             </div>
             <ul className="space-y-1.5">
               {insights.topPainPoints.map((point, idx) => (
-                <li key={idx} className="text-sm text-foreground flex gap-2">
-                  <span className="text-amber-600 dark:text-amber-500 font-bold">−</span>
+                <li key={idx} className="text-sm flex gap-2" style={{ color: '#1C2635' }}>
+                  <span style={{ color: '#A3D65C', fontWeight: 'bold' }}>−</span>
                   <span>{point}</span>
                 </li>
               ))}
@@ -180,15 +179,15 @@ export default function AIInsightsCard({ insights, isLoading, error }: AIInsight
 
         {/* Recommendations - Expandable */}
         {expanded && insights.recommendations.length > 0 && (
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+          <div className="pt-2" style={{ borderTop: '1px solid #E2E7EF' }}>
             <div className="flex items-center gap-2 mb-2">
-              <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-500" />
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Recommendations</p>
+              <CheckCircle2 className="w-4 h-4" style={{ color: '#37C0A3' }} />
+              <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: '#6A7789' }}>Recommendations</p>
             </div>
             <ul className="space-y-1.5">
               {insights.recommendations.map((rec, idx) => (
-                <li key={idx} className="text-sm text-foreground flex gap-2">
-                  <span className="text-green-600 dark:text-green-500 font-bold">✓</span>
+                <li key={idx} className="text-sm flex gap-2" style={{ color: '#1C2635' }}>
+                  <span style={{ color: '#37C0A3', fontWeight: 'bold' }}>✓</span>
                   <span>{rec}</span>
                 </li>
               ))}
