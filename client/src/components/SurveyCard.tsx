@@ -261,10 +261,11 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
         <Tooltip>
           <TooltipTrigger asChild>
             <Button 
-              className="flex-1" 
+              className="flex-1"
               onClick={onAnalyze} 
               data-testid={`button-analyze-${index}`}
               disabled={survey.responseCount === 0}
+              style={{ backgroundColor: 'var(--color-primary)', color: '#FFFFFF' }}
             >
               <BarChart3 className="w-4 h-4 mr-2" />
               Analyze
