@@ -2,6 +2,8 @@ import { useState } from "react";
 import ChatPanel from "@/components/ChatPanel";
 import QuestionEditor from "@/components/QuestionEditor";
 import FloatingAIChat from "@/components/FloatingAIChat";
+import { LivePreviewPanel } from "@/components/LivePreviewPanel";
+import { ToneAdjuster } from "@/components/ToneAdjuster";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,6 +30,8 @@ import {
 interface QuestionsStepProps {
   questions: Question[];
   title: string;
+  description?: string;
+  welcomeMessage?: string;
   messages: Message[];
   isProcessing: boolean;
   onSendMessage: (message: string) => void;
@@ -36,6 +40,7 @@ interface QuestionsStepProps {
   onAddQuestion: () => void;
   onReorderQuestions: (questions: Question[]) => void;
   onTitleChange: (title: string) => void;
+  onUpdateQuestions: (questions: Question[]) => void;
   onNext?: () => void;
 }
 

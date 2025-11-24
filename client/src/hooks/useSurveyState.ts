@@ -304,6 +304,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       estimatedMinutes: estimatedMinutes || undefined,
       privacyStatement: privacyStatement || undefined,
       dataUsageStatement: dataUsageStatement || undefined,
+      tone: tone || undefined,
     };
 
     if (isEditMode) {
@@ -337,6 +338,8 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
     setPrivacyStatement,
     dataUsageStatement,
     setDataUsageStatement,
+    tone,
+    setTone,
     currentWizardStep,
     setCurrentWizardStep,
     hasLoadedSurvey,
