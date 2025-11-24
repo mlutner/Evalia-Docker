@@ -43,26 +43,22 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-5xl mx-auto">
             <div className="group hover-elevate transition-all">
               <div className="bg-white border border-gray-100 rounded-lg p-6 text-center h-full flex flex-col items-center justify-center hover:border-evalia-teal-200">
-                <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-evalia-teal-500 to-evalia-teal-600 mb-2">L&D</div>
-                <p className="text-gray-600 font-medium text-sm leading-snug group-hover:text-evalia-navy transition-colors">Learning & Development Teams</p>
+                <p className="text-gray-700 font-semibold text-sm leading-snug group-hover:text-evalia-navy transition-colors">Learning & Development Teams</p>
               </div>
             </div>
             <div className="group hover-elevate transition-all">
               <div className="bg-white border border-gray-100 rounded-lg p-6 text-center h-full flex flex-col items-center justify-center hover:border-evalia-teal-200">
-                <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-evalia-mint to-evalia-teal-500 mb-2">CT</div>
-                <p className="text-gray-600 font-medium text-sm leading-snug group-hover:text-evalia-navy transition-colors">Corporate Trainers</p>
+                <p className="text-gray-700 font-semibold text-sm leading-snug group-hover:text-evalia-navy transition-colors">Corporate Trainers</p>
               </div>
             </div>
             <div className="group hover-elevate transition-all">
               <div className="bg-white border border-gray-100 rounded-lg p-6 text-center h-full flex flex-col items-center justify-center hover:border-evalia-teal-200">
-                <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-evalia-teal-600 to-evalia-mint mb-2">HR</div>
-                <p className="text-gray-600 font-medium text-sm leading-snug group-hover:text-evalia-navy transition-colors">HR Professionals</p>
+                <p className="text-gray-700 font-semibold text-sm leading-snug group-hover:text-evalia-navy transition-colors">HR Professionals</p>
               </div>
             </div>
             <div className="group hover-elevate transition-all">
               <div className="bg-white border border-gray-100 rounded-lg p-6 text-center h-full flex flex-col items-center justify-center hover:border-evalia-teal-200">
-                <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-evalia-teal-500 to-evalia-yellow mb-2">TF</div>
-                <p className="text-gray-600 font-medium text-sm leading-snug group-hover:text-evalia-navy transition-colors">Training Facilitators</p>
+                <p className="text-gray-700 font-semibold text-sm leading-snug group-hover:text-evalia-navy transition-colors">Training Facilitators</p>
               </div>
             </div>
           </div>
