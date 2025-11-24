@@ -270,34 +270,41 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
         )}
       </CardContent>
 
-      <CardFooter className="gap-2 mt-auto">
-        <Button variant="outline" className="flex-1" onClick={onEdit} data-testid={`button-edit-${index}`}>
-          <Edit3 className="w-4 h-4 mr-2" />
-          Edit
-        </Button>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              onClick={onAnalyze} 
-              data-testid={`button-analyze-${index}`}
-              disabled={survey.responseCount === 0}
-              style={{
-                backgroundColor: '#0B1D2E',
-                color: '#FFFFFF',
-                borderRadius: '6px'
-              }}
-              className="flex-1"
-            >
-              <BarChart3 className="w-4 h-4 mr-2" strokeWidth={2} />
-              Analyze
-            </Button>
-          </TooltipTrigger>
-          {survey.responseCount === 0 && (
-            <TooltipContent side="bottom" className="max-w-xs text-xs">
-              Collect responses first to analyze survey data
-            </TooltipContent>
-          )}
-        </Tooltip>
+      <CardFooter className="gap-3 mt-auto flex-col">
+        <div className="flex w-full gap-3">
+          <Button 
+            variant="outline" 
+            className="flex-1 h-11"
+            onClick={onEdit} 
+            data-testid={`button-edit-${index}`}
+          >
+            <Edit3 className="w-4 h-4 mr-2" />
+            Edit
+          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                onClick={onAnalyze} 
+                data-testid={`button-analyze-${index}`}
+                disabled={survey.responseCount === 0}
+                style={{
+                  backgroundColor: '#5AB3AB',
+                  color: '#FFFFFF',
+                  borderRadius: '6px'
+                }}
+                className="flex-1 h-11 font-semibold"
+              >
+                <BarChart3 className="w-4 h-4 mr-2" strokeWidth={2} />
+                Analyze
+              </Button>
+            </TooltipTrigger>
+            {survey.responseCount === 0 && (
+              <TooltipContent side="bottom" className="max-w-xs text-xs">
+                Collect responses first to analyze survey data
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </div>
       </CardFooter>
 
       {/* Share Link Below Card */}
