@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Navigation } from '@/components/Navigation';
 import { Hero } from '@/components/Hero';
 import { FeatureCard } from '@/components/FeatureCard';
-import { ArrowRightIcon, CheckCircle2Icon } from 'lucide-react';
+import { ArrowRightIcon, CheckCircle2Icon, Wand2, Share2, BarChart3 } from 'lucide-react';
 import evaliaLogo from '@assets/evalia-logo.png';
 
 export default function Home() {
@@ -74,13 +74,19 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-12 md:gap-16 max-w-6xl mx-auto">
+          {/* Connectors for desktop */}
+          <div className="hidden md:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-evalia-teal-200 via-evalia-teal-300 to-evalia-teal-200 -translate-y-24" style={{ maxWidth: '90%', marginLeft: '5%' }}></div>
+
+          <div className="grid md:grid-cols-3 gap-12 md:gap-16 max-w-6xl mx-auto relative z-10">
+            {/* Step 1 */}
             <div className="relative hover-elevate transition-all">
-              <div className="text-7xl font-bold text-evalia-teal-100 mb-6">
-                01
+              <div className="flex items-center gap-4 mb-8">
+                <div className="flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-br from-evalia-teal-500 to-evalia-teal-600 flex items-center justify-center shadow-lg">
+                  <Wand2 className="w-8 h-8 text-white" />
+                </div>
+                <div className="text-6xl font-bold text-evalia-teal-100/60">01</div>
               </div>
-              <div className="absolute top-0 left-0 w-2 h-16 bg-evalia-teal-500 rounded-full"></div>
-              <h3 className="text-xl font-bold text-evalia-navy mb-3" data-testid="text-step-1-title">
+              <h3 className="text-2xl font-bold text-evalia-navy mb-3" data-testid="text-step-1-title">
                 Create with AI
               </h3>
               <p className="text-gray-600 leading-relaxed text-base">
@@ -89,12 +95,15 @@ export default function Home() {
               </p>
             </div>
 
+            {/* Step 2 */}
             <div className="relative hover-elevate transition-all">
-              <div className="text-7xl font-bold text-evalia-teal-100 mb-6">
-                02
+              <div className="flex items-center gap-4 mb-8">
+                <div className="flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-br from-evalia-teal-600 to-evalia-mint flex items-center justify-center shadow-lg">
+                  <Share2 className="w-8 h-8 text-white" />
+                </div>
+                <div className="text-6xl font-bold text-evalia-teal-100/60">02</div>
               </div>
-              <div className="absolute top-0 left-0 w-2 h-16 bg-evalia-teal-600 rounded-full"></div>
-              <h3 className="text-xl font-bold text-evalia-navy mb-3" data-testid="text-step-2-title">
+              <h3 className="text-2xl font-bold text-evalia-navy mb-3" data-testid="text-step-2-title">
                 Share & Collect
               </h3>
               <p className="text-gray-600 leading-relaxed text-base">
@@ -103,12 +112,15 @@ export default function Home() {
               </p>
             </div>
 
+            {/* Step 3 */}
             <div className="relative hover-elevate transition-all">
-              <div className="text-7xl font-bold text-evalia-teal-100 mb-6">
-                03
+              <div className="flex items-center gap-4 mb-8">
+                <div className="flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-br from-evalia-mint to-evalia-teal-400 flex items-center justify-center shadow-lg">
+                  <BarChart3 className="w-8 h-8 text-white" />
+                </div>
+                <div className="text-6xl font-bold text-evalia-teal-100/60">03</div>
               </div>
-              <div className="absolute top-0 left-0 w-2 h-16 bg-evalia-mint rounded-full"></div>
-              <h3 className="text-xl font-bold text-evalia-navy mb-3" data-testid="text-step-3-title">
+              <h3 className="text-2xl font-bold text-evalia-navy mb-3" data-testid="text-step-3-title">
                 Analyze & Improve
               </h3>
               <p className="text-gray-600 leading-relaxed text-base">
