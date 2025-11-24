@@ -9,6 +9,9 @@ export interface SurveyTemplate {
   topic: "assessment" | "feedback" | "knowledge" | "satisfaction" | "application" | "manager" | "roi";
   questionCount: number;
   questions: Question[];
+  welcomeMessage?: string;
+  thankYouMessage?: string;
+  resultsSummary?: string;
 }
 
 export const surveyTemplates: SurveyTemplate[] = [

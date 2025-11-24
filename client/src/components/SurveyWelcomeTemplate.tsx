@@ -6,6 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { stripMarkdownLines } from "@/lib/markdownUtils";
 
 interface SurveyWelcomeTemplateProps {
   title: string;
@@ -63,8 +64,9 @@ const PurposeList = ({
 }: { 
   welcomeMessage?: string | null;
 }) => {
-  const purposePoints = welcomeMessage
-    ? welcomeMessage.split("\n").filter((line) => line.trim())
+  const cleanedMessage = stripMarkdownLines(welcomeMessage || "");
+  const purposePoints = cleanedMessage
+    ? cleanedMessage.split("\n").filter((line) => line.trim())
     : [];
 
   if (purposePoints.length === 0) return null;
