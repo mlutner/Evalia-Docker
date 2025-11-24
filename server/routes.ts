@@ -5,6 +5,7 @@ import path from "path";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { parsePDFWithVision, parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText, suggestScoringConfig, generateSurveySummary } from "./openrouter";
+import { analyzeResponses } from "./responseAnalysis";
 import { insertSurveySchema, questionSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
