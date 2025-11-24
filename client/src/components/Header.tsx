@@ -21,11 +21,11 @@ export default function Header({ showActions = true }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#FFFFFF] dark:bg-[#0D1B2A] border-b border-[#E7EBF0] dark:border-[#1F3B58] backdrop-blur supports-[backdrop-filter]:bg-[#FFFFFF]/60 dark:supports-[backdrop-filter]:bg-[#0D1B2A]/60">
+    <header className="sticky top-0 z-50 w-full backdrop-blur supports-[backdrop-filter]:bg-[var(--color-surface)]/60" style={{ backgroundColor: 'var(--color-surface)', borderBottomColor: 'var(--color-border)', borderBottomWidth: '1px' }}>
       <div className="flex h-14 items-center justify-end pr-6 gap-3">
         <div className="flex items-center gap-3">
           {typedUser && (
-            <span className="hidden md:inline text-sm text-[#6B7785] font-medium" data-testid="text-username">
+            <span className="hidden md:inline text-sm font-medium" style={{ color: 'var(--color-text-secondary)' }} data-testid="text-username">
               {typedUser.email || `${typedUser.firstName || ''} ${typedUser.lastName || ''}`.trim() || 'User'}
             </span>
           )}
@@ -36,7 +36,8 @@ export default function Header({ showActions = true }: HeaderProps) {
                 size="sm"
                 onClick={() => setLocation("/account")}
                 data-testid="button-account"
-                className="text-[#6B7785] hover:text-[#1C2B36] hover:bg-[#1F8EFA]/8 px-3"
+                className="px-3"
+                style={{ color: 'var(--color-text-secondary)' }}
               >
                 <span className="hidden sm:inline text-sm font-medium">Account</span>
               </Button>
@@ -45,9 +46,10 @@ export default function Header({ showActions = true }: HeaderProps) {
                 size="sm"
                 onClick={handleLogout}
                 data-testid="button-logout"
-                className="text-[#6B7785] hover:text-[#1C2B36] hover:bg-[#1F8EFA]/8 px-3"
+                className="px-3"
+                style={{ color: 'var(--color-text-secondary)' }}
               >
-                <LogOut className="w-5 h-5 flex-shrink-0 text-[#0D1B2A]" strokeWidth={2} />
+                <LogOut className="w-5 h-5 flex-shrink-0" style={{ color: 'var(--color-dark-navy)' }} strokeWidth={2} />
                 <span className="hidden sm:inline ml-2 text-sm font-medium">Logout</span>
               </Button>
             </>

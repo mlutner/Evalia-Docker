@@ -3,36 +3,31 @@
 @tailwind utilities;
 
 :root {
-  /* UNIFIED COLOR SYSTEM - All colors defined here */
+  /* EVALIA MINIMAL COLOR SYSTEM - 8 Colors Only */
   
-  /* Primary Color - Main UI (Blue) */
+  /* Primary Blue - Buttons, icons, charts, links */
   --color-primary: #3A8DFF;
-  --color-primary-dark: #1B3B66;
-  --color-primary-soft: #E8F2FF;
-  --color-primary-vibrant: #1F6FFF;
-
-  /* Accent Colors - Warnings & Highlights */
+  
+  /* Lime - "New Survey" button, success, highlights */
   --color-accent-lime: #A4E65A;
-  --color-accent-lime-dark: #6FA63B;
-  --color-accent-lime-soft: #F3FBE8;
-  --color-accent-lime-glow: #C8F995;
+  
+  /* Dark Navy - Sidebar background only */
+  --color-dark-navy: #0D1B2A;
+  
+  /* Light Background - Page background */
+  --color-bg-light: #F7F9FC;
+  
+  /* Card Surface - Card backgrounds */
+  --color-surface: #FFFFFF;
+  
+  /* Border/Dividers */
+  --color-border: #E2E7EF;
+  
+  /* Text Colors */
+  --color-text-primary: #1C2635;
+  --color-text-secondary: #6A7789;
 
-  /* Secondary Accents */
-  --color-secondary-indigo: #5A6BFF;
-  --color-secondary-aqua: #3FC7E4;
-  --color-secondary-lavender: #EEF0FF;
-
-  /* Neutral Colors - Backgrounds, Borders, Text */
-  --color-neutral-bg: #F7F9FC;
-  --color-neutral-surface: #FFFFFF;
-  --color-neutral-border: #E2E7EF;
-  --color-neutral-text-primary: #1C2635;
-  --color-neutral-text-secondary: #6A7789;
-
-  /* Status Colors */
-  --color-status-destructive: #FF4D4D;
-
-  /* Tailwind CSS Variables - Map to our unified colors */
+  /* Tailwind CSS Variables - Updated to match minimal system */
   --background: 0 0% 97.3%;
   --foreground: 217 33% 17%;
   --card: 0 0% 100%;
@@ -58,7 +53,7 @@
   --chart-4: 36 100% 50%;
   --chart-5: 340 82% 52%;
 
-  --sidebar: 210 8% 96%;
+  --sidebar: 6 8% 6%;
   --sidebar-foreground: 217 33% 17%;
   --sidebar-primary: 218 89% 52.7%;
   --sidebar-primary-foreground: 0 0% 100%;
@@ -80,7 +75,7 @@
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-  background: var(--color-neutral-bg);
+  background: var(--color-bg-light);
   min-height: 100vh;
 }
 
@@ -90,7 +85,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 40px 16px;
-  background: var(--color-neutral-bg);
+  background: var(--color-bg-light);
 }
 
 .survey-card {
@@ -98,8 +93,8 @@ body {
   width: 100%;
   padding: 48px 40px 32px;
   border-radius: 16px;
-  background: var(--color-neutral-surface);
-  border: 1px solid var(--color-neutral-border);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   box-shadow: 0 20px 50px rgba(7, 26, 50, 0.15);
 }
 
@@ -136,14 +131,14 @@ body {
   font-size: 32px;
   font-weight: 800;
   letter-spacing: -0.01em;
-  color: var(--color-neutral-text-primary);
+  color: var(--color-text-primary);
   margin: 0;
 }
 
 .survey-progress {
   margin: 0;
   font-size: 13px;
-  color: var(--color-neutral-text-secondary);
+  color: var(--color-text-secondary);
 }
 
 .survey-body {
@@ -152,7 +147,7 @@ body {
 
 .question-label-type {
   font-size: 13px;
-  color: var(--color-neutral-text-secondary);
+  color: var(--color-text-secondary);
   margin-bottom: 8px;
 }
 
@@ -160,19 +155,19 @@ body {
   font-size: 18px;
   line-height: 1.4;
   font-weight: 600;
-  color: var(--color-neutral-text-primary);
+  color: var(--color-text-primary);
   margin: 0 0 12px;
 }
 
 .required {
-  color: var(--color-status-destructive);
+  color: #FF4D4D;
 }
 
 .question-textarea {
   width: 100%;
   min-height: 140px;
   border-radius: 12px;
-  border: 2px solid var(--color-neutral-border);
+  border: 2px solid var(--color-border);
   padding: 12px 14px;
   font-size: 15px;
   line-height: 1.5;
@@ -195,7 +190,7 @@ body {
 .survey-exit-link {
   background: none;
   border: none;
-  color: var(--color-neutral-text-secondary);
+  color: var(--color-text-secondary);
   font-size: 12px;
   cursor: pointer;
   padding: 0;
@@ -204,7 +199,7 @@ body {
 }
 
 .survey-exit-link:hover {
-  color: var(--color-neutral-text-primary);
+  color: var(--color-text-primary);
 }
 
 /* LIGHT MODE */

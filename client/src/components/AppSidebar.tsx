@@ -21,9 +21,9 @@ export function AppSidebar() {
   const isActive = (href: string) => location === href;
 
   return (
-    <aside className={`bg-[#0D1B2A] border-r border-[#1F3B58] flex flex-col transition-all duration-300 ${
+    <aside className={`flex flex-col transition-all duration-300 ${
       sidebarExpanded ? "w-56" : "w-20"
-    }`}>
+    }`} style={{ backgroundColor: 'var(--color-dark-navy)', borderRightColor: 'var(--color-border)', borderRightWidth: '1px' }}>
       {/* Header with Logo */}
       <div className="p-6 flex items-center justify-between">
         {sidebarExpanded && (
@@ -31,7 +31,8 @@ export function AppSidebar() {
         )}
         <button
           onClick={() => setSidebarExpanded(!sidebarExpanded)}
-          className="text-[#3A8DFF] hover:bg-[#3A8DFF]/10 p-1 rounded transition-colors"
+          style={{ color: 'var(--color-primary)' }}
+          className="hover:bg-[var(--color-primary)]/10 p-1 rounded transition-colors"
           data-testid="button-toggle-sidebar"
           title={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
         >
@@ -42,7 +43,8 @@ export function AppSidebar() {
       <div className="px-4 py-6">
         <Button
           onClick={() => setLocation("/builder")}
-          className="w-full bg-[#A8E05E] hover:bg-[#A8E05E]/90 text-[#0D1B2A] border-0 font-semibold"
+          className="w-full font-semibold"
+          style={{ backgroundColor: 'var(--color-accent-lime)', color: 'var(--color-dark-navy)' }}
           size={sidebarExpanded ? "default" : "icon"}
           data-testid="button-new-survey-sidebar"
         >
@@ -60,15 +62,18 @@ export function AppSidebar() {
             <button
               key={item.id}
               onClick={() => setLocation(item.href)}
-              className={`w-full flex items-center gap-4 px-4 py-3 rounded-md text-sm font-medium transition-all relative ${
-                active
-                  ? "text-[#3A8DFF] border-l-3 border-l-[#3A8DFF] bg-[#3A8DFF]/8"
-                  : "text-[#6A7789] hover:bg-[#3A8DFF]/8"
+              className={`w-full flex items-center gap-4 px-4 py-3 rounded-md text-sm font-medium transition-all relative border-l-3 ${
+                active ? "border-l-3" : "border-l-3 border-l-transparent"
               } ${sidebarExpanded ? "" : "justify-center px-0"}`}
+              style={{
+                color: active ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+                backgroundColor: active ? 'rgba(58, 141, 255, 0.08)' : 'transparent',
+                borderLeftColor: active ? 'var(--color-primary)' : 'transparent',
+              }}
               data-testid={`nav-${item.id}`}
               title={!sidebarExpanded ? item.label : ""}
             >
-              <Icon className={`w-6 h-6 flex-shrink-0 ${active ? "text-[#3A8DFF]" : "text-[#1C2635]"}`} strokeWidth={2} />
+              <Icon className="w-6 h-6 flex-shrink-0" style={{ color: active ? 'var(--color-primary)' : 'var(--color-text-primary)' }} strokeWidth={2} />
               {sidebarExpanded && <span>{item.label}</span>}
             </button>
           );

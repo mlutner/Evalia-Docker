@@ -11,23 +11,15 @@ export default {
         sm: ".1875rem", /* 3px */
       },
       colors: {
-        // New Color System
+        // EVALIA MINIMAL COLOR SYSTEM - 8 Colors Only
         "primary-blue": "#3A8DFF",
-        "primary-blue-dark": "#1B3B66",
-        "primary-blue-soft": "#E8F2FF",
-        "primary-blue-vibrant": "#1F6FFF",
         "accent-lime": "#A4E65A",
-        "accent-lime-dark": "#6FA63B",
-        "accent-lime-soft": "#F3FBE8",
-        "accent-lime-glow": "#C8F995",
+        "dark-navy": "#0D1B2A",
         "neutral-bg": "#F7F9FC",
         "neutral-surface": "#FFFFFF",
         "neutral-border": "#E2E7EF",
         "neutral-text-primary": "#1C2635",
         "neutral-text-secondary": "#6A7789",
-        "accent-indigo": "#5A6BFF",
-        "accent-aqua": "#3FC7E4",
-        "accent-lavender": "#EEF0FF",
         // Flat / base colors (regular buttons)
         background: "hsl(var(--background) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",
