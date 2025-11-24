@@ -14,6 +14,7 @@ export default function TemplatesPage() {
 
   const { data: templates = [], isLoading } = useQuery<Template[]>({
     queryKey: ["/api/templates"],
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
   const handleUseTemplate = (template: Template) => {

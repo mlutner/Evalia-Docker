@@ -21,6 +21,7 @@ export default function SurveysPage() {
 
   const { data: surveys = [], isLoading } = useQuery<SurveyWithCounts[]>({
     queryKey: ["/api/surveys"],
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
   const deleteMutation = useMutation({
