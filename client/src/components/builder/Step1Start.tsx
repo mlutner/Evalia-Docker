@@ -103,12 +103,12 @@ export default function Step1Start({
               data-testid="tab-templates"
               className="p-6 rounded-lg border-2 transition-all"
               style={{
-                borderColor: activeTab === "templates" ? "#2F8FA5" : "#E2E7EF",
+                borderColor: activeTab === "templates" ? "#2F8FA5" : "rgba(47, 143, 165, 0.2)",
                 backgroundColor: activeTab === "templates" ? "rgba(47, 143, 165, 0.08)" : "#FFFFFF"
               }}
             >
               <div className="flex flex-col items-center text-center gap-3">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center transition-all" style={{ backgroundColor: activeTab === "templates" ? "#2F8FA5" : "#F0F2F5", color: activeTab === "templates" ? "#FFFFFF" : "#6A7789" }}>
+                <div className="w-12 h-12 rounded-full flex items-center justify-center transition-all" style={{ backgroundColor: activeTab === "templates" ? "#2F8FA5" : "rgba(47, 143, 165, 0.12)", color: activeTab === "templates" ? "#FFFFFF" : "#2F8FA5" }}>
                   <Layers className="w-6 h-6" />
                 </div>
                 <div>
@@ -123,12 +123,12 @@ export default function Step1Start({
               data-testid="tab-ai"
               className="p-6 rounded-lg border-2 transition-all"
               style={{
-                borderColor: activeTab === "ai" ? "#2F8FA5" : "#E2E7EF",
+                borderColor: activeTab === "ai" ? "#2F8FA5" : "rgba(47, 143, 165, 0.2)",
                 backgroundColor: activeTab === "ai" ? "rgba(47, 143, 165, 0.08)" : "#FFFFFF"
               }}
             >
               <div className="flex flex-col items-center text-center gap-3">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center transition-all" style={{ backgroundColor: activeTab === "ai" ? "#2F8FA5" : "#F0F2F5", color: activeTab === "ai" ? "#FFFFFF" : "#6A7789" }}>
+                <div className="w-12 h-12 rounded-full flex items-center justify-center transition-all" style={{ backgroundColor: activeTab === "ai" ? "#2F8FA5" : "rgba(47, 143, 165, 0.12)", color: activeTab === "ai" ? "#FFFFFF" : "#2F8FA5" }}>
                   <Sparkles className="w-6 h-6" />
                 </div>
                 <div>
@@ -143,12 +143,12 @@ export default function Step1Start({
               data-testid="tab-upload"
               className="p-6 rounded-lg border-2 transition-all"
               style={{
-                borderColor: activeTab === "upload" ? "#2F8FA5" : "#E2E7EF",
+                borderColor: activeTab === "upload" ? "#2F8FA5" : "rgba(47, 143, 165, 0.2)",
                 backgroundColor: activeTab === "upload" ? "rgba(47, 143, 165, 0.08)" : "#FFFFFF"
               }}
             >
               <div className="flex flex-col items-center text-center gap-3">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center transition-all" style={{ backgroundColor: activeTab === "upload" ? "#2F8FA5" : "#F0F2F5", color: activeTab === "upload" ? "#FFFFFF" : "#6A7789" }}>
+                <div className="w-12 h-12 rounded-full flex items-center justify-center transition-all" style={{ backgroundColor: activeTab === "upload" ? "#2F8FA5" : "rgba(47, 143, 165, 0.12)", color: activeTab === "upload" ? "#FFFFFF" : "#2F8FA5" }}>
                   <FileUp className="w-6 h-6" />
                 </div>
                 <div>
@@ -270,13 +270,13 @@ export default function Step1Start({
 
           {/* Upload Tab */}
           <TabsContent value="upload" className="space-y-10 pt-8">
-            <div className="space-y-4 bg-gradient-to-br from-yellow-100/30 via-yellow-50/15 to-background rounded-xl p-6 md:p-8 border-2 border-yellow-200/60" style={{ borderLeft: "4px solid rgb(245, 223, 161)" }}>
+            <div className="space-y-4 rounded-lg p-6 md:p-8 border" style={{ backgroundColor: '#FFFFFF', borderColor: '#E2E7EF', borderLeft: '4px solid #2F8FA5' }}>
               <div>
-                <h3 className="text-lg font-semibold mb-3">Upload Document or Paste Text</h3>
-                <p className="text-muted-foreground leading-relaxed">Upload a PDF, DOCX, or TXT document and AI will generate survey questions.</p>
+                <h3 className="text-lg font-semibold mb-3" style={{ color: '#1C2635' }}>Upload or Paste</h3>
+                <p className="leading-relaxed" style={{ color: '#6A7789' }}>Upload a PDF, DOCX, or TXT document and AI will generate survey questions.</p>
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block">Choose a document</label>
+                <label className="text-sm font-medium mb-2 block" style={{ color: '#1C2635' }}>Choose a document</label>
                 <FileUploadZone onFileSelect={onFileSelect} isProcessing={isProcessing} />
               </div>
             </div>
