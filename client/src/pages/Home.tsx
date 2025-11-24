@@ -49,8 +49,17 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-32 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="relative py-32 bg-evalia-teal-50 overflow-hidden">
+        {/* Background blobs */}
+        <div className="absolute inset-0 pointer-events-none">
+          {/* Blob 1 - Top left */}
+          <div className="absolute top-0 left-0 w-96 h-96 bg-evalia-teal-100/30 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+          
+          {/* Blob 2 - Bottom right */}
+          <div className="absolute bottom-0 right-0 w-80 h-80 bg-evalia-mint/10 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-6 z-10">
           <div className="text-center mb-20">
             <h2 className="text-4xl lg:text-5xl font-bold text-evalia-navy mb-6 leading-tight" data-testid="text-how-it-works">
               Create better training feedback in three steps
