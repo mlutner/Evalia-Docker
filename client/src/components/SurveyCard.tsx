@@ -2,7 +2,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { MoreVertical, Eye, BarChart3, Download, Share2, Check, Copy, Edit3, Users, CheckCircle, Pause, Lock, Download as DownloadIcon, Gauge, FileText as FileIcon } from "lucide-react";
+import { MoreVertical, Eye, BarChart3, Download, Share2, Check, Copy, Edit3, Users, CheckCircle, Pause, Lock, Download as DownloadIcon, Gauge, FileText as FileIcon, Save } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState, memo } from "react";
@@ -62,6 +62,10 @@ interface SurveyCardProps {
 const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport, onDelete, onDuplicate, onManageRespondents, onSaveAsTemplate, index = 0 }: SurveyCardProps) {
   const [copied, setCopied] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [saveTemplateOpen, setSaveTemplateOpen] = useState(false);
+  const [templateTitle, setTemplateTitle] = useState(survey.title);
+  const [templateDescription, setTemplateDescription] = useState(survey.description || "");
+  const [templateCategory, setTemplateCategory] = useState("General");
   
   const shareUrl = `${window.location.origin}/survey/${survey.id}`;
   
@@ -175,6 +179,12 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
                   <DropdownMenuItem onClick={onDuplicate} data-testid="menu-duplicate">
                     <Copy className="w-4 h-4 mr-2" />
                     Duplicate Survey
+                  </DropdownMenuItem>
+                )}
+                {onSaveAsTemplate && (
+                  <DropdownMenuItem onClick={() => setSaveTemplateOpen(true)} data-testid="menu-save-template">
+                    <Save className="w-4 h-4 mr-2" />
+                    Save as Template
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem onClick={onDelete} className="text-destructive" data-testid="menu-delete">
@@ -292,6 +302,82 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
           </Tooltip>
         </div>
       </div>
+      {/* Save as Template Dialog */}
+      <Dialog open={saveTemplateOpen} onOpenChange={setSaveTemplateOpen}>
+        <DialogContent data-testid="dialog-save-template">
+          <DialogHeader>
+            <DialogTitle>Save Survey as Template</DialogTitle>
+            <DialogDescription>
+              Save this survey structure as a reusable template
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-1 block">Template Name</label>
+              <input
+                type="text"
+                value={templateTitle}
+                onChange={(e) => setTemplateTitle(e.target.value)}
+                placeholder="e.g., Leadership Training Survey"
+                className="w-full px-3 py-2 border rounded-md text-sm"
+                data-testid="input-template-title"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Description</label>
+              <textarea
+                value={templateDescription}
+                onChange={(e) => setTemplateDescription(e.target.value)}
+                placeholder="Brief description of this template..."
+                className="w-full px-3 py-2 border rounded-md text-sm resize-none"
+                rows={3}
+                data-testid="input-template-description"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Category</label>
+              <select
+                value={templateCategory}
+                onChange={(e) => setTemplateCategory(e.target.value)}
+                className="w-full px-3 py-2 border rounded-md text-sm"
+                data-testid="select-template-category"
+              >
+                <option value="General">General</option>
+                <option value="Training Feedback">Training Feedback</option>
+                <option value="Employee Satisfaction">Employee Satisfaction</option>
+                <option value="Product Feedback">Product Feedback</option>
+                <option value="Assessment">Assessment</option>
+                <option value="Event Feedback">Event Feedback</option>
+              </select>
+            </div>
+            <div className="flex gap-2 pt-4">
+              <Button
+                onClick={() => setSaveTemplateOpen(false)}
+                variant="outline"
+                className="flex-1"
+                data-testid="button-cancel-save-template"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  if (templateTitle.trim() && onSaveAsTemplate) {
+                    onSaveAsTemplate();
+                    setSaveTemplateOpen(false);
+                  }
+                }}
+                style={{ backgroundColor: "#2F8FA5", color: "#FFFFFF" }}
+                className="flex-1"
+                data-testid="button-confirm-save-template"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                Save Template
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Share Dialog */}
       <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
         <DialogContent data-testid="dialog-share">

@@ -32,6 +32,25 @@ export default function SurveysPage() {
     },
   });
 
+  const [saveTemplateData, setSaveTemplateData] = useState<{ surveyId: string; title: string; description: string; category: string } | null>(null);
+
+  const saveTemplateMutation = useMutation({
+    mutationFn: () => saveTemplateData
+      ? apiRequest("POST", `/api/surveys/${saveTemplateData.surveyId}/save-as-template`, {
+          title: saveTemplateData.title,
+          description: saveTemplateData.description,
+          category: saveTemplateData.category,
+        })
+      : Promise.reject("No template data"),
+    onSuccess: () => {
+      toast({ title: "Template saved", description: "Survey saved as a new template successfully." });
+      setSaveTemplateData(null);
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to save template", variant: "destructive" });
+    },
+  });
+
   const allTags = useMemo(
     () => Array.from(new Set(surveys.flatMap(s => s.tags || []))),
     [surveys]
@@ -179,6 +198,15 @@ export default function SurveysPage() {
                         toast({ title: "Duplicate", description: "Duplicate feature coming soon" });
                       }}
                       onManageRespondents={() => setLocation(`/respondents/${survey.id}`)}
+                      onSaveAsTemplate={() => {
+                        setSaveTemplateData({
+                          surveyId: survey.id,
+                          title: survey.title,
+                          description: survey.description || "",
+                          category: "General",
+                        });
+                        saveTemplateMutation.mutate();
+                      }}
                       index={index}
                     />
                   </div>

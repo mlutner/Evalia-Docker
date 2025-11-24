@@ -886,6 +886,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Save survey as template
+  app.post("/api/surveys/:id/save-as-template", isAuthenticated, async (req: any, res) => {
+    try {
+      const { title, description, category } = req.body;
+      const surveyId = req.params.id;
+      const userId = req.user.claims.sub;
+
+      const survey = await storage.getSurvey(surveyId);
+      if (!survey) {
+        return res.status(404).json({ error: "Survey not found" });
+      }
+
+      const isOwner = await storage.checkSurveyOwnership(surveyId, userId);
+      if (!isOwner) {
+        return res.status(403).json({ error: "Unauthorized" });
+      }
+
+      const template = await storage.saveAsTemplate(survey, title, description, category);
+      res.json(template);
+    } catch (error: any) {
+      console.error("Save as template error:", error);
+      res.status(500).json({ message: error.message || "Failed to save template" });
+    }
+  });
+
   // AI Chat endpoint using Mistral directly with dynamic user data context
   app.post("/api/ai-chat", isAuthenticated, async (req: any, res) => {
     try {
