@@ -278,60 +278,62 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Metrics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <Card className="card-professional">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="card-professional" style={{ backgroundColor: '#F7F9FC', border: '1px solid #E2E7EF' }}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
               <CardTitle className="heading-4">Total Responses</CardTitle>
-              <div className="w-10 h-10 bg-primary/10 rounded-[8px] flex items-center justify-center flex-shrink-0">
-                <Users className="w-5 h-5" style={{ color: '#2F8FA5' }} />
+              <div className="w-12 h-12 rounded-[10px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#E1F6F3' }}>
+                <Users className="w-6 h-6" style={{ color: '#2F8FA5' }} strokeWidth={1.5} />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="heading-1" data-testid="text-response-count">{count}</div>
+              <div className="heading-1 mb-1" data-testid="text-response-count">{count}</div>
+              <p className="body-small text-tertiary">total responses collected</p>
             </CardContent>
           </Card>
 
-          <Card className="card-professional">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+          <Card className="card-professional" style={{ backgroundColor: '#F7F9FC', border: '1px solid #E2E7EF' }}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
               <CardTitle className="heading-4">Completion Rate</CardTitle>
-              <div className="w-10 h-10 bg-green-50 rounded-[8px] flex items-center justify-center flex-shrink-0">
-                <TrendingUp className="w-5 h-5 text-green-600" />
+              <div className="w-12 h-12 rounded-[10px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#F0FDF4' }}>
+                <TrendingUp className="w-6 h-6 text-green-600" strokeWidth={1.5} />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="heading-1" style={{ color: '#37C0A3' }}>{survey.questions.length > 0 ? Math.round((count / survey.questions.length) * 100) : 0}%</div>
-              <p className="body-small text-tertiary mt-2">{count} of {survey.questions.length} questions answered</p>
+              <div className="heading-1 mb-1" style={{ color: '#37C0A3' }}>{survey.questions.length > 0 ? Math.round((count / survey.questions.length) * 100) : 0}%</div>
+              <p className="body-small text-tertiary">{count} of {survey.questions.length} questions answered</p>
             </CardContent>
           </Card>
 
-          <Card className="card-professional">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-              <CardTitle className="heading-4">Response Timeline</CardTitle>
-              <div className="w-10 h-10 bg-blue-50 rounded-[8px] flex items-center justify-center flex-shrink-0">
-                <Clock className="w-5 h-5" style={{ color: '#2F8FA5' }} />
+          <Card className="card-professional" style={{ backgroundColor: '#F7F9FC', border: '1px solid #E2E7EF' }}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+              <CardTitle className="heading-4">Response Span</CardTitle>
+              <div className="w-12 h-12 rounded-[10px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#EFF6FF' }}>
+                <Clock className="w-6 h-6" style={{ color: '#2F8FA5' }} strokeWidth={1.5} />
               </div>
             </CardHeader>
             <CardContent>
               {data.responses.length > 0 ? (
                 <>
-                  <div className="heading-1">{Math.round((new Date(data.responses[data.responses.length - 1].completedAt).getTime() - new Date(data.responses[0].completedAt).getTime()) / (1000 * 60 * 60 * 24))}</div>
-                  <p className="body-small text-tertiary mt-2">days from first to last response</p>
+                  <div className="heading-1 mb-1">{Math.round((new Date(data.responses[data.responses.length - 1].completedAt).getTime() - new Date(data.responses[0].completedAt).getTime()) / (1000 * 60 * 60 * 24))}</div>
+                  <p className="body-small text-tertiary">days from first to last</p>
                 </>
               ) : (
-                <div className="body-small text-tertiary">No data yet</div>
+                <div className="body-small text-tertiary">—</div>
               )}
             </CardContent>
           </Card>
 
-          <Card className="card-professional">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+          <Card className="card-professional" style={{ backgroundColor: '#F7F9FC', border: '1px solid #E2E7EF' }}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
               <CardTitle className="heading-4">Total Questions</CardTitle>
-              <div className="w-10 h-10 bg-purple-50 rounded-[8px] flex items-center justify-center flex-shrink-0">
-                <FileText className="w-5 h-5" style={{ color: '#2F8FA5' }} />
+              <div className="w-12 h-12 rounded-[10px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#F3F4F6' }}>
+                <FileText className="w-6 h-6" style={{ color: '#2F8FA5' }} strokeWidth={1.5} />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="heading-1">{survey.questions.length}</div>
+              <div className="heading-1 mb-1">{survey.questions.length}</div>
+              <p className="body-small text-tertiary">questions in survey</p>
             </CardContent>
           </Card>
         </div>
@@ -389,12 +391,12 @@ export default function AnalyticsPage() {
             </Card>
 
             {/* Response List */}
-            <Card className="card-professional">
-              <CardHeader className="pb-4 border-b">
+            <Card className="card-professional" style={{ border: '1px solid #E2E7EF' }}>
+              <CardHeader className="pb-6 border-b border-border">
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="heading-3">Response Details</CardTitle>
-                    <CardDescription className="mt-1">{data.responses.length} response{data.responses.length !== 1 ? 's' : ''} collected</CardDescription>
+                    <CardTitle className="heading-3">Responses</CardTitle>
+                    <CardDescription className="mt-1 body-small">{data.responses.length} response{data.responses.length !== 1 ? 's' : ''} received</CardDescription>
                   </div>
                   <Checkbox
                     checked={selectedIds.size === data?.responses.length && data?.responses.length > 0}
@@ -404,9 +406,9 @@ export default function AnalyticsPage() {
                 </div>
               </CardHeader>
               <CardContent className="pt-4">
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {data?.responses.map((response) => (
-                    <div key={response.id} className="flex items-start gap-3 p-4 border rounded-[12px] hover-elevate transition-all cursor-pointer" onClick={() => setSelectedResponse(response)} data-testid={`response-row-${response.id}`}>
+                    <div key={response.id} className="flex items-start gap-3 p-4 rounded-[12px] transition-all cursor-pointer hover-elevate" style={{ backgroundColor: '#F7F9FC', border: '1px solid #E2E7EF' }} onClick={() => setSelectedResponse(response)} data-testid={`response-row-${response.id}`}>
                       <Checkbox
                         checked={selectedIds.has(response.id)}
                         onCheckedChange={() => toggleSelect(response.id)}
@@ -414,22 +416,27 @@ export default function AnalyticsPage() {
                         onClick={(e) => e.stopPropagation()}
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="body-small font-medium">
-                          {new Date(response.completedAt).toLocaleDateString()} at {new Date(response.completedAt).toLocaleTimeString()}
-                        </p>
-                        <div className="text-xs mt-2 space-y-1.5">
+                        <div className="flex items-center gap-2 mb-2">
+                          <p className="body-small font-medium" style={{ color: '#1C2635' }}>
+                            {new Date(response.completedAt).toLocaleDateString()}
+                          </p>
+                          <span className="text-xs" style={{ color: '#6A7789' }}>
+                            {new Date(response.completedAt).toLocaleTimeString()}
+                          </span>
+                        </div>
+                        <div className="text-xs space-y-1.5">
                           {survey.questions.slice(0, 2).map(q => {
                             const answer = response.answers[q.id];
                             return (
-                              <p key={q.id} className="truncate text-secondary">
-                                <strong className="text-foreground">{q.question}:</strong> {Array.isArray(answer) ? answer.join(", ") : answer || "—"}
+                              <p key={q.id} className="truncate" style={{ color: '#6A7789' }}>
+                                <strong style={{ color: '#1C2635' }}>{q.question}:</strong> {Array.isArray(answer) ? answer.join(", ") : answer || "—"}
                               </p>
                             );
                           })}
-                          {survey.questions.length > 2 && <p className="text-xs text-tertiary">+{survey.questions.length - 2} more questions</p>}
+                          {survey.questions.length > 2 && <p className="text-xs" style={{ color: '#A6ADBA' }}>+{survey.questions.length - 2} more</p>}
                         </div>
                       </div>
-                      <Eye className="w-4 h-4 text-secondary flex-shrink-0 mt-1" data-testid="button-view-response" />
+                      <Eye className="w-4 h-4 flex-shrink-0 mt-1" style={{ color: '#A6ADBA' }} data-testid="button-view-response" />
                     </div>
                   ))}
                 </div>
@@ -444,7 +451,10 @@ export default function AnalyticsPage() {
               onOpenChange={(open) => !open && setSelectedResponse(null)}
             />
             <div className="mt-8">
-              <h2 className="heading-2 mb-6">Question Breakdown</h2>
+              <div className="mb-8">
+                <h2 className="heading-2 mb-2">Question Breakdown</h2>
+                <p className="body-small text-tertiary">Response distribution and analysis for each question</p>
+              </div>
               <div className="space-y-4">
               {survey.questions.map((question, index) => {
                 const stats = getQuestionStats(question.id);
@@ -454,17 +464,20 @@ export default function AnalyticsPage() {
 
                 return (
                   <Collapsible key={question.id} defaultOpen={index < 2}>
-                    <Card className="card-professional hover-elevate" data-testid={`question-analytics-${question.id}`}>
+                    <Card className="card-professional hover-elevate" style={{ border: '1px solid #E2E7EF' }} data-testid={`question-analytics-${question.id}`}>
                       <CollapsibleTrigger asChild>
                         <button className="w-full text-left">
-                          <CardHeader className="pb-4">
+                          <CardHeader className="pb-5">
                             <div className="flex items-start justify-between gap-4">
                               <div className="flex-1 min-w-0">
-                                <CardTitle className="heading-4">
-                                  Q{index + 1}: {question.question}
-                                </CardTitle>
+                                <div className="flex items-center gap-3 mb-1">
+                                  <span className="text-xs font-semibold px-2 py-1 rounded-[6px]" style={{ color: '#2F8FA5', backgroundColor: '#E1F6F3' }}>Q{index + 1}</span>
+                                  <CardTitle className="heading-4 inline">
+                                    {question.question}
+                                  </CardTitle>
+                                </div>
                                 {question.description && (
-                                  <CardDescription className="mt-2 text-secondary">{question.description}</CardDescription>
+                                  <CardDescription className="mt-2 text-secondary" style={{ fontSize: '13px' }}>{question.description}</CardDescription>
                                 )}
                               </div>
                               <div className="flex items-center gap-4 flex-shrink-0">
@@ -479,21 +492,21 @@ export default function AnalyticsPage() {
                         </button>
                       </CollapsibleTrigger>
                       <CollapsibleContent>
-                        <CardContent className="pt-4 border-t">
+                        <CardContent className="pt-5 border-t border-border">
                           {(stats.type === "multiple_choice" || stats.type === "checkbox") && stats.distribution ? (
-                            <div className="space-y-4">
+                            <div className="space-y-5">
                               {Object.entries(stats.distribution).map(([option, count], idx) => {
                                 const percentage = stats.total > 0 ? (count / stats.total) * 100 : 0;
                                 const isTop = idx === 0;
                                 return (
-                                  <div key={option} className="space-y-2">
-                                    <div className="flex justify-between items-center">
-                                      <span className={`text-sm ${isTop ? "font-semibold" : ""}`}>{option}</span>
-                                      <span className="text-xs text-secondary">
-                                        {count} ({percentage.toFixed(1)}%)
+                                  <div key={option} className="space-y-2.5">
+                                    <div className="flex justify-between items-end gap-3">
+                                      <span className={`text-sm ${isTop ? "font-semibold" : ""}`} style={{ color: '#1C2635' }}>{option}</span>
+                                      <span className="text-xs font-medium px-2 py-1 rounded-[4px]" style={{ color: '#2F8FA5', backgroundColor: '#E1F6F3' }}>
+                                        {count} • {percentage.toFixed(1)}%
                                       </span>
                                     </div>
-                                    <div className="h-2 bg-border rounded-full overflow-hidden">
+                                    <div className="h-2.5 bg-border rounded-full overflow-hidden">
                                       <div
                                         className="h-full transition-all"
                                         style={{ width: `${percentage}%`, backgroundColor: isTop ? '#37C0A3' : '#2F8FA5' }}
