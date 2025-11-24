@@ -372,3 +372,24 @@ body {
     background-color: var(--elevate-2);
   }
 }
+
+/* Force Recharts bar color to Primary Blue */
+.recharts-bar-rectangle {
+  fill: #3A8DFF !important;
+}
+
+.recharts-bar {
+  fill: #3A8DFF !important;
+}
+
+rect[fill="#1F8EFA"],
+rect[fill="#0070F3"],
+rect[fill="0D6EFD"],
+rect[fill="#217EFF"] {
+  fill: #3A8DFF !important;
+}
+
+/* Line color */
+.recharts-curve {
+  stroke: #3A8DFF !important;
+}
