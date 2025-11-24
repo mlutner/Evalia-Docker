@@ -161,7 +161,7 @@ export default function SurveyResults({
             const originalCategoryScore = (result.score / result.maxScore) * originalMaxScore;
             
             const rangeInfo = getScoreRangeInfo(result.categoryId, result.score, result.maxScore, originalCategoryScore, originalMaxScore);
-            const progressColor = rangeInfo?.progressColor || "bg-blue-500";
+            const progressColor = rangeInfo?.progressColor || "bg-primary-teal";
 
             const rangeLabel = rangeInfo?.label || "Assessment";
 

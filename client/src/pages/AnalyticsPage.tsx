@@ -487,7 +487,7 @@ export default function AnalyticsPage() {
                                     </div>
                                     <div className="h-2.5 bg-muted rounded-full overflow-hidden">
                                       <div
-                                        className={`h-full transition-all ${isTop ? "bg-blue-500 dark:bg-blue-400" : "bg-primary"}`}
+                                        className={`h-full transition-all ${isTop ? "bg-primary-teal dark:bg-icon-teal" : "bg-primary"}`}
                                         style={{ width: `${percentage}%` }}
                                       />
                                     </div>
