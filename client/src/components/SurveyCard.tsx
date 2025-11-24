@@ -64,11 +64,22 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
   
   const shareUrl = `${window.location.origin}/survey/${survey.id}`;
   
+  const badgeStyle = {
+    backgroundColor: '#F7F9FC',
+    color: '#1C2635',
+    borderColor: '#E2E7EF',
+    fontSize: '12px',
+    fontWeight: 500,
+    padding: '6px 10px',
+    borderRadius: '6px',
+    border: '1px solid #E2E7EF'
+  };
+
   const getStatusDisplay = () => {
     // If not published yet, show Draft status
     if (!survey.publishedAt) {
       return {
-        badge: <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200 gap-1" data-testid={`badge-status-${survey.id}`}>
+        badge: <Badge variant="outline" style={badgeStyle} className="gap-1" data-testid={`badge-status-${survey.id}`}>
           Edit Survey
         </Badge>,
         tooltip: "Survey is in draft. Complete and publish to start collecting responses."
@@ -78,7 +89,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
     switch (survey.status) {
       case "Active":
         return {
-          badge: <Badge variant="outline" className="bg-cyan-50 text-cyan-700 border-cyan-200 gap-1" data-testid={`badge-status-${survey.id}`}>
+          badge: <Badge variant="outline" style={badgeStyle} className="gap-1" data-testid={`badge-status-${survey.id}`}>
             <CheckCircle className="w-3 h-3" />
             Live
           </Badge>,
@@ -86,7 +97,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
         };
       case "Paused":
         return {
-          badge: <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 gap-1" data-testid={`badge-status-${survey.id}`}>
+          badge: <Badge variant="outline" style={badgeStyle} className="gap-1" data-testid={`badge-status-${survey.id}`}>
             <Pause className="w-3 h-3" />
             Paused
           </Badge>,
@@ -94,7 +105,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
         };
       case "Closed":
         return {
-          badge: <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 gap-1" data-testid={`badge-status-${survey.id}`}>
+          badge: <Badge variant="outline" style={badgeStyle} className="gap-1" data-testid={`badge-status-${survey.id}`}>
             <Lock className="w-3 h-3" />
             Closed
           </Badge>,
@@ -145,7 +156,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
                   <span className="font-medium">Training Date:</span> {new Date(survey.trainingDate).toLocaleDateString()}
                 </p>
               )}
-              <p className="text-xs text-muted-foreground">
+              <p style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500, marginTop: '4px' }}>
                 Created {new Date(survey.createdAt).toLocaleDateString()}
               </p>
             </div>
@@ -189,7 +200,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
         </div>
         {statusDisplay.badge && (
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-muted-foreground">Status:</span>
+            <span style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500 }}>Status:</span>
             <Tooltip>
               <TooltipTrigger asChild>
                 {statusDisplay.badge}
@@ -204,17 +215,17 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
 
       <CardContent className="flex-1 space-y-4 overflow-y-auto">
         {/* Stats Section */}
-        <div className="flex gap-6 text-sm">
+        <div className="flex gap-6">
           <div>
-            <p className="text-muted-foreground">Questions</p>
-            <p className="font-semibold text-lg" data-testid="text-question-count">{survey.questionCount || 0}</p>
+            <p style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500 }}>Questions</p>
+            <p style={{ fontSize: '14px', fontWeight: 600, color: '#1C2635', marginTop: '4px' }} data-testid="text-question-count">{survey.questionCount || 0}</p>
           </div>
           <div>
-            <p className="text-muted-foreground">Responses</p>
-            <div className="flex items-center gap-2">
-              <p className="font-semibold text-lg" data-testid="text-response-count">{survey.responseCount ?? 0}</p>
+            <p style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500 }}>Responses</p>
+            <div className="flex items-center gap-2" style={{ marginTop: '4px' }}>
+              <p style={{ fontSize: '14px', fontWeight: 600, color: '#1C2635' }} data-testid="text-response-count">{survey.responseCount ?? 0}</p>
               {survey.respondentCount !== undefined && survey.respondentCount > 0 && (
-                <div className="text-xs text-muted-foreground">
+                <div style={{ fontSize: '12px', color: '#6A7789' }}>
                   <span>/ {survey.respondentCount}</span>
                   <span className="block font-medium">{Math.round((survey.responseCount / Math.max(1, survey.respondentCount)) * 100)}%</span>
                 </div>
