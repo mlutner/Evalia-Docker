@@ -13,7 +13,6 @@ import multer from "multer";
 import mammoth from "mammoth";
 import { PDFParse } from "pdf-parse";
 import { emailService } from "./email";
-import { Anthropic } from "@anthropic-ai/sdk";
 import "./types";
 
 // Pool of survey illustrations - rotated across surveys
@@ -887,7 +886,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AI Chat endpoint
+  // AI Chat endpoint using Mistral
   app.post("/api/ai-chat", isAuthenticated, async (req: any, res) => {
     try {
       const { message, history = [], context } = req.body;
@@ -896,29 +895,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Message is required" });
       }
 
-      const client = new Anthropic();
-
       const conversationHistory = history.map((m: any) => ({
         role: m.role as "user" | "assistant",
         content: m.content,
       }));
 
-      const response = await client.messages.create({
-        model: "claude-3-5-sonnet-20241022",
-        max_tokens: 1024,
-        system: context || "You are a helpful assistant.",
-        messages: [
-          ...conversationHistory,
-          { role: "user", content: message },
-        ],
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": process.env.OPENROUTER_REFERRER || "https://evalia.io",
+          "X-Title": "Evalia"
+        },
+        body: JSON.stringify({
+          model: "mistralai/mistral-medium:latest",
+          messages: [
+            { role: "system", content: context || "You are a helpful assistant." },
+            ...conversationHistory,
+            { role: "user", content: message },
+          ],
+          temperature: 0.7,
+          max_tokens: 1024,
+        }),
       });
 
-      const assistantMessage = response.content[0];
-      if (assistantMessage.type !== "text") {
-        return res.status(500).json({ error: "Unexpected response type" });
+      if (!response.ok) {
+        const error = await response.text();
+        console.error("OpenRouter API error:", error);
+        return res.status(500).json({ message: "Failed to get AI response" });
       }
 
-      return res.json({ message: assistantMessage.text });
+      const data = await response.json();
+      const assistantMessage = data.choices?.[0]?.message?.content;
+
+      if (!assistantMessage) {
+        return res.status(500).json({ error: "No response from AI model" });
+      }
+
+      return res.json({ message: assistantMessage });
     } catch (error: any) {
       console.error("AI Chat error:", error);
       return res.status(500).json({ message: error.message || "Failed to process chat request" });
