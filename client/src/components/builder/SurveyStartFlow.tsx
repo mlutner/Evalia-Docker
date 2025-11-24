@@ -114,12 +114,12 @@ export default function SurveyStartFlow({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-3 md:mb-6"
+          className="text-center mb-3 md:mb-6 px-2"
         >
-          <h1 className="text-5xl md:text-6xl font-bold mb-4" style={{ color: '#1C2635' }}>
+          <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 leading-tight" style={{ color: '#1C2635' }}>
             How would you like to start?
           </h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-6">
+          <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-6">
             Pick the option that matches how much structure you already have.
           </p>
         </motion.div>
@@ -166,35 +166,35 @@ export default function SurveyStartFlow({
                 whileTap={{ y: 0 }}
               >
                 <div
-                  className={`p-8 px-10 rounded-lg border-2 transition-all cursor-pointer group bg-white ${option.recommended ? "shadow-lg" : "hover:shadow-lg"}`}
+                  className={`p-4 sm:p-6 md:p-8 md:px-10 rounded-lg border-2 transition-all cursor-pointer group bg-white ${option.recommended ? "shadow-lg" : "hover:shadow-lg"}`}
                   style={getCardStyles(isExpanded)}
                 >
-                  <div className="flex items-start gap-8">
+                  <div className="flex items-start gap-4 sm:gap-6 md:gap-8">
                     {option.recommended && (
-                      <div className="absolute -top-2 left-8">
-                        <span className="inline-block px-2.5 py-0.5 bg-primary text-white text-xs font-semibold rounded-md">
+                      <div className="absolute -top-2 left-4 sm:left-6 md:left-8">
+                        <span className="inline-block px-2 sm:px-2.5 py-0.5 bg-primary text-white text-xs font-semibold rounded-md">
                           Recommended
                         </span>
                       </div>
                     )}
                     <div
-                      className="w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0 transition-all group-hover:scale-120"
+                      className="w-12 sm:w-16 h-12 sm:h-16 rounded-lg flex items-center justify-center flex-shrink-0 transition-all group-hover:scale-120"
                       style={getIconStyles(isExpanded)}
                     >
-                      <option.icon className="w-8 h-8" />
+                      <option.icon className="w-6 sm:w-8 h-6 sm:h-8" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-2xl font-semibold mb-1" style={{ color: '#1C2635' }}>
+                      <h3 className="text-base sm:text-lg md:text-2xl font-semibold mb-1" style={{ color: '#1C2635' }}>
                         {option.title}
                       </h3>
-                      <p className="text-base text-muted-foreground leading-relaxed opacity-80">{option.description}</p>
+                      <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed opacity-80">{option.description}</p>
                     </div>
                     <motion.div
                       animate={{ rotate: isExpanded ? 180 : 0 }}
                       transition={{ duration: 0.3 }}
-                      className="flex-shrink-0 ml-4"
+                      className="flex-shrink-0 ml-2 sm:ml-4"
                     >
-                      <ChevronDown className="w-6 h-6" style={{ color: getChevronColor(isExpanded), opacity: 1 }} />
+                      <ChevronDown className="w-5 sm:w-6 h-5 sm:h-6" style={{ color: getChevronColor(isExpanded), opacity: 1 }} />
                     </motion.div>
                   </div>
                 </div>
@@ -210,11 +210,11 @@ export default function SurveyStartFlow({
                     transition={{ duration: 0.3 }}
                     className="overflow-hidden"
                   >
-                    <div className="p-8 bg-muted/40 rounded-b-lg border-l-2 border-r-2 border-b-2" style={{ borderLeftColor: COLORS.primary, borderRightColor: COLORS.primary, borderBottomColor: COLORS.primary }}>
+                    <div className="p-4 sm:p-6 md:p-8 bg-muted/40 rounded-b-lg border-l-2 border-r-2 border-b-2" style={{ borderLeftColor: COLORS.primary, borderRightColor: COLORS.primary, borderBottomColor: COLORS.primary }}>
                       {option.id === "templates" && (
-                        <div className="space-y-6">
-                          <p className="text-sm text-muted-foreground">Select a template to get started instantly:</p>
-                          <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-4 sm:space-y-6">
+                          <p className="text-xs sm:text-sm text-muted-foreground">Select a template to get started instantly:</p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                             {surveyTemplates.map((template) => (
                               <TemplateCard
                                 key={template.id}
@@ -228,7 +228,7 @@ export default function SurveyStartFlow({
                       )}
 
                       {option.id === "ai" && (
-                        <div className="space-y-6">
+                        <div className="space-y-4 sm:space-y-6">
                           {isProcessing ? (
                             <div className="bg-primary/5 border border-primary/20 rounded-lg p-8 text-center space-y-4">
                               <div className="flex justify-center">
@@ -311,7 +311,7 @@ export default function SurveyStartFlow({
                       )}
 
                       {option.id === "upload" && (
-                        <div className="space-y-6">
+                        <div className="space-y-4 sm:space-y-6">
                           <div>
                             <label className="text-sm font-medium mb-2 block">Choose a document</label>
                             <FileUploadZone onFileSelect={onFileSelect} isProcessing={isProcessing} />
