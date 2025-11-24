@@ -217,40 +217,40 @@ export default function Dashboard() {
         </div>
 
         <nav className="flex-1 p-3 space-y-2">
-            {sidebarItems.map((item) => {
-              const isActive = activeView === item.id || (item.id === "surveys" && activeView === "surveys");
-              const Icon = item.icon;
-              
-              if (item.id === "respondents" || item.id === "scoring" || item.id === "templates" || item.id === "ai" || item.id === "settings") {
-                return (
-                  <div
-                    key={item.id}
-                    className="flex items-center gap-3 px-3 py-2 text-sm cursor-not-allowed rounded opacity-40 transition-all text-[#fafafa]"
-                    title="Coming soon"
-                  >
-                    <Icon className="w-5 h-5 flex-shrink-0" />
-                    {sidebarExpanded && <span className="text-xs">{item.label}</span>}
-                  </div>
-                );
-              }
-
+          {sidebarItems.map((item) => {
+            const isActive = activeView === item.id || (item.id === "surveys" && activeView === "surveys");
+            const Icon = item.icon;
+            
+            if (item.id === "respondents" || item.id === "scoring" || item.id === "templates" || item.id === "ai" || item.id === "settings") {
               return (
-                <button
+                <div
                   key={item.id}
-                  onClick={() => setActiveView(item.id as any)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all ${
-                    isActive
-                      ? "bg-evalia-lime/20 text-evalia-lime"
-                      : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
-                  } ${sidebarExpanded ? "" : "justify-center"}`}
-                  data-testid={`nav-${item.id}`}
-                  title={!sidebarExpanded ? item.label : ""}
+                  className="flex items-center gap-3 px-3 py-2 text-sm cursor-not-allowed rounded opacity-40 transition-all text-[#fafafa]"
+                  title="Coming soon"
                 >
-                  <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? "text-evalia-lime" : ""}`} />
-                  {sidebarExpanded && <span>{item.label}</span>}
-                </button>
+                  <Icon className="w-5 h-5 flex-shrink-0" />
+                  {sidebarExpanded && <span className="text-xs">{item.label}</span>}
+                </div>
               );
-            })}
+            }
+
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveView(item.id as any)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all ${
+                  isActive
+                    ? "bg-evalia-lime/20 text-evalia-lime"
+                    : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
+                } ${sidebarExpanded ? "" : "justify-center"}`}
+                data-testid={`nav-${item.id}`}
+                title={!sidebarExpanded ? item.label : ""}
+              >
+                <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? "text-evalia-lime" : ""}`} />
+                {sidebarExpanded && <span>{item.label}</span>}
+              </button>
+            );
+          })}
         </nav>
       </aside>
 
