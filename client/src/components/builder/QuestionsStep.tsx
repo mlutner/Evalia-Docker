@@ -103,19 +103,19 @@ export default function QuestionsStep({
           {/* Mobile: AI Chat Button */}
           <Sheet open={isMobileChat} onOpenChange={setIsMobileChat}>
             <SheetTrigger asChild>
-              <Button variant="outline" data-testid="button-open-chat-mobile" className="md:hidden flex-1 sm:flex-none">
+              <Button data-testid="button-open-chat-mobile" className="md:hidden flex-1 sm:flex-none bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80">
                 <MessageSquare className="w-4 h-4 mr-2" />
                 AI Chat
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-full sm:max-w-md">
+            <SheetContent side="right" className="w-full sm:max-w-md flex flex-col">
               <SheetHeader>
                 <SheetTitle>AI Assistant</SheetTitle>
                 <SheetDescription>
                   Ask AI to refine your survey questions
                 </SheetDescription>
               </SheetHeader>
-              <div className="mt-6 h-[calc(100vh-12rem)]">
+              <div className="mt-4 flex-1 min-h-0">
                 <ChatPanel
                   messages={messages}
                   onSendMessage={onSendMessage}
