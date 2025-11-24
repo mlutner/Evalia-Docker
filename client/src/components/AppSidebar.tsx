@@ -43,7 +43,7 @@ export function AppSidebar() {
       <div className="px-4 py-6">
         <Button
           onClick={() => setLocation("/builder")}
-          className="w-full font-semibold transition-colors hover:bg-[#37C0A3] active:bg-[#1F6F78]"
+          className="w-full font-semibold transition-colors hover:bg-[#37C0A3] active:bg-[#1F6F78] border-0 outline-none"
           style={{ backgroundColor: '#2F8FA5', color: '#FFFFFF' }}
           size={sidebarExpanded ? "default" : "icon"}
           data-testid="button-new-survey-sidebar"
