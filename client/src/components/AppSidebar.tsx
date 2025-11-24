@@ -72,7 +72,7 @@ export function AppSidebar() {
               title={!sidebarExpanded ? item.label : ""}
             >
               <Icon className="w-6 h-6 flex-shrink-0" style={{ color: active ? '#2F8FA5' : '#6A7789' }} strokeWidth={2} />
-              {sidebarExpanded && <span>{item.label}</span>}
+              {sidebarExpanded && <span style={{ color: active ? '#2F8FA5' : '#6A7789' }}>{item.label}</span>}
             </button>
           );
         })}
