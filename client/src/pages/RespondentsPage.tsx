@@ -96,7 +96,8 @@ export default function RespondentsPage() {
         return;
       }
 
-      const parsed = [...new Set(emails)].map(email => ({
+      const uniqueEmails = Array.from(new Set(emails));
+      const parsed = uniqueEmails.map(email => ({
         email: email.trim(),
         name: undefined,
       }));

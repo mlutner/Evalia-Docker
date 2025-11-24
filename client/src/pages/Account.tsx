@@ -3,7 +3,6 @@ import { useLocation } from "wouter";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,7 +24,7 @@ export default function Account() {
     },
   });
 
-  const { data: emailSettings } = useQuery({
+  const { data: emailSettings } = useQuery<{ hasResendApiKey?: boolean }>({
     queryKey: ["/api/user/email-settings"],
   });
 
@@ -51,12 +50,11 @@ export default function Account() {
   });
 
   const apiKeyValue = watch("resendApiKey");
-  const hasApiKey = emailSettings?.hasResendApiKey || false;
+  const hasApiKey = emailSettings?.hasResendApiKey ?? false;
   const isConnected = hasApiKey || apiKeyValue.length > 0;
 
   return (
     <div className="min-h-screen bg-background">
-      <Header showActions={false} />
       <main className="container mx-auto px-4 py-6 md:py-8 max-w-4xl">
         <div className="mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-2">Account Settings</h1>
