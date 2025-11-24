@@ -34,7 +34,6 @@ export function Hero() {
         <div className="absolute bottom-40 left-1/4 w-2 h-2 bg-evalia-teal-300/20 rounded-full animate-float animation-delay-3000"></div>
         <div className="absolute bottom-32 right-20 w-1.5 h-1.5 bg-evalia-mint/25 rounded-full animate-float animation-delay-2000"></div>
       </div>
-
       {/* Content */}
       <div className="relative max-w-7xl mx-auto px-6 py-40 z-10">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -59,11 +58,7 @@ export function Hero() {
               </span>
             </h1>
 
-            <p className="text-lg lg:text-xl text-white/90 leading-relaxed max-w-xl" style={{ animationDelay: '0.3s' }}>
-              Give trainers ready-made templates, AI-powered question creation,
-              and instant reporting — so you can design better sessions and
-              measure what matters.
-            </p>
+            <p className="text-lg lg:text-xl text-white/90 leading-relaxed max-w-xl" style={{ animationDelay: '0.3s' }}>Give trainers ready-made templates, AI-powered question creation, and instant reporting so you can design better sessions and measure what matters.</p>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-6" style={{ animationDelay: '0.4s' }}>
               <button className="bg-white text-evalia-teal-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-50 transition-all hover:shadow-xl flex items-center justify-center space-x-2 shadow-lg" data-testid="button-get-started-hero">
@@ -87,7 +82,6 @@ export function Hero() {
           </div>
         </div>
       </div>
-
       {/* Straight line divider at bottom */}
       <div className="absolute bottom-0 left-0 right-0 z-20 h-1 bg-white translate-y-1/2"></div>
     </section>
