@@ -287,9 +287,7 @@ export default function Builder() {
             onSurveyTitleChange={surveyState.setCurrentSurveyTitle}
             onUseTemplate={(template: SurveyTemplate) => {
               handleUseTemplate(template);
-              if (surveyState.currentQuestions.length === 0) {
-                setTimeout(() => surveyState.setCurrentWizardStep(3), 100);
-              }
+              setTimeout(() => surveyState.setCurrentWizardStep(3), 100);
             }}
             onFileSelect={handleFileSelect}
             onGenerateFromPrompt={(prompt: string, includeScoringToggle: boolean, selectedFile?: any) => {
