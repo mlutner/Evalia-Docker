@@ -21,7 +21,7 @@ export default function TemplateCard({ template, onPreview, onUse }: TemplateCar
       <div className="px-5 pt-4 pb-2">
         <div className="flex items-start justify-between gap-3">
           <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#1C2635', lineHeight: '1.3' }} className="line-clamp-2 flex-1">{template.title}</h3>
-          <Badge variant="outline" style={{ backgroundColor: 'rgba(163, 214, 92, 0.1)', color: '#1C2635', borderColor: 'rgba(163, 214, 92, 0.3)', fontSize: '11px', padding: '4px 8px' }} className="gap-1 flex-shrink-0" data-testid={`badge-question-count-${template.id}`}>
+          <Badge variant="outline" style={{ backgroundColor: 'rgba(47, 143, 165, 0.08)', color: '#2F8FA5', borderColor: 'rgba(47, 143, 165, 0.3)', fontSize: '11px', padding: '4px 8px' }} className="gap-1 flex-shrink-0" data-testid={`badge-question-count-${template.id}`}>
             <FileText className="w-3 h-3" />
             {template.questionCount}
           </Badge>
