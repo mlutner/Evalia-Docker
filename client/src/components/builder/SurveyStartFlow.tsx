@@ -24,27 +24,29 @@ interface SurveyStartFlowProps {
   isProcessing: boolean;
 }
 
+const PRIMARY_COLOR = "#2F8FA5";
+
 const OPTION_CARDS = [
   {
     id: "templates",
     title: "Start with a template",
-    description: "Choose from professionally designed survey frameworks built specifically for training scenarios",
+    description: "Choose from professionally designed survey frameworks built specifically for training and assessment scenarios. Perfect for getting started quickly with best practices.",
     icon: Layers,
-    color: "#2F8FA5",
+    color: PRIMARY_COLOR,
   },
   {
     id: "ai",
     title: "Generate with AI",
-    description: "Describe what you want to measure and let AI create tailored questions for your training",
+    description: "Describe your training needs and let AI create custom survey questions tailored to your specific learning objectives and target audience.",
     icon: Sparkles,
-    color: "#37C0A3",
+    color: PRIMARY_COLOR,
   },
   {
     id: "upload",
     title: "Upload or paste",
-    description: "Import existing questions from a file or paste them directly from your clipboard",
+    description: "Import questions from an existing document, PDF, or training materials. Paste content directly or upload files for AI-powered survey generation.",
     icon: FileUp,
-    color: "#A3D65C",
+    color: PRIMARY_COLOR,
   },
 ];
 
@@ -124,7 +126,7 @@ export default function SurveyStartFlow({
         </AnimatePresence>
 
         {/* Option Cards */}
-        <div className="space-y-4 mb-12">
+        <div className="space-y-6 mb-12">
           {OPTION_CARDS.map((option, index) => (
             <motion.div
               key={option.id}
@@ -139,34 +141,34 @@ export default function SurveyStartFlow({
                 whileTap={{ y: 0 }}
               >
                 <div
-                  className="p-6 rounded-lg border-2 transition-all cursor-pointer group"
+                  className="p-8 rounded-lg border-2 transition-all cursor-pointer group"
                   style={{
                     borderColor: expandedOption === option.id ? option.color : "rgba(0,0,0,0.08)",
                     backgroundColor: expandedOption === option.id ? `${option.color}08` : "white",
                   }}
                 >
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-6">
                     <div
-                      className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 transition-all group-hover:scale-110"
+                      className="w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0 transition-all group-hover:scale-110"
                       style={{
                         backgroundColor: expandedOption === option.id ? option.color : `${option.color}12`,
                         color: expandedOption === option.id ? "white" : option.color,
                       }}
                     >
-                      <option.icon className="w-6 h-6" />
+                      <option.icon className="w-8 h-8" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold mb-1" style={{ color: '#1C2635' }}>
+                      <h3 className="text-2xl font-semibold mb-2" style={{ color: '#1C2635' }}>
                         {option.title}
                       </h3>
-                      <p className="text-sm text-muted-foreground">{option.description}</p>
+                      <p className="text-base text-muted-foreground leading-relaxed">{option.description}</p>
                     </div>
                     <motion.div
                       animate={{ rotate: expandedOption === option.id ? 180 : 0 }}
                       transition={{ duration: 0.3 }}
                       className="flex-shrink-0"
                     >
-                      <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                      <ChevronDown className="w-6 h-6 text-muted-foreground" />
                     </motion.div>
                   </div>
                 </div>
@@ -182,7 +184,7 @@ export default function SurveyStartFlow({
                     transition={{ duration: 0.3 }}
                     className="overflow-hidden"
                   >
-                    <div className="p-6 bg-muted/40 rounded-b-lg border-l-2 border-r-2 border-b-2 border-muted mt-0" style={{ borderLeftColor: option.color, borderRightColor: option.color, borderBottomColor: option.color }}>
+                    <div className="p-8 bg-muted/40 rounded-b-lg border-l-2 border-r-2 border-b-2 border-muted mt-0" style={{ borderLeftColor: option.color, borderRightColor: option.color, borderBottomColor: option.color }}>
                       {option.id === "templates" && (
                         <div className="space-y-6">
                           <p className="text-sm text-muted-foreground">Select a template to get started instantly:</p>
@@ -254,7 +256,7 @@ export default function SurveyStartFlow({
                                   <Upload className="w-4 h-4 mr-2" />
                                   Attach File
                                 </Button>
-                                <Button size="lg" onClick={handleGenerateClick} disabled={(!prompt.trim() && !selectedFileForAI) || isProcessing} className="flex-1" style={{ backgroundColor: option.color, color: '#FFFFFF' }} data-testid="button-generate">
+                                <Button size="lg" onClick={handleGenerateClick} disabled={(!prompt.trim() && !selectedFileForAI) || isProcessing} className="flex-1" style={{ backgroundColor: PRIMARY_COLOR, color: '#FFFFFF' }} data-testid="button-generate">
                                   <Sparkles className="w-5 h-5 mr-2" />
                                   Generate
                                 </Button>
@@ -312,7 +314,7 @@ export default function SurveyStartFlow({
                               data-testid="textarea-paste-text"
                             />
                           </div>
-                          <Button size="lg" onClick={handlePasteClick} disabled={!parsedText.trim() || isProcessing} className="w-full" style={{ backgroundColor: option.color, color: '#FFFFFF' }} data-testid="button-process-text">
+                          <Button size="lg" onClick={handlePasteClick} disabled={!parsedText.trim() || isProcessing} className="w-full" style={{ backgroundColor: PRIMARY_COLOR, color: '#FFFFFF' }} data-testid="button-process-text">
                             <Sparkles className="w-5 h-5 mr-2" />
                             Process Text & Generate Survey
                           </Button>
