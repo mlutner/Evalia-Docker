@@ -1,12 +1,22 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Plus, LayoutDashboard, BarChart3, Users, BookOpen, FileText, Zap, Settings, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, LayoutDashboard, BarChart3, Users, BookOpen, FileText, Zap, Settings, ChevronLeft, ChevronRight, LogOut, User } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { queryClient } from "@/lib/queryClient";
+import type { User as UserType } from "@shared/schema";
 import evaliaLogo from "@assets/Heading (300 x 50 px) (1000 x 250 px) (3)_1763943705026.png";
 
 export function AppSidebar() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [location, setLocation] = useLocation();
+  const { user } = useAuth();
+  const typedUser = user as UserType | null | undefined;
+
+  const handleLogout = () => {
+    queryClient.clear();
+    window.location.href = "/api/logout";
+  };
 
   const sidebarItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
@@ -77,6 +87,29 @@ export function AppSidebar() {
           );
         })}
       </nav>
+      {/* Footer: Account & Logout */}
+      {typedUser && (
+        <div className="px-3 py-4 space-y-2 border-t border-[var(--color-dark-navy)] mt-auto">
+          <Button
+            onClick={() => setLocation("/account")}
+            variant="ghost"
+            className="w-full justify-start text-sm h-10"
+            data-testid="button-account-sidebar"
+          >
+            <User className="w-5 h-5 mr-2" style={{ color: '#6A7789' }} />
+            {sidebarExpanded && <span style={{ color: '#6A7789' }}>Account</span>}
+          </Button>
+          <Button
+            onClick={handleLogout}
+            variant="ghost"
+            className="w-full justify-start text-sm h-10"
+            data-testid="button-logout-sidebar"
+          >
+            <LogOut className="w-5 h-5 mr-2" style={{ color: '#6A7789' }} />
+            {sidebarExpanded && <span style={{ color: '#6A7789' }}>Logout</span>}
+          </Button>
+        </div>
+      )}
     </aside>
   );
 }

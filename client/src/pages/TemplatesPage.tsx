@@ -64,9 +64,9 @@ export default function TemplatesPage() {
                 <div className="px-6 pt-5 pb-3">
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="heading-4 flex-1">{template.title}</h3>
-                    <div className="badge-teal flex-shrink-0">
+                    <div className="badge-teal flex-shrink-0 flex items-center gap-1">
                       <FileText className="w-3 h-3" />
-                      {template.questions.length}
+                      <span>{template.questions.length}</span>
                     </div>
                   </div>
                 </div>
