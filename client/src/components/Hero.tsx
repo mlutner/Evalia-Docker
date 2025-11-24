@@ -79,10 +79,10 @@ export function Hero() {
       </div>
 
       {/* Decorative wave shape at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 z-20">
-        <svg className="w-full h-auto" viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0,50 Q360,0 720,50 T1440,50 L1440,100 L0,100 Z" fill="white" opacity="0.95"/>
-          <path d="M0,60 Q360,10 720,60 T1440,60 L1440,100 L0,100 Z" fill="white" opacity="0.05"/>
+      <div className="absolute bottom-0 left-0 right-0 z-20 translate-y-1/2">
+        <svg className="w-full h-auto" viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,30 Q360,10 720,30 T1440,30 L1440,60 L0,60 Z" fill="white" opacity="0.95"/>
+          <path d="M0,35 Q360,15 720,35 T1440,35 L1440,60 L0,60 Z" fill="white" opacity="0.05"/>
         </svg>
       </div>
     </section>
