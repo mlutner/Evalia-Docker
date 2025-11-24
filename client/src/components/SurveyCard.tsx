@@ -52,6 +52,7 @@ interface SurveyCardProps {
   onAnalyze: () => void;
   onExport: () => void;
   onDelete: () => void;
+  onReset?: () => void;
   onDuplicate?: () => void;
   onManageRespondents?: () => void;
   onShare?: () => void;
@@ -59,7 +60,7 @@ interface SurveyCardProps {
   index?: number;
 }
 
-const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport, onDelete, onDuplicate, onManageRespondents, onSaveAsTemplate, index = 0 }: SurveyCardProps) {
+const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport, onDelete, onReset, onDuplicate, onManageRespondents, onSaveAsTemplate, index = 0 }: SurveyCardProps) {
   const [copied, setCopied] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [saveTemplateOpen, setSaveTemplateOpen] = useState(false);
@@ -211,6 +212,11 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
                   <DropdownMenuItem onClick={() => setSaveTemplateOpen(true)} data-testid="menu-save-template">
                     <Save className="w-4 h-4 mr-2" />
                     Save as Template
+                  </DropdownMenuItem>
+                )}
+                {onReset && survey.responseCount > 0 && (
+                  <DropdownMenuItem onClick={onReset} className="text-destructive" data-testid="menu-reset-responses">
+                    Clear Responses
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem onClick={onDelete} className="text-destructive" data-testid="menu-delete">

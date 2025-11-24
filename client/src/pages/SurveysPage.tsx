@@ -17,6 +17,7 @@ export default function SurveysPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "most-responses" | "alphabetical">("newest");
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [resetConfirm, setResetConfirm] = useState<string | null>(null);
   const { toast } = useToast();
 
   const { data: surveys = [], isLoading } = useQuery<SurveyWithCounts[]>({
@@ -30,6 +31,18 @@ export default function SurveysPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/surveys"] });
       toast({ title: "Survey deleted", description: "The survey has been removed." });
       setDeleteConfirm(null);
+    },
+  });
+
+  const resetMutation = useMutation({
+    mutationFn: (id: string) => apiRequest("POST", `/api/surveys/${id}/clear-responses`),
+    onSuccess: (_, surveyId) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/surveys"] });
+      toast({ title: "Responses cleared", description: "All survey responses have been reset." });
+      setResetConfirm(null);
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to clear responses", variant: "destructive" });
     },
   });
 
@@ -90,11 +103,19 @@ export default function SurveysPage() {
   }, [surveys, searchTerm, selectedTags, sortBy]);
 
   const surveyToDelete = surveys.find(s => s.id === deleteConfirm);
+  const surveyToReset = surveys.find(s => s.id === resetConfirm);
 
   const handleDelete = (id: string) => setDeleteConfirm(id);
   const confirmDelete = () => {
     if (deleteConfirm) {
       deleteMutation.mutate(deleteConfirm);
+    }
+  };
+
+  const handleReset = (id: string) => setResetConfirm(id);
+  const confirmReset = () => {
+    if (resetConfirm) {
+      resetMutation.mutate(resetConfirm);
     }
   };
 
@@ -117,6 +138,28 @@ export default function SurveysPage() {
               data-testid="button-confirm-delete"
             >
               {deleteMutation.isPending ? "Removing..." : "Remove"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!resetConfirm} onOpenChange={(open) => !open && setResetConfirm(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Clear responses for "{surveyToReset?.title}"?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete all responses collected for this survey. The survey itself will remain, and you can continue collecting new responses. You can't undo this.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-reset">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmReset}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={resetMutation.isPending}
+              data-testid="button-confirm-reset"
+            >
+              {resetMutation.isPending ? "Clearing..." : "Clear Responses"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -195,6 +238,7 @@ export default function SurveysPage() {
                         toast({ title: "Export", description: "Export feature coming soon" });
                       }}
                       onDelete={() => handleDelete(survey.id)}
+                      onReset={() => handleReset(survey.id)}
                       onDuplicate={() => {
                         toast({ title: "Duplicate", description: "Duplicate feature coming soon" });
                       }}

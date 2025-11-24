@@ -504,6 +504,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Clear survey responses (protected)
+  app.post("/api/surveys/:id/clear-responses", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user.claims.sub;
+
+      // Verify ownership
+      const isOwner = await storage.checkSurveyOwnership(id, userId);
+      if (!isOwner) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      const survey = await storage.getSurvey(id);
+      if (!survey) {
+        return res.status(404).json({ error: "Survey not found" });
+      }
+
+      const cleared = await storage.clearSurveyResponses(id);
+      res.json({ success: true, cleared });
+    } catch (error: any) {
+      console.error("Clear responses error:", error);
+      res.status(500).json({ error: "Failed to clear responses" });
+    }
+  });
+
   // Duplicate survey (protected)
   app.post("/api/surveys/:id/duplicate", isAuthenticated, async (req: any, res) => {
     try {

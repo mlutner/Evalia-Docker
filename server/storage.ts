@@ -32,6 +32,7 @@ export interface IStorage {
   getResponseCount(surveyId: string): Promise<number>;
   deleteResponse(id: string): Promise<boolean>;
   deleteResponsesBulk(ids: string[]): Promise<number>;
+  clearSurveyResponses(surveyId: string): Promise<number>;
   searchResponses(surveyId: string, searchTerm: string): Promise<SurveyResponse[]>;
   detectDuplicates(surveyId: string): Promise<SurveyResponse[][]>;
 
@@ -409,6 +410,15 @@ export class MemStorage implements IStorage {
     return deleted;
   }
 
+  async clearSurveyResponses(surveyId: string): Promise<number> {
+    const responses = Array.from(this.responses.values()).filter(r => r.surveyId === surveyId);
+    let deleted = 0;
+    responses.forEach(r => {
+      if (this.responses.delete(r.id)) deleted++;
+    });
+    return deleted;
+  }
+
   async searchResponses(surveyId: string, searchTerm: string): Promise<SurveyResponse[]> {
     const term = searchTerm.toLowerCase();
     return Array.from(this.responses.values())
@@ -624,6 +634,13 @@ export class DbStorage implements IStorage {
   async deleteResponsesBulk(ids: string[]): Promise<number> {
     if (ids.length === 0) return 0;
     const result = await db.delete(surveyResponses).where(sql`${surveyResponses.id} IN (${sql.join(ids)})`).returning();
+    return result.length;
+  }
+
+  async clearSurveyResponses(surveyId: string): Promise<number> {
+    const result = await db.delete(surveyResponses).where(eq(surveyResponses.surveyId, surveyId)).returning();
+    // Invalidate cache for this survey
+    this.responseCountCache.delete(surveyId);
     return result.length;
   }
 
