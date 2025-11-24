@@ -40,25 +40,37 @@ export default function Home() {
           <p className="text-center text-xs font-bold text-evalia-teal-600 mb-12 uppercase tracking-widest letter-spacing-2" data-testid="text-trusted-by">
             Trusted by leading organizations
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 max-w-6xl mx-auto">
             <div className="group hover-elevate transition-all">
-              <div className="bg-white border border-gray-100 rounded-lg p-6 text-center h-full flex flex-col items-center justify-center hover:border-evalia-teal-200">
-                <p className="text-gray-700 font-semibold text-sm leading-snug group-hover:text-evalia-navy transition-colors">Learning & Development Teams</p>
+              <div className="bg-gradient-to-br from-white to-evalia-teal-50/20 border border-gray-200 hover:border-evalia-teal-300 rounded-xl p-8 min-h-32 flex flex-col items-center justify-center text-center transition-all">
+                <div className="w-12 h-12 rounded-full bg-evalia-teal-100 mb-4 flex items-center justify-center">
+                  <div className="w-6 h-6 rounded-full border-2 border-evalia-teal-500"></div>
+                </div>
+                <p className="text-gray-800 font-bold text-base leading-relaxed group-hover:text-evalia-navy transition-colors">Learning & Development Teams</p>
               </div>
             </div>
             <div className="group hover-elevate transition-all">
-              <div className="bg-white border border-gray-100 rounded-lg p-6 text-center h-full flex flex-col items-center justify-center hover:border-evalia-teal-200">
-                <p className="text-gray-700 font-semibold text-sm leading-snug group-hover:text-evalia-navy transition-colors">Corporate Trainers</p>
+              <div className="bg-gradient-to-br from-white to-evalia-mint/10 border border-gray-200 hover:border-evalia-teal-300 rounded-xl p-8 min-h-32 flex flex-col items-center justify-center text-center transition-all">
+                <div className="w-12 h-12 rounded-full bg-evalia-mint/20 mb-4 flex items-center justify-center">
+                  <div className="w-6 h-6 rounded-full border-2 border-evalia-mint"></div>
+                </div>
+                <p className="text-gray-800 font-bold text-base leading-relaxed group-hover:text-evalia-navy transition-colors">Corporate Trainers</p>
               </div>
             </div>
             <div className="group hover-elevate transition-all">
-              <div className="bg-white border border-gray-100 rounded-lg p-6 text-center h-full flex flex-col items-center justify-center hover:border-evalia-teal-200">
-                <p className="text-gray-700 font-semibold text-sm leading-snug group-hover:text-evalia-navy transition-colors">HR Professionals</p>
+              <div className="bg-gradient-to-br from-white to-evalia-teal-50/20 border border-gray-200 hover:border-evalia-teal-300 rounded-xl p-8 min-h-32 flex flex-col items-center justify-center text-center transition-all">
+                <div className="w-12 h-12 rounded-full bg-evalia-teal-100 mb-4 flex items-center justify-center">
+                  <div className="w-6 h-6 rounded-full border-2 border-evalia-teal-600"></div>
+                </div>
+                <p className="text-gray-800 font-bold text-base leading-relaxed group-hover:text-evalia-navy transition-colors">HR Professionals</p>
               </div>
             </div>
             <div className="group hover-elevate transition-all">
-              <div className="bg-white border border-gray-100 rounded-lg p-6 text-center h-full flex flex-col items-center justify-center hover:border-evalia-teal-200">
-                <p className="text-gray-700 font-semibold text-sm leading-snug group-hover:text-evalia-navy transition-colors">Training Facilitators</p>
+              <div className="bg-gradient-to-br from-white to-evalia-mint/10 border border-gray-200 hover:border-evalia-teal-300 rounded-xl p-8 min-h-32 flex flex-col items-center justify-center text-center transition-all">
+                <div className="w-12 h-12 rounded-full bg-evalia-mint/20 mb-4 flex items-center justify-center">
+                  <div className="w-6 h-6 rounded-full border-2 border-evalia-teal-500"></div>
+                </div>
+                <p className="text-gray-800 font-bold text-base leading-relaxed group-hover:text-evalia-navy transition-colors">Training Facilitators</p>
               </div>
             </div>
           </div>
