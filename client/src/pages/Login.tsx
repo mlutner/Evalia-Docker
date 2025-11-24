@@ -42,9 +42,9 @@ export default function Login() {
         <div className="relative z-10 text-center">
           <img src={evaliaLogoWhite} alt="Evalia" className="h-24 w-auto mx-auto mb-12" />
           <img
-            src={ChatGPT_Image_Nov_21__2025__12_41_07_PM}
+            src={trainerImage}
             alt="Professional trainer"
-            className="w-full h-auto max-w-lg object-contain"
+            className="w-full h-auto max-w-xl object-contain"
           />
         </div>
       </div>
