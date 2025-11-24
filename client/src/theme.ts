@@ -6,17 +6,33 @@
 
 export const theme = {
   colors: {
+    // Primary Colors
     primary: 'var(--color-primary)',        // #2F8FA5 - Primary Blue-Teal
     primaryHex: '#2F8FA5',                  // Hex version for direct use
     lime: 'var(--color-accent-lime)',       // #A3D65C - Primary Lime
     limeHex: '#A3D65C',                     // Hex version for direct use
     navy: 'var(--color-dark-navy)',         // #0D1B2A - Navy (Sidebar)
     navyHex: '#0D1B2A',                     // Hex version for direct use
+    
+    // Backgrounds
     bg: 'var(--color-bg-light)',            // #F7F9FC - Page Background
-    surface: 'var(--color-surface)',        // #FFFFFF - Card Surface
-    border: 'var(--color-border)',          // #E2E7EF - Borders
+    surface: 'var(--color-surface)',        // #FFFFFF - Standard Card Surface
+    surfaceHighlightLime: 'var(--color-surface-highlight-lime)',  // #F3FDE3
+    surfaceHighlightTeal: 'var(--color-surface-highlight-teal)',  // #E1F6F3
+    surfaceDark: 'var(--color-surface-dark)',                      // #0A1A2F
+    
+    // Borders
+    border: 'var(--color-border)',          // #E2E7EF - Standard Border
+    borderHighlightLime: 'var(--color-border-highlight-lime)',    // #D9F55E
+    borderHighlightTeal: 'var(--color-border-highlight-teal)',    // #A8E8E1
+    
+    // Text Colors
     textPrimary: 'var(--color-text-primary)',     // #1C2635 - Primary Text
     textSecondary: 'var(--color-text-secondary)', // #6A7789 - Secondary Text
+    
+    // Icon Colors (for highlight cards)
+    iconLime: 'var(--color-icon-lime)',     // #C3F33C
+    iconTeal: 'var(--color-icon-teal)',     // #37C0A3
   },
   
   buttons: {

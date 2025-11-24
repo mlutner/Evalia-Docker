@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  /* EVALIA FINAL PALETTE - 8 Colors (Corrected & Cohesive) */
+  /* EVALIA FINAL PALETTE - Core Colors */
   
   /* Primary Accent - Evalia Blue-Teal */
   --color-primary: #2F8FA5;
@@ -17,15 +17,24 @@
   /* Background */
   --color-bg-light: #F7F9FC;
   
-  /* Card Surface */
+  /* Card Surfaces */
   --color-surface: #FFFFFF;
+  --color-surface-highlight-lime: #F3FDE3;
+  --color-surface-highlight-teal: #E1F6F3;
+  --color-surface-dark: #0A1A2F;
   
   /* Border/Dividers */
   --color-border: #E2E7EF;
+  --color-border-highlight-lime: #D9F55E;
+  --color-border-highlight-teal: #A8E8E1;
   
   /* Text Colors */
   --color-text-primary: #1C2635;
   --color-text-secondary: #6A7789;
+  
+  /* Highlight Icon Colors */
+  --color-icon-lime: #C3F33C;
+  --color-icon-teal: #37C0A3;
 
   /* Tailwind CSS Variables */
   --background: 0 0% 97.3%;
