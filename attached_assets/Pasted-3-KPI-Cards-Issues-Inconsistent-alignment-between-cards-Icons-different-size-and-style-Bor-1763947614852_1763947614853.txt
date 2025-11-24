@@ -1,0 +1,270 @@
+3️⃣ KPI Cards
+❌ Issues
+
+
+Inconsistent alignment between cards
+
+
+Icons different size and style
+
+
+Borders inconsistent (one card has blue border, others don’t)
+
+
+Typography does not match system
+
+
+✔ Fixes
+Implement a single reusable KPI card component:
+Structure:
+
+
+Upper label (12px uppercase, grey)
+
+
+Large value (32px bold)
+
+
+Subtext (14px regular)
+
+
+Icon (20–24px, teal, right-aligned)
+
+
+Optional left border (2px teal) — use on all cards or remove from all
+
+
+Spacing:
+
+
+24px padding inside
+
+
+All KPI cards equal height
+
+
+
+4️⃣ Charts (Response Trends, Skills Ratings, etc.)
+❌ Issues
+
+
+Colors do not match brand
+
+
+Gridlines inconsistent
+
+
+Chart fonts inconsistent
+
+
+Bar colors mismatched (some grey, some blue)
+
+
+✔ Fixes
+Apply Evalia Chart Style:
+Line chart
+
+
+Line: #1F8EFA
+
+
+Dots: lime accent (optional)
+
+
+Axis text: #6B7785
+
+
+Gridlines: #E7EBF0 (very light)
+
+
+Bar charts
+
+
+Bars: teal (#1F8EFA)
+
+
+Hover/selected bar: lime (#A8E05E)
+
+
+Axis + labels: same as above
+
+
+Typography
+
+
+Label font: 12px / 500
+
+
+Title font: 16px / 600
+
+
+
+5️⃣ AI Insights Panel
+❌ Issues
+
+
+Card size inconsistent
+
+
+Icons not matching KPI icon style
+
+
+Pale yellow icon is off brand
+
+
+Text spacing too tight
+
+
+Background shade inconsistent
+
+
+✔ Fixes
+Build a unified Insight Card component:
+Structure
+
+
+Icon left (24px, teal or lime)
+
+
+Title (14px / 600)
+
+
+Description (13px / 400)
+
+
+16px vertical spacing
+
+
+24px padding
+
+
+Colors
+
+
+Awareness: lime icon + very light lime background rgba(168,224,94,0.08)
+
+
+Info: teal icon + very light teal background
+
+
+Neutral: navy icon + grey background #F5F7FA
+
+
+Spacing
+
+
+Align to chart grid precisely
+
+
+Equal height cards or allow them to auto-fit but use consistent padding
+
+
+
+6️⃣ Chart-Card Containers
+❌ Issues
+
+
+Some have heavier shadows
+
+
+Radii inconsistent
+
+
+Padding mismatched (some 20px, some 24px)
+
+
+✔ Fixes
+
+
+Use same card component system
+
+
+Radius: 12px everywhere
+
+
+Padding: 24px everywhere
+
+
+Shadow: subtle only
+
+
+Remove ALL inconsistent shadow presets.
+
+7️⃣ Top Right “Last 30 Days” Filter
+❌ Issues
+
+
+Floats awkwardly
+
+
+Border too light or too dark
+
+
+Icon mismatched
+
+
+✔ Fixes
+
+
+Use branded dropdown component
+
+
+Border: #E7EBF0
+
+
+Radius: 8px
+
+
+Icon: brand arrow (thin-line teal)
+
+
+Align with KPI card grid (same vertical level)
+
+
+
+8️⃣ General Layout Structure
+❌ Issues
+
+
+Cards don’t perfectly align in a grid
+
+
+Top section too tight
+
+
+Bottom section feels compressed
+
+
+Right-side panel too narrow
+
+
+✔ Fixes
+Use 12-column layout:
+
+
+KPI cards: span evenly across columns
+
+
+Charts:
+
+
+Trends: 6 columns
+
+
+Skills ratings: 6 columns
+
+
+
+
+Distribution + response volume: each 6 columns
+
+
+AI panel: 4 columns wide (or use fixed 320px panel)
+
+
+Apply consistent grid everywhere.
+
+🟩 SUMMARY FOR REPLIT (Copy/Paste)
+If you want, I can generate a developer checklist version (bullet point only, zero explanation) that you can paste directly into your issue tracker.
+Just say:
+"Give me the dev checklist version."
