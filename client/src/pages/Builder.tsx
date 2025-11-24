@@ -271,7 +271,7 @@ export default function Builder() {
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 md:gap-8 mb-4 sm:mb-6 md:mb-8">
             <div className="min-w-0">
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-1 sm:mb-2 line-clamp-2">
-                {isEditMode ? "Edit Feedback Tool" : "Build Feedback Tool"}
+                {isEditMode ? "Edit Questionnaire Type" : "Build Questionnaire Type"}
               </h1>
               <p className="text-xs sm:text-sm md:text-base text-muted-foreground line-clamp-2">
                 {surveyState.currentWizardStep === 1 && "Step 1 of 4: Choose survey or assessment"}
