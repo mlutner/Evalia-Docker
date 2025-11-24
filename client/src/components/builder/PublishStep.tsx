@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown, Clock, BookOpen, ChevronRight, Link2, Unlink2, FileText, BarChart3, GripVertical, HelpCircle } from "lucide-react";
+import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown, Clock, BookOpen, ChevronRight, Link2, Unlink2, FileText, BarChart3, GripVertical, HelpCircle, ArrowRight } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -13,6 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useScoring } from "@/hooks/useScoring";
 import { ScoringConfiguration } from "./ScoringConfiguration";
 import type { Question, SurveyScoreConfig } from "@shared/schema";
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { useDraggable } from "@dnd-kit/core";
 
 interface PublishStepProps {
   title: string;
@@ -342,15 +344,15 @@ export default function PublishStep({
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-semibold mb-3">Customize Your Survey</h2>
-        <p className="text-muted-foreground text-lg">
+        <h2 className="text-3xl font-semibold mb-3" style={{ color: '#1C2635' }}>Customize Your Survey</h2>
+        <p className="text-lg" style={{ color: '#6A7789' }}>
           Add details and optional scoring configuration
         </p>
       </div>
       <div className="form-field-group bg-card border rounded-lg p-8">
         <div className="form-field-item">
-          <label className="text-sm heading-secondary mb-3 block">
-            Survey Title <span className="text-destructive">*</span>
+          <label className="text-sm font-semibold mb-3 block" style={{ color: '#1C2635' }}>
+            Survey Title <span style={{ color: '#A3D65C' }}>*</span>
           </label>
           <Input
             value={title}
@@ -360,7 +362,7 @@ export default function PublishStep({
             data-testid="input-survey-title"
           />
           {!title.trim() && (
-            <p className="text-xs text-destructive mt-1">
+            <p className="text-xs mt-1" style={{ color: '#A3D65C' }}>
               Title is required to publish your survey
             </p>
           )}
@@ -368,8 +370,8 @@ export default function PublishStep({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="text-sm font-medium mb-2 block">
-              Trainer Name <span className="text-muted-foreground">(optional)</span>
+            <label className="text-sm font-medium mb-2 block" style={{ color: '#1C2635' }}>
+              Trainer Name <span style={{ color: '#6A7789' }}>(optional)</span>
             </label>
             <Input
               value={trainerName || ""}
@@ -379,8 +381,8 @@ export default function PublishStep({
             />
           </div>
           <div>
-            <label className="text-sm font-medium mb-2 block">
-              Training Date <span className="text-muted-foreground">(optional)</span>
+            <label className="text-sm font-medium mb-2 block" style={{ color: '#1C2635' }}>
+              Training Date <span style={{ color: '#6A7789' }}>(optional)</span>
             </label>
             <Input
               type="date"
@@ -392,8 +394,8 @@ export default function PublishStep({
         </div>
 
         <div>
-          <label className="text-sm font-medium mb-2 block">
-            Tags <span className="text-muted-foreground">(optional - add categories for sorting)</span>
+          <label className="text-sm font-medium mb-2 block" style={{ color: '#1C2635' }}>
+            Tags <span style={{ color: '#6A7789' }}>(optional - add categories for sorting)</span>
           </label>
           <div className="flex gap-2 mb-2">
             <Input
@@ -431,13 +433,14 @@ export default function PublishStep({
               {currentTags.map((tag) => (
                 <div
                   key={tag}
-                  className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
+                  className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm"
+                  style={{ backgroundColor: '#F0F2F5', color: '#2F8FA5', border: '1px solid #E2E7EF' }}
                   data-testid={`tag-${tag}`}
                 >
                   {tag}
                   <button
                     onClick={() => onTagsChange?.(currentTags.filter(t => t !== tag))}
-                    className="text-primary/60 hover:text-primary"
+                    style={{ color: '#A3D65C' }}
                     data-testid={`button-remove-tag-${tag}`}
                   >
                     ×
@@ -454,21 +457,31 @@ export default function PublishStep({
           {/* Choose from Images Section */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-sm font-medium text-muted-foreground">Choose from images</p>
+              <p className="text-sm font-medium" style={{ color: '#6A7789' }}>Choose from images</p>
             </div>
             <div className="grid grid-cols-3 gap-2">
               {illustrations.map((url) => (
                 <div
                   key={url}
                   onClick={() => onIllustrationChange?.(url)}
-                  className={`relative cursor-pointer rounded-md overflow-hidden border-2 transition-all flex items-center justify-center bg-muted/30 h-24 ${
-                    illustrationUrl === url ? "border-primary" : "border-border hover:border-muted-foreground/50"
-                  }`}
+                  style={{
+                    border: illustrationUrl === url ? '2px solid #2F8FA5' : '2px solid #E2E7EF',
+                    backgroundColor: '#F7F9FC',
+                    cursor: 'pointer',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '96px',
+                    transition: 'all 0.2s'
+                  }}
+                  className="relative"
                 >
                   <img src={url} alt="Survey illustration" className="max-w-full max-h-full object-contain p-1" />
                   {illustrationUrl === url && (
-                    <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
-                      <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                    <div className="absolute inset-0 flex items-center justify-center" style={{ backgroundColor: 'rgba(47, 143, 165, 0.15)' }}>
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ backgroundColor: '#2F8FA5' }}>
                         <div className="w-3 h-3 bg-white rounded-full" />
                       </div>
                     </div>
@@ -480,7 +493,7 @@ export default function PublishStep({
 
           {/* Upload Image Section */}
           <div>
-            <p className="text-sm font-medium text-muted-foreground mb-3">Upload image</p>
+            <p className="text-sm font-medium mb-3" style={{ color: '#6A7789' }}>Upload image</p>
             <label>
               <input
                 type="file"
@@ -489,16 +502,34 @@ export default function PublishStep({
                 disabled={uploadingImage}
                 className="hidden"
               />
-              <div className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:bg-muted/50 transition-colors">
+              <div style={{
+                borderWidth: '2px',
+                borderStyle: 'dashed',
+                borderRadius: '8px',
+                padding: '24px',
+                textAlign: 'center',
+                cursor: 'pointer',
+                borderColor: '#E2E7EF',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#F0F2F5';
+                e.currentTarget.style.borderColor = '#2F8FA5';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.borderColor = '#E2E7EF';
+              }}
+              >
                 {uploadingImage ? (
                   <>
-                    <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">Uploading...</p>
+                    <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" style={{ color: '#2F8FA5' }} />
+                    <p className="text-sm" style={{ color: '#6A7789' }}>Uploading...</p>
                   </>
                 ) : (
                   <>
-                    <Upload className="w-5 h-5 mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
+                    <Upload className="w-5 h-5 mx-auto mb-2" style={{ color: '#A3D65C' }} />
+                    <p className="text-sm" style={{ color: '#6A7789' }}>Click to upload or drag and drop</p>
                   </>
                 )}
               </div>
@@ -506,8 +537,8 @@ export default function PublishStep({
           </div>
 
           {illustrationUrl && (
-            <div className="mt-6 rounded-lg overflow-hidden border bg-muted/30">
-              <p className="text-xs font-medium text-muted-foreground px-3 pt-3">Selected illustration</p>
+            <div className="mt-6 rounded-lg overflow-hidden border" style={{ borderColor: '#E2E7EF', backgroundColor: '#F7F9FC' }}>
+              <p className="text-xs font-medium px-3 pt-3" style={{ color: '#6A7789' }}>Selected illustration</p>
               <div className="flex items-center justify-center h-32 p-2">
                 <img src={illustrationUrl} alt="Selected illustration" className="max-w-full max-h-full object-contain" />
               </div>
@@ -527,26 +558,26 @@ export default function PublishStep({
         </div>
 
         {/* Scoring Configuration - Prominent Card Section */}
-        <Card className="bg-gradient-to-br from-primary/5 via-primary/3 to-background border-primary/30 shadow-sm">
+        <Card style={{ backgroundColor: '#F0F2F5', borderColor: '#E2E7EF' }}>
           <Collapsible defaultOpen={true} className="w-full">
             <CollapsibleTrigger className="w-full">
-              <CardHeader className="pb-3 hover:bg-primary/5 transition-colors">
+              <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3 flex-1">
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 mt-1" style={{ backgroundColor: '#071a32' }}>
-                      <Award className="w-5 h-5" style={{ color: '#ccff00' }} />
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 mt-1" style={{ backgroundColor: '#37C0A3' }}>
+                      <Award className="w-5 h-5" style={{ color: 'white' }} />
                     </div>
                     <div className="text-left">
                       <div className="flex items-center gap-2 mb-1">
-                        <CardTitle className="text-base">Assessment Scoring</CardTitle>
-                        <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary">Optional</span>
+                        <CardTitle className="text-base" style={{ color: '#1C2635' }}>Assessment Scoring</CardTitle>
+                        <span className="text-xs font-medium px-2.5 py-1 rounded-full" style={{ backgroundColor: '#F7F9FC', color: '#2F8FA5', border: '1px solid #E2E7EF' }}>Optional</span>
                       </div>
-                      <CardDescription className="text-sm">
+                      <CardDescription className="text-sm" style={{ color: '#6A7789' }}>
                         Show respondents their results with personalized feedback and interpretations
                       </CardDescription>
                     </div>
                   </div>
-                  <ChevronDown className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-1 group-data-[state=open]:rotate-180 transition-transform" />
+                  <ChevronDown className="w-5 h-5 flex-shrink-0 mt-1 group-data-[state=open]:rotate-180 transition-transform" style={{ color: '#6A7789' }} />
                 </div>
               </CardHeader>
             </CollapsibleTrigger>

@@ -72,15 +72,15 @@ export default function Step1Start({
     <div className="space-y-12">
       <div className="max-w-6xl mx-auto">
         <div className="mb-10">
-          <h2 className="text-2xl font-semibold mb-2">Step 1: Choose your creation method</h2>
-          <p className="text-muted-foreground text-base leading-relaxed">
+          <h2 className="text-2xl font-semibold mb-2" style={{ color: '#1C2635' }}>Step 1: Choose your creation method</h2>
+          <p className="text-base leading-relaxed" style={{ color: '#6A7789' }}>
             Pick the option that works best for you. You can edit questions in the next step regardless of which method you choose.
           </p>
         </div>
 
         {/* Survey Title Input - Always Visible */}
         {currentQuestions.length > 0 && (
-          <div className="mb-10 p-6 bg-primary/5 border border-primary/20 rounded-lg">
+          <div className="mb-10 p-6 rounded-lg" style={{ backgroundColor: '#F0F2F5', border: '1px solid #E2E7EF' }}>
             <label className="text-sm font-semibold mb-3 block text-foreground">
               Survey Title <span className="text-destructive">*</span>
             </label>
