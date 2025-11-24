@@ -21,9 +21,9 @@ import { useFileProcessing } from "@/hooks/useFileProcessing";
 import { useAIChat } from "@/hooks/useAIChat";
 
 const WIZARD_STEPS = [
-  { number: 1, title: "Start", description: "Select a template, generate with AI, or upload your content" },
-  { number: 2, title: "Questions", description: "Build your questions. Use AI to help you refine them" },
-  { number: 3, title: "Customize", description: "Add survey details, welcome message, and optional scoring configuration" },
+  { number: 1, title: "Choose Method", description: "Select how you'd like to create your survey" },
+  { number: 2, title: "Build Questions", description: "Create and refine your survey questions" },
+  { number: 3, title: "Publish", description: "Add details, welcome message, and publish your survey" },
 ];
 
 function formatTimeAgo(date: Date): string {
@@ -251,10 +251,17 @@ export default function Builder() {
         </div>
 
         <div className="mb-12 pb-8 border-b border-border/30">
-          <div className="flex items-center justify-between mb-3">
-            <h1 className="text-4xl font-semibold">
-              {isEditMode ? "Edit Survey" : "Create Survey"}
-            </h1>
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-4xl font-semibold mb-2">
+                {isEditMode ? "Edit Survey" : "Create Survey"}
+              </h1>
+              <p className="text-base text-muted-foreground">
+                {surveyState.currentWizardStep === 1 && "Step 1 of 3: Choose how you'd like to create your survey"}
+                {surveyState.currentWizardStep === 2 && "Step 2 of 3: Build and refine your survey questions"}
+                {surveyState.currentWizardStep === 3 && "Step 3 of 3: Add details and publish your survey"}
+              </p>
+            </div>
             {surveyState.lastAutoSave && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Save className="w-3 h-3" />
@@ -262,9 +269,6 @@ export default function Builder() {
               </div>
             )}
           </div>
-          <p className="text-muted-foreground mb-8">
-            {WIZARD_STEPS[surveyState.currentWizardStep - 1]?.description || ""}
-          </p>
           
           <WizardSteps
             steps={WIZARD_STEPS}
