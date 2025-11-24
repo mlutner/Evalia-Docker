@@ -38,7 +38,7 @@ export function AppSidebar() {
         </button>
       </div>
       {/* New Survey Button */}
-      <div className="px-3 py-3 border-b border-slate-700 bg-[#0e1729]">
+      <div className="px-3 py-3 bg-[#0e1729]">
         <Button
           onClick={() => setLocation("/builder")}
           className="w-full bg-evalia-lime hover:bg-evalia-lime/90 text-slate-900 border-0 font-semibold"
