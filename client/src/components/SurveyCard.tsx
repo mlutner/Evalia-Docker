@@ -137,7 +137,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
     >
       <CardHeader className="flex flex-col pb-0 mb-2">
         <div className="flex flex-row items-start justify-between gap-3 mb-3">
-          <h3 style={{ fontSize: '16px', fontWeight: 700, lineHeight: '1.3', color: '#1C2635', flex: 1 }} className="line-clamp-2 text-[18px] font-extrabold">{survey.title}</h3>
+          <h3 style={{ fontSize: '16px', fontWeight: 700, lineHeight: '1.3', color: '#1C2635', flex: 1 }} className="line-clamp-2 font-extrabold text-[17px]">{survey.title}</h3>
           <div className="flex gap-1 flex-shrink-0 items-center">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
