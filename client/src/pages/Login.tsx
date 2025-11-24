@@ -3,10 +3,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import trainerImage from "@assets/ChatGPT Image Nov 6, 2025, 03_45_09 PM_1762472718165.png";
+import trainingFeedbackIllustration from "@assets/training-feedback-illustration.png";
 import evaliaLogoWhite from "@assets/evalia-logo-white.png";
-
-import ChatGPT_Image_Nov_21__2025__12_41_07_PM from "@assets/ChatGPT Image Nov 21, 2025, 12_41_07 PM.png";
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -32,19 +30,20 @@ export default function Login() {
 
   return (
     <div className="flex h-screen">
-      {/* Left side - Teal background with white logo */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center bg-gradient-to-br from-evalia-teal-600 via-evalia-teal-500 to-evalia-teal-700">
+      {/* Left side - Warmer backdrop with white logo */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center bg-gradient-to-br from-amber-500/40 via-orange-400/30 to-evalia-teal-600">
         <div className="absolute inset-0 pointer-events-none">
-          {/* Subtle background blobs */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-evalia-teal-400/20 rounded-full mix-blend-multiply filter blur-3xl"></div>
+          {/* Subtle warm background blobs */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-orange-300/15 rounded-full mix-blend-multiply filter blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-evalia-mint/15 rounded-full mix-blend-multiply filter blur-3xl"></div>
+          <div className="absolute top-1/3 right-1/4 w-72 h-72 bg-amber-400/10 rounded-full mix-blend-multiply filter blur-3xl"></div>
         </div>
         <div className="relative z-10 text-center">
           <img src={evaliaLogoWhite} alt="Evalia" className="h-24 w-auto mx-auto mb-12" />
           <img
-            src={trainerImage}
-            alt="Professional trainer"
-            className="w-full h-auto max-w-xl object-contain"
+            src={trainingFeedbackIllustration}
+            alt="Training feedback illustration"
+            className="w-full h-auto max-w-2xl object-contain"
           />
         </div>
       </div>
