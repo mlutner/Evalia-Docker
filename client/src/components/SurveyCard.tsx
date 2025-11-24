@@ -131,8 +131,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
 
   return (
     <Card 
-      className="card-hover hover-elevate transition-all flex flex-col" 
-      style={{ height: '360px', display: 'flex', flexDirection: 'column', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)', borderColor: '#E2E7EF', borderRadius: '12px' }}
+      className="evalia-survey-card"
       data-testid={`survey-card-${survey.id}`}
     >
       <CardHeader className="flex flex-col pb-3 px-5 pt-4">

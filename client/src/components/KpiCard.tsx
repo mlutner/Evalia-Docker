@@ -19,22 +19,16 @@ export function KpiCard({
   borderColor = '#2F8FA5'
 }: KpiCardProps) {
   return (
-    <Card className={`hover-elevate ${showBorder ? "border-l-4" : ""} h-full`} style={{
-      borderLeftColor: showBorder ? borderColor : undefined,
-      backgroundColor: '#FFFFFF',
-      borderColor: '#E2E7EF',
-      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
-      borderRadius: '12px',
-    }}>
-      <CardContent className="p-6">
+    <Card className="evalia-kpi-card" style={{ borderLeftColor: showBorder ? borderColor : undefined }}>
+      <CardContent className="p-0">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-neutral-text-secondary)' }}>{label}</p>
-            <p className="text-[32px] font-bold mt-2" style={{ color: 'var(--color-neutral-text-primary)' }}>{value}</p>
-            <p className="text-[13px] mt-2" style={{ color: 'var(--color-neutral-text-secondary)' }}>{subtext}</p>
+            <p className="evalia-kpi-label">{label}</p>
+            <p className="evalia-kpi-value">{value}</p>
+            <p className="evalia-kpi-subtext">{subtext}</p>
           </div>
-          <div className="flex items-center justify-center flex-shrink-0 ml-6 w-12 h-12 rounded-[12px]" style={{ backgroundColor: '#F7F9FA' }}>
-            <Icon className="w-6 h-6" strokeWidth={2} style={{ color: borderColor }} />
+          <div className="evalia-kpi-icon-wrapper" style={{ backgroundColor: borderColor ? `${borderColor}15` : undefined }}>
+            <Icon className="evalia-icon" style={{ color: borderColor }} strokeWidth={2} />
           </div>
         </div>
       </CardContent>
