@@ -82,13 +82,12 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
               key={item.id}
               onClick={() => handleNavigation(item.href)}
               className={`w-full flex items-center gap-4 px-4 py-3 rounded-[12px] text-sm font-medium transition-colors group ${
-                sidebarExpanded ? "" : "justify-center px-0"`}
-              data-testid={`nav-${item.id}`}
+                sidebarExpanded ? "" : "justify-center px-0"
               }`}
+              data-testid={`nav-${item.id}`}
               style={{
                 color: '#6A7789',
               }}
-              data-testid={`nav-${item.id}`}
               title={item.tooltip || item.label}
             >
               <Icon className="w-6 h-6 flex-shrink-0" style={{ color: active ? '#2F8FA5' : '#6A7789' }} strokeWidth={2} />
