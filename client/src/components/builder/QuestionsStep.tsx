@@ -53,6 +53,7 @@ export default function QuestionsStep({
 }: QuestionsStepProps) {
   const [chatOpen, setChatOpen] = useState(true);
   const [chatExpanded, setChatExpanded] = useState(false);
+  const [isMobileChat, setIsMobileChat] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -109,8 +110,8 @@ export default function QuestionsStep({
             </Button>
           )}
           {/* Mobile: AI Chat Sheet */}
-          <Sheet>
-            <SheetTrigger asChild className="lg:hidden">
+          <Sheet open={isMobileChat} onOpenChange={setIsMobileChat}>
+            <SheetTrigger asChild className="md:hidden">
               <Button variant="outline" data-testid="button-open-chat-mobile">
                 <MessageSquare className="w-4 h-4 mr-2" />
                 AI Chat
@@ -137,21 +138,21 @@ export default function QuestionsStep({
           <Button
             variant="outline"
             onClick={() => setChatOpen(!chatOpen)}
-            className="hidden lg:flex"
+            className="hidden md:flex"
             data-testid="button-toggle-chat"
           >
-            {chatOpen ? <ChevronRight className="w-4 h-4 mr-2" /> : <ChevronLeft className="w-4 h-4 mr-2" />}
-            {chatOpen ? 'Hide' : 'Show'} AI Chat
+            {chatOpen ? <ChevronLeft className="w-4 h-4 mr-2" /> : <ChevronRight className="w-4 h-4 mr-2" />}
+            {chatOpen ? 'Hide' : 'Show'} Chat
           </Button>
         </div>
       </div>
 
-      <div className={`grid gap-6 transition-all ${
+      <div className={`grid gap-6 transition-all duration-300 ${
         chatOpen 
           ? chatExpanded 
-            ? 'lg:grid-cols-[1fr,600px]' 
-            : 'lg:grid-cols-[1fr,280px]'
-          : 'lg:grid-cols-1'
+            ? 'md:grid-cols-[1fr,500px] lg:grid-cols-[1fr,600px]' 
+            : 'md:grid-cols-[1fr,350px] lg:grid-cols-[1fr,400px]'
+          : 'grid-cols-1'
       }`}>
         {/* Questions Editor - Main Area */}
         <div className="space-y-4">
@@ -214,16 +215,16 @@ export default function QuestionsStep({
 
         {/* AI Chat Panel - Desktop Side Panel */}
         {chatOpen && (
-          <div className="hidden lg:block">
+          <div className="hidden md:block">
             <div className="sticky top-20 h-[calc(100vh-8rem)]">
               <Card className="h-full flex flex-col">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base flex items-center gap-2">
+                  <CardTitle className="text-sm flex items-center gap-2">
                     <MessageSquare className="w-4 h-4" />
                     AI Assistant
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Ask to add, modify, or remove questions
+                    Refine your questions
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1 overflow-hidden p-0">
