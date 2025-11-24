@@ -13,6 +13,7 @@ import multer from "multer";
 import mammoth from "mammoth";
 import { PDFParse } from "pdf-parse";
 import { emailService } from "./email";
+import { Anthropic } from "@anthropic-ai/sdk";
 import "./types";
 
 // Pool of survey illustrations - rotated across surveys
@@ -883,6 +884,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching template:", error);
       res.status(500).json({ message: "Failed to fetch template" });
+    }
+  });
+
+  // AI Chat endpoint
+  app.post("/api/ai-chat", isAuthenticated, async (req: any, res) => {
+    try {
+      const { message, history = [], context } = req.body;
+
+      if (!message || typeof message !== "string") {
+        return res.status(400).json({ error: "Message is required" });
+      }
+
+      const client = new Anthropic();
+
+      const conversationHistory = history.map((m: any) => ({
+        role: m.role as "user" | "assistant",
+        content: m.content,
+      }));
+
+      const response = await client.messages.create({
+        model: "claude-3-5-sonnet-20241022",
+        max_tokens: 1024,
+        system: context || "You are a helpful assistant.",
+        messages: [
+          ...conversationHistory,
+          { role: "user", content: message },
+        ],
+      });
+
+      const assistantMessage = response.content[0];
+      if (assistantMessage.type !== "text") {
+        return res.status(500).json({ error: "Unexpected response type" });
+      }
+
+      return res.json({ message: assistantMessage.text });
+    } catch (error: any) {
+      console.error("AI Chat error:", error);
+      return res.status(500).json({ message: error.message || "Failed to process chat request" });
     }
   });
 
