@@ -7,20 +7,15 @@ import { SurveyFilters } from "@/components/SurveyFilters";
 import { DashboardOverview } from "@/components/DashboardOverview";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Plus, FileText, BarChart3, Calendar, Clock, Users, TrendingUp } from "lucide-react";
+import { Plus, FileText, BarChart3, Calendar, Clock, Users, Settings, Zap, BookOpen, LayoutDashboard } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { SurveyWithCounts } from "@shared/schema";
-import type { ReactNode } from "react";
 
 export default function Dashboard() {
-  const [location, setLocation] = useLocation();
-  const [activeTab, setActiveTab] = useState<"overview" | "all" | "recent">(() => {
-    const params = new URLSearchParams(location.split("?")[1]);
-    return (params.get("tab") as any) || "overview";
-  });
+  const [, setLocation] = useLocation();
+  const [activeView, setActiveView] = useState<"overview" | "surveys">("overview");
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -38,12 +33,6 @@ export default function Dashboard() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.split("?")[1]);
-    const tab = (params.get("tab") as any) || "overview";
-    setActiveTab(tab);
-  }, [location]);
 
   const { data: surveys = [], isLoading } = useQuery<SurveyWithCounts[]>({
     queryKey: ["/api/surveys"],
@@ -85,7 +74,7 @@ export default function Dashboard() {
     });
 
     return filtered;
-  }, [surveys, searchTerm, selectedTags, sortBy]);  // Keeping inline to avoid import issues
+  }, [surveys, searchTerm, selectedTags, sortBy]);
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -161,8 +150,6 @@ export default function Dashboard() {
     duplicateMutation.mutate();
   };
 
-  const isExpired = (survey: Survey) => false; // Placeholder - expiresAt not in schema
-
   const handleDelete = (id: string) => {
     setDeleteConfirm(id);
   };
@@ -173,18 +160,21 @@ export default function Dashboard() {
     }
   };
 
-  // Sort surveys by creation date for "Recent" tab (memoized)
-  const recentSurveys = useMemo(
-    () => [...filteredSurveys].sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    ).slice(0, 6),
-    [filteredSurveys]
-  );
-
   const surveyToDelete = surveys.find(s => s.id === deleteConfirm);
 
+  // Sidebar items
+  const sidebarItems = [
+    { id: "overview", label: "Dashboard", icon: LayoutDashboard },
+    { id: "surveys", label: "Surveys", icon: BarChart3 },
+    { id: "respondents", label: "Respondents", icon: Users },
+    { id: "scoring", label: "Scoring Models", icon: BookOpen },
+    { id: "templates", label: "Templates", icon: FileText },
+    { id: "ai", label: "AI Assist", icon: Zap },
+    { id: "settings", label: "Settings", icon: Settings },
+  ];
+
   return (
-    <div className="min-h-screen bg-background dark:bg-slate-950">
+    <div className="min-h-screen bg-background dark:bg-slate-950 flex flex-col">
       <Header />
       
       {/* Delete Confirmation Dialog */}
@@ -210,204 +200,193 @@ export default function Dashboard() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <main className="container mx-auto px-4 py-6 md:py-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
-          <div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-2">Your Surveys</h1>
-            <p className="text-sm md:text-base text-muted-foreground">
-              {surveys.length === 0 
-                ? "Create, manage, and analyze your training surveys"
-                : `${surveys.length} ${surveys.length === 1 ? 'survey' : 'surveys'} created • ${surveys.filter(s => s.publishedAt).length} live • ${surveys.reduce((sum, s) => sum + (s.responseCount || 0), 0)} total responses`
-              }
-            </p>
-          </div>
-          <Button 
-            size="lg" 
-            onClick={() => setLocation("/builder")} 
-            data-testid="button-new-survey"
-            className="w-full sm:w-auto bg-lime-400 hover:bg-lime-500 text-slate-900 border-0 font-semibold shadow-md hover:shadow-lg"
-          >
-            <Plus className="w-5 h-5" />
-            New Survey
-          </Button>
-        </div>
-
-        {isLoading ? (
-          <div className="flex justify-center py-20">
-            <div className="text-muted-foreground">Loading your surveys...</div>
-          </div>
-        ) : surveys.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 md:py-20 px-4">
-            <div className="w-20 h-20 md:w-24 md:h-24 bg-primary/10 rounded-full flex items-center justify-center mb-6">
-              <FileText className="w-10 h-10 md:w-12 md:h-12 text-primary" />
+      <div className="flex flex-1">
+        {/* Sidebar */}
+        <aside className="w-48 bg-evalia-navy dark:bg-evalia-navy border-r border-slate-200 dark:border-slate-800 flex flex-col">
+          <div className="p-4 border-b border-slate-700 dark:border-slate-700">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded bg-white/20 flex items-center justify-center">
+                <span className="text-white font-bold text-sm">E</span>
+              </div>
+              <span className="text-white font-semibold">Evalia</span>
             </div>
-            <h3 className="text-xl md:text-2xl font-semibold mb-2 text-center">No surveys yet</h3>
-            <p className="text-sm md:text-base text-muted-foreground mb-8 text-center max-w-md px-4">
-              Create your first AI-powered survey in minutes. Choose from templates, generate with AI, or upload a document.
-            </p>
-            <Button 
-              size="lg" 
-              onClick={() => setLocation("/builder")} 
-              data-testid="button-create-first"
-              className="w-full sm:w-auto"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Create Your First Survey
-            </Button>
           </div>
-        ) : (
-          <Tabs value={activeTab} onValueChange={(v) => setLocation(`/dashboard?tab=${v}`)} className="space-y-6">
-            <TabsList className="grid w-full max-w-2xl grid-cols-3">
-              <TabsTrigger value="overview" data-testid="tab-overview">
-                <TrendingUp className="w-4 h-4 mr-2" />
-                Overview
-              </TabsTrigger>
-              <TabsTrigger value="all" data-testid="tab-all-surveys">
-                <BarChart3 className="w-4 h-4 mr-2" />
-                All Surveys
-              </TabsTrigger>
-              <TabsTrigger value="recent" data-testid="tab-recent-surveys">
-                <Calendar className="w-4 h-4 mr-2" />
-                Recent
-              </TabsTrigger>
-            </TabsList>
 
-            <TabsContent value="overview" className="space-y-6">
-              <DashboardOverview />
-            </TabsContent>
+          <nav className="flex-1 p-4 space-y-2">
+            {sidebarItems.map((item) => {
+              const isActive = activeView === item.id || (item.id === "surveys" && activeView === "surveys");
+              const Icon = item.icon;
+              
+              if (item.id === "respondents" || item.id === "scoring" || item.id === "templates" || item.id === "ai" || item.id === "settings") {
+                return (
+                  <div
+                    key={item.id}
+                    className="flex items-center gap-3 px-3 py-2 text-slate-400 text-sm cursor-not-allowed rounded opacity-60"
+                    title="Coming soon"
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span>{item.label}</span>
+                  </div>
+                );
+              }
 
-            <TabsContent value="all" className="space-y-6">
-              <div className="space-y-4">
-                <SurveyFilters
-                  searchTerm={searchTerm}
-                  onSearchChange={setSearchTerm}
-                  allTags={allTags}
-                  selectedTags={selectedTags}
-                  onTagToggle={(tag) => setSelectedTags(prev => 
-                    prev.includes(tag) 
-                      ? prev.filter(t => t !== tag)
-                      : [...prev, tag]
-                  )}
-                  testIdPrefix="surveys"
-                />
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <p className="text-sm text-muted-foreground">
-                    Showing {filteredSurveys.length} of {surveys.length} {surveys.length === 1 ? 'survey' : 'surveys'}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground">Sort:</span>
-                    <select 
-                      value={sortBy} 
-                      onChange={(e) => setSortBy(e.target.value as any)}
-                      className="text-xs px-2 py-1 border rounded-md bg-background"
-                      data-testid="select-sort"
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveView(item.id as any)}
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded text-sm font-medium transition-colors ${
+                    isActive
+                      ? "bg-white/20 text-white"
+                      : "text-slate-300 hover:bg-white/10 hover:text-white"
+                  }`}
+                  data-testid={`nav-${item.id}`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+        </aside>
+
+        {/* Main Content */}
+        <main className="flex-1 overflow-auto">
+          <div className="container mx-auto px-4 py-6 md:py-8">
+            {activeView === "overview" ? (
+              <>
+                <div className="flex items-center justify-between mb-8">
+                  <h1 className="text-3xl font-semibold">Dashboard</h1>
+                  <Button 
+                    size="lg" 
+                    onClick={() => setLocation("/builder")} 
+                    data-testid="button-new-survey"
+                    className="bg-evalia-lime hover:bg-evalia-lime/90 text-slate-900 border-0 font-semibold shadow-md hover:shadow-lg"
+                  >
+                    <Plus className="w-5 h-5" />
+                    New Survey
+                  </Button>
+                </div>
+                <DashboardOverview />
+              </>
+            ) : (
+              <>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
+                  <div>
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-2">Your Surveys</h1>
+                    <p className="text-sm md:text-base text-muted-foreground">
+                      {surveys.length === 0 
+                        ? "Create, manage, and analyze your training surveys"
+                        : `${surveys.length} ${surveys.length === 1 ? 'survey' : 'surveys'} created • ${surveys.filter(s => s.publishedAt).length} live • ${surveys.reduce((sum, s) => sum + (s.responseCount || 0), 0)} total responses`
+                      }
+                    </p>
+                  </div>
+                  <Button 
+                    size="lg" 
+                    onClick={() => setLocation("/builder")} 
+                    data-testid="button-new-survey"
+                    className="w-full sm:w-auto bg-evalia-lime hover:bg-evalia-lime/90 text-slate-900 border-0 font-semibold shadow-md hover:shadow-lg"
+                  >
+                    <Plus className="w-5 h-5" />
+                    New Survey
+                  </Button>
+                </div>
+
+                {isLoading ? (
+                  <div className="flex justify-center py-20">
+                    <div className="text-muted-foreground">Loading your surveys...</div>
+                  </div>
+                ) : surveys.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12 md:py-20 px-4">
+                    <div className="w-20 h-20 md:w-24 md:h-24 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                      <FileText className="w-10 h-10 md:w-12 md:h-12 text-primary" />
+                    </div>
+                    <h3 className="text-xl md:text-2xl font-semibold mb-2 text-center">No surveys yet</h3>
+                    <p className="text-sm md:text-base text-muted-foreground mb-8 text-center max-w-md px-4">
+                      Create your first AI-powered survey in minutes. Choose from templates, generate with AI, or upload a document.
+                    </p>
+                    <Button 
+                      size="lg" 
+                      onClick={() => setLocation("/builder")} 
+                      data-testid="button-create-first"
+                      className="w-full sm:w-auto"
                     >
-                      <option value="newest">Newest First</option>
-                      <option value="oldest">Oldest First</option>
-                      <option value="most-responses">Most Responses</option>
-                      <option value="alphabetical">A-Z</option>
-                    </select>
+                      <Plus className="w-5 h-5 mr-2" />
+                      Create Your First Survey
+                    </Button>
                   </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredSurveys.map((survey, index) => (
-                  <div key={survey.id} className="relative">
-                    {isExpired(survey) && (
-                      <div className="absolute top-2 right-2 z-10">
-                        <Badge variant="destructive" data-testid={`badge-expired-${survey.id}`}>Expired</Badge>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <SurveyFilters
+                        searchTerm={searchTerm}
+                        onSearchChange={setSearchTerm}
+                        allTags={allTags}
+                        selectedTags={selectedTags}
+                        onTagToggle={(tag) => setSelectedTags(prev => 
+                          prev.includes(tag) 
+                            ? prev.filter(t => t !== tag)
+                            : [...prev, tag]
+                        )}
+                        testIdPrefix="surveys"
+                      />
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <p className="text-sm text-muted-foreground">
+                          Showing {filteredSurveys.length} of {surveys.length} {surveys.length === 1 ? 'survey' : 'surveys'}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-muted-foreground">Sort:</span>
+                          <select 
+                            value={sortBy} 
+                            onChange={(e) => setSortBy(e.target.value as any)}
+                            className="text-xs px-2 py-1 border rounded-md bg-background"
+                            data-testid="select-sort"
+                          >
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="most-responses">Most Responses</option>
+                            <option value="alphabetical">A-Z</option>
+                          </select>
+                        </div>
                       </div>
-                    )}
-                    <SurveyCard
-                      survey={{
-                        id: survey.id,
-                        title: survey.title,
-                        description: survey.description || undefined,
-                        createdAt: survey.createdAt.toString(),
-                        questionCount: survey.questions.length,
-                        responseCount: survey.responseCount,
-                        status: survey.status || undefined,
-                        publishedAt: survey.publishedAt?.toString(),
-                        trainerName: survey.trainerName || undefined,
-                        trainingDate: survey.trainingDate?.toString(),
-                        tags: survey.tags || undefined,
-                        questions: survey.questions,
-                        scoreConfig: survey.scoreConfig,
-                      }}
-                      onEdit={() => handleEdit(survey.id)}
-                      onView={() => handleView(survey.id)}
-                      onAnalyze={() => handleAnalyze(survey.id)}
-                      onExport={() => handleExport(survey.id)}
-                      onDelete={() => handleDelete(survey.id)}
-                      onDuplicate={() => handleDuplicate(survey.id)}
-                      onManageRespondents={() => setLocation(`/respondents/${survey.id}`)}
-                      index={index}
-                    />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {filteredSurveys.map((survey, index) => (
+                        <div key={survey.id} className="relative">
+                          <SurveyCard
+                            survey={{
+                              id: survey.id,
+                              title: survey.title,
+                              description: survey.description || undefined,
+                              createdAt: survey.createdAt.toString(),
+                              questionCount: survey.questions.length,
+                              responseCount: survey.responseCount,
+                              status: survey.status || undefined,
+                              publishedAt: survey.publishedAt?.toString(),
+                              trainerName: survey.trainerName || undefined,
+                              trainingDate: survey.trainingDate?.toString(),
+                              tags: survey.tags || undefined,
+                              questions: survey.questions,
+                              scoreConfig: survey.scoreConfig,
+                            }}
+                            onEdit={() => handleEdit(survey.id)}
+                            onView={() => handleView(survey.id)}
+                            onAnalyze={() => handleAnalyze(survey.id)}
+                            onExport={() => handleExport(survey.id)}
+                            onDelete={() => handleDelete(survey.id)}
+                            onDuplicate={() => handleDuplicate(survey.id)}
+                            onManageRespondents={() => setLocation(`/respondents/${survey.id}`)}
+                            index={index}
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ))}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="recent" className="space-y-6">
-              <div className="space-y-4">
-                <SurveyFilters
-                  searchTerm={searchTerm}
-                  onSearchChange={setSearchTerm}
-                  allTags={allTags}
-                  selectedTags={selectedTags}
-                  onTagToggle={(tag) => setSelectedTags(prev => 
-                    prev.includes(tag) 
-                      ? prev.filter(t => t !== tag)
-                      : [...prev, tag]
-                  )}
-                  testIdPrefix="surveys-recent"
-                />
-                <div className="flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">
-                    Your {recentSurveys.length} most recent {recentSurveys.length === 1 ? 'survey' : 'surveys'}
-                  </p>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {recentSurveys.map((survey, index) => (
-                  <div key={survey.id} className="relative">
-                    {isExpired(survey) && (
-                      <div className="absolute top-2 right-2 z-10">
-                        <Badge variant="destructive" data-testid={`badge-expired-${survey.id}`}>Expired</Badge>
-                      </div>
-                    )}
-                    <SurveyCard
-                      survey={{
-                        id: survey.id,
-                        title: survey.title,
-                        description: survey.description || undefined,
-                        createdAt: survey.createdAt.toString(),
-                        questionCount: survey.questions.length,
-                        responseCount: survey.responseCount,
-                        status: survey.status || undefined,
-                        publishedAt: survey.publishedAt?.toString(),
-                        trainerName: survey.trainerName || undefined,
-                        trainingDate: survey.trainingDate?.toString(),
-                        tags: survey.tags || undefined,
-                        questions: survey.questions,
-                        scoreConfig: survey.scoreConfig,
-                      }}
-                      onEdit={() => handleEdit(survey.id)}
-                      onView={() => handleView(survey.id)}
-                      onAnalyze={() => handleAnalyze(survey.id)}
-                      onExport={() => handleExport(survey.id)}
-                      onDelete={() => handleDelete(survey.id)}
-                      onDuplicate={() => handleDuplicate(survey.id)}
-                      onManageRespondents={() => setLocation(`/respondents/${survey.id}`)}
-                      index={index}
-                    />
-                  </div>
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
-        )}
-      </main>
+                )}
+              </>
+            )}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
