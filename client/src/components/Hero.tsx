@@ -84,7 +84,7 @@ export function Hero() {
           {/* Right illustration with background */}
           <div className="relative hidden lg:flex items-center justify-center">
             <div className="absolute inset-0 bg-gradient-to-br from-evalia-teal-100/15 to-evalia-mint/10 rounded-full blur-3xl" style={{ transform: 'scale(0.7)' }}></div>
-            <img src={heroIllustration} alt="Training feedback and ratings illustration" className="relative w-full h-auto" data-testid="img-hero-illustration" />
+            <img src={heroIllustration} alt="Training feedback and ratings illustration" className="relative w-full h-auto scale-110" data-testid="img-hero-illustration" />
           </div>
         </div>
       </div>
