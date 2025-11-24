@@ -703,6 +703,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Analyze responses with AI (protected)
+  app.post("/api/surveys/:id/responses/analyze", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user.claims.sub;
+
+      // Verify ownership
+      const isOwner = await storage.checkSurveyOwnership(id, userId);
+      if (!isOwner) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      const survey = await storage.getSurvey(id);
+      if (!survey) {
+        return res.status(404).json({ error: "Survey not found" });
+      }
+
+      const responses = await storage.getResponses(id);
+      if (responses.length === 0) {
+        return res.status(400).json({ error: "No responses to analyze" });
+      }
+
+      const insights = await analyzeResponses(survey.questions, responses, survey.title);
+      res.json(insights);
+    } catch (error: any) {
+      console.error("Error analyzing responses:", error);
+      res.status(500).json({ error: error.message || "Failed to analyze responses" });
+    }
+  });
+
   // Bulk delete responses (protected)
   app.post("/api/surveys/:id/responses/bulk-delete", isAuthenticated, async (req: any, res) => {
     try {

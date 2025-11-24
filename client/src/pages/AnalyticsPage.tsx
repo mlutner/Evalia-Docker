@@ -8,8 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ResponseDetailModal } from "@/components/ResponseDetailModal";
+import AIInsightsCard from "@/components/AIInsightsCard";
 import { ArrowLeft, Users, FileText, Calendar, Download, Loader2, Trash2, AlertTriangle, TrendingUp, ChevronDown, Zap, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useResponseAnalysis } from "@/hooks/useResponseAnalysis";
 import { useState, useMemo } from "react";
 import type { Survey, SurveyResponse } from "@shared/schema";
 
@@ -35,6 +37,9 @@ export default function AnalyticsPage() {
       return fetch(url).then(r => r.json());
     }
   });
+
+  // Fetch AI insights when responses are available
+  const { data: insights, isLoading: insightsLoading, error: insightsError } = useResponseAnalysis(id, !!data?.responses && data.responses.length > 0);
 
   // Calculate statistics for a question (defined early so useMemo can use it)
   const getQuestionStats = (questionId: string) => {
@@ -327,6 +332,13 @@ export default function AnalyticsPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* AI Insights Card */}
+        <AIInsightsCard 
+          insights={insights || null}
+          isLoading={insightsLoading}
+          error={insightsError?.message}
+        />
 
         {keyInsights && keyInsights.length > 0 && (
           <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-blue-200 dark:border-blue-800 mb-8">
