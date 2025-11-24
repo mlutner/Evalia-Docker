@@ -11,6 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Plus, FileText, BarChart3, Calendar, Clock, Users, Settings, Zap, BookOpen, LayoutDashboard, Menu, X } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import evaliaLogo from "@assets/Heading (300 x 50 px) (1000 x 250 px) (3)_1763943596811.png";
 import type { SurveyWithCounts } from "@shared/schema";
 
 export default function Dashboard() {
@@ -204,7 +205,7 @@ export default function Dashboard() {
         <aside className={`bg-evalia-navy border-r border-slate-700 flex flex-col transition-all duration-300 ${
           sidebarExpanded ? "w-56" : "w-20"
         }`}>
-          <div className="p-4 border-b border-slate-700 flex items-center justify-between">
+          <div className="p-4 border-b border-slate-700 flex items-center justify-between bg-[#032643]">
             {sidebarExpanded && (
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded bg-evalia-lime/20 flex items-center justify-center flex-shrink-0">
