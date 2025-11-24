@@ -9,6 +9,7 @@ import PublishStep from "@/components/builder/PublishStep";
 import ScoringConfigStep from "@/components/builder/ScoringConfigStep";
 import TemplatePreviewModal from "@/components/TemplatePreviewModal";
 import SurveyPreviewDialog from "@/components/SurveyPreviewDialog";
+import SurveyOutlinePreview from "@/components/SurveyOutlinePreview";
 import { Button } from "@/components/ui/button";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -54,6 +55,7 @@ export default function Builder() {
   // UI state
   const [viewMode, setViewMode] = useState<"chat" | "edit">("chat");
   const [showPreview, setShowPreview] = useState(false);
+  const [previewMode, setPreviewMode] = useState<"online" | "test">("online");
   const [previewTemplate, setPreviewTemplate] = useState<SurveyTemplate | null>(null);
 
   // Load existing survey if in edit mode
@@ -206,10 +208,12 @@ export default function Builder() {
   };
 
   const handlePreviewSurvey = () => {
+    setPreviewMode("online");
     setShowPreview(true);
   };
 
   const handleTestPreviewSurvey = () => {
+    setPreviewMode("test");
     setShowPreview(true);
   };
 
@@ -418,18 +422,29 @@ export default function Builder() {
         onUse={() => previewTemplate && handleUseTemplate(previewTemplate)}
       />
 
-      <SurveyPreviewDialog
-        questions={surveyState.currentQuestions}
-        title={surveyState.currentSurveyTitle}
-        description={surveyState.currentSurveyDescription}
-        welcomeMessage={surveyState.welcomeMessage}
-        illustration={existingSurvey?.illustrationUrl || "/attached_assets/1_1763757398561.png"}
-        estimatedMinutes={surveyState.estimatedMinutes}
-        privacyStatement={surveyState.privacyStatement}
-        dataUsageStatement={surveyState.dataUsageStatement}
-        open={showPreview}
-        onOpenChange={setShowPreview}
-      />
+      {previewMode === "online" ? (
+        <SurveyPreviewDialog
+          questions={surveyState.currentQuestions}
+          title={surveyState.currentSurveyTitle}
+          description={surveyState.currentSurveyDescription}
+          welcomeMessage={surveyState.welcomeMessage}
+          illustration={existingSurvey?.illustrationUrl || "/attached_assets/1_1763757398561.png"}
+          estimatedMinutes={surveyState.estimatedMinutes}
+          privacyStatement={surveyState.privacyStatement}
+          dataUsageStatement={surveyState.dataUsageStatement}
+          open={showPreview}
+          onOpenChange={setShowPreview}
+        />
+      ) : (
+        <SurveyOutlinePreview
+          questions={surveyState.currentQuestions}
+          title={surveyState.currentSurveyTitle}
+          description={surveyState.currentSurveyDescription}
+          estimatedMinutes={surveyState.estimatedMinutes}
+          open={showPreview}
+          onOpenChange={setShowPreview}
+        />
+      )}
     </div>
   );
 }
