@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Plus, MessageSquare, FileQuestion, ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { Plus, Bot, FileQuestion, ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import type { Message } from "@/components/ChatPanel";
 import type { Question } from "@shared/schema";
 import {
@@ -106,8 +106,8 @@ export default function QuestionsStep({
           {/* Mobile: AI Chat Button */}
           <Sheet open={isMobileChat} onOpenChange={setIsMobileChat}>
             <SheetTrigger asChild>
-              <Button data-testid="button-open-chat-mobile" className="md:hidden flex-1 sm:flex-none bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80">
-                <MessageSquare className="w-4 h-4 mr-2" />
+              <Button data-testid="button-open-chat-mobile" className="md:hidden flex-1 sm:flex-none" style={{ backgroundColor: "#A3D65C", color: "#1C2635" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#92c84b"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#A3D65C"}>
+                <Bot className="w-4 h-4 mr-2" />
                 AI Chat
               </Button>
             </SheetTrigger>
@@ -225,7 +225,7 @@ export default function QuestionsStep({
               <Card className="h-full flex flex-col">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm flex items-center gap-2">
-                    <MessageSquare className="w-4 h-4" />
+                    <Bot className="w-4 h-4" />
                     AI Assistant
                   </CardTitle>
                   <CardDescription className="text-xs">

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { MessageSquare } from "lucide-react";
+import { Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -58,7 +58,7 @@ export default function FloatingAIChat({ onClick, isOpen = false }: FloatingAICh
                 }}
                 transition={{ duration: 0.3 }}
               >
-                <MessageSquare className="w-6 h-6" style={{ color: "#1C2635" }} />
+                <Bot className="w-6 h-6" style={{ color: "#1C2635" }} />
               </motion.div>
             </Button>
           </motion.div>
