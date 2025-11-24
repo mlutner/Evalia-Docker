@@ -7,8 +7,15 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { useUpdateChecker } from "@/hooks/useUpdateChecker";
 import UpdateNotification from "@/components/UpdateNotification";
+import { AppLayout } from "@/layouts/AppLayout";
 import Home from "@/pages/Home";
-import Dashboard from "@/pages/Dashboard";
+import DashboardPage from "@/pages/DashboardPage";
+import SurveysPage from "@/pages/SurveysPage";
+import RespondentsListPage from "@/pages/RespondentsListPage";
+import TemplatesPage from "@/pages/TemplatesPage";
+import ScoringPage from "@/pages/ScoringPage";
+import AiAssistPage from "@/pages/AiAssistPage";
+import SettingsPage from "@/pages/SettingsPage";
 import Builder from "@/pages/Builder";
 import SurveyView from "@/pages/SurveyView";
 import AnalyticsPage from "@/pages/AnalyticsPage";
@@ -22,7 +29,6 @@ function ProtectedRoute({ component: Component }: { component: () => JSX.Element
   const [location, setLocation] = useLocation();
   const { user, isLoading } = useAuth();
 
-  // Redirect to login only after query settles, using useEffect to avoid side effects during render
   useEffect(() => {
     if (!isLoading && !user && location !== "/login") {
       setLocation("/login");
@@ -41,7 +47,7 @@ function ProtectedRoute({ component: Component }: { component: () => JSX.Element
     return null;
   }
 
-  return <Component />;
+  return <AppLayout><Component /></AppLayout>;
 }
 
 function Router() {
@@ -56,12 +62,6 @@ function Router() {
       <Route path="/account">
         {() => <ProtectedRoute component={Account} />}
       </Route>
-      <Route path="/analytics/:id">
-        {() => <ProtectedRoute component={AnalyticsPage} />}
-      </Route>
-      <Route path="/respondents/:surveyId">
-        {() => <ProtectedRoute component={RespondentsPage} />}
-      </Route>
       <Route path="/help">
         {() => <ProtectedRoute component={HelpPage} />}
       </Route>
@@ -71,9 +71,36 @@ function Router() {
       <Route path="/builder">
         {() => <ProtectedRoute component={Builder} />}
       </Route>
-      <Route path="/dashboard">
-        {() => <ProtectedRoute component={Dashboard} />}
+      <Route path="/analytics/:id">
+        {() => <ProtectedRoute component={AnalyticsPage} />}
       </Route>
+      <Route path="/respondents/:surveyId">
+        {() => <ProtectedRoute component={RespondentsPage} />}
+      </Route>
+
+      {/* Main app routes with sidebar */}
+      <Route path="/dashboard">
+        {() => <ProtectedRoute component={DashboardPage} />}
+      </Route>
+      <Route path="/surveys">
+        {() => <ProtectedRoute component={SurveysPage} />}
+      </Route>
+      <Route path="/respondents">
+        {() => <ProtectedRoute component={RespondentsListPage} />}
+      </Route>
+      <Route path="/templates">
+        {() => <ProtectedRoute component={TemplatesPage} />}
+      </Route>
+      <Route path="/scoring">
+        {() => <ProtectedRoute component={ScoringPage} />}
+      </Route>
+      <Route path="/ai-assist">
+        {() => <ProtectedRoute component={AiAssistPage} />}
+      </Route>
+      <Route path="/settings">
+        {() => <ProtectedRoute component={SettingsPage} />}
+      </Route>
+
       <Route component={NotFound} />
     </Switch>
   );
