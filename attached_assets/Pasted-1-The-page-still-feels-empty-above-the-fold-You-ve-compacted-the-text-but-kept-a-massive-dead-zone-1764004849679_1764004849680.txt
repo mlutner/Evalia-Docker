@@ -1,0 +1,102 @@
+1. The page still feels empty above the fold
+
+You’ve compacted the text but kept a massive dead zone between:
+
+Stepper section
+
+“How would you like to start?”
+
+On a 1440px display, this looks like “scroll down for the real content.”
+
+Impact:
+Users interpret empty vertical space as lack of importance.
+It visually disconnects the flow: step → choice.
+
+Fix:
+Pull “How would you like to start?” up by at least 80–120px.
+Shrink the vertical gap between stepper and hero text.
+
+2. The “Recommended for most” badge is floating awkwardly
+
+Right now it looks:
+
+Visually detached
+
+A bit like an afterthought
+
+Slightly misaligned with the card
+
+Impact:
+It creates a tiny credibility wobble.
+It should look intentional, not patched on.
+
+Fix options:
+
+Move it inside the card, top-left, like a tag chip.
+
+Or shift it slightly up/left and reduce its height by ~20%.
+
+3. The three options are still visually too similar
+
+You reduced copy, but the three cards still feel like “three white rectangles with icons.”
+
+This is a cognitive load problem.
+Users won’t differentiate them quickly enough.
+
+Fix:
+Add subtle visual cues:
+
+Template → soft blue accent on icon
+
+AI → soft purple or teal
+
+Import → soft gray
+
+Even slight color-coding anchors visual memory.
+
+4. Card descriptions are still a bit generic
+
+Your new copy is better, but still vague. Users benefit from specificity.
+
+Example:
+
+Create with AI
+“Tell us your goals — AI builds your survey for you.”
+
+This can be sharpened:
+
+→ “Describe what you want to measure. AI generates a complete survey draft.”
+
+Micro-precision = confidence.
+
+5. The stepper still feels informational, not actionable
+
+You're almost there — but step 2 and 3 still read like neutral statements.
+
+Try making them more verb-first:
+
+Build Questions
+“Refine and customize questions with AI guidance.”
+
+Publish
+“Apply scoring, add logic, and launch your survey.”
+
+This small tweak increases momentum.
+
+6. The whole flow lacks a single, dominant CTA
+
+Right now, each card acts like a CTA, but none feels like the CTA.
+
+You don’t need a giant “Continue” button — but you need something that anchors the user’s eye.
+
+Fix:
+Increase the card’s hover elevation by one small step:
+
+Slight shadow lift
+
+Slight border-color shift
+
+Slight background tint change
+
+This tells the user:
+“Choosing a card is the primary action.”

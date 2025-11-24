@@ -33,21 +33,24 @@ const OPTION_CARDS = [
     description: "Start fast with proven training-focused templates.",
     icon: Layers,
     color: PRIMARY_COLOR,
+    iconColor: "#2F8FA5",
     recommended: true,
   },
   {
     id: "ai",
     title: "Create with AI",
-    description: "Tell us your goals — AI builds your survey for you.",
+    description: "Describe what you want to measure. AI generates a complete survey draft.",
     icon: Sparkles,
     color: PRIMARY_COLOR,
+    iconColor: "#7C3AED",
   },
   {
     id: "upload",
     title: "Import your content",
-    description: "Upload questions or documents to convert into a survey.",
+    description: "Upload documents or paste questions. We convert them to a survey.",
     icon: FileUp,
     color: PRIMARY_COLOR,
+    iconColor: "#6B7280",
   },
 ];
 
@@ -86,13 +89,13 @@ export default function SurveyStartFlow({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      <div className="max-w-7xl mx-auto px-4 py-12 md:py-20">
+      <div className="max-w-7xl mx-auto px-4 py-6 md:py-10">
         {/* Hero Section */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-8 md:mb-12"
+          className="text-center mb-3 md:mb-6"
         >
           <h1 className="text-5xl md:text-6xl font-bold mb-4" style={{ color: '#1C2635' }}>
             How would you like to start?
@@ -134,34 +137,33 @@ export default function SurveyStartFlow({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={option.recommended ? "relative" : ""}
             >
-              {option.recommended && (
-                <div className="absolute -top-3 left-8">
-                  <span className="inline-block px-3 py-1 bg-primary text-white text-xs font-semibold rounded-full">
-                    Recommended for most
-                  </span>
-                </div>
-              )}
               <motion.button
                 onClick={() => setExpandedOption(expandedOption === option.id ? null : option.id)}
                 className="w-full text-left"
-                whileHover={{ y: -2 }}
+                whileHover={{ y: -4 }}
                 whileTap={{ y: 0 }}
               >
                 <div
-                  className={`p-8 px-10 rounded-lg border-2 transition-all cursor-pointer group bg-white hover:shadow-md ${option.recommended ? "border-primary shadow-md" : ""}`}
+                  className={`p-8 px-10 rounded-lg border-2 transition-all cursor-pointer group bg-white ${option.recommended ? "shadow-lg" : "hover:shadow-lg"}`}
                   style={{
-                    borderColor: expandedOption === option.id ? option.color : (option.recommended ? option.color : "#D1D5DB"),
-                    backgroundColor: expandedOption === option.id ? `${option.color}08` : (option.recommended ? `${option.color}04` : "white"),
+                    borderColor: expandedOption === option.id ? option.color : (option.recommended ? option.color : "#E5E7EB"),
+                    backgroundColor: expandedOption === option.id ? `${option.color}08` : (option.recommended ? `${option.color}05` : "white"),
                   }}
                 >
                   <div className="flex items-start gap-8">
+                    {option.recommended && (
+                      <div className="absolute -top-2 left-8">
+                        <span className="inline-block px-2.5 py-0.5 bg-primary text-white text-xs font-semibold rounded-md">
+                          Recommended
+                        </span>
+                      </div>
+                    )}
                     <div
-                      className="w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0 transition-all group-hover:scale-110"
+                      className="w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0 transition-all group-hover:scale-120"
                       style={{
-                        backgroundColor: expandedOption === option.id ? option.color : `${option.color}12`,
-                        color: expandedOption === option.id ? "white" : option.color,
+                        backgroundColor: expandedOption === option.id ? option.color : `${option.iconColor}15`,
+                        color: expandedOption === option.id ? "white" : option.iconColor,
                       }}
                     >
                       <option.icon className="w-8 h-8" />
