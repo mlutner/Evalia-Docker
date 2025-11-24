@@ -89,7 +89,6 @@ export type SurveyScoreConfig = z.infer<typeof surveyScoreConfigSchema>;
 export const surveys = pgTable("surveys", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull().references(() => users.id),
-  type: varchar("type").default("survey"), // "survey" or "assessment"
   title: text("title").notNull(),
   description: text("description"),
   questions: jsonb("questions").notNull().$type<Question[]>(),

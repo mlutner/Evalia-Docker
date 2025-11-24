@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import type { SurveyType } from "@shared/schema";
 
 const SURVEY_TYPES = [
   {
@@ -12,8 +13,6 @@ const SURVEY_TYPES = [
     description: "Measure knowledge, skills & behavior change with scoring. Evaluate performance and provide feedback.",
   },
 ] as const;
-
-import type { SurveyType } from "@shared/schema";
 
 interface SurveyTypeSelectorProps {
   value: SurveyType;

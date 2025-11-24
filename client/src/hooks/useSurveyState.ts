@@ -14,7 +14,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
   const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
 
   // Survey data state
-  const [surveyType, setSurveyType] = useState<SurveyType>("survey");
+  const [surveyType, setSurveyType] = useState<SurveyType>("survey"); // Frontend only for now, DB migration pending
   const [currentSurveyTitle, setCurrentSurveyTitle] = useState("");
   const [currentSurveyDescription, setCurrentSurveyDescription] = useState("");
   const [welcomeMessage, setWelcomeMessage] = useState("");
