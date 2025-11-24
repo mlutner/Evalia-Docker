@@ -128,7 +128,7 @@
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-  background: var(--color-bg-light);
+  background: #F7F9FC;
   min-height: 100vh;
 }
 
