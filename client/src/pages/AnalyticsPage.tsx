@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ResponseDetailModal } from "@/components/ResponseDetailModal";
 import AIInsightsCard from "@/components/AIInsightsCard";
-import { ArrowLeft, Users, FileText, Calendar, Download, Loader2, Trash2, AlertTriangle, TrendingUp, ChevronDown, Zap, Clock, Eye } from "lucide-react";
+import { ArrowLeft, Users, FileText, Calendar, Download, Loader2, Trash2, AlertTriangle, TrendingUp, ChevronDown, Zap, Clock, Eye, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useResponseAnalysis } from "@/hooks/useResponseAnalysis";
 import { useState, useMemo } from "react";
@@ -26,6 +27,9 @@ export default function AnalyticsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [selectedResponse, setSelectedResponse] = useState<SurveyResponse | null>(null);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "fastest" | "slowest">("newest");
   const { toast } = useToast();
 
   const { data, isLoading, error } = useQuery<AnalyticsData>({
@@ -39,6 +43,52 @@ export default function AnalyticsPage() {
 
   // Fetch AI insights when responses are available
   const { data: insights, isLoading: insightsLoading, error: insightsError } = useResponseAnalysis(id, !!data?.responses && data.responses.length > 0);
+
+  // Filter and sort responses
+  const filteredAndSortedResponses = useMemo(() => {
+    if (!data?.responses) return [];
+    
+    let filtered = data.responses;
+    
+    // Apply date range filters
+    if (dateFrom || dateTo) {
+      filtered = filtered.filter(response => {
+        const responseDate = new Date(response.completedAt);
+        if (dateFrom) {
+          const fromDate = new Date(dateFrom);
+          if (responseDate < fromDate) return false;
+        }
+        if (dateTo) {
+          const toDate = new Date(dateTo);
+          toDate.setHours(23, 59, 59, 999);
+          if (responseDate > toDate) return false;
+        }
+        return true;
+      });
+    }
+    
+    // Apply sorting
+    const sorted = [...filtered].sort((a, b) => {
+      const dateA = new Date(a.completedAt).getTime();
+      const dateB = new Date(b.completedAt).getTime();
+      
+      switch (sortBy) {
+        case "newest":
+          return dateB - dateA;
+        case "oldest":
+          return dateA - dateB;
+        case "fastest":
+          // Assume faster = earlier completion if submitted sequentially
+          return dateA - dateB;
+        case "slowest":
+          return dateB - dateA;
+        default:
+          return 0;
+      }
+    });
+    
+    return sorted;
+  }, [data?.responses, dateFrom, dateTo, sortBy]);
 
   // Calculate statistics for a question (defined early so useMemo can use it)
   const getQuestionStats = (questionId: string) => {
@@ -363,7 +413,7 @@ export default function AnalyticsPage() {
               <div className="space-y-6">
                 {/* Search & Filter Bar */}
                 <Card className="card-professional">
-                  <CardHeader className="pb-4">
+                  <CardHeader className="pb-4 space-y-4">
                     <div className="flex gap-3 flex-wrap items-center justify-between">
                       <div className="flex-1 min-w-[200px]">
                         <Input
@@ -387,7 +437,59 @@ export default function AnalyticsPage() {
                     </Button>
                   )}
                 </div>
-              </CardHeader>
+                    {/* Filters & Sort */}
+                    <div className="flex gap-3 flex-wrap items-end">
+                      <div className="flex-1 min-w-[150px]">
+                        <label className="text-xs font-medium text-secondary mb-2 block">From Date</label>
+                        <Input
+                          type="date"
+                          value={dateFrom}
+                          onChange={(e) => setDateFrom(e.target.value)}
+                          data-testid="input-date-from"
+                          className="h-10"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-[150px]">
+                        <label className="text-xs font-medium text-secondary mb-2 block">To Date</label>
+                        <Input
+                          type="date"
+                          value={dateTo}
+                          onChange={(e) => setDateTo(e.target.value)}
+                          data-testid="input-date-to"
+                          className="h-10"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-[150px]">
+                        <label className="text-xs font-medium text-secondary mb-2 block">Sort By</label>
+                        <Select value={sortBy} onValueChange={(val) => setSortBy(val as any)} data-testid="select-sort">
+                          <SelectTrigger className="h-10">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="newest">Newest First</SelectItem>
+                            <SelectItem value="oldest">Oldest First</SelectItem>
+                            <SelectItem value="fastest">Fastest First</SelectItem>
+                            <SelectItem value="slowest">Slowest First</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {(dateFrom || dateTo || sortBy !== "newest") && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setDateFrom("");
+                            setDateTo("");
+                            setSortBy("newest");
+                          }}
+                          data-testid="button-reset-filters"
+                        >
+                          <RotateCcw className="w-4 h-4 mr-2" />
+                          Reset
+                        </Button>
+                      )}
+                    </div>
+                  </CardHeader>
             </Card>
 
             {/* Response List */}
@@ -407,7 +509,12 @@ export default function AnalyticsPage() {
               </CardHeader>
               <CardContent className="pt-4">
                 <div className="space-y-3">
-                  {data?.responses.map((response) => (
+                  {filteredAndSortedResponses.length === 0 ? (
+                    <div className="text-center py-8 text-secondary">
+                      <p className="text-sm">No responses match your filters</p>
+                    </div>
+                  ) : (
+                    filteredAndSortedResponses.map((response) => (
                     <div key={response.id} className="flex items-start gap-3 p-4 rounded-[12px] transition-all cursor-pointer hover-elevate" style={{ backgroundColor: '#F7F9FC', border: '1px solid #E2E7EF' }} onClick={() => setSelectedResponse(response)} data-testid={`response-row-${response.id}`}>
                       <Checkbox
                         checked={selectedIds.has(response.id)}
@@ -438,7 +545,8 @@ export default function AnalyticsPage() {
                       </div>
                       <Eye className="w-4 h-4 flex-shrink-0 mt-1" style={{ color: '#A6ADBA' }} data-testid="button-view-response" />
                     </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
