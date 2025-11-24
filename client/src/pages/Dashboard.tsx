@@ -209,7 +209,7 @@ export default function Dashboard() {
           )}
           <button
             onClick={() => setSidebarExpanded(!sidebarExpanded)}
-            className="text-evalia-lime hover:bg-white/10 p-1 rounded transition-colors"
+            className="text-white hover:bg-white/10 p-1 rounded transition-colors"
             data-testid="button-toggle-sidebar"
           >
             {sidebarExpanded ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
