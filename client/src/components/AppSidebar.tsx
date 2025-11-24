@@ -50,7 +50,7 @@ export function AppSidebar() {
         </Button>
       </div>
       {/* Navigation */}
-      <nav className="flex-1 p-3 space-y-2 overflow-y-auto">
+      <nav className="flex-1 p-3 space-y-2 overflow-y-auto bg-[#0e1729]">
         {sidebarItems.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.href);
