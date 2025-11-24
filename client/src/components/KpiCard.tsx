@@ -34,7 +34,7 @@ export function KpiCard({
             <p className="text-[13px] mt-2" style={{ color: 'var(--color-neutral-text-secondary)' }}>{subtext}</p>
           </div>
           <div className="flex items-center justify-center flex-shrink-0 ml-6 w-12 h-12 rounded-[12px]" style={{ backgroundColor: '#F7F9FA' }}>
-            <Icon className="w-6 h-6" strokeWidth={2} style={{ color: 'rgba(14, 27, 44, 0.7)' }} />
+            <Icon className="w-6 h-6" strokeWidth={2} style={{ color: borderColor }} />
           </div>
         </div>
       </CardContent>
