@@ -366,18 +366,6 @@ export default function Builder() {
           </div>
 
           <div className="flex gap-3">
-            {surveyState.currentQuestions.length > 0 && surveyState.currentWizardStep > 1 && (
-              <Button 
-                variant="outline" 
-                size="lg" 
-                onClick={handlePreviewSurvey}
-                data-testid="button-preview"
-                style={{ color: '#37C0A3', borderColor: '#37C0A3' }}
-              >
-                Preview Survey
-              </Button>
-            )}
-
             {surveyState.currentWizardStep < 4 ? (
               <Button 
                 size="lg" 
