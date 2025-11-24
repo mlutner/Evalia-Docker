@@ -6,6 +6,7 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { parsePDFWithVision, parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText, suggestScoringConfig, generateSurveySummary } from "./openrouter";
 import { analyzeResponses } from "./responseAnalysis";
+import { getDashboardMetrics } from "./dashboard";
 import { insertSurveySchema, questionSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
@@ -700,6 +701,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Delete response error:", error);
       res.status(500).json({ error: "Failed to delete response" });
+    }
+  });
+
+  // Get dashboard metrics (protected)
+  app.get("/api/dashboard/metrics", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const metrics = await getDashboardMetrics(userId);
+      res.json(metrics);
+    } catch (error: any) {
+      console.error("Error fetching dashboard metrics:", error);
+      res.status(500).json({ error: "Failed to fetch dashboard metrics" });
     }
   });
 

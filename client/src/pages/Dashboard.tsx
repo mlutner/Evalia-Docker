@@ -4,19 +4,23 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import SurveyCard from "@/components/SurveyCard";
 import { SurveyFilters } from "@/components/SurveyFilters";
+import { DashboardOverview } from "@/components/DashboardOverview";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Plus, FileText, BarChart3, Calendar, Clock, Users } from "lucide-react";
+import { Plus, FileText, BarChart3, Calendar, Clock, Users, TrendingUp } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { SurveyWithCounts } from "@shared/schema";
 import type { ReactNode } from "react";
 
 export default function Dashboard() {
-  const [, setLocation] = useLocation();
-  const [activeTab, setActiveTab] = useState<"all" | "recent">("all");
+  const [location, setLocation] = useLocation();
+  const [activeTab, setActiveTab] = useState<"overview" | "all" | "recent">(() => {
+    const params = new URLSearchParams(location.split("?")[1]);
+    return (params.get("tab") as any) || "overview";
+  });
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -33,7 +37,13 @@ export default function Dashboard() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [setLocation]);
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.split("?")[1]);
+    const tab = (params.get("tab") as any) || "overview";
+    setActiveTab(tab);
+  }, [location]);
 
   const { data: surveys = [], isLoading } = useQuery<SurveyWithCounts[]>({
     queryKey: ["/api/surveys"],
@@ -246,8 +256,12 @@ export default function Dashboard() {
             </Button>
           </div>
         ) : (
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "all" | "recent")} className="space-y-6">
-            <TabsList className="grid w-full max-w-md grid-cols-2">
+          <Tabs value={activeTab} onValueChange={(v) => setLocation(`/dashboard?tab=${v}`)} className="space-y-6">
+            <TabsList className="grid w-full max-w-2xl grid-cols-3">
+              <TabsTrigger value="overview" data-testid="tab-overview">
+                <TrendingUp className="w-4 h-4 mr-2" />
+                Overview
+              </TabsTrigger>
               <TabsTrigger value="all" data-testid="tab-all-surveys">
                 <BarChart3 className="w-4 h-4 mr-2" />
                 All Surveys
@@ -257,6 +271,10 @@ export default function Dashboard() {
                 Recent
               </TabsTrigger>
             </TabsList>
+
+            <TabsContent value="overview" className="space-y-6">
+              <DashboardOverview />
+            </TabsContent>
 
             <TabsContent value="all" className="space-y-6">
               <div className="space-y-4">
