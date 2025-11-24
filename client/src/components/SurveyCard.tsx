@@ -135,38 +135,21 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
       style={{ height: '320px', display: 'flex', flexDirection: 'column' }}
       data-testid={`survey-card-${survey.id}`}
     >
-      <CardHeader className="flex flex-col space-y-3 pb-4">
-        <div className="flex flex-row items-start justify-between space-y-0">
-          <div className="flex-1">
-            <h3 className="font-semibold text-lg line-clamp-2 leading-tight">{survey.title}</h3>
-            {survey.description && (
-              <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{survey.description}</p>
-            )}
-            {!survey.description && survey.questions && (
-              <p className="text-sm text-muted-foreground mt-2">{generateSurveySummary(survey.questions)}</p>
-            )}
-            <div className="flex flex-col gap-1 mt-2">
-              {survey.trainerName && (
-                <p className="text-xs text-muted-foreground">
-                  <span className="font-medium">Trainer:</span> {survey.trainerName}
-                </p>
-              )}
-              {survey.trainingDate && (
-                <p className="text-xs text-muted-foreground">
-                  <span className="font-medium">Training Date:</span> {new Date(survey.trainingDate).toLocaleDateString()}
-                </p>
-              )}
-              <p style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500, marginTop: '4px' }}>
-                Created {new Date(survey.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" data-testid="button-menu">
-              <MoreVertical className="w-4 h-4" />
-            </Button>
-          </DropdownMenuTrigger>
+      <CardHeader className="flex flex-col pb-4">
+        <div className="flex flex-row items-start justify-between gap-2 mb-2">
+          <h3 style={{ fontSize: '15px', fontWeight: 600, lineHeight: '1.3', color: '#1C2635', flex: 1 }} className="line-clamp-2">{survey.title}</h3>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                data-testid="button-menu"
+                style={{ color: '#6A7789', width: '32px', height: '32px', minWidth: '32px' }}
+                className="hover:text-[#1C2635] transition-colors flex-shrink-0"
+              >
+                <MoreVertical className="w-[18px] h-[18px]" />
+              </Button>
+            </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => setShareDialogOpen(true)} data-testid="menu-share">
               <Share2 className="w-4 h-4 mr-2" />
