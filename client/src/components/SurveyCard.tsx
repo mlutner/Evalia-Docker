@@ -132,12 +132,12 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
   return (
     <Card 
       className="card-hover hover-elevate shadow-sm transition-all flex flex-col" 
-      style={{ height: '440px', display: 'flex', flexDirection: 'column' }}
+      style={{ height: '380px', display: 'flex', flexDirection: 'column' }}
       data-testid={`survey-card-${survey.id}`}
     >
-      <CardHeader className="flex flex-col pb-0">
-        <div className="flex flex-row items-start justify-between gap-2 mb-2">
-          <h3 style={{ fontSize: '15px', fontWeight: 600, lineHeight: '1.3', color: '#1C2635', flex: 1 }} className="line-clamp-2">{survey.title}</h3>
+      <CardHeader className="flex flex-col pb-0 mb-2">
+        <div className="flex flex-row items-start justify-between gap-2 mb-3">
+          <h3 style={{ fontSize: '16px', fontWeight: 700, lineHeight: '1.3', color: '#1C2635', flex: 1 }} className="line-clamp-2">{survey.title}</h3>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button 
@@ -183,13 +183,13 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
         </div>
         
         {survey.description && (
-          <p style={{ fontSize: '13px', color: '#6A7789', marginBottom: '8px', lineHeight: '1.4' }} className="line-clamp-2">{survey.description}</p>
+          <p style={{ fontSize: '13px', color: '#6A7789', marginBottom: '6px', lineHeight: '1.4' }} className="line-clamp-2">{survey.description}</p>
         )}
         {!survey.description && survey.questions && (
-          <p style={{ fontSize: '13px', color: '#6A7789', marginBottom: '8px', lineHeight: '1.4' }}>{generateSurveySummary(survey.questions)}</p>
+          <p style={{ fontSize: '13px', color: '#6A7789', marginBottom: '6px', lineHeight: '1.4' }}>{generateSurveySummary(survey.questions)}</p>
         )}
 
-        <div style={{ marginBottom: '16px' }} className="flex flex-col gap-1">
+        <div style={{ marginBottom: '12px' }} className="flex flex-col gap-0.5">
           {survey.trainerName && (
             <p style={{ fontSize: '12px', color: '#6A7789', fontWeight: 500 }}>
               <span style={{ fontWeight: 600 }}>Trainer:</span> {survey.trainerName}
@@ -220,21 +220,21 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
         )}
       </CardHeader>
 
-      <CardContent className="flex-1 space-y-4">
+      <CardContent className="flex-1 space-y-3">
         {/* Stats Section */}
-        <div className="flex gap-6">
+        <div className="flex gap-8">
           <div>
-            <p style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500 }}>Questions</p>
-            <p style={{ fontSize: '14px', fontWeight: 600, color: '#1C2635', marginTop: '4px' }} data-testid="text-question-count">{survey.questionCount || 0}</p>
+            <p style={{ fontSize: '11px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 600, letterSpacing: '0.5px' }}>Questions</p>
+            <p style={{ fontSize: '18px', fontWeight: 700, color: '#1C2635', marginTop: '2px' }} data-testid="text-question-count">{survey.questionCount || 0}</p>
           </div>
           <div>
-            <p style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500 }}>Responses</p>
-            <div className="flex items-center gap-2" style={{ marginTop: '4px' }}>
-              <p style={{ fontSize: '14px', fontWeight: 600, color: '#1C2635' }} data-testid="text-response-count">{survey.responseCount ?? 0}</p>
+            <p style={{ fontSize: '11px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 600, letterSpacing: '0.5px' }}>Responses</p>
+            <div className="flex items-center gap-2" style={{ marginTop: '2px' }}>
+              <p style={{ fontSize: '18px', fontWeight: 700, color: '#1C2635' }} data-testid="text-response-count">{survey.responseCount ?? 0}</p>
               {survey.respondentCount !== undefined && survey.respondentCount > 0 && (
-                <div style={{ fontSize: '12px', color: '#6A7789' }}>
+                <div style={{ fontSize: '11px', color: '#6A7789' }}>
                   <span>/ {survey.respondentCount}</span>
-                  <span className="block font-medium">{Math.round((survey.responseCount / Math.max(1, survey.respondentCount)) * 100)}%</span>
+                  <span className="block font-semibold">{Math.round((survey.responseCount / Math.max(1, survey.respondentCount)) * 100)}%</span>
                 </div>
               )}
             </div>
@@ -243,7 +243,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
 
         
         {/* Feature Indicators */}
-        <div className="flex flex-wrap gap-2 pt-2">
+        <div className="flex flex-wrap gap-2 pt-1">
           {survey.scoreConfig?.enabled && (
             <Tooltip>
               <TooltipTrigger asChild>
