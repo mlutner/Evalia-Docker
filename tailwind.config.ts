@@ -114,6 +114,10 @@ export default {
         serif: ["var(--font-serif)"],
         mono: ["var(--font-mono)"],
       },
+      spacing: {
+        13: "3.25rem",
+        17: "4.25rem",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
