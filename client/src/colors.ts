@@ -1,6 +1,7 @@
 /**
- * EVALIA FINAL COLOR SYSTEM - Simplified & Cohesive
- * Single source of truth for all colors
+ * EVALIA COLOR PALETTE - Single Source of Truth
+ * All colors are defined here and referenced via CSS variables
+ * Use these exports to reference colors in TypeScript/React code
  */
 
 export const COLORS = {
@@ -27,4 +28,16 @@ export const COLORS = {
   
   // Text Secondary
   textSecondary: '#6A7789',
+} as const;
+
+// CSS variable references - use in inline styles
+export const CSS_VARS = {
+  primary: 'var(--color-primary)',
+  lime: 'var(--color-accent-lime)',
+  navy: 'var(--color-dark-navy)',
+  bg: 'var(--color-bg-light)',
+  surface: 'var(--color-surface)',
+  border: 'var(--color-border)',
+  textPrimary: 'var(--color-text-primary)',
+  textSecondary: 'var(--color-text-secondary)',
 } as const;

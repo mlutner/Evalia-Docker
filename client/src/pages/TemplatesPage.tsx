@@ -6,6 +6,7 @@ import { Plus, Clock, Users, FileText } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useState } from "react";
 import type { Template } from "@shared/schema";
+import { theme } from "@/theme";
 
 export default function TemplatesPage() {
   const [, setLocation] = useLocation();
@@ -27,18 +28,22 @@ export default function TemplatesPage() {
   };
 
   return (
-    <main className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-950">
+    <main style={{ backgroundColor: theme.backgrounds.page }}>
       <div className="container mx-auto px-4 py-6 md:py-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-semibold mb-2">Survey Templates</h1>
-            <p className="text-muted-foreground">Choose from pre-built templates or create a new one</p>
+            <p style={{ color: theme.text.secondary }}>Choose from pre-built templates or create a new one</p>
           </div>
           <Button 
             size="lg" 
             onClick={() => setLocation("/builder")} 
             data-testid="button-new-template"
-            className="w-full sm:w-auto bg-evalia-lime hover:bg-evalia-lime/90 text-slate-900 border-0 font-semibold shadow-md hover:shadow-lg"
+            style={{ 
+              backgroundColor: theme.colors.lime,
+              color: theme.buttons.lime.text,
+              fontWeight: '600'
+            }}
           >
             <Plus className="w-5 h-5" />
             New Template
@@ -60,23 +65,23 @@ export default function TemplatesPage() {
                 <CardContent className="p-6 flex flex-col flex-1">
                   <div className="flex items-start justify-between gap-4 mb-4">
                     <h3 className="text-xl font-bold flex-1 leading-tight">{template.title}</h3>
-                    <div className="bg-slate-200 dark:bg-slate-700 rounded-md px-2 py-0.5 flex items-center gap-1.5 flex-shrink-0 text-xs font-medium text-slate-700 dark:text-slate-300">
+                    <div style={{ backgroundColor: 'rgba(163, 214, 92, 0.1)', borderRadius: '0.375rem', padding: '0.125rem 0.5rem', display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', fontWeight: '500', color: theme.colors.textPrimary }}>
                       <FileText className="w-3.5 h-3.5" />
                       {template.questions.length}
                     </div>
                   </div>
 
-                  <p className="text-sm text-muted-foreground mb-4">{template.description}</p>
+                  <p className="text-sm mb-4" style={{ color: theme.text.secondary }}>{template.description}</p>
 
                   <div className="space-y-2 mb-6 flex-1">
                     {template.timing && (
-                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-3 text-sm" style={{ color: theme.text.secondary }}>
                         <Clock className="w-4 h-4 flex-shrink-0" />
                         <span>{template.timing}</span>
                       </div>
                     )}
                     {template.audience && (
-                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-3 text-sm" style={{ color: theme.text.secondary }}>
                         <Users className="w-4 h-4 flex-shrink-0" />
                         <span>{template.audience}</span>
                       </div>
@@ -86,15 +91,20 @@ export default function TemplatesPage() {
                   <div className="flex gap-3">
                     <Button
                       onClick={() => setPreviewTemplate(template)}
-                      className="flex-1 bg-evalia-primary hover:bg-evalia-primary/90 text-[#0e1729]"
-                      variant="default"
+                      variant="outline"
+                      className="flex-1"
                       data-testid={`button-preview-template-${template.id}`}
                     >
                       Preview
                     </Button>
                     <Button 
                       onClick={() => handleUseTemplate(template)}
-                      className="flex-1 bg-[#0e1729] hover:bg-evalia-primary/90 text-evalia-lime font-semibold"
+                      className="flex-1"
+                      style={{ 
+                        backgroundColor: theme.colors.primary,
+                        color: '#FFFFFF',
+                        fontWeight: '600'
+                      }}
                       data-testid={`button-use-template-${template.id}`}
                     >
                       Use Template
