@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { useRoute, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, Save, Loader2 } from "lucide-react";
-import Header from "@/components/Header";
 import WizardSteps from "@/components/WizardSteps";
 import SurveyStartFlow from "@/components/builder/SurveyStartFlow";
 import QuestionsStep from "@/components/builder/QuestionsStep";
@@ -224,7 +223,6 @@ export default function Builder() {
   if (isEditMode && isLoadingSurvey) {
     return (
       <div className="min-h-screen bg-background">
-        <Header />
         <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
           <div className="text-muted-foreground">Loading survey...</div>
         </div>
@@ -234,7 +232,6 @@ export default function Builder() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10">
-      <Header />
       <main className="container mx-auto px-4 py-8">
         {/* Back to Dashboard Button */}
         <div className="mb-8">
