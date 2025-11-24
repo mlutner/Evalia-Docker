@@ -177,7 +177,6 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background dark:bg-slate-950 flex flex-col">
       <Header />
-      
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!deleteConfirm} onOpenChange={(open) => !open && setDeleteConfirm(null)}>
         <AlertDialogContent>
@@ -200,7 +199,6 @@ export default function Dashboard() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
       <div className="flex flex-1">
         {/* Sidebar */}
         <aside className={`bg-evalia-navy border-r border-slate-700 flex flex-col transition-all duration-300 ${
@@ -224,7 +222,7 @@ export default function Dashboard() {
             </button>
           </div>
 
-          <nav className="flex-1 p-3 space-y-2">
+          <nav className="flex-1 p-3 space-y-2 bg-[#022643] text-[#fafafa]">
             {sidebarItems.map((item) => {
               const isActive = activeView === item.id || (item.id === "surveys" && activeView === "surveys");
               const Icon = item.icon;
