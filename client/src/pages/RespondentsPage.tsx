@@ -78,7 +78,8 @@ export default function RespondentsPage() {
   const parsePdfFile = async (file: File) => {
     try {
       const arrayBuffer = await file.arrayBuffer();
-      const pdfParse = (await import("pdf-parse")).default;
+      const pdfParseModule = await import("pdf-parse");
+      const pdfParse = (pdfParseModule as any).default || pdfParseModule;
       const data = await pdfParse(arrayBuffer);
       const text = data.text;
 
