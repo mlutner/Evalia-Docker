@@ -21,7 +21,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       )}
       
       {/* Sidebar */}
-      <div className={`fixed lg:relative left-0 top-0 h-full z-40 transform lg:transform-none transition-transform duration-300 ${
+      <div className={`fixed lg:relative left-0 top-0 h-screen lg:h-auto z-40 transform lg:transform-none transition-transform duration-300 overflow-hidden ${
         sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       }`}>
         <AppSidebar onNavigate={() => setSidebarOpen(false)} />

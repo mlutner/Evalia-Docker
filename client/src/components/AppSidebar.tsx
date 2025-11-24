@@ -40,7 +40,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
   const isActive = (href: string) => location === href;
 
   return (
-    <aside className={`flex flex-col transition-all duration-300 ${
+    <aside className={`flex flex-col h-full transition-all duration-300 ${
       sidebarExpanded ? "w-56" : "w-20"
     }`} style={{ backgroundColor: 'var(--color-dark-navy)', borderRightColor: 'var(--color-border)', borderRightWidth: '1px' }}>
       {/* Header with Logo */}
