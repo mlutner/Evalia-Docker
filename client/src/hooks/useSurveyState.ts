@@ -278,6 +278,7 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
     }
 
     const surveyData = {
+      type: surveyType,
       title: currentSurveyTitle,
       description: currentSurveyDescription || undefined,
       welcomeMessage: welcomeMessage || undefined,
@@ -299,6 +300,8 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
 
   return {
     // State
+    surveyType,
+    setSurveyType,
     currentSurveyTitle,
     setCurrentSurveyTitle,
     currentSurveyDescription,

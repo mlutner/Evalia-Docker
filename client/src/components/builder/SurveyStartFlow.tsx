@@ -13,6 +13,8 @@ import type { SurveyTemplate } from "@shared/templates";
 import type { Question } from "@shared/schema";
 
 interface SurveyStartFlowProps {
+  surveyType: "survey" | "assessment";
+  onSurveyTypeChange: (type: "survey" | "assessment") => void;
   currentQuestions: Question[];
   currentSurveyTitle: string;
   onSurveyTitleChange: (title: string) => void;
@@ -62,6 +64,8 @@ const OPTION_CARDS: OptionCard[] = [
 ];
 
 export default function SurveyStartFlow({
+  surveyType,
+  onSurveyTypeChange,
   currentQuestions,
   currentSurveyTitle,
   onSurveyTitleChange,
@@ -109,6 +113,57 @@ export default function SurveyStartFlow({
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="max-w-7xl mx-auto px-4 py-6 md:py-10">
+        {/* Survey Type Selection */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8 md:mb-12"
+        >
+          <div className="bg-white rounded-lg border-2 border-border p-4 sm:p-6 md:p-8">
+            <h2 className="text-base sm:text-lg md:text-xl font-semibold mb-4" style={{ color: '#1C2635' }}>
+              What are you creating?
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+              {/* Survey Option */}
+              <motion.button
+                onClick={() => onSurveyTypeChange("survey")}
+                whileHover={{ y: -2 }}
+                className={`p-4 sm:p-5 rounded-lg border-2 transition-all text-left ${
+                  surveyType === "survey"
+                    ? "border-primary bg-primary/5"
+                    : "border-border bg-white hover:border-primary/50"
+                }`}
+              >
+                <h3 className="font-semibold text-base sm:text-lg mb-2" style={{ color: '#1C2635' }}>
+                  Survey
+                </h3>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                  Collect feedback & reactions. Focus on opinions, experiences, and satisfaction across any topic.
+                </p>
+              </motion.button>
+
+              {/* Assessment Option */}
+              <motion.button
+                onClick={() => onSurveyTypeChange("assessment")}
+                whileHover={{ y: -2 }}
+                className={`p-4 sm:p-5 rounded-lg border-2 transition-all text-left ${
+                  surveyType === "assessment"
+                    ? "border-primary bg-primary/5"
+                    : "border-border bg-white hover:border-primary/50"
+                }`}
+              >
+                <h3 className="font-semibold text-base sm:text-lg mb-2" style={{ color: '#1C2635' }}>
+                  Assessment
+                </h3>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                  Measure knowledge, skills & behavior change with scoring. Evaluate performance and provide feedback.
+                </p>
+              </motion.button>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Hero Section */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}

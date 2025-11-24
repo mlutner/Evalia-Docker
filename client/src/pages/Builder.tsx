@@ -67,6 +67,7 @@ export default function Builder() {
 
   useEffect(() => {
     if (existingSurvey && isEditMode && !surveyState.hasLoadedSurvey) {
+      surveyState.setSurveyType((existingSurvey as any).type || "survey");
       surveyState.setCurrentSurveyTitle(existingSurvey.title);
       surveyState.setCurrentSurveyDescription(existingSurvey.description || "");
       surveyState.setWelcomeMessage(existingSurvey.welcomeMessage || "");
