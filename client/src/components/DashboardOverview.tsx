@@ -138,7 +138,7 @@ export function DashboardOverview() {
               <CardHeader>
                 <CardTitle className="text-base">Skills ratings across dimensions</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="bg-[#0D1B2A]/5">
                 <CategoryBreakdownChart data={[
                   { name: "Communication", count: 8 },
                   { name: "Engagement", count: 6 },
