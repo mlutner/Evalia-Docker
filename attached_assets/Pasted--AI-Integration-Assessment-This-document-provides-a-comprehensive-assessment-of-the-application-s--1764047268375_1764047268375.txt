@@ -1,0 +1,130 @@
+# AI Integration Assessment
+
+This document provides a comprehensive assessment of the application's AI and API integrations, focusing on prompt quality, model selection, and overall integration strategy.
+
+## 1. Prompt Analysis and Recommendations
+
+The application's prompts are well-structured and provide good context to the AI. However, they can be improved by adding more explicit constraints, examples, and role-playing scenarios.
+
+### 1.1. `generateSurveyFromText` Prompt
+
+*   **Assessment:** This prompt is strong, but it could be more robust in handling complex documents.
+*   **Recommendation:** Add a "persona" to the system prompt to guide the AI's behavior more effectively.
+
+**Improved Prompt Example:**
+
+```
+You are an expert instructional designer and survey methodologist. Your task is to transform the following document into a high-quality survey that is clear, unbiased, and effective at measuring the intended outcomes.
+
+**Document Content:**
+...
+
+**Instructions:**
+1.  **Identify Core Concepts:** First, identify the key themes and learning objectives in the document.
+2.  **Generate Questions:** For each core concept, create a set of questions that...
+3.  **Ensure Variety:** Use a mix of question types, including multiple-choice, rating scales, and open-ended questions.
+...
+```
+
+### 1.2. `refineSurvey` Prompt
+
+*   **Assessment:** This prompt is good, but it could be more explicit about how to handle different types of user requests.
+*   **Recommendation:** Add a "chain-of-thought" instruction to encourage the AI to reason about the user's request before generating the response.
+
+**Improved Prompt Example:**
+
+```
+You are a survey design consultant. The user will provide you with a survey and a request for changes. Your task is to first understand the user's intent, then provide a thoughtful response that either fulfills the request or explains why it might not be a good idea.
+
+**User Request:**
+...
+
+**Chain of Thought:**
+1.  **Analyze the Request:** What is the user trying to achieve with this change?
+2.  **Evaluate the Impact:** How will this change affect the survey's quality, clarity, and data?
+3.  **Formulate a Response:** Based on your analysis, either generate the updated survey questions or provide a helpful explanation.
+...
+```
+
+### 1.3. `analyzeResponses` Prompt
+
+*   **Assessment:** This prompt is well-defined, but it could be more specific about the desired output format to ensure consistency.
+*   **Recommendation:** Add a "JSON schema" to the prompt to enforce a strict output structure.
+
+**Improved Prompt Example:**
+
+```
+You are a data analyst specializing in qualitative feedback. Analyze the following survey responses and provide a summary of your findings.
+
+**Responses:**
+...
+
+**Output Schema:**
+Your response MUST be a valid JSON object that conforms to the following schema:
+{
+  "summary": "A high-level overview of the key themes.",
+  "themes": [
+    {
+      "theme": "The main topic of the feedback.",
+      "quotes": ["A list of direct quotes from the responses that support the theme."],
+      "sentiment": "The overall sentiment of the theme (Positive, Negative, Neutral)."
+    }
+  ],
+  "actionable_insights": [
+    {
+      "insight": "A specific, actionable recommendation based on the feedback.",
+      "urgency": "The urgency of addressing the insight (High, Medium, Low)."
+    }
+  ]
+}
+```
+
+## 2. AI Model Selection and Routing
+
+The application currently uses `mistral-medium-latest` for generation tasks and a specialized OCR model. This is a good starting point, but a more sophisticated model routing strategy can optimize for cost, speed, and capabilities.
+
+### 2.1. Model Routing Strategy
+
+Instead of using a single model for all generation tasks, I recommend a "model routing" approach. This involves selecting the best model for each specific task based on its complexity.
+
+*   **For simple, low-stakes tasks:** Use a smaller, faster, and cheaper model (e.g., `mistral-small-latest`).
+*   **For complex, high-stakes tasks:** Use a larger, more capable, but slower and more expensive model (e.g., `mistral-large-latest`).
+
+### 2.2. Recommended Model-to-Task Mapping
+
+| Task                       | Current Model              | Recommended Model          | Rationale                                                                 |
+| -------------------------- | -------------------------- | -------------------------- | ------------------------------------------------------------------------- |
+| **Survey Generation**      | `mistral-medium-latest`    | `mistral-large-latest`     | High-quality question generation is a core feature; use the best model.   |
+| **Survey Refinement**      | `mistral-medium-latest`    | `mistral-large-latest`     | Nuanced understanding of user requests is critical for a good experience. |
+| **Response Analysis**      | `mistral-medium-latest`    | `mistral-large-latest`     | High-stakes task that requires deep analysis and insight generation.      |
+| **AI Chat**                | `mistral-medium-latest`    | `mistral-small-latest`     | A faster, cheaper model is better for a conversational, back-and-forth UI. |
+| **Generate Survey Text**   | `mistral-medium-latest`    | `mistral-small-latest`     | Generating short text snippets is a low-complexity task.                |
+
+### 2.3. Implementation
+
+The `callMistral` function in `server/openrouter.ts` can be modified to accept a `quality` parameter (e.g., "fast," "balanced," "best") that maps to the appropriate model. This will allow you to easily implement the model routing strategy without changing the call sites.
+
+## 3. AI Integration Best Practices
+
+To ensure the long-term success of your AI features, I recommend the following best practices:
+
+### 3.1. Centralized Prompt Management
+
+*   **Problem:** As the application grows, prompts can become scattered throughout the codebase, making them difficult to manage and update.
+*   **Solution:** Store all prompts in a dedicated directory (e.g., `server/prompts`) as separate text or markdown files. This will make them easier to find, version, and A/B test.
+
+### 3.2. Robust Error Handling and Retries
+
+*   **Problem:** AI models can fail for various reasons (e.g., API downtime, invalid responses).
+*   **Solution:** Implement a robust error handling and retry mechanism. The `callMistral` function should include logic to automatically retry failed requests with exponential backoff. It should also be able to handle malformed JSON responses from the AI.
+
+### 3.3. Performance Monitoring and Logging
+
+*   **Problem:** It's difficult to know how well your AI features are performing in production.
+*   **Solution:** Log all AI requests and responses, including the prompt, the model used, the latency, and the cost. This will allow you to monitor the performance and cost of your AI features and identify areas for improvement.
+
+### 3.4. A/B Testing and Experimentation
+
+*   **Problem:** It's not always clear which prompts or models will perform best for a given task.
+*   **Solution:** Implement a framework for A/B testing different prompts and models in production. This will allow you to make data-driven decisions about how to optimize your AI features.
+
