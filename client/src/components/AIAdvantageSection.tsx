@@ -180,8 +180,8 @@ export function AIAdvantageSection() {
                   <div className="relative w-full bg-zinc-400 flex items-center justify-center overflow-hidden group p-1" style={{ aspectRatio: "3 / 2" }}>
                     {cardImages[index] ? (
                       <>
-                        {/* Display uploaded image - rounded borders with shadow lift */}
-                        <div className="relative w-full h-full border-2 border-gray-200 rounded-2xl overflow-hidden flex items-center justify-center" style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)" }}>
+                        {/* Display uploaded image - rounded corners with shadow lift */}
+                        <div className="relative w-full h-full rounded-2xl overflow-hidden flex items-center justify-center" style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)" }}>
                           <img 
                             src={cardImages[index]} 
                             alt={advantage.title} 
