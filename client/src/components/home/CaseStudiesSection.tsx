@@ -146,37 +146,29 @@ export function CaseStudiesSection() {
 
           {/* Right Image Container */}
           <div className="relative" style={{ aspectRatio: '1' }}>
-            {/* Larger offset square - further back */}
-            <div className="absolute rounded-3xl bg-gradient-to-br from-teal-400 via-teal-500 to-blue-600" style={{
+            {/* Offset gradient square behind */}
+            <div className="absolute rounded-3xl bg-gradient-to-br from-teal-400 to-blue-500" style={{
               width: '100%',
               height: '100%',
-              transform: 'translate(48px, 48px)',
-              zIndex: -2
-            }} />
-            
-            {/* Secondary offset square - closer */}
-            <div className="absolute rounded-3xl bg-gradient-to-br from-teal-400/80 via-teal-500/80 to-blue-600/80" style={{
-              width: '100%',
-              height: '100%',
-              transform: 'translate(24px, 24px)',
+              transform: 'translate(32px, 32px)',
               zIndex: -1
             }} />
             
-            {/* Main image container - no frame */}
+            {/* Main image container */}
             <div
-              className="relative w-full h-full rounded-3xl overflow-hidden bg-slate-200 flex items-center justify-center shadow-2xl"
+              className="relative w-full h-full rounded-3xl overflow-hidden bg-blue-50 flex items-center justify-center shadow-lg"
               data-testid={`image-container-${currentCase.id}`}
             >
               <div className="text-center space-y-3">
-                <div className="text-6xl text-slate-400">📸</div>
-                <p className="text-slate-500 font-medium">
+                <div className="text-6xl">📸</div>
+                <p className="text-slate-500 font-medium text-sm">
                   Case study image<br />{currentCase.tab.toLowerCase()}
                 </p>
               </div>
             </div>
 
             {/* Navigation dots */}
-            <div className="flex gap-2 justify-center mt-6">
+            <div className="flex gap-2 justify-center mt-8">
               {caseStudies.map((_, index) => (
                 <button
                   key={index}
