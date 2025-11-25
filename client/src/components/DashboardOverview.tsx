@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
-import { BarChart3, TrendingUp, Users, Award, ChevronRight, AlertTriangle, Star, FileText, CheckCircle, Plus } from "lucide-react";
+import { ChartBar, ChartLine, Medal, CaretRight, Warning, Star, FileText, CheckCircle, Plus } from "phosphor-react";
 import { useLocation } from "wouter";
 import { ResponseTrendsChart, CategoryBreakdownChart, DistributionChart, ResponseVolumeChart } from "./DashboardCharts";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -80,7 +80,7 @@ export function DashboardOverview() {
             style={{ backgroundColor: '#2F8FA5', color: '#FFFFFF' }}
             data-testid="button-start-survey-dashboard"
           >
-            <Plus className="w-4 h-4 mr-2" strokeWidth={2} />
+            <Plus className="w-4 h-4 mr-2" weight="bold" />
             <span className="hidden sm:inline">New Questionnaire</span>
             <span className="sm:hidden">New</span>
           </Button>
@@ -93,8 +93,9 @@ export function DashboardOverview() {
             label="Created this month"
             value={metrics.totalSurveys}
             subtext={`${metrics.activeSurveys} active`}
-            icon={BarChart3}
+            icon={ChartBar}
             borderColor="#2F8FA5"
+            iconColor="#6A7789"
           />
         </div>
         <div className="col-span-12 md:col-span-4">
@@ -102,8 +103,9 @@ export function DashboardOverview() {
             label="Across all scoring models"
             value={metrics.avgScore}
             subtext="out of 100"
-            icon={Award}
+            icon={Medal}
             borderColor="#37C0A3"
+            iconColor="#6A7789"
           />
         </div>
         <div className="col-span-12 md:col-span-4">
@@ -111,8 +113,9 @@ export function DashboardOverview() {
             label="Across all surveys"
             value={`${metrics.responseRate}%`}
             subtext="completion"
-            icon={TrendingUp}
+            icon={ChartLine}
             borderColor="#A3D65C"
+            iconColor="#6A7789"
           />
         </div>
       </div>
@@ -195,28 +198,32 @@ export function DashboardOverview() {
             </CardHeader>
             <CardContent className="p-5 space-y-4">
               <InsightCard
-                icon={AlertTriangle}
+                icon={Warning}
                 title="Top Weak Areas"
                 description="Communication skills showed lower scores compared to other categories."
                 type="warning"
+                iconColor="#6A7789"
               />
               <InsightCard
                 icon={Star}
                 title="Top Strength"
                 description="Knowledge was rated as the strongest area across all respondents."
                 type="info"
+                iconColor="#6A7789"
               />
               <InsightCard
                 icon={FileText}
                 title="Question Quality"
                 description="1 question may need clarification for better clarity."
                 type="info"
+                iconColor="#6A7789"
               />
               <InsightCard
                 icon={CheckCircle}
                 title="Recommendations"
                 description="Consider revising communication and skills questions for clarity."
                 type="neutral"
+                iconColor="#6A7789"
               />
             </CardContent>
           </Card>
@@ -228,7 +235,7 @@ export function DashboardOverview() {
           <div className="flex items-center justify-between">
             <CardTitle className="heading-3" style={{ color: 'var(--color-text-primary)' }}>Recent Surveys</CardTitle>
             <Button variant="ghost" size="sm" onClick={() => setLocation("/dashboard?tab=all")} data-testid="button-view-all">
-              View All <ChevronRight className="w-6 h-6 ml-1" strokeWidth={2} />
+              View All <CaretRight className="w-6 h-6 ml-1" weight="bold" />
             </Button>
           </div>
         </CardHeader>

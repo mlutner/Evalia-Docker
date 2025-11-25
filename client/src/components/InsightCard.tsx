@@ -1,30 +1,23 @@
-import { LucideIcon } from "lucide-react";
-
 interface InsightCardProps {
-  icon: LucideIcon;
+  icon: React.ComponentType<any>;
   title: string;
   description: string;
   type?: "warning" | "info" | "neutral";
+  iconColor?: string;
 }
 
 const typeStyles = {
   warning: {
     bgColor: "#F7F9FC",
-    iconColor: "#A3D65C",
     borderColor: "#A3D65C",
-    iconBgColor: "transparent",
   },
   info: {
     bgColor: "#F7F9FC",
-    iconColor: "#2F8FA5",
     borderColor: "#2F8FA5",
-    iconBgColor: "transparent",
   },
   neutral: {
     bgColor: "#F7F9FC",
-    iconColor: "#37C0A3",
     borderColor: "#37C0A3",
-    iconBgColor: "transparent",
   },
 };
 
@@ -32,7 +25,8 @@ export function InsightCard({
   icon: Icon,
   title,
   description,
-  type = "info"
+  type = "info",
+  iconColor = "#6A7789"
 }: InsightCardProps) {
   const styles = typeStyles[type];
 
@@ -44,7 +38,7 @@ export function InsightCard({
         borderLeftColor: styles.borderColor,
       }}
     >
-      <Icon className="w-6 h-6 flex-shrink-0 mt-0.5" strokeWidth={2} style={{ color: styles.iconColor }} />
+      <Icon size={24} weight="bold" className="flex-shrink-0 mt-0.5" style={{ color: iconColor }} />
       <div className="min-w-0">
         <p className="text-sm font-semibold" style={{ color: '#0E1B2C' }}>{title}</p>
         <p className="text-xs mt-1" style={{ color: 'var(--color-neutral-text-secondary)' }}>{description}</p>

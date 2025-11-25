@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Plus, CaretLeft, CaretRight, SignOut, UserCircle } from "phosphor-react";
-import { SquareFour, BarChart, Users, Book, TextT, Lightning, Gear } from "phosphor-react";
+import { SquaresFour, ChartBar, Users, Book, TextT, Lightning, Gear } from "phosphor-react";
 import { useAuth } from "@/hooks/useAuth";
 import { queryClient } from "@/lib/queryClient";
 import type { User as UserType } from "@shared/schema";
@@ -29,8 +29,8 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
   };
 
   const sidebarItems = [
-    { id: "dashboard", label: "Dashboard", icon: SquareFour, href: "/dashboard", tooltip: "Overview and key metrics" },
-    { id: "surveys", label: "Surveys", icon: BarChart, href: "/surveys", tooltip: "Create, manage, and analyze surveys" },
+    { id: "dashboard", label: "Dashboard", icon: SquaresFour, href: "/dashboard", tooltip: "Overview and key metrics" },
+    { id: "surveys", label: "Surveys", icon: ChartBar, href: "/surveys", tooltip: "Create, manage, and analyze surveys" },
     { id: "respondents", label: "Respondent Groups", icon: Users, href: "/respondents", tooltip: "Manage respondent lists and segments" },
     { id: "templates", label: "Templates", icon: TextT, href: "/templates", tooltip: "Pre-built survey templates" },
     { id: "ai-assist", label: "AI Assist", icon: Lightning, href: "/ai-assist", tooltip: "Generate surveys with AI" },

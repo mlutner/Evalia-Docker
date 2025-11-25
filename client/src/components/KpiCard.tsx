@@ -1,13 +1,13 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { LucideIcon } from "lucide-react";
 
 interface KpiCardProps {
   label: string;
   value: string | number;
   subtext: string;
-  icon: LucideIcon;
+  icon: React.ComponentType<any>;
   showBorder?: boolean;
   borderColor?: string;
+  iconColor?: string;
 }
 
 export function KpiCard({
@@ -16,7 +16,8 @@ export function KpiCard({
   subtext,
   icon: Icon,
   showBorder = true,
-  borderColor = '#2F8FA5'
+  borderColor = '#2F8FA5',
+  iconColor
 }: KpiCardProps) {
   return (
     <Card className="evalia-kpi-card" style={{ borderLeftColor: showBorder ? borderColor : undefined }}>
@@ -28,7 +29,7 @@ export function KpiCard({
             <p className="evalia-kpi-subtext">{subtext}</p>
           </div>
           <div className="evalia-kpi-icon-wrapper" style={{ backgroundColor: borderColor ? `${borderColor}15` : undefined }}>
-            <Icon className="evalia-icon" style={{ color: borderColor }} strokeWidth={2} />
+            <Icon size={24} weight="bold" className="evalia-icon" style={{ color: iconColor || borderColor }} />
           </div>
         </div>
       </CardContent>
