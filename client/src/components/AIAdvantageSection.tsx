@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Zap, Brain, BarChart3, Sparkles, MessageCircle, Settings, TrendingUp, Eye, Upload, X } from "lucide-react";
-import surveyGenerationHero from "@assets/survey-generation-hero.png";
+import surveyGenerationFull from "@assets/survey-generation-full.png";
 
 export function AIAdvantageSection() {
   const [cardImages, setCardImages] = useState<{ [key: number]: string | null }>({
-    0: surveyGenerationHero,
+    0: surveyGenerationFull,
     1: null,
     2: null,
     3: null,
@@ -166,7 +166,7 @@ export function AIAdvantageSection() {
               >
                 {/* Card Container */}
                 <div
-                  className={`relative bg-slate-800/90 backdrop-blur-sm border ${advantage.borderColor} rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:border-opacity-100 flex flex-col h-full hover:scale-105`}
+                  className={`relative bg-gray-50 border ${advantage.borderColor} rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:border-opacity-100 flex flex-col h-full hover:scale-105`}
                 >
                   {/* Top colored accent bar */}
                   <div
@@ -174,11 +174,11 @@ export function AIAdvantageSection() {
                   />
 
                   {/* Image Container */}
-                  <div className="relative w-full bg-gradient-to-br from-slate-100 to-slate-50 border-b border-slate-200 flex items-center justify-center overflow-hidden group p-4" style={{ aspectRatio: "3 / 2" }}>
+                  <div className="relative w-full bg-gray-50 flex items-center justify-center overflow-hidden group p-4" style={{ aspectRatio: "3 / 1.4" }}>
                     {cardImages[index] ? (
                       <>
-                        {/* Display uploaded image - 3x2 aspect ratio with rounded borders */}
-                        <div className="relative w-full h-full border-2 border-slate-300 rounded-2xl overflow-hidden flex items-center justify-center">
+                        {/* Display uploaded image - taller with rounded borders */}
+                        <div className="relative w-full h-full border-2 border-gray-200 rounded-2xl overflow-hidden flex items-center justify-center">
                           <img 
                             src={cardImages[index]} 
                             alt={advantage.title} 
