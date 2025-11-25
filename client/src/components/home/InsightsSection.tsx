@@ -123,12 +123,12 @@ export function InsightsSection() {
             <div className="relative">
               {/* Offset square background */}
               <div 
-                className="absolute rounded-3xl bg-gradient-to-br from-evalia-teal-500 to-evalia-teal-dark pointer-events-none transition-all duration-300"
+                className="absolute rounded-3xl bg-teal-400 pointer-events-none transition-all duration-300"
                 style={{
-                  width: '100%',
-                  height: '100%',
-                  bottom: '-30px',
-                  right: '-30px',
+                  width: '120%',
+                  height: '120%',
+                  top: '-40px',
+                  right: '-50px',
                   zIndex: 0
                 }} 
               />
