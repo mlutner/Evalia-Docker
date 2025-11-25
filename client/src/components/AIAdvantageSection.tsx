@@ -6,59 +6,119 @@ export function AIAdvantageSection() {
       icon: Zap,
       title: "AI Survey Generation",
       description: "Transform documents into perfectly structured surveys instantly. Let AI handle the heavy lifting.",
-      gradient: "from-blue-600 to-blue-800",
+      cardColor: "from-blue-50 to-blue-50/50",
+      borderColor: "border-blue-200",
+      iconBg: "bg-blue-100",
+      iconColor: "text-blue-600",
       accentIcon: MessageCircle,
     },
     {
       icon: Brain,
       title: "Question Quality Scoring",
       description: "Prompt new Anthropic models in Claude. Ensure every question is clear and effective.",
-      gradient: "from-amber-600 to-amber-800",
+      cardColor: "from-emerald-50 to-emerald-50/50",
+      borderColor: "border-emerald-200",
+      iconBg: "bg-emerald-100",
+      iconColor: "text-emerald-600",
       accentIcon: Settings,
     },
     {
       icon: BarChart3,
       title: "Smart Analytics",
       description: "Transform your respondents into action. Unlock deeper insights from feedback data.",
-      gradient: "from-purple-600 to-purple-800",
+      cardColor: "from-teal-50 to-teal-50/50",
+      borderColor: "border-teal-200",
+      iconBg: "bg-teal-100",
+      iconColor: "text-teal-600",
       accentIcon: TrendingUp,
     },
     {
       icon: Sparkles,
       title: "AI-Driven Recommendations",
       description: "Reveal how LLMs talk about your brand across every touchpoint. Act with confidence.",
-      gradient: "from-slate-700 to-slate-900",
+      cardColor: "from-purple-50 to-purple-50/50",
+      borderColor: "border-purple-200",
+      iconBg: "bg-purple-100",
+      iconColor: "text-purple-600",
       accentIcon: Eye,
     },
   ];
 
   return (
-    <section className="relative py-32 overflow-hidden">
-      {/* Gradient background - more vibrant and prominent */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "linear-gradient(135deg, #2563eb 0%, #0ea5e9 25%, #a78bfa 50%, #ec4899 75%, #f97316 100%)",
-        }}
-      />
+    <section className="relative py-24 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
+      {/* Dynamic animated background shape */}
+      <svg
+        className="absolute inset-0 w-full h-full"
+        style={{ filter: "blur(0px)" }}
+        viewBox="0 0 1440 800"
+        preserveAspectRatio="xMidYMid slice"
+      >
+        <defs>
+          <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#2F8FA5" stopOpacity="0.08" />
+            <stop offset="50%" stopColor="#37C0A3" stopOpacity="0.06" />
+            <stop offset="100%" stopColor="#A3D65C" stopOpacity="0.04" />
+          </linearGradient>
 
-      {/* Content overlay with slight transparency */}
-      <div className="absolute inset-0 bg-black/5 pointer-events-none" />
+          <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1" />
+          </filter>
+        </defs>
 
+        {/* Main curved wave shapes */}
+        <path
+          d="M 0,300 Q 360,200 720,250 T 1440,300 L 1440,0 L 0,0 Z"
+          fill="url(#grad1)"
+          opacity="0.6"
+        />
+
+        <path
+          d="M 0,400 Q 360,320 720,380 T 1440,400 L 1440,800 L 0,800 Z"
+          fill="url(#grad1)"
+          opacity="0.4"
+        />
+
+        {/* Accent blob shapes */}
+        <circle
+          cx="1200"
+          cy="150"
+          r="150"
+          fill="#37C0A3"
+          opacity="0.03"
+        />
+
+        <circle
+          cx="200"
+          cy="650"
+          r="120"
+          fill="#2F8FA5"
+          opacity="0.04"
+        />
+
+        {/* Decorative line accent */}
+        <path
+          d="M 0,500 Q 360,480 720,500 T 1440,500"
+          stroke="#A3D65C"
+          strokeWidth="2"
+          fill="none"
+          opacity="0.08"
+        />
+      </svg>
+
+      {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-20">
-          <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
+          <h2 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6">
             Your unfair AI advantage
           </h2>
-          <p className="text-xl text-white/95 max-w-2xl mx-auto font-light">
-            Learn deeper, act faster, and grow like never before. With AI analytics off you have to do is ask.
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto font-light leading-relaxed">
+            Learn deeper, act faster, and grow like never before. With AI at every step, you'll create better surveys and understand your respondents like never before.
           </p>
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {advantages.map((advantage, index) => {
             const Icon = advantage.icon;
             const AccentIcon = advantage.accentIcon;
@@ -66,44 +126,45 @@ export function AIAdvantageSection() {
               <div
                 key={index}
                 className="group flex flex-col h-full"
+                data-testid={`card-ai-advantage-${index}`}
               >
                 {/* Card Container */}
-                <div className="relative bg-slate-900/50 backdrop-blur-xl border border-white/20 rounded-2xl overflow-hidden hover:bg-slate-900/70 transition-all duration-300 hover:border-white/40 hover:shadow-2xl hover:shadow-white/10 flex flex-col h-full">
-                  {/* Mockup/Preview area at top */}
-                  <div className={`relative h-40 bg-gradient-to-br ${advantage.gradient} p-6 flex items-center justify-center overflow-hidden`}>
-                    {/* Decorative background pattern */}
-                    <div className="absolute inset-0 opacity-20">
-                      <div className="absolute top-2 left-2 w-2 h-2 bg-white rounded-full" />
-                      <div className="absolute top-4 right-4 w-3 h-3 bg-white/60 rounded-full" />
-                      <div className="absolute bottom-3 left-1/3 w-1 h-1 bg-white/40 rounded-full" />
-                      <div className="absolute bottom-4 right-1/4 w-2 h-2 bg-white/50 rounded-full" />
+                <div
+                  className={`relative bg-white backdrop-blur-sm border ${advantage.borderColor} rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:border-opacity-100 flex flex-col h-full hover:scale-105`}
+                >
+                  {/* Top colored accent bar */}
+                  <div
+                    className={`h-1 bg-gradient-to-r ${advantage.cardColor.replace("from-", "from-").replace("to-", "to-")}`}
+                  />
+
+                  {/* Icon and header area */}
+                  <div className="p-6 pb-4">
+                    <div className={`inline-block p-3 ${advantage.iconBg} rounded-lg mb-4 group-hover:scale-110 transition-transform`}>
+                      <Icon className={`w-6 h-6 ${advantage.iconColor}`} />
                     </div>
 
-                    {/* Icon and visual indicator */}
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="bg-white/20 backdrop-blur p-3 rounded-lg">
-                        <Icon className="w-8 h-8 text-white" />
-                      </div>
-                      <AccentIcon className="w-6 h-6 text-white/70" />
-                    </div>
-                  </div>
-
-                  {/* Content area */}
-                  <div className="flex-1 p-6 flex flex-col">
                     {/* Title */}
-                    <h3 className="text-lg font-bold text-white mb-3 leading-snug">
+                    <h3 className="text-lg font-bold text-slate-900 mb-3 leading-snug">
                       {advantage.title}
                     </h3>
+                  </div>
 
+                  {/* Divider */}
+                  <div className="px-6 py-2">
+                    <div className="h-px bg-gradient-to-r from-slate-200 to-transparent" />
+                  </div>
+
+                  {/* Description and footer */}
+                  <div className="flex-1 px-6 py-4 flex flex-col">
                     {/* Description */}
-                    <p className="text-sm text-white/75 mb-6 leading-relaxed flex-1">
+                    <p className="text-sm text-slate-600 mb-6 leading-relaxed flex-1">
                       {advantage.description}
                     </p>
 
                     {/* Learn more link */}
-                    <div className="flex items-center text-white font-semibold text-sm group-hover:text-white/90 transition-colors">
-                      <span>Learn more</span>
-                      <span className="ml-2 transform group-hover:translate-x-1 transition-transform">→</span>
+                    <div className="flex items-center text-sm font-semibold group-hover:text-opacity-100 transition-colors">
+                      <span className="text-slate-700 group-hover:text-slate-900">Learn more</span>
+                      <span className="ml-2 text-slate-700 group-hover:text-slate-900 transform group-hover:translate-x-1 transition-transform">→</span>
                     </div>
                   </div>
                 </div>
