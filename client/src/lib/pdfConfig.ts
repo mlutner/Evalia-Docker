@@ -32,7 +32,8 @@ export const PDF_CONFIG = {
   spacing: {
     titleBottom: 4,
     descriptionBottom: 6,
-    sectionHeaderBottom: 6,
+    beforeQuestionsHeader: 12, // Space before "Questions" header (best practice: 12-16mm)
+    sectionHeaderBottom: 8, // Increased space after section headers like "Questions"
     betweenQuestions: 8, // Extra space after each question
     betweenOptions: 2, // Between checkbox/radio options
     beforeAnswerArea: 2,
@@ -84,7 +85,8 @@ export const SURVEY_TYPE_CONFIGS: Record<string, Partial<typeof PDF_CONFIG>> = {
     spacing: {
       titleBottom: 4,
       descriptionBottom: 6,
-      sectionHeaderBottom: 6,
+      beforeQuestionsHeader: 12,
+      sectionHeaderBottom: 8,
       betweenQuestions: 9,
       betweenOptions: 2.5,
       beforeAnswerArea: 2,
@@ -96,7 +98,8 @@ export const SURVEY_TYPE_CONFIGS: Record<string, Partial<typeof PDF_CONFIG>> = {
     spacing: {
       titleBottom: 4,
       descriptionBottom: 6,
-      sectionHeaderBottom: 6,
+      beforeQuestionsHeader: 12,
+      sectionHeaderBottom: 8,
       betweenQuestions: 8,
       betweenOptions: 2,
       beforeAnswerArea: 2,
@@ -108,7 +111,8 @@ export const SURVEY_TYPE_CONFIGS: Record<string, Partial<typeof PDF_CONFIG>> = {
     spacing: {
       titleBottom: 5,
       descriptionBottom: 7,
-      sectionHeaderBottom: 7,
+      beforeQuestionsHeader: 13,
+      sectionHeaderBottom: 9,
       betweenQuestions: 10,
       betweenOptions: 2.5,
       beforeAnswerArea: 2,
@@ -120,7 +124,8 @@ export const SURVEY_TYPE_CONFIGS: Record<string, Partial<typeof PDF_CONFIG>> = {
     spacing: {
       titleBottom: 4,
       descriptionBottom: 6,
-      sectionHeaderBottom: 6,
+      beforeQuestionsHeader: 12,
+      sectionHeaderBottom: 8,
       betweenQuestions: 10,
       betweenOptions: 3,
       beforeAnswerArea: 2,
@@ -132,7 +137,8 @@ export const SURVEY_TYPE_CONFIGS: Record<string, Partial<typeof PDF_CONFIG>> = {
     spacing: {
       titleBottom: 4,
       descriptionBottom: 6,
-      sectionHeaderBottom: 6,
+      beforeQuestionsHeader: 14,
+      sectionHeaderBottom: 8,
       betweenQuestions: 12,
       betweenOptions: 2,
       beforeAnswerArea: 2,

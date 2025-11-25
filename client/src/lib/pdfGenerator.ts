@@ -106,8 +106,9 @@ export async function generateSurveyPDF(
 
   // === QUESTIONS HEADER ===
   checkNewPage(12);
+  currentY += config.spacing.beforeQuestionsHeader;
   renderText("Questions", margin, currentY, config.fonts.sectionHeader, config.colors.headings, "bold");
-  currentY += 8;
+  currentY += config.spacing.sectionHeaderBottom;
 
   // === QUESTIONS ===
   questions.forEach((question, index) => {
