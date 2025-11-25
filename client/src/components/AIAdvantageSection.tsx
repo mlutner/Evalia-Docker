@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Zap, Brain, BarChart3, Sparkles, MessageCircle, Settings, TrendingUp, Eye, Upload, X } from "lucide-react";
 import surveyGenerationFull from "@assets/survey-generation-full.png";
+import qualityCheckMockup from "@assets/quality-check-mockup.png";
 
 export function AIAdvantageSection() {
   const [cardImages, setCardImages] = useState<{ [key: number]: string | null }>({
     0: surveyGenerationFull,
-    1: null,
+    1: qualityCheckMockup,
     2: null,
     3: null,
   });
