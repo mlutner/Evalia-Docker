@@ -10,6 +10,7 @@ export function AIAdvantageSection() {
       borderColor: "border-blue-200",
       iconBg: "bg-blue-100",
       iconColor: "text-blue-600",
+      imagePlaceholderId: "survey-creation-placeholder",
       accentIcon: MessageCircle,
     },
     {
@@ -20,6 +21,7 @@ export function AIAdvantageSection() {
       borderColor: "border-emerald-200",
       iconBg: "bg-emerald-100",
       iconColor: "text-emerald-600",
+      imagePlaceholderId: "quality-check-placeholder",
       accentIcon: Settings,
     },
     {
@@ -30,6 +32,7 @@ export function AIAdvantageSection() {
       borderColor: "border-teal-200",
       iconBg: "bg-teal-100",
       iconColor: "text-teal-600",
+      imagePlaceholderId: "response-analysis-placeholder",
       accentIcon: TrendingUp,
     },
     {
@@ -40,6 +43,7 @@ export function AIAdvantageSection() {
       borderColor: "border-purple-200",
       iconBg: "bg-purple-100",
       iconColor: "text-purple-600",
+      imagePlaceholderId: "insights-reports-placeholder",
       accentIcon: Eye,
     },
   ];
@@ -145,12 +149,24 @@ export function AIAdvantageSection() {
                     className={`h-1 bg-gradient-to-r ${advantage.cardColor.replace("from-", "from-").replace("to-", "to-")}`}
                   />
 
-                  {/* Icon and header area */}
-                  <div className="p-6 pb-4">
-                    <div className={`inline-block p-3 ${advantage.iconBg} rounded-lg mb-4 group-hover:scale-110 transition-transform`}>
-                      <Icon className={`w-6 h-6 ${advantage.iconColor}`} />
+                  {/* Image Placeholder Area */}
+                  <div className="relative w-full h-48 bg-gradient-to-br from-slate-100 to-slate-50 border-b border-slate-200 flex items-center justify-center overflow-hidden group">
+                    {/* Placeholder frame */}
+                    <div className="absolute inset-4 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className={`inline-block p-3 ${advantage.iconBg} rounded-lg mb-2`}>
+                          <Icon className={`w-6 h-6 ${advantage.iconColor}`} />
+                        </div>
+                        <p className="text-xs text-slate-500 font-medium">Image placeholder</p>
+                      </div>
                     </div>
+                    
+                    {/* Subtle overlay hint on hover */}
+                    <div className="absolute inset-0 bg-slate-900/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
 
+                  {/* Header area with title */}
+                  <div className="p-6 pb-4">
                     {/* Title */}
                     <h3 className="text-lg font-bold text-slate-900 mb-3 leading-snug">
                       {advantage.title}
