@@ -1,4 +1,5 @@
 import { Zap, Brain, BarChart3, Sparkles, MessageCircle, Settings, TrendingUp, Eye } from "lucide-react";
+import surveyCreationMockup from "@assets/survey-creation-mockup.png";
 
 export function AIAdvantageSection() {
   const advantages = [
@@ -151,18 +152,29 @@ export function AIAdvantageSection() {
 
                   {/* Image Placeholder Area */}
                   <div className="relative w-full h-48 bg-gradient-to-br from-slate-100 to-slate-50 border-b border-slate-200 flex items-center justify-center overflow-hidden group">
-                    {/* Placeholder frame */}
-                    <div className="absolute inset-4 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center">
-                      <div className="text-center">
-                        <div className={`inline-block p-3 ${advantage.iconBg} rounded-lg mb-2`}>
-                          <Icon className={`w-6 h-6 ${advantage.iconColor}`} />
+                    {/* Show actual image for first card, placeholder for others */}
+                    {index === 0 ? (
+                      <img 
+                        src={surveyCreationMockup} 
+                        alt="Survey Creation Mockup" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <>
+                        {/* Placeholder frame */}
+                        <div className="absolute inset-4 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center">
+                          <div className="text-center">
+                            <div className={`inline-block p-3 ${advantage.iconBg} rounded-lg mb-2`}>
+                              <Icon className={`w-6 h-6 ${advantage.iconColor}`} />
+                            </div>
+                            <p className="text-xs text-slate-500 font-medium">Image placeholder</p>
+                          </div>
                         </div>
-                        <p className="text-xs text-slate-500 font-medium">Image placeholder</p>
-                      </div>
-                    </div>
-                    
-                    {/* Subtle overlay hint on hover */}
-                    <div className="absolute inset-0 bg-slate-900/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        
+                        {/* Subtle overlay hint on hover */}
+                        <div className="absolute inset-0 bg-slate-900/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </>
+                    )}
                   </div>
 
                   {/* Header area with title */}
