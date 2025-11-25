@@ -2,12 +2,14 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { MoreVertical, Eye, BarChart3, Download, Share2, Check, Copy, Edit3, Users, CheckCircle, Pause, Lock, Download as DownloadIcon, Gauge, FileText as FileIcon, Save } from "lucide-react";
+import { MoreVertical, Eye, BarChart3, Download, Share2, Check, Copy, Edit3, Users, CheckCircle, Pause, Lock, Download as DownloadIcon, Gauge, FileText as FileIcon, Save, Loader2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState, memo } from "react";
 import { theme } from "@/theme";
+import { useToast } from "@/hooks/use-toast";
 import type { Question, SurveyWithCounts } from "@shared/schema";
+import { generateSurveyPDF, downloadPDF } from "@/lib/pdfGenerator";
 
 // Generate a brief summary from survey questions
 function generateSurveySummary(questions?: Question[]): string {
@@ -61,6 +63,7 @@ interface SurveyCardProps {
 }
 
 const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport, onDelete, onReset, onDuplicate, onManageRespondents, onSaveAsTemplate, index = 0 }: SurveyCardProps) {
+  const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [saveTemplateOpen, setSaveTemplateOpen] = useState(false);
@@ -69,6 +72,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
   const [templateCategory, setTemplateCategory] = useState("General");
   const [shortUrl, setShortUrl] = useState<string | null>(null);
   const [loadingShortUrl, setLoadingShortUrl] = useState(false);
+  const [exportingPdf, setExportingPdf] = useState(false);
   
   const shareUrl = `${window.location.origin}/survey/${survey.id}`;
 
@@ -160,6 +164,44 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
     }
   };
 
+  const handleExportPdf = async () => {
+    if (!survey.questions || survey.questions.length === 0) {
+      toast({
+        title: "No questions",
+        description: "Survey has no questions to export",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setExportingPdf(true);
+    try {
+      const pdf = await generateSurveyPDF(
+        survey.title,
+        survey.description || "",
+        survey.questions,
+        survey.welcomeMessage || "",
+        survey.thankYouMessage || "",
+        undefined,
+        undefined
+      );
+      downloadPDF(pdf, survey.title);
+      toast({
+        title: "Success",
+        description: "Survey exported as PDF",
+      });
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF",
+        variant: "destructive",
+      });
+    } finally {
+      setExportingPdf(false);
+    }
+  };
+
 
   return (
     <Card 
@@ -201,6 +243,14 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
                 <DropdownMenuItem onClick={onExport} data-testid="menu-export">
                   <Download className="w-4 h-4 mr-2" />
                   Export Data
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportPdf} disabled={exportingPdf} data-testid="menu-export-pdf">
+                  {exportingPdf ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <FileIcon className="w-4 h-4 mr-2" />
+                  )}
+                  Export as PDF
                 </DropdownMenuItem>
                 {onDuplicate && (
                   <DropdownMenuItem onClick={onDuplicate} data-testid="menu-duplicate">
