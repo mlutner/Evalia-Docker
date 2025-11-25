@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { ChartBar, UsersThree, TrendUp } from 'phosphor-react';
-import { ArrowRightIcon } from 'lucide-react';
+import { ChartBar, UsersThree, TrendUp, ArrowRight } from 'phosphor-react';
 import dashboardAnalytics from '@assets/ChatGPT Image Nov 25, 2025, 11_18_30 AM_1764098321565.png';
 import dashboardRespondents from '@assets/ChatGPT Image Nov 25, 2025, 11_05_22 AM_1764097552873.png';
 import dashboardScoring from '@assets/ChatGPT Image Nov 25, 2025, 11_06_48 AM_1764097630621.png';
@@ -108,7 +107,7 @@ export function InsightsSection() {
                         {isActive && (
                           <div className="flex items-center gap-2 text-evalia-teal font-medium text-sm group">
                             Learn more
-                            <ArrowRightIcon className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                            <ArrowRight size={16} weight="bold" className="group-hover:translate-x-1 transition-transform" />
                           </div>
                         )}
                       </div>

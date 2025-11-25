@@ -5,7 +5,7 @@ import { Navigation } from '@/components/Navigation';
 import { Hero } from '@/components/Hero';
 import { FeatureCard } from '@/components/FeatureCard';
 import { AIAdvantageSection } from '@/components/AIAdvantageSection';
-import { ArrowRightIcon, CheckCircle2Icon } from 'lucide-react';
+import { ArrowRight, CheckCircle } from 'phosphor-react';
 import { SocialProofSection } from '@/components/home/SocialProofSection';
 import { HowItWorksSection } from '@/components/home/HowItWorksSection';
 import { CaseStudiesSection } from '@/components/home/CaseStudiesSection';
@@ -58,7 +58,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12 px-4 sm:px-0">
             <button onClick={handleGetStarted} className="bg-white text-evalia-teal-600 px-6 sm:px-10 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-gray-50 transition-all hover:shadow-xl flex items-center justify-center space-x-2 shadow-lg text-sm sm:text-base" data-testid="button-get-started-cta">
               <span>Get started free</span>
-              <ArrowRightIcon className="w-4 sm:w-5 h-4 sm:h-5" />
+              <ArrowRight size={20} weight="bold" />
             </button>
             <button className="border-2 border-white text-white px-6 sm:px-10 py-2.5 sm:py-3 rounded-full font-semibold hover:bg-white/10 transition-colors text-sm sm:text-base" data-testid="button-schedule-demo">
               Schedule a demo
@@ -68,15 +68,15 @@ export default function Home() {
           {/* Trust signals */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 lg:gap-8 text-white/90 text-xs sm:text-sm font-medium">
             <div className="flex items-center gap-2">
-              <CheckCircle2Icon className="w-4 sm:w-5 h-4 sm:h-5 text-evalia-yellow flex-shrink-0" />
+              <CheckCircle size={20} weight="bold" className="text-evalia-yellow flex-shrink-0" />
               <span>No credit card required</span>
             </div>
             <div className="flex items-center gap-2">
-              <CheckCircle2Icon className="w-4 sm:w-5 h-4 sm:h-5 text-evalia-yellow flex-shrink-0" />
+              <CheckCircle size={20} weight="bold" className="text-evalia-yellow flex-shrink-0" />
               <span>Free 14-day trial</span>
             </div>
             <div className="flex items-center gap-2">
-              <CheckCircle2Icon className="w-4 sm:w-5 h-4 sm:h-5 text-evalia-yellow flex-shrink-0" />
+              <CheckCircle size={20} weight="bold" className="text-evalia-yellow flex-shrink-0" />
               <span>Cancel anytime</span>
             </div>
           </div>
