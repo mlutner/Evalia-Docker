@@ -202,28 +202,24 @@ export function DashboardOverview() {
                 title="Top Weak Areas"
                 description="Communication skills showed lower scores compared to other categories."
                 type="warning"
-                iconColor="#6A7789"
               />
               <InsightCard
                 icon={Star}
                 title="Top Strength"
                 description="Knowledge was rated as the strongest area across all respondents."
                 type="info"
-                iconColor="#6A7789"
               />
               <InsightCard
                 icon={FileText}
                 title="Question Quality"
                 description="1 question may need clarification for better clarity."
                 type="info"
-                iconColor="#6A7789"
               />
               <InsightCard
                 icon={CheckCircle}
                 title="Recommendations"
                 description="Consider revising communication and skills questions for clarity."
                 type="neutral"
-                iconColor="#6A7789"
               />
             </CardContent>
           </Card>
