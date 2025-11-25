@@ -44,27 +44,6 @@ export default function Home() {
       <CaseStudiesSection />
       <InsightsSection />
 
-      {/* Features section */}
-      <section className="py-16 sm:py-24 md:py-32 lg:py-40 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12 sm:mb-16 md:mb-20">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-evalia-navy mb-4 sm:mb-6 leading-tight" data-testid="text-features-heading">
-              Everything you need for better training
-            </h2>
-            <p className="text-sm sm:text-base lg:text-lg xl:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed px-2">
-              Powerful features that help you create, distribute, and analyze
-              training feedback effortlessly.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
-            <FeatureCard accentColor="bg-evalia-teal-500" title="AI-Powered Creation" description="Generate survey questions instantly with AI. Upload documents, paste text, or describe your training topic." testId="card-feature-ai" />
-            <FeatureCard accentColor="bg-evalia-teal-600" title="Instant Analytics" description="Get real-time insights on survey responses with beautiful visualizations and detailed reports." testId="card-feature-analytics" />
-            <FeatureCard accentColor="bg-evalia-mint" title="Fast & Simple" description="Create, publish, and share surveys in minutes. No training needed. Mobile-friendly for all respondents." testId="card-feature-simple" />
-          </div>
-        </div>
-      </section>
-
       {/* CTA section */}
       <section className="py-16 sm:py-24 md:py-32 lg:py-40 bg-gradient-to-br from-evalia-teal-600 to-evalia-teal-700">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
