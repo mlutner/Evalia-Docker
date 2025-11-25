@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { BarChart3Icon, Users2Icon, TrendingUpIcon, ArrowRightIcon } from 'lucide-react';
 import dashboardAnalytics from '@assets/ChatGPT Image Nov 25, 2025, 10_59_56 AM_1764097220928.png';
 import dashboardRespondents from '@assets/ChatGPT Image Nov 25, 2025, 11_05_22 AM_1764097552873.png';
-import dashboardCompose from '@assets/ChatGPT Image Nov 25, 2025, 11_02_04 AM_1764097340642.png';
+import dashboardScoring from '@assets/ChatGPT Image Nov 25, 2025, 11_06_48 AM_1764097630621.png';
 
 interface Insight {
   id: string;
@@ -40,7 +40,7 @@ const insights: Insight[] = [
     icon: TrendingUpIcon,
     iconBg: 'bg-evalia-teal-dark/10',
     iconColor: 'text-evalia-teal-dark',
-    mockupImage: dashboardCompose,
+    mockupImage: dashboardScoring,
   }
 ];
 
