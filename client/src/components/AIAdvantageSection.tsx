@@ -176,11 +176,11 @@ export function AIAdvantageSection() {
                   />
 
                   {/* Image Container */}
-                  <div className="relative w-full bg-gray-50 flex items-center justify-center overflow-hidden group p-4" style={{ aspectRatio: "4 / 2" }}>
+                  <div className="relative w-full bg-gray-50 flex items-center justify-center overflow-hidden group p-5" style={{ aspectRatio: "2 / 2.8" }}>
                     {cardImages[index] ? (
                       <>
                         {/* Display uploaded image - taller with rounded borders */}
-                        <div className="relative w-full h-full border-2 border-gray-200 rounded-2xl overflow-hidden flex items-center justify-center">
+                        <div className="relative w-full h-full border-2 border-gray-300 rounded-3xl overflow-hidden flex items-center justify-center">
                           <img 
                             src={cardImages[index]} 
                             alt={advantage.title} 
@@ -221,27 +221,27 @@ export function AIAdvantageSection() {
                   </div>
 
                   {/* Header area with title */}
-                  <div className="p-6 pb-4">
+                  <div className="p-5 pb-3">
                     {/* Title */}
-                    <h3 className="text-lg font-bold text-slate-900 mb-3 leading-snug">
+                    <h3 className="text-base font-bold text-slate-900 leading-snug">
                       {advantage.title}
                     </h3>
                   </div>
 
                   {/* Divider */}
-                  <div className="px-6 py-2">
-                    <div className="h-px bg-gradient-to-r from-slate-200 to-transparent" />
+                  <div className="px-5 py-1.5">
+                    <div className="h-px bg-gray-200" />
                   </div>
 
                   {/* Description and footer */}
-                  <div className="flex-1 px-6 py-4 flex flex-col">
+                  <div className="flex-1 px-5 py-3 flex flex-col">
                     {/* Description */}
-                    <p className="text-sm text-slate-600 mb-6 leading-relaxed flex-1">
+                    <p className="text-xs text-slate-600 mb-4 leading-relaxed flex-1">
                       {advantage.description}
                     </p>
 
                     {/* Learn more link */}
-                    <div className="flex items-center text-sm font-semibold group-hover:text-opacity-100 transition-colors">
+                    <div className="flex items-center text-xs font-semibold group-hover:text-opacity-100 transition-colors">
                       <span className="text-slate-700 group-hover:text-slate-900">Learn more</span>
                       <span className="ml-2 text-slate-700 group-hover:text-slate-900 transform group-hover:translate-x-1 transition-transform">→</span>
                     </div>
