@@ -177,12 +177,14 @@ export function AIAdvantageSection() {
                   <div className="relative w-full h-48 bg-gradient-to-br from-slate-100 to-slate-50 border-b border-slate-200 flex items-center justify-center overflow-hidden group p-4">
                     {cardImages[index] ? (
                       <>
-                        {/* Display uploaded image - centered and contained */}
-                        <img 
-                          src={cardImages[index]} 
-                          alt={advantage.title} 
-                          className="w-full h-full object-contain"
-                        />
+                        {/* Display uploaded image - centered and contained with border */}
+                        <div className="relative w-full h-full border-2 border-slate-300 rounded-lg overflow-hidden flex items-center justify-center">
+                          <img 
+                            src={cardImages[index]} 
+                            alt={advantage.title} 
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
                         {/* Remove image button on hover */}
                         <button
                           onClick={() => removeImage(index)}
