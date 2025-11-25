@@ -76,24 +76,17 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
   
   const shareUrl = `${window.location.origin}/survey/${survey.id}`;
 
+  const BRAND_DOMAIN = "evaliasurvey.ca";
+
   const generateShortUrl = async () => {
     if (shortUrl) return;
     setLoadingShortUrl(true);
     try {
-      const response = await fetch(`/api/surveys/${survey.id}/short-url`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" }
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: "Unknown error" }));
-        throw new Error(`API error: ${response.status} - ${errorData.message || errorData.error || "Failed to generate short URL"}`);
-      }
-      
-      const data = await response.json();
-      setShortUrl(`${window.location.origin}${data.shortUrl}`);
+      // Generate brand domain short URL
+      const brandShortUrl = `https://${BRAND_DOMAIN}/survey/${survey.id}`;
+      setShortUrl(brandShortUrl);
     } catch (err) {
-      console.error("Failed to shorten URL:", err);
+      console.error("Failed to generate short URL:", err);
       setShortUrl(shareUrl);
     } finally {
       setLoadingShortUrl(false);
@@ -554,8 +547,13 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                {shortUrl ? `Short link - easier to share` : `Full link`} • Anyone with this link can submit a response
+                {shortUrl ? `Brand domain link - professional and easy to remember` : `Full link`} • Anyone with this link can submit a response
               </p>
+              {shortUrl && (
+                <p className="text-xs text-muted-foreground italic">
+                  Requires domain redirect setup at your DNS provider to work with evaliasurvey.ca
+                </p>
+              )}
             </div>
           </div>
         </DialogContent>
