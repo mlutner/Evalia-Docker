@@ -454,7 +454,7 @@ Make interpretations clear and practical - they'll be shown to respondents after
       }
       
       return range;
-    }).filter(r => r.minScore !== r.maxScore || r.minScore === 0); // Remove invalid ranges
+    }).filter((r: any) => r.minScore !== r.maxScore || r.minScore === 0); // Remove invalid ranges
     
     // If no valid ranges, generate fallback ranges
     if (processedRanges.length === 0 && parsed.categories && parsed.categories.length > 0) {

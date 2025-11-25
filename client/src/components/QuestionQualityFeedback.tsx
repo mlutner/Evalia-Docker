@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -24,26 +23,46 @@ interface QuestionQualityFeedbackProps {
   options?: string[];
 }
 
+// Color constants aligned with Evalia design system
+const COLOR_SCHEME = {
+  exemplary: { score: "#37C0A3", background: "#E1F6F3", label: "Exemplary" },
+  strong: { score: "#2F8FA5", background: "#E1F6F3", label: "Strong" },
+  fair: { score: "#A3D65C", background: "#F3FDE3", label: "Fair" },
+  weak: { score: "#EF4444", background: "#FEE2E2", label: "Weak" },
+  poor: { score: "#EF4444", background: "#FEE2E2", label: "Poor" },
+  primary: "#2F8FA5",
+  lime: "#A3D65C",
+  text: "#1C2635",
+};
+
 function getScoreColor(score: number): string {
-  if (score >= 85) return "#37C0A3"; // Icon Teal - Exemplary
-  if (score >= 70) return "#2F8FA5"; // Primary Teal - Strong
-  if (score >= 55) return "#A3D65C"; // Accent Lime - Fair
-  return "#EF4444"; // Red - Weak/Poor
+  if (score >= 85) return COLOR_SCHEME.exemplary.score;
+  if (score >= 70) return COLOR_SCHEME.strong.score;
+  if (score >= 55) return COLOR_SCHEME.fair.score;
+  return COLOR_SCHEME.weak.score;
 }
 
 function getScoreBackground(score: number): string {
-  if (score >= 85) return "#E1F6F3"; // Teal light background
-  if (score >= 70) return "#E1F6F3"; // Teal light background
-  if (score >= 55) return "#F3FDE3"; // Lime light background
-  return "#FEE2E2"; // Red light background
+  if (score >= 85) return COLOR_SCHEME.exemplary.background;
+  if (score >= 70) return COLOR_SCHEME.strong.background;
+  if (score >= 55) return COLOR_SCHEME.fair.background;
+  return COLOR_SCHEME.weak.background;
 }
 
 function getScoreLabel(score: number): string {
-  if (score >= 85) return "Exemplary";
-  if (score >= 70) return "Strong";
-  if (score >= 55) return "Fair";
-  if (score >= 40) return "Weak";
-  return "Poor";
+  if (score >= 85) return COLOR_SCHEME.exemplary.label;
+  if (score >= 70) return COLOR_SCHEME.strong.label;
+  if (score >= 55) return COLOR_SCHEME.fair.label;
+  if (score >= 40) return COLOR_SCHEME.weak.label;
+  return COLOR_SCHEME.poor.label;
+}
+
+function getScoreFeedbackMessage(score: number): string {
+  if (score >= 85) return "Excellent question with clear wording and neutrality";
+  if (score >= 70) return "Good question with minor improvements possible";
+  if (score >= 55) return "Fair question with room for refinement";
+  if (score >= 40) return "Needs significant revision for better responses";
+  return "Critical issues that must be addressed";
 }
 
 export default function QuestionQualityFeedback({
@@ -73,7 +92,7 @@ export default function QuestionQualityFeedback({
     }
   };
 
-  const scoreColor = analysis ? getScoreColor(analysis.score) : "#6B7280";
+  const scoreColor = analysis ? getScoreColor(analysis.score) : COLOR_SCHEME.primary;
   const scoreLabel = analysis ? getScoreLabel(analysis.score) : "Analyze";
 
   return (
@@ -85,8 +104,8 @@ export default function QuestionQualityFeedback({
         disabled={!question.trim() || analyzeMutation.isPending}
         className="mt-3 w-full gap-2 font-semibold border-2 transition-colors"
         style={{
-          borderColor: analysis ? scoreColor : "#2F8FA5",
-          color: analysis ? scoreColor : "#2F8FA5",
+          borderColor: analysis ? scoreColor : COLOR_SCHEME.primary,
+          color: analysis ? scoreColor : COLOR_SCHEME.primary,
         }}
         data-testid="button-quality-feedback"
       >
@@ -143,15 +162,7 @@ export default function QuestionQualityFeedback({
                     {scoreLabel}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {analysis.score >= 85
-                      ? "Excellent question with clear wording and neutrality"
-                      : analysis.score >= 70
-                      ? "Good question with minor improvements possible"
-                      : analysis.score >= 55
-                      ? "Fair question with room for refinement"
-                      : analysis.score >= 40
-                      ? "Needs significant revision for better responses"
-                      : "Critical issues that must be addressed"}
+                    {getScoreFeedbackMessage(analysis.score)}
                   </p>
                 </div>
               </div>
@@ -160,7 +171,7 @@ export default function QuestionQualityFeedback({
               {analysis.issues.length > 0 && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4" style={{ color: "#A3D65C" }} />
+                    <AlertCircle className="w-4 h-4" style={{ color: COLOR_SCHEME.lime }} />
                     <p className="font-semibold text-sm">Issues Detected</p>
                   </div>
                   <ul className="space-y-2 ml-6">
@@ -181,13 +192,13 @@ export default function QuestionQualityFeedback({
                 <div
                   className="flex gap-3 p-3 rounded-lg border"
                   style={{
-                    backgroundColor: "#F3FDE3",
-                    borderColor: "#A3D65C",
+                    backgroundColor: COLOR_SCHEME.fair.background,
+                    borderColor: COLOR_SCHEME.lime,
                   }}
                 >
-                  <Lightbulb className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#A3D65C" }} />
+                  <Lightbulb className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: COLOR_SCHEME.lime }} />
                   <div>
-                    <p className="text-sm font-semibold mb-1" style={{ color: "#1C2635" }}>
+                    <p className="text-sm font-semibold mb-1" style={{ color: COLOR_SCHEME.text }}>
                       Suggestion for Improvement
                     </p>
                     <p className="text-sm text-muted-foreground leading-relaxed">
@@ -202,12 +213,12 @@ export default function QuestionQualityFeedback({
                 <div
                   className="flex gap-3 p-3 rounded-lg border"
                   style={{
-                    backgroundColor: "#E1F6F3",
-                    borderColor: "#37C0A3",
+                    backgroundColor: COLOR_SCHEME.exemplary.background,
+                    borderColor: COLOR_SCHEME.exemplary.score,
                   }}
                 >
-                  <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#37C0A3" }} />
-                  <p className="text-sm font-medium" style={{ color: "#1C2635" }}>
+                  <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: COLOR_SCHEME.exemplary.score }} />
+                  <p className="text-sm font-medium" style={{ color: COLOR_SCHEME.text }}>
                     Excellent question! It's clear, neutral, and well-structured.
                   </p>
                 </div>
