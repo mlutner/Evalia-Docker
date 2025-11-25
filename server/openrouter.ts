@@ -6,10 +6,14 @@ const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
 const MISTRAL_BASE_URL = "https://api.mistral.ai/v1";
 const MISTRAL_OCR_URL = "https://api.mistral.ai/v1/ocr";
 
-// Mistral models
+// Mistral models with intelligent routing strategy
 const MODELS = {
-  // For survey generation and chat
-  GENERATION: "mistral-medium-latest", // Mistral Medium for survey generation and refinement
+  // Small model for simple, low-stakes tasks (fast & cost-effective)
+  SMALL: "mistral-small-latest", // AI chat, simple text generation
+  // Medium model for moderate complexity tasks (balanced)
+  MEDIUM: "mistral-medium-latest", // Score calculation, moderate reasoning
+  // Large model for complex, high-stakes tasks (best quality)
+  LARGE: "mistral-large-latest", // Survey generation, refinement, analysis, quality scoring
   // For OCR/document parsing (native OCR model)
   OCR: "mistral-ocr-2505", // Mistral OCR native model - specialized for document OCR
 };
@@ -171,7 +175,7 @@ Be critical. Average questions should score 50-65. Only award 85+ for truly exce
   ];
 
   try {
-    const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
+    const response = await callMistral(messages, MODELS.LARGE, { type: "json_object" });
     const parsed = JSON.parse(response);
     return {
       score: Math.min(100, Math.max(0, parsed.score || 50)),
