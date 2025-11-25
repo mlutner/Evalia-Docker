@@ -11,6 +11,7 @@ import { GripVertical, Trash2, Plus } from "lucide-react";
 import type { Question, QuestionType } from "@shared/schema";
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { theme } from "@/theme";
 import QuestionQualityFeedback from "@/components/QuestionQualityFeedback";
 
 interface QuestionEditorProps {
@@ -96,14 +97,14 @@ export default function QuestionEditor({
         {...attributes}
         {...listeners}
         className="absolute left-2 top-4 cursor-move touch-none"
-        style={{ color: '#A3D65C' }}
+        style={{ color: theme.colors.lime }}
       >
         <GripVertical className="w-5 h-5" />
       </div>
       
       <CardHeader className="pl-12 pr-4 pb-4">
         <div className="flex items-start gap-3">
-          <span className="text-sm font-medium shrink-0 mt-2" style={{ color: '#6A7789' }}>
+          <span className="text-sm font-medium shrink-0 mt-2" style={{ color: theme.colors.textSecondary }}>
             {index + 1}.
           </span>
           <div className="flex-1 space-y-4">

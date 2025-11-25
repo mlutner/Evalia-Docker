@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { MessageSquare, AtSign, Hash, Type, CheckCircle2, Radio, ThumbsUp, Gauge, Grid3x3, List, Calendar, Star, HelpCircle } from "lucide-react";
+import { theme } from "@/theme";
 import type { Question, QuestionType } from "@shared/schema";
 
 export type { Question, QuestionType };
@@ -121,7 +122,7 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
       </h2>
 
       {question.description && (
-        <p className="text-sm mt-2 mb-4" style={{ color: '#6A7789' }} data-testid="text-question-description">{question.description}</p>
+        <p className="text-sm mt-2 mb-4" style={{ color: theme.colors.textSecondary }} data-testid="text-question-description">{question.description}</p>
       )}
 
       <div className="space-y-6">
@@ -345,18 +346,18 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
                 ))}
               </div>
             </div>
-            <p className="text-xs" style={{ color: '#6A7789' }}>How likely are you to recommend this training? (0 = Not likely, 10 = Extremely likely)</p>
+            <p className="text-xs" style={{ color: theme.colors.textSecondary }}>How likely are you to recommend this training? (0 = Not likely, 10 = Extremely likely)</p>
           </>
         )}
 
         {question.type === "matrix" && (
           <>
             <div className="flex items-center gap-2 mb-3">
-              <p className="text-sm font-medium" style={{ color: '#1C2635' }}>Select one option per row</p>
+              <p className="text-sm font-medium" style={{ color: theme.colors.textPrimary }}>Select one option per row</p>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <HelpCircle className="w-4 h-4" style={{ color: '#2F8FA5', cursor: 'help' }} />
+                    <HelpCircle className="w-4 h-4" style={{ color: theme.colors.primary, cursor: 'help' }} />
                   </TooltipTrigger>
                   <TooltipContent side="right" className="max-w-xs">
                     <p>Click the circle in each row that matches your response. You must select exactly one option per row.</p>
@@ -368,20 +369,20 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
               <table className="w-full border-collapse text-sm">
                 <thead>
                   <tr>
-                    <th className="border p-2 text-left font-medium min-w-[120px]" style={{ backgroundColor: '#F7F9FC', borderColor: '#E2E7EF' }}></th>
+                    <th className="border p-2 text-left font-medium min-w-[120px]" style={{ backgroundColor: theme.colors.bg, borderColor: theme.colors.border }}></th>
                     {question.colLabels?.map((col) => (
-                      <th key={col} className="border p-2 text-center font-medium min-w-[80px]" style={{ backgroundColor: '#F7F9FC', borderColor: '#E2E7EF', color: '#1C2635' }}>{col}</th>
+                      <th key={col} className="border p-2 text-center font-medium min-w-[80px]" style={{ backgroundColor: theme.colors.bg, borderColor: theme.colors.border, color: theme.colors.textPrimary }}>{col}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {question.rowLabels?.map((row) => (
                     <tr key={row}>
-                      <td className="border p-2 font-medium text-left" style={{ borderColor: '#E2E7EF', color: '#1C2635' }}>{row}</td>
+                      <td className="border p-2 font-medium text-left" style={{ borderColor: theme.colors.border, color: theme.colors.textPrimary }}>{row}</td>
                       {question.colLabels?.map((col) => {
                         const isSelected = answer === `${row}|${col}`;
                         return (
-                          <td key={`${row}-${col}`} className="border p-2 text-center" style={{ borderColor: '#E2E7EF' }}>
+                          <td key={`${row}-${col}`} className="border p-2 text-center" style={{ borderColor: theme.colors.border }}>
                             <button
                               onClick={() => handleMatrixChange(row, col)}
                               data-testid={`button-matrix-${row}-${col}`}
@@ -390,8 +391,8 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
                                 height: '24px',
                                 margin: '0 auto',
                                 borderRadius: '50%',
-                                border: isSelected ? '2px solid #1F6F78' : '2px solid #E2E7EF',
-                                backgroundColor: isSelected ? '#2F8FA5' : 'transparent',
+                                border: isSelected ? `2px solid ${theme.colors.primaryHex}` : `2px solid ${theme.colors.border}`,
+                                backgroundColor: isSelected ? theme.colors.primary : 'transparent',
                                 cursor: 'pointer',
                                 transition: 'all 0.2s ease'
                               }}
@@ -411,11 +412,11 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
         {question.type === "ranking" && (
           <>
             <div className="flex items-center gap-2 mb-3">
-              <p className="text-sm font-medium" style={{ color: '#1C2635' }}>Drag to reorder by importance</p>
+              <p className="text-sm font-medium" style={{ color: theme.colors.textPrimary }}>Drag to reorder by importance</p>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <HelpCircle className="w-4 h-4" style={{ color: '#2F8FA5', cursor: 'help' }} />
+                    <HelpCircle className="w-4 h-4" style={{ color: theme.colors.primary, cursor: 'help' }} />
                   </TooltipTrigger>
                   <TooltipContent side="right" className="max-w-xs">
                     <p>Items are currently numbered 1 (top priority) to {question.options?.length} (lowest priority). You can reorder them to match your ranking. Use drag-and-drop or click items to reorganize.</p>
@@ -428,21 +429,21 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
                 <div 
                   key={option} 
                   className="flex items-center gap-3 p-3 border rounded-lg hover-elevate active-elevate-2"
-                  style={{ borderColor: '#E2E7EF', backgroundColor: '#F7F9FC' }}
+                  style={{ borderColor: theme.colors.border, backgroundColor: theme.colors.bg }}
                   data-testid={`ranking-item-${idx}`}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = '#F0F2F5';
-                    e.currentTarget.style.borderColor = '#2F8FA5';
+                    e.currentTarget.style.borderColor = theme.colors.primary;
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#F7F9FC';
-                    e.currentTarget.style.borderColor = '#E2E7EF';
+                    e.currentTarget.style.backgroundColor = theme.colors.bg;
+                    e.currentTarget.style.borderColor = theme.colors.border;
                   }}
                 >
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#E2E7EF' }}>
-                    <span className="text-sm font-bold" style={{ color: '#2F8FA5' }}>{idx + 1}</span>
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: theme.colors.border }}>
+                    <span className="text-sm font-bold" style={{ color: theme.colors.primary }}>{idx + 1}</span>
                   </div>
-                  <span className="text-sm flex-1" style={{ color: '#1C2635' }}>{option}</span>
+                  <span className="text-sm flex-1" style={{ color: theme.colors.textPrimary }}>{option}</span>
                 </div>
               ))}
             </div>

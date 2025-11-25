@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Plus, Bot, FileQuestion, ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { theme } from "@/theme";
 import type { Message } from "@/components/ChatPanel";
 import type { Question } from "@shared/schema";
 import {
@@ -116,14 +117,14 @@ export default function QuestionsStep({
       {/* Header with Question Count and Actions */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <p className="font-medium text-lg" style={{ color: '#1C2635' }}>{questions.length} {questions.length === 1 ? 'question' : 'questions'} created</p>
-          <p className="text-sm" style={{ color: '#6A7789' }}>Edit your questions and refine with AI</p>
+          <p className="font-medium text-lg" style={{ color: theme.colors.textPrimary }}>{questions.length} {questions.length === 1 ? 'question' : 'questions'} created</p>
+          <p className="text-sm" style={{ color: theme.colors.textSecondary }}>Edit your questions and refine with AI</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
           {/* Mobile: AI Chat Button */}
           <Sheet open={isMobileChat} onOpenChange={setIsMobileChat}>
             <SheetTrigger asChild>
-              <Button data-testid="button-open-chat-mobile" className="md:hidden flex-1 sm:flex-none" style={{ backgroundColor: "#A3D65C", color: "#1C2635" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#92c84b"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#A3D65C"}>
+              <Button data-testid="button-open-chat-mobile" className="md:hidden flex-1 sm:flex-none" style={{ backgroundColor: theme.colors.lime, color: theme.colors.textPrimary }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#92c84b"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = theme.colors.lime}>
                 <Bot className="w-4 h-4 mr-2" />
                 AI Chat
               </Button>
@@ -177,8 +178,8 @@ export default function QuestionsStep({
           : 'grid-cols-1'
       }`}>
         {/* Questions Editor - Main Area */}
-        <div className="space-y-4 p-4 rounded-lg" style={{ backgroundColor: '#F7F9FC' }}>
-          <div className="text-xs font-medium text-muted-foreground" style={{ color: '#6A7789' }}>
+        <div className="space-y-4 p-4 rounded-lg" style={{ backgroundColor: theme.colors.bg }}>
+          <div className="text-xs font-medium text-muted-foreground" style={{ color: theme.colors.textSecondary }}>
             💡 Tip: Press <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-semibold">Cmd+N</kbd> (Mac) or <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-semibold">Ctrl+N</kbd> (Windows) to add a new question
           </div>
           {questions.length === 0 ? (

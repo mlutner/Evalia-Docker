@@ -1,0 +1,98 @@
+# UI Consolidation Guide
+
+This document provides a guide for understanding and using the application's design system to ensure a consistent and maintainable UI.
+
+## 1. The Existing Design System: Your Single Source of Truth
+
+Your application already has a well-structured design system that serves as a single source of truth for all UI elements. This system is documented in `client/src/DESIGN_SYSTEM.md` and is built from a few key files that work together to ensure consistency.
+
+### 1.1. Core Files
+
+*   **`client/src/index.css`:** This is the foundation of the entire system. It defines all the core design tokens (colors, fonts, spacing, etc.) as CSS variables. **To change a core color or style across the entire application, you only need to change it here.**
+*   **`client/src/theme.ts`:** This file imports the CSS variables from `index.css` and exports them as a JavaScript object. This allows you to use your design tokens directly in your React components in a type-safe way.
+*   **`client/src/buttons.ts` & `client/src/cards.ts`:** These files define the different styles for your button and card components. They use the variables from `theme.ts` to create consistent, reusable styles.
+
+### 1.2. How It Works
+
+1.  **Define a Style:** A core style (like a color) is defined as a CSS variable in `index.css`.
+2.  **Expose it to Code:** The variable is imported and exposed through the `theme.ts` file.
+3.  **Create a Component Style:** A specific component style (like the "primary button") is created in `buttons.ts` or `cards.ts` using the theme variables.
+4.  **Use it in a Component:** A React component then uses the style from `buttons.ts` or `cards.ts` to ensure it matches the design system.
+
+By following this model, you can change a color in `index.css`, and that change will automatically be reflected in every button, card, and component that uses that color.
+
+## 2. How to Use the Design System
+
+To ensure consistency, all new and existing components should use the design system. Here is a step-by-step guide on how to do this.
+
+### 2.1. For Buttons
+
+Instead of styling a button manually, import the `ButtonSystem` from `buttons.ts` and use the predefined styles.
+
+**Do this:**
+
+```tsx
+import { Button } from "@/components/ui/button";
+import { ButtonSystem } from "@/buttons";
+
+function MyComponent() {
+  return <Button className={ButtonSystem.primaryTeal.className}>Click Me</Button>;
+}
+```
+
+**Avoid this:**
+
+```tsx
+// This uses a hardcoded color and is not consistent with the design system
+function MyComponent() {
+  return <button style={{ backgroundColor: "#1F6F78", color: "white" }}>Click Me</button>;
+}
+```
+
+### 2.2. For Cards
+
+Similarly, use the `CardSystem` from `cards.ts` for all card-like containers.
+
+**Do this:**
+
+```tsx
+import { Card } from "@/components/ui/card";
+import { CardSystem } from "@/cards";
+
+function MyComponent() {
+  return <Card className={CardSystem.standard.className}>...</Card>;
+}
+```
+
+**Avoid this:**
+
+```tsx
+// This uses one-off styles and is not consistent
+function MyComponent() {
+  return <div style={{ border: "1px solid #E2E7EF", borderRadius: "12px", padding: "24px" }}>...</div>;
+}
+```
+
+### 2.3. For Colors and Other Styles
+
+For any other component that needs to use a color, font, or spacing from the design system, import the `theme` object from `theme.ts`.
+
+**Do this:**
+
+```tsx
+import { theme } from "@/theme";
+
+function MyComponent() {
+  return <div style={{ color: theme.colors.primaryText }}>Hello World</div>;
+}
+```
+
+**Avoid this:**
+
+```tsx
+// This uses a hardcoded color that will not update if the theme changes
+function MyComponent() {
+  return <div style={{ color: "#1C2635" }}>Hello World</div>;
+}
+```
+
