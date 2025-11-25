@@ -134,9 +134,13 @@ export function InsightsSection() {
                 }} 
               />
               
-              {/* Dashboard mockup card */}
+              {/* Dashboard mockup card - Square */}
               <div 
-                className="relative z-10 rounded-3xl overflow-hidden shadow-2xl bg-white transition-all duration-300 min-h-96" 
+                className="relative z-10 rounded-3xl overflow-hidden shadow-2xl bg-white transition-all duration-300" 
+                style={{
+                  width: '100%',
+                  aspectRatio: '1 / 1'
+                }}
                 data-testid={`mockup-${activeId}`}
               >
                 {activeInsight.mockupImage ? (
