@@ -3,13 +3,14 @@ import { Zap, Brain, BarChart3, Sparkles, MessageCircle, Settings, TrendingUp, E
 import surveyGenerationFull from "@assets/survey-generation-full.png";
 import qualityCheckMockup from "@assets/quality-check-mockup.png";
 import responseAnalysisMockup from "@assets/response-analysis-mockup.png";
+import insightsReportsMockup from "@assets/insights-reports-mockup.png";
 
 export function AIAdvantageSection() {
   const [cardImages, setCardImages] = useState<{ [key: number]: string | null }>({
     0: surveyGenerationFull,
     1: qualityCheckMockup,
     2: responseAnalysisMockup,
-    3: null,
+    3: insightsReportsMockup,
   });
 
   const handleImageUpload = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,7 +177,7 @@ export function AIAdvantageSection() {
                   />
 
                   {/* Image Container */}
-                  <div className="relative w-full bg-gray-50 flex items-center justify-center overflow-hidden group p-5" style={{ aspectRatio: "2 / 2.8" }}>
+                  <div className="relative w-full bg-gray-50 flex items-center justify-center overflow-hidden group p-5" style={{ aspectRatio: "3 / 2" }}>
                     {cardImages[index] ? (
                       <>
                         {/* Display uploaded image - taller with rounded borders */}
