@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Navigation } from '@/components/Navigation';
 import { Hero } from '@/components/Hero';
 import { FeatureCard } from '@/components/FeatureCard';
+import { AIAdvantageSection } from '@/components/AIAdvantageSection';
 import { ArrowRightIcon, CheckCircle2Icon } from 'lucide-react';
 import { SocialProofSection } from '@/components/home/SocialProofSection';
 import { HowItWorksSection } from '@/components/home/HowItWorksSection';
@@ -37,6 +38,7 @@ export default function Home() {
       <Hero />
       <SocialProofSection />
       <HowItWorksSection />
+      <AIAdvantageSection />
 
       {/* Features section */}
       <section className="py-16 sm:py-24 md:py-32 lg:py-40 bg-gray-50">
