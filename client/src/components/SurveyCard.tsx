@@ -70,19 +70,11 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
   const [templateTitle, setTemplateTitle] = useState(survey.title);
   const [templateDescription, setTemplateDescription] = useState(survey.description || "");
   const [templateCategory, setTemplateCategory] = useState("General");
-  const [shortUrl, setShortUrl] = useState<string | null>(null);
-  const [loadingShortUrl, setLoadingShortUrl] = useState(false);
   const [exportingPdf, setExportingPdf] = useState(false);
   
   const shareUrl = `${window.location.origin}/survey/${survey.id}`;
-
   const BRAND_DOMAIN = "evaliasurvey.ca";
-
-  const generateShortUrl = () => {
-    if (shortUrl) return; // Already generated
-    const brandShortUrl = `https://${BRAND_DOMAIN}/survey/${survey.id}`;
-    setShortUrl(brandShortUrl);
-  };
+  const brandDomainUrl = `https://${BRAND_DOMAIN}/survey/${survey.id}`;
   
   const badgeStyle = {
     backgroundColor: '#F7F9FC',
@@ -450,12 +442,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
       </Dialog>
 
       {/* Share Dialog */}
-      <Dialog open={shareDialogOpen} onOpenChange={(open) => {
-        setShareDialogOpen(open);
-        if (open && !shortUrl) {
-          generateShortUrl();
-        }
-      }}>
+      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
         <DialogContent data-testid="dialog-share">
           <DialogHeader>
             <DialogTitle>Share Survey</DialogTitle>
@@ -504,20 +491,19 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
               </div>
             </div>
 
-            {/* Copy Link Section - Shortened */}
+            {/* Copy Link Section - Brand Domain */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <input
                   type="text"
-                  value={shortUrl || shareUrl}
+                  value={brandDomainUrl}
                   readOnly
                   className="flex-1 px-3 py-2 border rounded-md bg-muted text-sm"
                   data-testid="input-share-url"
                 />
                 <Button 
                   onClick={() => {
-                    const urlToCopy = shortUrl || shareUrl;
-                    navigator.clipboard.writeText(urlToCopy);
+                    navigator.clipboard.writeText(brandDomainUrl);
                     setCopied(true);
                     setTimeout(() => setCopied(false), 2000);
                   }} 
@@ -538,13 +524,11 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                {shortUrl ? `Brand domain link - professional and easy to remember` : `Full link`} • Anyone with this link can submit a response
+                Brand domain link - professional and easy to remember • Anyone with this link can submit a response
               </p>
-              {shortUrl && (
-                <p className="text-xs text-muted-foreground italic">
-                  Requires domain redirect setup at your DNS provider to work with evaliasurvey.ca
-                </p>
-              )}
+              <p className="text-xs text-muted-foreground italic">
+                Requires domain redirect setup at your DNS provider to work with evaliasurvey.ca
+              </p>
             </div>
           </div>
         </DialogContent>
