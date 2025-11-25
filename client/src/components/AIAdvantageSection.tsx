@@ -169,7 +169,7 @@ export function AIAdvantageSection() {
               >
                 {/* Card Container */}
                 <div
-                  className={`relative bg-white border ${advantage.borderColor} rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:border-opacity-100 flex flex-col h-full hover:scale-105`}
+                  className={`relative bg-slate-50 border ${advantage.borderColor} rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:border-opacity-100 flex flex-col h-full hover:scale-105`}
                 >
                   {/* Top colored accent bar */}
                   <div
@@ -177,7 +177,7 @@ export function AIAdvantageSection() {
                   />
 
                   {/* Image Container */}
-                  <div className="relative w-full bg-white flex items-center justify-center overflow-hidden group p-1" style={{ aspectRatio: "3 / 2" }}>
+                  <div className="relative w-full bg-slate-50 flex items-center justify-center overflow-hidden group p-1" style={{ aspectRatio: "3 / 2" }}>
                     {cardImages[index] ? (
                       <>
                         {/* Display uploaded image - rounded borders with shadow lift */}
@@ -188,14 +188,6 @@ export function AIAdvantageSection() {
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        {/* Remove image button on hover */}
-                        <button
-                          onClick={() => removeImage(index)}
-                          className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
-                          data-testid={`button-remove-image-${index}`}
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
                       </>
                     ) : (
                       <>
