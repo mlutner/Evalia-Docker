@@ -169,7 +169,7 @@ export function AIAdvantageSection() {
               >
                 {/* Card Container */}
                 <div
-                  className={`relative bg-zinc-400 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full hover:scale-105`}
+                  className={`relative bg-zinc-600 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full hover:scale-105`}
                 >
                   {/* Top colored accent bar */}
                   <div
@@ -177,7 +177,7 @@ export function AIAdvantageSection() {
                   />
 
                   {/* Image Container */}
-                  <div className="relative w-full bg-zinc-400 flex items-center justify-center overflow-hidden group p-1" style={{ aspectRatio: "3 / 2" }}>
+                  <div className="relative w-full bg-zinc-600 flex items-center justify-center overflow-hidden group p-1" style={{ aspectRatio: "3 / 2" }}>
                     {cardImages[index] ? (
                       <>
                         {/* Display uploaded image - rounded corners with shadow lift */}
@@ -216,7 +216,7 @@ export function AIAdvantageSection() {
                   {/* Header area with title */}
                   <div className="p-5 pb-2">
                     {/* Title */}
-                    <h3 className="text-base font-bold text-slate-900 leading-snug h-11 flex items-start">
+                    <h3 className="text-base font-bold text-white leading-snug h-11 flex items-start">
                       {advantage.title}
                     </h3>
                   </div>
@@ -229,14 +229,14 @@ export function AIAdvantageSection() {
                   {/* Description and footer */}
                   <div className="flex-1 px-5 py-3 flex flex-col">
                     {/* Description */}
-                    <p className="text-xs text-slate-600 mb-4 leading-relaxed flex-1 line-clamp-2">
+                    <p className="text-xs text-gray-100 mb-4 leading-relaxed flex-1 line-clamp-2">
                       {advantage.description}
                     </p>
 
                     {/* Learn more link */}
                     <div className="flex items-center text-xs font-semibold transition-colors">
-                      <span className="text-slate-800 group-hover:text-slate-900 border-b border-slate-300 group-hover:border-slate-800 transition-colors">Learn more</span>
-                      <span className="ml-2 text-slate-800 group-hover:text-slate-900 transform group-hover:translate-x-1 transition-transform">→</span>
+                      <span className="text-white border-b border-gray-400 group-hover:border-white transition-colors">Learn more</span>
+                      <span className="ml-2 text-white transform group-hover:translate-x-1 transition-transform">→</span>
                     </div>
                   </div>
                 </div>
