@@ -1,58 +1,10 @@
 import type { Question } from "@shared/schema";
 import mammoth from "mammoth";
+import { callMistral, safeParseJSON, type ChatMessage } from "./utils/aiClient";
 
 // Use Mistral API key
 const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
-const MISTRAL_BASE_URL = "https://api.mistral.ai/v1";
 const MISTRAL_OCR_URL = "https://api.mistral.ai/v1/ocr";
-
-// Mistral models with intelligent routing strategy
-const MODELS = {
-  // Small model for simple, low-stakes tasks (fast & cost-effective)
-  SMALL: "mistral-small-latest", // AI chat, simple text generation
-  // Medium model for moderate complexity tasks (balanced)
-  MEDIUM: "mistral-medium-latest", // Score calculation, moderate reasoning
-  // Large model for complex, high-stakes tasks (best quality)
-  LARGE: "mistral-large-latest", // Survey generation, refinement, analysis, quality scoring
-  // For OCR/document parsing (native OCR model)
-  OCR: "mistral-ocr-2505", // Mistral OCR native model - specialized for document OCR
-};
-
-interface ChatMessage {
-  role: "system" | "user" | "assistant";
-  content: string;
-}
-
-async function callMistral(
-  messages: ChatMessage[],
-  model: string = MODELS.GENERATION,
-  responseFormat?: { type: "json_object" }
-): Promise<string> {
-  if (!MISTRAL_API_KEY) {
-    throw new Error("Mistral API key not configured");
-  }
-
-  const response = await fetch(`${MISTRAL_BASE_URL}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${MISTRAL_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages,
-      ...(responseFormat && { response_format: responseFormat }),
-    }),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Mistral API error: ${error}`);
-  }
-
-  const data = await response.json();
-  return data.choices[0]?.message?.content || "";
-}
 
 /**
  * Parse PDF using Mistral OCR native API
@@ -175,8 +127,13 @@ Be critical. Average questions should score 50-65. Only award 85+ for truly exce
   ];
 
   try {
-    const response = await callMistral(messages, MODELS.LARGE, { type: "json_object" });
-    const parsed = JSON.parse(response);
+    const response = await callMistral(messages, { 
+      quality: "best",
+      responseFormat: { type: "json_object" }
+    });
+    const parsed = safeParseJSON(response, { score: 50, issues: [], suggestions: "" });
+    if (!parsed) return { score: 50, issues: [], suggestions: "" };
+    
     return {
       score: Math.min(100, Math.max(0, parsed.score || 50)),
       issues: Array.isArray(parsed.issues) ? parsed.issues.slice(0, 3) : [],
