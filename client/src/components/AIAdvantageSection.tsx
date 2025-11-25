@@ -55,9 +55,9 @@ export function AIAdvantageSection() {
       >
         <defs>
           <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#2F8FA5" stopOpacity="0.08" />
-            <stop offset="50%" stopColor="#37C0A3" stopOpacity="0.06" />
-            <stop offset="100%" stopColor="#A3D65C" stopOpacity="0.04" />
+            <stop offset="0%" stopColor="#2F8FA5" stopOpacity="0.25" />
+            <stop offset="50%" stopColor="#37C0A3" stopOpacity="0.20" />
+            <stop offset="100%" stopColor="#A3D65C" stopOpacity="0.15" />
           </linearGradient>
 
           <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
@@ -69,13 +69,13 @@ export function AIAdvantageSection() {
         <path
           d="M 0,300 Q 360,200 720,250 T 1440,300 L 1440,0 L 0,0 Z"
           fill="url(#grad1)"
-          opacity="0.6"
+          opacity="1"
         />
 
         <path
           d="M 0,400 Q 360,320 720,380 T 1440,400 L 1440,800 L 0,800 Z"
           fill="url(#grad1)"
-          opacity="0.4"
+          opacity="0.85"
         />
 
         {/* Accent blob shapes */}
@@ -84,7 +84,7 @@ export function AIAdvantageSection() {
           cy="150"
           r="150"
           fill="#37C0A3"
-          opacity="0.03"
+          opacity="0.12"
         />
 
         <circle
@@ -92,7 +92,7 @@ export function AIAdvantageSection() {
           cy="650"
           r="120"
           fill="#2F8FA5"
-          opacity="0.04"
+          opacity="0.14"
         />
 
         {/* Decorative line accent */}
@@ -101,7 +101,7 @@ export function AIAdvantageSection() {
           stroke="#A3D65C"
           strokeWidth="2"
           fill="none"
-          opacity="0.08"
+          opacity="0.20"
         />
       </svg>
 
