@@ -11,41 +11,33 @@ import { useToast } from "@/hooks/use-toast";
 import type { Question, SurveyWithCounts } from "@shared/schema";
 import { generateSurveyPDF, downloadPDF } from "@/lib/pdfGenerator";
 
-// Generate a brief summary from survey questions
-function generateSurveySummary(questions?: Question[]): string {
-  if (!questions || questions.length === 0) return "";
-  
-  // Extract key themes from questions
-  const questionTexts = questions.map(q => q.question.toLowerCase());
-  const themes: string[] = [];
-  
-  if (questionTexts.some(q => q.includes("confident") || q.includes("familiar"))) {
-    themes.push("Confidence");
-  }
-  if (questionTexts.some(q => q.includes("satisf") || q.includes("meet"))) {
-    themes.push("Satisfaction");
-  }
-  if (questionTexts.some(q => q.includes("apply") || q.includes("use") || q.includes("change"))) {
-    themes.push("Application");
-  }
-  if (questionTexts.some(q => q.includes("knowledge") || q.includes("understand") || q.includes("explain"))) {
-    themes.push("Knowledge");
-  }
-  if (questionTexts.some(q => q.includes("quality") || q.includes("impact") || q.includes("improvement"))) {
-    themes.push("Impact");
-  }
-  if (questionTexts.some(q => q.includes("motiv") || q.includes("barrier") || q.includes("challenge"))) {
-    themes.push("Motivation");
-  }
-  if (questionTexts.some(q => q.includes("feedback") || q.includes("improve") || q.includes("change"))) {
-    themes.push("Feedback");
-  }
-  
-  if (themes.length === 0) return "";
-  
-  // Take first 2-3 themes for conciseness
-  return `Covers: ${themes.slice(0, 3).join(", ")}`;
-}
+// Constants
+const BADGE_STYLE = { backgroundColor: '#F7F9FC', color: '#1C2635', borderColor: '#E2E7EF', fontSize: '12px', fontWeight: 500, padding: '6px 10px', borderRadius: '6px', border: '1px solid #E2E7EF' };
+const THEME_KEYWORDS = [
+  { keywords: ["confident", "familiar"], label: "Confidence" },
+  { keywords: ["satisf", "meet"], label: "Satisfaction" },
+  { keywords: ["apply", "use", "change"], label: "Application" },
+  { keywords: ["knowledge", "understand", "explain"], label: "Knowledge" },
+  { keywords: ["quality", "impact", "improvement"], label: "Impact" },
+  { keywords: ["motiv", "barrier", "challenge"], label: "Motivation" },
+  { keywords: ["feedback", "improve", "change"], label: "Feedback" },
+];
+
+// Helpers
+const generateSurveySummary = (questions?: Question[]): string => {
+  if (!questions?.length) return "";
+  const texts = questions.map(q => q.question.toLowerCase());
+  const themes = THEME_KEYWORDS.filter(t => t.keywords.some(k => texts.some(q => q.includes(k)))).map(t => t.label);
+  return themes.length > 0 ? `Covers: ${themes.slice(0, 3).join(", ")}` : "";
+};
+
+const StatusBadge = ({ status, published }: { status?: string; published?: string }) => {
+  const icons = { Active: CheckCircle, Paused: Pause, Closed: Lock };
+  const labels = { Active: "Live", Paused: "Paused", Closed: "Closed" };
+  if (!published) return <Badge variant="outline" style={BADGE_STYLE}>Edit Survey</Badge>;
+  const Icon = icons[status as keyof typeof icons];
+  return Icon ? <Badge variant="outline" style={BADGE_STYLE} className="gap-1"><Icon className="w-3 h-3" />{labels[status as keyof typeof labels]}</Badge> : null;
+};
 
 interface SurveyCardProps {
   survey: SurveyWithCounts;
@@ -65,198 +57,59 @@ interface SurveyCardProps {
 const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnalyze, onExport, onDelete, onReset, onDuplicate, onManageRespondents, onSaveAsTemplate, index = 0 }: SurveyCardProps) {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
-  const [shareDialogOpen, setShareDialogOpen] = useState(false);
-  const [saveTemplateOpen, setSaveTemplateOpen] = useState(false);
-  const [templateTitle, setTemplateTitle] = useState(survey.title);
-  const [templateDescription, setTemplateDescription] = useState(survey.description || "");
-  const [templateCategory, setTemplateCategory] = useState("General");
-  const [exportingPdf, setExportingPdf] = useState(false);
-  
+  const [shareOpen, setShareOpen] = useState(false);
+  const [templateOpen, setTemplateOpen] = useState(false);
+  const [templateData, setTemplateData] = useState({ title: survey.title, description: survey.description || "", category: "General" });
+  const [exporting, setExporting] = useState(false);
+
   const shareUrl = `${window.location.origin}/survey/${survey.id}`;
-  const BRAND_DOMAIN = "evaliasurvey.ca";
-  const brandDomainUrl = `https://${BRAND_DOMAIN}/survey/${survey.id}`;
-  
-  const badgeStyle = {
-    backgroundColor: '#F7F9FC',
-    color: '#1C2635',
-    borderColor: '#E2E7EF',
-    fontSize: '12px',
-    fontWeight: 500,
-    padding: '6px 10px',
-    borderRadius: '6px',
-    border: '1px solid #E2E7EF'
-  };
-
-  const getStatusDisplay = () => {
-    // If not published yet, show Draft status
-    if (!survey.publishedAt) {
-      return {
-        badge: <Badge variant="outline" style={badgeStyle} className="gap-1" data-testid={`badge-status-${survey.id}`}>
-          Edit Survey
-        </Badge>,
-        tooltip: "Survey is in draft. Complete and publish to start collecting responses."
-      };
-    }
-
-    switch (survey.status) {
-      case "Active":
-        return {
-          badge: <Badge variant="outline" style={badgeStyle} className="gap-1" data-testid={`badge-status-${survey.id}`}>
-            <CheckCircle className="w-3 h-3" />
-            Live
-          </Badge>,
-          tooltip: "Survey is live and accepting responses"
-        };
-      case "Paused":
-        return {
-          badge: <Badge variant="outline" style={badgeStyle} className="gap-1" data-testid={`badge-status-${survey.id}`}>
-            <Pause className="w-3 h-3" />
-            Paused
-          </Badge>,
-          tooltip: "Survey is paused. Respondents cannot submit new responses."
-        };
-      case "Closed":
-        return {
-          badge: <Badge variant="outline" style={badgeStyle} className="gap-1" data-testid={`badge-status-${survey.id}`}>
-            <Lock className="w-3 h-3" />
-            Closed
-          </Badge>,
-          tooltip: "Survey is closed. No new responses are accepted. View analytics anytime."
-        };
-      default:
-        return { badge: null, tooltip: "" };
-    }
-  };
-
-  const statusDisplay = getStatusDisplay();
-  
-  const handleCopyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error("Failed to copy:", err);
-    }
-  };
+  const brandUrl = `https://evaliasurvey.ca/survey/${survey.id}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(shareUrl)}`;
 
   const handleExportPdf = async () => {
-    if (!survey.questions || survey.questions.length === 0) {
-      toast({
-        title: "No questions",
-        description: "Survey has no questions to export",
-        variant: "destructive",
-      });
+    if (!survey.questions?.length) {
+      toast({ title: "No questions", description: "Survey has no questions to export", variant: "destructive" });
       return;
     }
-
-    setExportingPdf(true);
+    setExporting(true);
     try {
-      const pdf = await generateSurveyPDF(
-        survey.title,
-        survey.description || "",
-        survey.questions,
-        survey.welcomeMessage || "",
-        survey.thankYouMessage || "",
-        undefined,
-        undefined
-      );
+      const pdf = await generateSurveyPDF(survey.title, survey.description || "", survey.questions, survey.welcomeMessage || "", survey.thankYouMessage || "", undefined, undefined);
       downloadPDF(pdf, survey.title);
-      toast({
-        title: "Success",
-        description: "Survey exported as PDF",
-      });
+      toast({ title: "Success", description: "Survey exported as PDF" });
     } catch (error) {
       console.error("Error generating PDF:", error);
-      toast({
-        title: "Error",
-        description: "Failed to generate PDF",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to generate PDF", variant: "destructive" });
     } finally {
-      setExportingPdf(false);
+      setExporting(false);
     }
   };
 
-
   return (
-    <Card 
-      className="evalia-survey-card"
-      data-testid={`survey-card-${survey.id}`}
-      style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
-    >
-      {/* Header: Title + Menu */}
+    <Card className="evalia-survey-card" data-testid={`survey-card-${survey.id}`} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* Header */}
       <div className="px-6 pt-5 pb-3">
         <div className="flex items-start justify-between gap-3">
           <h3 className="heading-4 flex-1">{survey.title}</h3>
           <div className="flex gap-1 flex-shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  data-testid="button-menu"
-                  className="evalia-button-icon h-8 w-8"
-                >
+                <Button variant="ghost" size="icon" data-testid="button-menu" className="evalia-button-icon h-8 w-8">
                   <MoreVertical className="w-4 h-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setShareDialogOpen(true)} data-testid="menu-share">
-                  <Share2 className="w-4 h-4 mr-2" />
-                  Share Survey
-                </DropdownMenuItem>
-                {onManageRespondents && (
-                  <DropdownMenuItem onClick={onManageRespondents} data-testid="menu-respondents">
-                    <Users className="w-4 h-4 mr-2" />
-                    Manage Respondents
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem onClick={onView} data-testid="menu-view">
-                  <Eye className="w-4 h-4 mr-2" />
-                  Preview
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={onExport} data-testid="menu-export">
-                  <Download className="w-4 h-4 mr-2" />
-                  Export Data
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleExportPdf} disabled={exportingPdf} data-testid="menu-export-pdf">
-                  {exportingPdf ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <FileIcon className="w-4 h-4 mr-2" />
-                  )}
-                  Export as PDF
-                </DropdownMenuItem>
-                {onDuplicate && (
-                  <DropdownMenuItem onClick={onDuplicate} data-testid="menu-duplicate">
-                    <Copy className="w-4 h-4 mr-2" />
-                    Duplicate Survey
-                  </DropdownMenuItem>
-                )}
-                {onSaveAsTemplate && (
-                  <DropdownMenuItem onClick={() => setSaveTemplateOpen(true)} data-testid="menu-save-template">
-                    <Save className="w-4 h-4 mr-2" />
-                    Save as Template
-                  </DropdownMenuItem>
-                )}
-                {onReset && survey.responseCount > 0 && (
-                  <DropdownMenuItem onClick={onReset} className="text-destructive" data-testid="menu-reset-responses">
-                    Clear Responses
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem onClick={onDelete} className="text-destructive" data-testid="menu-delete">
-                  Delete
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShareOpen(true)} data-testid="menu-share"><Share2 className="w-4 h-4 mr-2" />Share</DropdownMenuItem>
+                {onManageRespondents && <DropdownMenuItem onClick={onManageRespondents} data-testid="menu-respondents"><Users className="w-4 h-4 mr-2" />Respondents</DropdownMenuItem>}
+                <DropdownMenuItem onClick={onView} data-testid="menu-view"><Eye className="w-4 h-4 mr-2" />Preview</DropdownMenuItem>
+                <DropdownMenuItem onClick={onExport} data-testid="menu-export"><Download className="w-4 h-4 mr-2" />Export Data</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportPdf} disabled={exporting} data-testid="menu-export-pdf">{exporting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <FileIcon className="w-4 h-4 mr-2" />}PDF</DropdownMenuItem>
+                {onDuplicate && <DropdownMenuItem onClick={onDuplicate} data-testid="menu-duplicate"><Copy className="w-4 h-4 mr-2" />Duplicate</DropdownMenuItem>}
+                {onSaveAsTemplate && <DropdownMenuItem onClick={() => setTemplateOpen(true)} data-testid="menu-save-template"><Save className="w-4 h-4 mr-2" />Template</DropdownMenuItem>}
+                {onReset && survey.responseCount > 0 && <DropdownMenuItem onClick={onReset} className="text-destructive" data-testid="menu-reset-responses">Clear</DropdownMenuItem>}
+                <DropdownMenuItem onClick={onDelete} className="text-destructive" data-testid="menu-delete">Delete</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => setShareDialogOpen(true)}
-              data-testid={`button-share-header-${survey.id}`}
-              className="evalia-button-icon h-8 w-8"
-            >
+            <Button variant="ghost" size="icon" onClick={() => setShareOpen(true)} data-testid={`button-share-header-${survey.id}`} className="evalia-button-icon h-8 w-8">
               <Share2 className="w-4 h-4" />
             </Button>
           </div>
@@ -265,15 +118,10 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
 
       {/* Description */}
       <div className="px-6 py-2">
-        {survey.description && (
-          <p className="body-small line-clamp-1">{survey.description}</p>
-        )}
-        {!survey.description && survey.questions && (
-          <p className="body-small line-clamp-1">{generateSurveySummary(survey.questions)}</p>
-        )}
+        <p className="body-small line-clamp-1">{survey.description || generateSurveySummary(survey.questions)}</p>
       </div>
 
-      {/* Metadata Row: Created + Scoring Badge */}
+      {/* Metadata */}
       <div className="px-6 py-3 flex items-center justify-between">
         <p style={{ fontSize: '12px', textTransform: 'uppercase', color: '#6A7789', fontWeight: 500, letterSpacing: '0.4px' }}>
           Created {new Date(survey.createdAt).toLocaleDateString()}
@@ -282,253 +130,96 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
           <Tooltip>
             <TooltipTrigger asChild>
               <Badge variant="outline" style={{ backgroundColor: 'rgba(47, 143, 165, 0.08)', color: '#2F8FA5', borderColor: 'rgba(47, 143, 165, 0.3)', fontSize: '11px', padding: '4px 8px' }} className="gap-1 cursor-help" data-testid={`badge-scoring-${survey.id}`}>
-                <Gauge className="w-2.5 h-2.5" />
-                Scoring
+                <Gauge className="w-2.5 h-2.5" />Scoring
               </Badge>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="max-w-xs text-xs">
-              This survey has scoring enabled
-            </TooltipContent>
+            <TooltipContent side="bottom" className="max-w-xs text-xs">Scoring enabled</TooltipContent>
           </Tooltip>
         )}
       </div>
 
-      {/* Status Badge Row */}
-      {statusDisplay.badge && (
+      {/* Status */}
+      {survey.publishedAt && (
         <div className="px-6 py-2">
           <div className="flex items-center gap-2">
-            <span className="text-tertiary uppercase tracking-wider">Status:</span>
+            <span className="text-tertiary uppercase tracking-wider text-xs">Status:</span>
             <Tooltip>
               <TooltipTrigger asChild>
-                {statusDisplay.badge}
+                <StatusBadge status={survey.status} published={survey.publishedAt} />
               </TooltipTrigger>
-              <TooltipContent side="bottom" className="max-w-xs text-xs">
-                {statusDisplay.tooltip}
-              </TooltipContent>
+              <TooltipContent side="bottom" className="max-w-xs text-xs">{survey.status === "Active" ? "Live and accepting" : survey.status === "Paused" ? "Paused" : "Closed"}</TooltipContent>
             </Tooltip>
           </div>
         </div>
       )}
 
-      {/* Stats Row: Questions + Responses */}
+      {/* Stats */}
       <div className="px-6 py-4 flex gap-8 flex-1">
         <div>
-          <p className="text-tertiary uppercase tracking-wider font-semibold">Questions</p>
-          <p style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-primary)', marginTop: '4px' }} data-testid="text-question-count">{survey.questionCount || 0}</p>
+          <p className="text-tertiary uppercase tracking-wider text-xs font-semibold">Qs</p>
+          <p className="text-2xl font-bold" data-testid="text-question-count">{survey.questionCount || 0}</p>
         </div>
         <div>
-          <p className="text-tertiary uppercase tracking-wider font-semibold">Responses</p>
-          <p style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-primary)', marginTop: '4px' }} data-testid="text-response-count">{survey.responseCount ?? 0}</p>
+          <p className="text-tertiary uppercase tracking-wider text-xs font-semibold">Responses</p>
+          <p className="text-2xl font-bold" data-testid="text-response-count">{survey.responseCount ?? 0}</p>
         </div>
       </div>
 
       {/* Buttons */}
       <div className="px-6 py-5 gap-3 flex flex-col mt-auto">
-        <div className="flex w-full gap-3">
-          <Button 
-            variant="outline" 
-            className="flex-1 font-semibold text-sm"
-            onClick={onEdit} 
-            data-testid={`button-edit-${index}`}
-            style={{ color: '#2F8FA5', borderColor: '#E2E7EF' }}
-          >
-            <Edit3 className="w-4 h-4 mr-2" />
-            Edit
-          </Button>
-          <div className="flex-1">
-            <Tooltip delayDuration={0}>
-              <TooltipTrigger asChild>
-                <div className="w-full">
-                  <Button 
-                    onClick={onAnalyze} 
-                    data-testid={`button-analyze-${index}`}
-                    disabled={survey.responseCount === 0}
-                    className="flex-1 font-semibold text-sm w-full"
-                    style={{
-                      backgroundColor: survey.responseCount === 0 ? 'rgba(47, 143, 165, 0.15)' : '#2F8FA5',
-                      color: survey.responseCount === 0 ? '#2F8FA5' : '#FFFFFF',
-                      border: 'none'
-                    }}
-                  >
-                    <BarChart3 className="w-4 h-4 mr-2" strokeWidth={2} />
-                    Analyze
-                  </Button>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="max-w-xs text-xs">
-                {survey.responseCount === 0 
-                  ? "No responses yet. Start collecting responses to view analytics."
-                  : "View detailed analytics and response breakdown"
-                }
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        </div>
+        <Button variant="outline" className="font-semibold" onClick={onEdit} data-testid={`button-edit-${index}`} style={{ color: '#2F8FA5' }}><Edit3 className="w-4 h-4 mr-2" />Edit</Button>
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger asChild>
+            <Button onClick={onAnalyze} data-testid={`button-analyze-${index}`} disabled={survey.responseCount === 0} className="font-semibold" style={{ backgroundColor: survey.responseCount === 0 ? 'rgba(47, 143, 165, 0.15)' : '#2F8FA5', color: survey.responseCount === 0 ? '#2F8FA5' : '#FFF' }}>
+              <BarChart3 className="w-4 h-4 mr-2" />Analyze
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="text-xs">{survey.responseCount === 0 ? "Collect responses first" : "View analytics"}</TooltipContent>
+        </Tooltip>
       </div>
-      {/* Save as Template Dialog */}
-      <Dialog open={saveTemplateOpen} onOpenChange={setSaveTemplateOpen}>
+
+      {/* Template Dialog */}
+      <Dialog open={templateOpen} onOpenChange={setTemplateOpen}>
         <DialogContent data-testid="dialog-save-template">
           <DialogHeader>
-            <DialogTitle>Save Survey as Template</DialogTitle>
-            <DialogDescription>
-              Save this survey structure as a reusable template
-            </DialogDescription>
+            <DialogTitle>Save as Template</DialogTitle>
+            <DialogDescription>Create a reusable template</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium mb-1 block">Template Name</label>
-              <input
-                type="text"
-                value={templateTitle}
-                onChange={(e) => setTemplateTitle(e.target.value)}
-                placeholder="e.g., Leadership Training Survey"
-                className="w-full px-3 py-2 border rounded-md text-sm"
-                data-testid="input-template-title"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-1 block">Description</label>
-              <textarea
-                value={templateDescription}
-                onChange={(e) => setTemplateDescription(e.target.value)}
-                placeholder="Brief description of this template..."
-                className="w-full px-3 py-2 border rounded-md text-sm resize-none"
-                rows={3}
-                data-testid="input-template-description"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-1 block">Category</label>
-              <select
-                value={templateCategory}
-                onChange={(e) => setTemplateCategory(e.target.value)}
-                className="w-full px-3 py-2 border rounded-md text-sm"
-                data-testid="select-template-category"
-              >
-                <option value="General">General</option>
-                <option value="Training Feedback">Training Feedback</option>
-                <option value="Employee Satisfaction">Employee Satisfaction</option>
-                <option value="Product Feedback">Product Feedback</option>
-                <option value="Assessment">Assessment</option>
-                <option value="Event Feedback">Event Feedback</option>
-              </select>
-            </div>
-            <div className="flex gap-2 pt-4">
-              <Button
-                onClick={() => setSaveTemplateOpen(false)}
-                variant="outline"
-                className="flex-1"
-                data-testid="button-cancel-save-template"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => {
-                  if (templateTitle.trim() && onSaveAsTemplate) {
-                    onSaveAsTemplate();
-                    setSaveTemplateOpen(false);
-                  }
-                }}
-                style={{ backgroundColor: "#2F8FA5", color: "#FFFFFF" }}
-                className="flex-1"
-                data-testid="button-confirm-save-template"
-              >
-                <Save className="w-4 h-4 mr-2" />
-                Save Template
-              </Button>
+            <input type="text" value={templateData.title} onChange={(e) => setTemplateData({...templateData, title: e.target.value})} placeholder="Template name" className="w-full px-3 py-2 border rounded-md text-sm" data-testid="input-template-title" />
+            <textarea value={templateData.description} onChange={(e) => setTemplateData({...templateData, description: e.target.value})} placeholder="Description..." className="w-full px-3 py-2 border rounded-md text-sm resize-none" rows={3} data-testid="input-template-description" />
+            <select value={templateData.category} onChange={(e) => setTemplateData({...templateData, category: e.target.value})} className="w-full px-3 py-2 border rounded-md text-sm" data-testid="select-template-category">
+              <option>General</option><option>Training</option><option>Satisfaction</option><option>Assessment</option>
+            </select>
+            <div className="flex gap-2 pt-2">
+              <Button onClick={() => setTemplateOpen(false)} variant="outline" className="flex-1">Cancel</Button>
+              <Button onClick={() => { if (templateData.title.trim() && onSaveAsTemplate) { onSaveAsTemplate(); setTemplateOpen(false); } }} style={{ backgroundColor: "#2F8FA5", color: "#FFF" }} className="flex-1" data-testid="button-confirm-save-template"><Save className="w-4 h-4 mr-2" />Save</Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Share Dialog */}
-      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+      <Dialog open={shareOpen} onOpenChange={setShareOpen}>
         <DialogContent data-testid="dialog-share">
           <DialogHeader>
             <DialogTitle>Share Survey</DialogTitle>
-            <DialogDescription>
-              Share with respondents to collect responses
-            </DialogDescription>
+            <DialogDescription>Share with respondents</DialogDescription>
           </DialogHeader>
           <div className="space-y-6">
-            {/* QR Code Section */}
             <div className="flex flex-col items-center gap-3">
-              <div className="p-3 bg-white rounded-lg border">
-                <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(shareUrl)}`}
-                  alt="Survey QR Code"
-                  className="w-[200px] h-[200px]"
-                  data-testid="qr-code-image"
-                />
-              </div>
-              <p className="text-xs text-muted-foreground text-center">
-                Scan this QR code to take the survey
-              </p>
-              <Button 
-                onClick={() => {
-                  const link = document.createElement('a');
-                  link.href = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(shareUrl)}`;
-                  link.download = `survey-${survey.id}-qr.png`;
-                  link.click();
-                }} 
-                size="sm" 
-                variant="outline" 
-                className="w-full" 
-                data-testid="button-download-qr"
-              >
-                <DownloadIcon className="w-4 h-4 mr-2" />
-                Download QR Code
-              </Button>
+              <img src={qrUrl} alt="QR" className="w-48 h-48 p-3 bg-white rounded-lg border" data-testid="qr-code-image" />
+              <Button onClick={() => { const link = document.createElement('a'); link.href = qrUrl.replace("200x200", "400x400"); link.download = `survey-${survey.id}-qr.png`; link.click(); }} variant="outline" className="w-full" data-testid="button-download-qr"><DownloadIcon className="w-4 h-4 mr-2" />QR</Button>
             </div>
-
-            {/* Divider */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border/30"></div>
-              </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="px-2 bg-background text-muted-foreground">or share link</span>
-              </div>
-            </div>
-
-            {/* Copy Link Section - Brand Domain */}
+            <div className="relative"><div className="absolute inset-0 flex items-center"><div className="w-full border-t" /></div><div className="relative flex justify-center"><span className="px-2 bg-background text-xs text-muted-foreground">or link</span></div></div>
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={brandDomainUrl}
-                  readOnly
-                  className="flex-1 px-3 py-2 border rounded-md bg-muted text-sm"
-                  data-testid="input-share-url"
-                />
-                <Button 
-                  onClick={() => {
-                    navigator.clipboard.writeText(brandDomainUrl);
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 2000);
-                  }} 
-                  variant="outline" 
-                  data-testid="button-copy-link"
-                >
-                  {copied ? (
-                    <>
-                      <Check className="w-4 h-4 mr-2" />
-                      Copied
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-4 h-4 mr-2" />
-                      Copy
-                    </>
-                  )}
+              <div className="flex gap-2">
+                <input type="text" value={brandUrl} readOnly className="flex-1 px-3 py-2 border rounded-md bg-muted text-sm" data-testid="input-share-url" />
+                <Button onClick={() => { navigator.clipboard.writeText(brandUrl); setCopied(true); setTimeout(() => setCopied(false), 2000); }} variant="outline" data-testid="button-copy-link">
+                  {copied ? <><Check className="w-4 h-4 mr-2" />Copied</> : <><Copy className="w-4 h-4 mr-2" />Copy</>}
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Brand domain link - professional and easy to remember • Anyone with this link can submit a response
-              </p>
-              <p className="text-xs text-muted-foreground italic">
-                Requires domain redirect setup at your DNS provider to work with evaliasurvey.ca
-              </p>
+              <p className="text-xs text-muted-foreground">Professional domain • Requires DNS setup</p>
             </div>
           </div>
         </DialogContent>
