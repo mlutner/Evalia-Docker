@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import hrTeamsImage from '@assets/pexels-yankrukov-7698715_1764094641849.jpg';
+import learningImage from '@assets/pexels-bertellifotografia-34774352_1764094751636.jpg';
 
 interface CaseStudy {
   id: string;
@@ -29,6 +30,7 @@ export function CaseStudiesSection() {
       title: 'Training Manager',
       company: 'TechCorp Learning',
       imagePlaceholderId: 'case-learning',
+      imageUrl: learningImage,
     },
     {
       id: 'hr',
