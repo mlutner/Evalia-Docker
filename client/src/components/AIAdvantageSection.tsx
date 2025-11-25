@@ -170,7 +170,7 @@ export function AIAdvantageSection() {
                 {/* Card Container */}
                 <div
                   className={`relative rounded-2xl overflow-hidden transition-all duration-300 flex flex-col h-full hover:scale-105 -translate-y-6`}
-                  style={{ backgroundColor: "#243539" }}
+                  style={{ backgroundColor: "#243539", backgroundImage: "linear-gradient(to bottom, #243539 0%, #243539 100%)" }}
                 >
                   {/* Top teal accent bar */}
                   <div
@@ -178,7 +178,7 @@ export function AIAdvantageSection() {
                   />
 
                   {/* Image Container */}
-                  <div className="relative w-full flex items-center justify-center overflow-hidden group p-1" style={{ aspectRatio: "3 / 2", backgroundColor: "#152A2C" }}>
+                  <div className="relative w-full flex items-center justify-center overflow-hidden group" style={{ aspectRatio: "3 / 2", backgroundColor: "#243539", padding: "0.375rem" }}>
                     {cardImages[index] ? (
                       <>
                         {/* Display uploaded image - rounded corners */}
