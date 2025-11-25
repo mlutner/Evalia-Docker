@@ -503,7 +503,7 @@ export default function AnalyticsPage() {
             </Card>
 
             {/* Response List */}
-            <Card className="card-professional" style={{ border: '1px solid #E2E7EF' }}>
+            <Card className="card-professional" style={{ border: `1px solid ${theme.colors.border}` }}>
               <CardHeader className="pb-6 border-b border-border">
                 <div className="flex items-center justify-between">
                   <div>
@@ -525,7 +525,7 @@ export default function AnalyticsPage() {
                     </div>
                   ) : (
                     filteredAndSortedResponses.map((response) => (
-                    <div key={response.id} className="flex items-start gap-3 p-4 rounded-[12px] transition-all cursor-pointer hover-elevate" style={{ backgroundColor: '#F7F9FC', border: '1px solid #E2E7EF' }} onClick={() => setSelectedResponse(response)} data-testid={`response-row-${response.id}`}>
+                    <div key={response.id} className="flex items-start gap-3 p-4 rounded-[12px] transition-all cursor-pointer hover-elevate" style={{ backgroundColor: theme.colors.bg, border: `1px solid ${theme.colors.border}` }} onClick={() => setSelectedResponse(response)} data-testid={`response-row-${response.id}`}>
                       <Checkbox
                         checked={selectedIds.has(response.id)}
                         onCheckedChange={() => toggleSelect(response.id)}
@@ -534,10 +534,10 @@ export default function AnalyticsPage() {
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-2">
-                          <p className="body-small font-medium" style={{ color: '#1C2635' }}>
+                          <p className="body-small font-medium" style={{ color: theme.colors.textPrimary }}>
                             {new Date(response.completedAt).toLocaleDateString()}
                           </p>
-                          <span className="text-xs" style={{ color: '#6A7789' }}>
+                          <span className="text-xs" style={{ color: theme.colors.textSecondary }}>
                             {new Date(response.completedAt).toLocaleTimeString()}
                           </span>
                         </div>
@@ -545,15 +545,15 @@ export default function AnalyticsPage() {
                           {survey.questions.slice(0, 2).map(q => {
                             const answer = response.answers[q.id];
                             return (
-                              <p key={q.id} className="truncate" style={{ color: '#6A7789' }}>
-                                <strong style={{ color: '#1C2635' }}>{q.question}:</strong> {Array.isArray(answer) ? answer.join(", ") : answer || "—"}
+                              <p key={q.id} className="truncate" style={{ color: theme.colors.textSecondary }}>
+                                <strong style={{ color: theme.colors.textPrimary }}>{q.question}:</strong> {Array.isArray(answer) ? answer.join(", ") : answer || "—"}
                               </p>
                             );
                           })}
-                          {survey.questions.length > 2 && <p className="text-xs" style={{ color: '#A6ADBA' }}>+{survey.questions.length - 2} more</p>}
+                          {survey.questions.length > 2 && <p className="text-xs" style={{ color: theme.colors.textSecondary }}>+{survey.questions.length - 2} more</p>}
                         </div>
                       </div>
-                      <Eye className="w-4 h-4 flex-shrink-0 mt-1" style={{ color: '#A6ADBA' }} data-testid="button-view-response" />
+                      <Eye className="w-4 h-4 flex-shrink-0 mt-1" style={{ color: theme.colors.textSecondary }} data-testid="button-view-response" />
                     </div>
                     ))
                   )}
@@ -582,14 +582,14 @@ export default function AnalyticsPage() {
 
                 return (
                   <Collapsible key={question.id} defaultOpen={index < 2}>
-                    <Card className="card-professional hover-elevate" style={{ border: '1px solid #E2E7EF' }} data-testid={`question-analytics-${question.id}`}>
+                    <Card className="card-professional hover-elevate" style={{ border: `1px solid ${theme.colors.border}` }} data-testid={`question-analytics-${question.id}`}>
                       <CollapsibleTrigger asChild>
                         <button className="w-full text-left">
                           <CardHeader className="pb-5">
                             <div className="flex items-start justify-between gap-4">
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-3 mb-1">
-                                  <span className="text-xs font-semibold px-2 py-1 rounded-[6px]" style={{ color: '#2F8FA5', backgroundColor: '#E1F6F3' }}>Q{index + 1}</span>
+                                  <span className="text-xs font-semibold px-2 py-1 rounded-[6px]" style={{ color: theme.colors.primary, backgroundColor: theme.colors.surfaceHighlightTeal }}>Q{index + 1}</span>
                                   <CardTitle className="heading-4 inline">
                                     {question.question}
                                   </CardTitle>
@@ -600,7 +600,7 @@ export default function AnalyticsPage() {
                               </div>
                               <div className="flex items-center gap-4 flex-shrink-0">
                                 <div className="text-right">
-                                  <p className="heading-4" style={{ color: '#2F8FA5' }}>{stats.total}</p>
+                                  <p className="heading-4" style={{ color: theme.colors.primary }}>{stats.total}</p>
                                   <p className="text-xs text-tertiary mt-1">{responseRate}% answered</p>
                                 </div>
                                 <ChevronDown className="w-5 h-5 text-secondary transition-transform group-data-[state=open]:rotate-180 flex-shrink-0" />
@@ -619,15 +619,15 @@ export default function AnalyticsPage() {
                                 return (
                                   <div key={option} className="space-y-2.5">
                                     <div className="flex justify-between items-end gap-3">
-                                      <span className={`text-sm ${isTop ? "font-semibold" : ""}`} style={{ color: '#1C2635' }}>{option}</span>
-                                      <span className="text-xs font-medium px-2 py-1 rounded-[4px]" style={{ color: '#2F8FA5', backgroundColor: '#E1F6F3' }}>
+                                      <span className={`text-sm ${isTop ? "font-semibold" : ""}`} style={{ color: theme.colors.textPrimary }}>{option}</span>
+                                      <span className="text-xs font-medium px-2 py-1 rounded-[4px]" style={{ color: theme.colors.primary, backgroundColor: theme.colors.surfaceHighlightTeal }}>
                                         {count} • {percentage.toFixed(1)}%
                                       </span>
                                     </div>
                                     <div className="h-2.5 bg-border rounded-full overflow-hidden">
                                       <div
                                         className="h-full transition-all"
-                                        style={{ width: `${percentage}%`, backgroundColor: isTop ? '#37C0A3' : '#2F8FA5' }}
+                                        style={{ width: `${percentage}%`, backgroundColor: isTop ? theme.colors.iconTeal : theme.colors.primary }}
                                       />
                                     </div>
                                   </div>
