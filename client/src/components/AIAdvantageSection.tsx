@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Zap, Brain, BarChart3, Sparkles, MessageCircle, Settings, TrendingUp, Eye, Upload, X } from "lucide-react";
-import surveyGenerationBox from "@assets/survey-generation-box.png";
+import surveyGenerationHero from "@assets/survey-generation-hero.png";
 
 export function AIAdvantageSection() {
   const [cardImages, setCardImages] = useState<{ [key: number]: string | null }>({
-    0: surveyGenerationBox,
+    0: surveyGenerationHero,
     1: null,
     2: null,
     3: null,
@@ -174,15 +174,15 @@ export function AIAdvantageSection() {
                   />
 
                   {/* Image Container */}
-                  <div className="relative w-full h-48 bg-gradient-to-br from-slate-100 to-slate-50 border-b border-slate-200 flex items-center justify-center overflow-hidden group p-4">
+                  <div className="relative w-full bg-gradient-to-br from-slate-100 to-slate-50 border-b border-slate-200 flex items-center justify-center overflow-hidden group p-4" style={{ aspectRatio: "3 / 2" }}>
                     {cardImages[index] ? (
                       <>
-                        {/* Display uploaded image - centered and contained with border */}
-                        <div className="relative w-full h-full border-2 border-slate-300 rounded-xl overflow-hidden flex items-center justify-center">
+                        {/* Display uploaded image - 3x2 aspect ratio with rounded borders */}
+                        <div className="relative w-full h-full border-2 border-slate-300 rounded-2xl overflow-hidden flex items-center justify-center">
                           <img 
                             src={cardImages[index]} 
                             alt={advantage.title} 
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-cover"
                           />
                         </div>
                         {/* Remove image button on hover */}
