@@ -121,22 +121,29 @@ export function InsightsSection() {
           {/* Right: Dashboard Mockup */}
           <div className="hidden lg:block sticky top-20">
             <div className="relative" style={{ aspectRatio: '1 / 1' }}>
-              {/* Offset square background - positioned bottom right */}
+              {/* Offset teal square background */}
               <div 
                 className="absolute rounded-3xl pointer-events-none transition-all duration-300"
                 style={{
-                  width: '110%',
-                  height: '110%',
-                  bottom: '-40px',
-                  right: '-40px',
+                  width: '100%',
+                  height: '100%',
+                  top: 0,
+                  left: 0,
                   zIndex: 0,
                   background: 'linear-gradient(135deg, #2F8FA5 0%, #37C0A3 100%)'
                 }} 
               />
               
-              {/* Dashboard mockup card - Square */}
+              {/* Dashboard mockup card - White card inset to show teal square */}
               <div 
-                className="relative z-10 rounded-3xl overflow-hidden shadow-2xl bg-white transition-all duration-300 w-full h-full" 
+                className="absolute rounded-3xl overflow-hidden shadow-2xl bg-white transition-all duration-300" 
+                style={{
+                  top: '0',
+                  left: '0',
+                  right: '40px',
+                  bottom: '40px',
+                  zIndex: 10
+                }}
                 data-testid={`mockup-${activeId}`}
               >
                 {activeInsight.mockupImage ? (
