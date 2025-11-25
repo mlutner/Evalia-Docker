@@ -117,7 +117,6 @@ export async function callMistral(
         const backoffMs = Math.min(retryAfter * 1000, 10000);
         
         if (attempt < maxRetries) {
-          console.warn(`Rate limited. Retrying after ${backoffMs}ms (attempt ${attempt + 1}/${maxRetries})`);
           await sleep(backoffMs);
           continue;
         }
@@ -183,10 +182,6 @@ export async function callMistral(
       // Calculate exponential backoff
       if (attempt < maxRetries) {
         const backoffMs = Math.pow(2, attempt) * 1000 + Math.random() * 1000;
-        console.warn(
-          `AI API call failed (attempt ${attempt + 1}/${maxRetries}): ${error}. ` +
-          `Retrying in ${backoffMs.toFixed(0)}ms...`
-        );
         await sleep(backoffMs);
       }
     }
@@ -237,9 +232,7 @@ export async function callMistral(
 export function safeParseJSON<T>(content: string, fallback?: T): T | null {
   try {
     return JSON.parse(content) as T;
-  } catch (error) {
-    console.warn("Failed to parse JSON response:", error);
-    
+  } catch {
     // Try to recover by finding JSON object in content
     const jsonMatch = content.match(/\{[\s\S]*\}/);
     if (jsonMatch) {

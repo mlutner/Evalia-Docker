@@ -77,11 +77,6 @@ export class AICallLogger {
     if (this.metrics.length >= 100) {
       this.exportMetrics();
     }
-
-    // Log to console in development
-    if (process.env.NODE_ENV !== "production") {
-      console.log(`[AI] ${metrics.taskType} | Model: ${metrics.model} | Latency: ${metrics.latencyMs}ms | Cost: $${(metrics.costEstimated / 100).toFixed(4)}`);
-    }
   }
 
   /**
@@ -162,7 +157,8 @@ export class AICallLogger {
       this.metrics = []; // Clear after export
       await this.exportCallback(metricsToExport);
     } catch (error) {
-      console.error("Failed to export AI metrics:", error);
+      // Silently handle export failure to not block AI operations
+      // In production, this would be reported to error tracking service
     }
   }
 
