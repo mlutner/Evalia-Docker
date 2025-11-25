@@ -339,6 +339,9 @@ export default function AnalyticsPage() {
             <CardContent>
               <div className="heading-1 mb-1" data-testid="text-response-count">{count}</div>
               <p className="body-small text-tertiary">total responses collected</p>
+              <p className="text-xs mt-2" style={{ color: '#2F8FA5' }}>
+                {count >= 50 ? 'Great engagement! 🎉' : count >= 20 ? 'Good progress so far' : 'Keep collecting responses'}
+              </p>
             </CardContent>
           </Card>
 
@@ -352,6 +355,9 @@ export default function AnalyticsPage() {
             <CardContent>
               <div className="heading-1 mb-1" style={{ color: '#37C0A3' }}>{survey.questions.length > 0 ? Math.round((count / survey.questions.length) * 100) : 0}%</div>
               <p className="body-small text-tertiary">{count} of {survey.questions.length} questions answered</p>
+              <p className="text-xs mt-2" style={{ color: '#2F8FA5' }}>
+                {survey.questions.length > 0 && count > 0 ? `Excellent response rate! Above typical survey average.` : `Keep sharing to increase response count`}
+              </p>
             </CardContent>
           </Card>
 
@@ -367,6 +373,9 @@ export default function AnalyticsPage() {
                 <>
                   <div className="heading-1 mb-1">{Math.round((new Date(data.responses[data.responses.length - 1].completedAt).getTime() - new Date(data.responses[0].completedAt).getTime()) / (1000 * 60 * 60 * 24))}</div>
                   <p className="body-small text-tertiary">days from first to last</p>
+                  <p className="text-xs mt-2" style={{ color: '#2F8FA5' }}>
+                    {Math.round((new Date(data.responses[data.responses.length - 1].completedAt).getTime() - new Date(data.responses[0].completedAt).getTime()) / (1000 * 60 * 60 * 24)) > 7 ? 'Long-term engagement observed' : 'Recent responses'}
+                  </p>
                 </>
               ) : (
                 <div className="body-small text-tertiary">—</div>

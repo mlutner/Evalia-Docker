@@ -1,4 +1,5 @@
 import { useState } from "react";
+import React from "react";
 import ChatPanel from "@/components/ChatPanel";
 import QuestionEditor from "@/components/QuestionEditor";
 import FloatingAIChat from "@/components/FloatingAIChat";
@@ -77,6 +78,19 @@ export default function QuestionsStep({
       onReorderQuestions(reorderedQuestions);
     }
   };
+
+  // Keyboard shortcut for adding questions (Cmd+N or Ctrl+N)
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
+        e.preventDefault();
+        onAddQuestion();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onAddQuestion]);
 
   return (
     <div className="space-y-6 relative">
@@ -163,7 +177,10 @@ export default function QuestionsStep({
           : 'grid-cols-1'
       }`}>
         {/* Questions Editor - Main Area */}
-        <div className="space-y-4">
+        <div className="space-y-4 p-4 rounded-lg" style={{ backgroundColor: '#F7F9FC' }}>
+          <div className="text-xs font-medium text-muted-foreground" style={{ color: '#6A7789' }}>
+            💡 Tip: Press <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-semibold">Cmd+N</kbd> (Mac) or <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-semibold">Ctrl+N</kbd> (Windows) to add a new question
+          </div>
           {questions.length === 0 ? (
             <Card className="border-dashed" data-testid="card-no-questions">
               <CardHeader className="text-center">

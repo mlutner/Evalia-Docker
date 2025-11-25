@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -5,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { GripVertical, Trash2, Plus } from "lucide-react";
 import type { Question, QuestionType } from "@shared/schema";
 import { useSortable } from '@dnd-kit/sortable';
@@ -26,6 +28,8 @@ export default function QuestionEditor({
   onUpdate,
   onDelete,
 }: QuestionEditorProps) {
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  
   const {
     attributes,
     listeners,
@@ -34,6 +38,16 @@ export default function QuestionEditor({
     transition,
     isDragging,
   } = useSortable({ id: question.id });
+  
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    setShowDeleteConfirm(false);
+    onDelete();
+  };
+
   const updateField = (field: keyof Question, value: any) => {
     onUpdate({ ...question, [field]: value });
   };
@@ -175,7 +189,7 @@ export default function QuestionEditor({
           <Button
             variant="ghost"
             size="icon"
-            onClick={onDelete}
+            onClick={handleDeleteClick}
             className="shrink-0 text-destructive hover:text-destructive"
             data-testid="button-delete-question"
           >
@@ -218,6 +232,24 @@ export default function QuestionEditor({
           </Button>
         </CardContent>
       )}
+      
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Question?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently remove this question. Any responses to this question will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-delete">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" data-testid="button-confirm-delete">
+              Delete Question
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }
