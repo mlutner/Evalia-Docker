@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { BarChart3Icon, Users2Icon, TrendingUpIcon, ArrowRightIcon } from 'lucide-react';
-import dashboardAnalytics from '@assets/ChatGPT Image Nov 25, 2025, 10_59_56 AM_1764097220928.png';
+import dashboardAnalytics from '@assets/ChatGPT Image Nov 25, 2025, 11_18_30 AM_1764098321565.png';
 import dashboardRespondents from '@assets/ChatGPT Image Nov 25, 2025, 11_05_22 AM_1764097552873.png';
 import dashboardScoring from '@assets/ChatGPT Image Nov 25, 2025, 11_06_48 AM_1764097630621.png';
 
@@ -151,6 +151,11 @@ export function InsightsSection() {
                     src={activeInsight.mockupImage} 
                     alt={activeInsight.title}
                     className="w-full h-full object-cover"
+                    style={{
+                      transform: activeId === 'analytics' ? 'scale(1.15)' : 'scale(1)',
+                      transformOrigin: 'center',
+                      transition: 'transform 0.3s ease-in-out'
+                    }}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-8">
