@@ -5,7 +5,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { MessageSquare, AtSign, Hash, Type, CheckCircle2, Radio, ThumbsUp, Gauge, Grid3x3, List, Calendar, Star } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { MessageSquare, AtSign, Hash, Type, CheckCircle2, Radio, ThumbsUp, Gauge, Grid3x3, List, Calendar, Star, HelpCircle } from "lucide-react";
 import type { Question, QuestionType } from "@shared/schema";
 
 export type { Question, QuestionType };
@@ -350,6 +351,19 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
 
         {question.type === "matrix" && (
           <>
+            <div className="flex items-center gap-2 mb-3">
+              <p className="text-sm font-medium" style={{ color: '#1C2635' }}>Select one option per row</p>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="w-4 h-4" style={{ color: '#2F8FA5', cursor: 'help' }} />
+                  </TooltipTrigger>
+                  <TooltipContent side="right" className="max-w-xs">
+                    <p>Click the circle in each row that matches your response. You must select exactly one option per row.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-sm">
                 <thead>
@@ -391,12 +405,24 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
                 </tbody>
               </table>
             </div>
-            <p className="text-xs" style={{ color: '#6A7789' }}>Select one response per row</p>
           </>
         )}
 
         {question.type === "ranking" && (
           <>
+            <div className="flex items-center gap-2 mb-3">
+              <p className="text-sm font-medium" style={{ color: '#1C2635' }}>Drag to reorder by importance</p>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="w-4 h-4" style={{ color: '#2F8FA5', cursor: 'help' }} />
+                  </TooltipTrigger>
+                  <TooltipContent side="right" className="max-w-xs">
+                    <p>Items are currently numbered 1 (top priority) to {question.options?.length} (lowest priority). You can reorder them to match your ranking. Use drag-and-drop or click items to reorganize.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <div className="space-y-2">
               {question.options?.map((option, idx) => (
                 <div 
@@ -420,7 +446,6 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
                 </div>
               ))}
             </div>
-            <p className="text-xs" style={{ color: '#6A7789' }}>Items are ranked from most to least important</p>
           </>
         )}
 
