@@ -39,10 +39,10 @@ export default function Home() {
       <Navigation />
       <Hero />
       <SocialProofSection />
-      <HowItWorksSection />
       <AIAdvantageSection />
       <CaseStudiesSection />
       <InsightsSection />
+      <HowItWorksSection />
 
       {/* CTA section */}
       <section className="py-16 sm:py-24 md:py-32 lg:py-40 bg-gradient-to-br from-evalia-teal-600 to-evalia-teal-700">
