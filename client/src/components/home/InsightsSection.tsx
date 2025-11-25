@@ -152,7 +152,7 @@ export function InsightsSection() {
                     alt={activeInsight.title}
                     className="w-full h-full object-cover"
                     style={{
-                      transform: activeId === 'analytics' ? 'scale(1.15)' : 'scale(1)',
+                      transform: activeId === 'analytics' ? 'scale(1.08)' : 'scale(1)',
                       transformOrigin: 'center',
                       transition: 'transform 0.3s ease-in-out'
                     }}
