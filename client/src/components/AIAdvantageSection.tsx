@@ -169,7 +169,7 @@ export function AIAdvantageSection() {
               >
                 {/* Card Container */}
                 <div
-                  className={`relative bg-gray-50 border ${advantage.borderColor} rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:border-opacity-100 flex flex-col h-full hover:scale-105`}
+                  className={`relative bg-white border ${advantage.borderColor} rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:border-opacity-100 flex flex-col h-full hover:scale-105`}
                 >
                   {/* Top colored accent bar */}
                   <div
@@ -177,11 +177,11 @@ export function AIAdvantageSection() {
                   />
 
                   {/* Image Container */}
-                  <div className="relative w-full bg-gray-50 flex items-center justify-center overflow-hidden group p-5" style={{ aspectRatio: "3 / 2" }}>
+                  <div className="relative w-full bg-white flex items-center justify-center overflow-hidden group p-3" style={{ aspectRatio: "3 / 2" }}>
                     {cardImages[index] ? (
                       <>
-                        {/* Display uploaded image - taller with rounded borders */}
-                        <div className="relative w-full h-full border-2 border-gray-300 rounded-3xl overflow-hidden flex items-center justify-center">
+                        {/* Display uploaded image - rounded borders without constraint */}
+                        <div className="relative w-full h-full border-2 border-gray-200 rounded-2xl overflow-hidden flex items-center justify-center">
                           <img 
                             src={cardImages[index]} 
                             alt={advantage.title} 
