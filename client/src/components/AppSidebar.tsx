@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Plus, LayoutDashboard, BarChart3, Users, BookOpen, FileText, Zap, Settings, ChevronLeft, ChevronRight, LogOut, User } from "lucide-react";
+import { Plus, CaretLeft, CaretRight, SignOut, UserCircle } from "phosphor-react";
+import { SquareFour, BarChart, Users, Book, TextT, Lightning, Gear } from "phosphor-react";
 import { useAuth } from "@/hooks/useAuth";
 import { queryClient } from "@/lib/queryClient";
 import type { User as UserType } from "@shared/schema";
@@ -28,13 +29,13 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
   };
 
   const sidebarItems = [
-    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, href: "/dashboard", tooltip: "Overview and key metrics" },
-    { id: "surveys", label: "Surveys", icon: BarChart3, href: "/surveys", tooltip: "Create, manage, and analyze surveys" },
+    { id: "dashboard", label: "Dashboard", icon: SquareFour, href: "/dashboard", tooltip: "Overview and key metrics" },
+    { id: "surveys", label: "Surveys", icon: BarChart, href: "/surveys", tooltip: "Create, manage, and analyze surveys" },
     { id: "respondents", label: "Respondent Groups", icon: Users, href: "/respondents", tooltip: "Manage respondent lists and segments" },
-    { id: "templates", label: "Templates", icon: FileText, href: "/templates", tooltip: "Pre-built survey templates" },
-    { id: "ai-assist", label: "AI Assist", icon: Zap, href: "/ai-assist", tooltip: "Generate surveys with AI" },
-    { id: "scoring", label: "Scoring Models", icon: BookOpen, href: "/scoring", tooltip: "Set up scoring rules for questions" },
-    { id: "settings", label: "Settings", icon: Settings, href: "/settings", tooltip: "Account and workspace settings" },
+    { id: "templates", label: "Templates", icon: TextT, href: "/templates", tooltip: "Pre-built survey templates" },
+    { id: "ai-assist", label: "AI Assist", icon: Lightning, href: "/ai-assist", tooltip: "Generate surveys with AI" },
+    { id: "scoring", label: "Scoring Models", icon: Book, href: "/scoring", tooltip: "Set up scoring rules for questions" },
+    { id: "settings", label: "Settings", icon: Gear, href: "/settings", tooltip: "Account and workspace settings" },
   ];
 
   const isActive = (href: string) => location === href;
@@ -55,7 +56,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
           data-testid="button-toggle-sidebar"
           title={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
         >
-          {sidebarExpanded ? <ChevronLeft className="w-6 h-6" strokeWidth={2} /> : <ChevronRight className="w-6 h-6" strokeWidth={2} />}
+          {sidebarExpanded ? <CaretLeft className="w-6 h-6" weight="bold" /> : <CaretRight className="w-6 h-6" weight="bold" />}
         </button>
       </div>
       {/* New Survey Button */}
@@ -67,7 +68,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
           size={sidebarExpanded ? "default" : "icon"}
           data-testid="button-new-survey-sidebar"
         >
-          <Plus className="w-5 h-5" strokeWidth={2} />
+          <Plus className="w-5 h-5" weight="bold" />
           {sidebarExpanded && <span className="ml-2">New Survey</span>}
         </Button>
       </div>
@@ -90,7 +91,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
               }}
               title={item.tooltip || item.label}
             >
-              <Icon className="w-6 h-6 flex-shrink-0" style={{ color: active ? '#2F8FA5' : '#6A7789' }} strokeWidth={2} />
+              <Icon size={24} weight="bold" style={{ color: active ? '#2F8FA5' : '#6A7789' }} className="flex-shrink-0" />
               {sidebarExpanded && (
                 <div className="flex flex-col flex-1">
                   <span style={{ color: active ? '#2F8FA5' : '#6A7789' }}>{item.label}</span>
@@ -109,7 +110,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
             className="w-full justify-start text-sm h-10"
             data-testid="button-account-sidebar"
           >
-            <User className="w-5 h-5 mr-2" style={{ color: '#6A7789' }} />
+            <UserCircle size={20} weight="bold" style={{ color: '#6A7789' }} className="mr-2" />
             {sidebarExpanded && <span style={{ color: '#6A7789' }}>Account</span>}
           </Button>
           <Button
@@ -118,7 +119,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
             className="w-full justify-start text-sm h-10"
             data-testid="button-logout-sidebar"
           >
-            <LogOut className="w-5 h-5 mr-2" style={{ color: '#6A7789' }} />
+            <SignOut size={20} weight="bold" style={{ color: '#6A7789' }} className="mr-2" />
             {sidebarExpanded && <span style={{ color: '#6A7789' }}>Logout</span>}
           </Button>
         </div>
