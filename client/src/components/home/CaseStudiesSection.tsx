@@ -145,7 +145,11 @@ export function CaseStudiesSection() {
           </div>
 
           {/* Right Image Container */}
-          <div className="relative">
+          <div className="relative h-full">
+            {/* Offset decorative square behind image */}
+            <div className="absolute inset-0 bg-gradient-to-br from-teal-400/40 to-teal-500/30 rounded-3xl transform translate-x-6 translate-y-6 -z-10" />
+            
+            {/* Main image container */}
             <div
               className="relative w-full rounded-3xl overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 p-1 aspect-square shadow-2xl"
               data-testid={`image-container-${currentCase.id}`}
