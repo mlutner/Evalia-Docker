@@ -1,6 +1,9 @@
 /**
- * Enhanced AI client with intelligent model routing and robust error handling
+ * Enhanced AI client with intelligent model routing, robust error handling, monitoring, and A/B testing
  */
+
+import { aiLogger, estimateTokens, calculateCost } from "./aiMonitoring";
+import { abTestingManager } from "./abTesting";
 
 const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
 const MISTRAL_BASE_URL = "https://api.mistral.ai/v1";
@@ -22,6 +25,8 @@ interface CallMistralOptions {
   responseFormat?: { type: "json_object" };
   maxRetries?: number;
   timeout?: number;
+  taskType?: string; // For monitoring and A/B testing
+  enableABTesting?: boolean;
 }
 
 /**
@@ -52,22 +57,40 @@ export async function callMistral(
     quality = "balanced",
     responseFormat,
     maxRetries = 3,
-    timeout = 30000
+    timeout = 30000,
+    taskType = "unknown",
+    enableABTesting = false
   } = options;
 
   if (!MISTRAL_API_KEY) {
     throw new Error("Mistral API key not configured");
   }
 
-  const model = QUALITY_LEVELS[quality];
+  // A/B Testing: Select variant if active experiment exists
+  let selectedVariant = null;
+  let selectedQuality = quality;
+  if (enableABTesting) {
+    selectedVariant = abTestingManager.selectVariant(taskType);
+    if (selectedVariant) {
+      selectedQuality = selectedVariant.quality || quality;
+    }
+  }
+
+  const model = QUALITY_LEVELS[selectedQuality];
   if (!model) {
-    throw new Error(`Invalid quality level: ${quality}. Must be 'fast', 'balanced', or 'best'`);
+    throw new Error(`Invalid quality level: ${selectedQuality}. Must be 'fast', 'balanced', or 'best'`);
   }
 
   let lastError: Error | null = null;
+  const startTime = Date.now();
+  const promptLength = messages.reduce((sum, m) => sum + m.content.length, 0);
+  let responseLength = 0;
+  let retryCount = 0;
+  let success = false;
 
   // Retry loop with exponential backoff
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    if (attempt > 0) retryCount++;
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -112,6 +135,41 @@ export async function callMistral(
         throw new Error("No content in API response");
       }
 
+      // Log success metrics
+      responseLength = content.length;
+      success = true;
+      const latencyMs = Date.now() - startTime;
+      const inputTokens = estimateTokens(messages.reduce((sum, m) => sum + m.content, ""));
+      const outputTokens = estimateTokens(content);
+      const cost = calculateCost(model, inputTokens, outputTokens);
+
+      aiLogger.logCall({
+        taskType,
+        model,
+        quality: selectedQuality,
+        promptLength,
+        responseLength,
+        latencyMs,
+        success: true,
+        tokensEstimated: inputTokens + outputTokens,
+        costEstimated: cost,
+        timestamp: new Date(),
+        retries: retryCount,
+        variant: selectedVariant?.id,
+      });
+
+      // Record A/B test result if applicable
+      if (enableABTesting && selectedVariant) {
+        abTestingManager.recordResult({
+          variantId: selectedVariant.id,
+          taskType,
+          success: true,
+          latencyMs,
+          cost,
+          timestamp: new Date(),
+        });
+      }
+
       return content;
 
     } catch (error) {
@@ -134,7 +192,39 @@ export async function callMistral(
     }
   }
 
-  // All retries exhausted
+  // All retries exhausted - log failure
+  const latencyMs = Date.now() - startTime;
+  const inputTokens = estimateTokens(messages.reduce((sum, m) => sum + m.content, ""));
+  const errorCost = calculateCost(model, inputTokens, 0); // No output tokens on failure
+
+  aiLogger.logCall({
+    taskType,
+    model,
+    quality: selectedQuality,
+    promptLength,
+    responseLength,
+    latencyMs,
+    success: false,
+    errorMessage: lastError?.message,
+    tokensEstimated: inputTokens,
+    costEstimated: errorCost,
+    timestamp: new Date(),
+    retries: retryCount,
+    variant: selectedVariant?.id,
+  });
+
+  // Record failed A/B test result
+  if (enableABTesting && selectedVariant) {
+    abTestingManager.recordResult({
+      variantId: selectedVariant.id,
+      taskType,
+      success: false,
+      latencyMs,
+      cost: errorCost,
+      timestamp: new Date(),
+    });
+  }
+
   throw new Error(
     `Failed to call Mistral API after ${maxRetries + 1} attempts. ` +
     `Last error: ${lastError?.message}`
