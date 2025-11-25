@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { BarChart3Icon, Users2Icon, TrendingUpIcon, ArrowRightIcon } from 'lucide-react';
+import dashboardAnalytics from '@assets/ChatGPT Image Nov 25, 2025, 10_59_56 AM_1764097220928.png';
 
 // Import dashboard mockup images here
-// Example: import dashboardImage1 from '@assets/dashboard-mockup-analytics.png';
+// Example: import dashboardImage2 from '@assets/dashboard-mockup-tracking.png';
 // Then add to insights array below
 
 interface Insight {
@@ -23,7 +24,7 @@ const insights: Insight[] = [
     icon: BarChart3Icon,
     iconBg: 'bg-evalia-teal/10',
     iconColor: 'text-evalia-teal',
-    // mockupImage: dashboardImage1, // Add image here
+    mockupImage: dashboardAnalytics,
   },
   {
     id: 'respondents',
