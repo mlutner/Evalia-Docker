@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { BarChart3Icon, Users2Icon, TrendingUpIcon, ArrowRightIcon } from 'lucide-react';
 import dashboardAnalytics from '@assets/ChatGPT Image Nov 25, 2025, 10_59_56 AM_1764097220928.png';
+import dashboardScoring from '@assets/ChatGPT Image Nov 25, 2025, 11_02_04 AM_1764097340642.png';
 
 // Import dashboard mockup images here
-// Example: import dashboardImage2 from '@assets/dashboard-mockup-tracking.png';
+// Example: import dashboardImage3 from '@assets/dashboard-mockup-respondents.png';
 // Then add to insights array below
 
 interface Insight {
@@ -42,7 +43,7 @@ const insights: Insight[] = [
     icon: TrendingUpIcon,
     iconBg: 'bg-evalia-teal-dark/10',
     iconColor: 'text-evalia-teal-dark',
-    // mockupImage: dashboardImage3, // Add image here
+    mockupImage: dashboardScoring,
   }
 ];
 
