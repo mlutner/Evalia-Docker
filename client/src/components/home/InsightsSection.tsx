@@ -121,7 +121,20 @@ export function InsightsSection() {
           {/* Right: Dashboard Mockup */}
           <div className="hidden lg:block sticky top-20">
             <div className="relative" style={{ aspectRatio: '1 / 1' }}>
-              {/* Dashboard mockup card - White card */}
+              {/* Teal square background */}
+              <div 
+                className="absolute rounded-3xl pointer-events-none transition-all duration-300"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  top: 0,
+                  left: 0,
+                  zIndex: 0,
+                  background: 'linear-gradient(135deg, #2F8FA5 0%, #37C0A3 100%)'
+                }} 
+              />
+
+              {/* Dashboard mockup card - White card on top, offset */}
               <div 
                 className="absolute rounded-3xl overflow-hidden shadow-2xl bg-white transition-all duration-300" 
                 style={{
@@ -129,7 +142,7 @@ export function InsightsSection() {
                   left: '40px',
                   right: '0',
                   bottom: '0',
-                  zIndex: 0
+                  zIndex: 10
                 }}
                 data-testid={`mockup-${activeId}`}
               >
@@ -155,19 +168,6 @@ export function InsightsSection() {
                   </div>
                 )}
               </div>
-
-              {/* Offset teal square on top */}
-              <div 
-                className="absolute rounded-3xl pointer-events-none transition-all duration-300"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  top: 0,
-                  left: 0,
-                  zIndex: 10,
-                  background: 'linear-gradient(135deg, #2F8FA5 0%, #37C0A3 100%)'
-                }} 
-              />
             </div>
           </div>
         </div>
