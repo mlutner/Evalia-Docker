@@ -9,6 +9,7 @@ import { GripVertical, Trash2, Plus } from "lucide-react";
 import type { Question, QuestionType } from "@shared/schema";
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import QuestionQualityFeedback from "@/components/QuestionQualityFeedback";
 
 interface QuestionEditorProps {
   question: Question;
@@ -102,6 +103,11 @@ export default function QuestionEditor({
                 className="mt-1 resize-none"
                 rows={2}
                 data-testid="input-question-text"
+              />
+              <QuestionQualityFeedback
+                question={question.question}
+                questionType={question.type}
+                options={question.options}
               />
             </div>
 
