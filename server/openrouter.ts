@@ -243,7 +243,7 @@ export async function calculateScoresWithAI(
         { role: "user", content: userPrompt },
       ];
 
-      const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
+      const response = await callMistral(messages, MODELS.MEDIUM, { type: "json_object" });
       const aiScores = JSON.parse(response);
       
       // Add AI scores to category scores
@@ -338,7 +338,7 @@ Create a brief, friendly summary (under 100 characters) that describes what this
   ];
 
   try {
-    const response = await callMistral(messages, MODELS.GENERATION);
+    const response = await callMistral(messages, MODELS.SMALL);
     return response.trim().substring(0, 150); // Trim to reasonable length
   } catch (error) {
     console.warn("Summary generation failed, using title:", error);
@@ -427,7 +427,7 @@ Make interpretations clear and practical - they'll be shown to respondents after
   ];
 
   try {
-    const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
+    const response = await callMistral(messages, MODELS.LARGE, { type: "json_object" });
     const parsed = JSON.parse(response);
     
     const theoreticalMax = calculateTheoreticalMaxScore(questions);
@@ -539,7 +539,7 @@ export async function generateSurveyFromText(
     { role: "user", content: userPrompt },
   ];
 
-  const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
+  const response = await callMistral(messages, MODELS.LARGE, { type: "json_object" });
   
   try {
     const parsed = JSON.parse(response);
@@ -767,7 +767,7 @@ ${JSON.stringify(survey.questions, null, 2)}`;
     { role: "user", content: enhancedMessage },
   ];
 
-  const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
+  const response = await callMistral(messages, MODELS.LARGE, { type: "json_object" });
   
   try {
     const parsed = JSON.parse(response);
@@ -917,5 +917,5 @@ OUTPUT FORMAT: Plain text only, no special formatting.`;
     { role: "user", content: userPrompt },
   ];
 
-  return callMistral(messages, MODELS.GENERATION);
+  return callMistral(messages, MODELS.SMALL);
 }

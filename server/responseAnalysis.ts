@@ -150,7 +150,7 @@ Your response MUST be a valid JSON object that conforms to this exact schema:
   ];
 
   try {
-    const response = await callMistral(messages);
+    const response = await callMistral(messages, "mistral-large-latest");
     const parsed = JSON.parse(response);
 
     // Calculate percentages
