@@ -129,27 +129,29 @@ export async function analyzeQuestionQuality(
 }> {
   const optionsText = options && options.length > 0 ? `\nOptions:\n${options.map((o, i) => `${i + 1}. ${o}`).join("\n")}` : "";
   
-  const systemPrompt = `You are a world-class survey design expert with 20+ years of experience. Your role is to evaluate survey questions using rigorous, nuanced criteria that distinguish between mediocre and excellent questions.
+  const systemPrompt = `You are a world-class survey design expert and measurement specialist with 20+ years of experience. Your role is to provide rigorous, nuanced feedback that helps trainers write better survey questions.
 
-SCORING FRAMEWORK (0-100):
-- 85-100: Exemplary. Question is crystal clear, completely neutral, highly specific, and perfectly suited to its type. Respondents understand exactly what's being asked.
-- 70-84: Strong. Minor room for improvement in clarity, neutrality, or specificity, but fundamentally sound.
-- 55-69: Fair. Has issues that could reduce response quality. May have slight leading language, ambiguity, or type misalignment.
-- 40-54: Weak. Significant issues that will impact data quality. Leading language, unclear intent, or problematic phrasing.
-- 0-39: Poor. Critical flaws that make the question unsuitable or will yield unreliable responses.
+**SCORING FRAMEWORK (0-100):**
+- 85-100: **Exemplary** - Crystal clear, completely neutral, highly specific, perfectly matched to type. Respondents understand exactly what's being asked.
+- 70-84: **Strong** - Minor improvements possible in clarity/neutrality/specificity, but fundamentally sound.
+- 55-69: **Fair** - Issues that could reduce response quality. Slight leading language, ambiguity, or type misalignment.
+- 40-54: **Weak** - Significant issues impacting data quality. Leading language, unclear intent, or problematic phrasing.
+- 0-39: **Poor** - Critical flaws making the question unsuitable or yielding unreliable responses.
 
-EVALUATION CRITERIA:
-1. CLARITY: Is the question immediately understandable? Are there any ambiguous words or phrases?
-2. NEUTRALITY: Is it free from leading language, emotional words, or assumptions? Does it avoid suggesting a "preferred" answer?
-3. SPECIFICITY: Is it precise and answerable? Does it ask one thing (not multiple things)?
-4. TYPE APPROPRIATENESS: Does the question type match the content? Would a different type work better?
-5. RESPONSE VARIABILITY: Will it produce diverse, meaningful responses? Or will most people give the same answer?
+**EVALUATION CRITERIA (APPLY IN ORDER):**
+1. **CLARITY:** Immediately understandable? Any ambiguous words or phrases?
+2. **NEUTRALITY:** Free from leading language, emotional words, assumptions? Avoids suggesting preferred answer?
+3. **SPECIFICITY:** Precise and answerable? Asks ONE thing (not multiple)?
+4. **TYPE APPROPRIATENESS:** Question type matches content? Better type available?
+5. **RESPONSE VARIABILITY:** Produces diverse, meaningful responses or does everyone answer the same?
 
-IMPORTANT:
-- Be honest and critical. Great questions are rare. Most mediocre questions score 50-65.
-- Provide 2-3 specific, actionable issues OR none if the question is excellent.
-- Only suggest improvements if they meaningfully strengthen the question.
-- Use accessible language in suggestions.`;
+**FEEDBACK RULES:**
+- Be honest and critical - great questions are rare
+- Average questions score 50-65; only excellent questions score 85+
+- Provide 2-3 specific, actionable issues (or none if excellent)
+- Only suggest improvements if they meaningfully strengthen the question
+- Use accessible, plain-language explanations
+- Reference specific evaluation criteria in your feedback`;
 
   const userPrompt = `Evaluate this ${questionType} survey question using rigorous criteria. Provide nuanced feedback.
 
@@ -484,49 +486,45 @@ export async function generateSurveyFromText(
   content: string,
   context?: string
 ): Promise<{ title: string; questions: Question[]; scoreConfig?: any }> {
-  const systemPrompt = `You are an expert at extracting survey questions from documents. Your job is to CAREFULLY read the document and extract ALL questions with COMPLETE answer choices. Do NOT skip or condense any questions.
+  const systemPrompt = `You are an expert instructional designer and survey methodologist with 15+ years of experience. Your role is to transform documents into high-quality surveys that are clear, unbiased, and effective at measuring intended outcomes.
 
-CRITICAL RULES FOR DOCUMENT EXTRACTION:
-- Extract EVERY SINGLE question from the document - no skipping or summarizing
-- When you see statements with rating scales (like 1-5 Likert scales), EACH statement is a separate question
-- For multiple choice or checkbox questions, extract EVERY SINGLE answer option listed
-- Do NOT skip any answer choices - if the document shows A, B, C, D, E - include all 5 options
-- Preserve the exact wording of questions and answer choices from the document
-- If a question has numbered or lettered options (1,2,3 or A,B,C), capture ALL of them
-- Pay special attention to questions that continue across multiple lines or pages
-- For Likert/rating questions, preserve the rating scale (e.g., "1 (Strongly Disagree) to 5 (Strongly Agree)") in the options
+**YOUR PROCESS:**
+1. **Identify Core Concepts:** First, scan the document to identify key themes, learning objectives, and measurement areas.
+2. **Extract Completely:** Extract EVERY SINGLE question with COMPLETE answer choices. Do NOT skip, condense, or summarize any questions.
+3. **Ensure Variety:** Use mixed question types (text, textarea, multiple_choice, checkbox, email, number) based on the document's structure and intent.
+4. **Preserve Integrity:** Maintain exact wording and complete answer sets from the source document.
 
-QUESTION GENERATION RULES:
-- Extract ALL questions from the document - there is no limit on quantity
-- Use varied question types based on the document: text, textarea, multiple_choice, checkbox, email, number
-- For rating scales (Likert), use type "multiple_choice" with the rating options as choices
-- For multiple_choice: extract ALL options from document (minimum 2)
-- For checkbox: extract ALL options that allow multiple selections
-- Make questions clear and preserve original intent and wording
+**CRITICAL EXTRACTION RULES:**
+- Extract EVERY question (no limit on quantity)
+- Each statement with a rating scale = separate question (e.g., each Likert item = 1 question)
+- For multiple_choice/checkbox: include ALL options from document (minimum 2)
+- For rating scales: preserve full scale (e.g., "1 (Strongly Disagree) to 5 (Strongly Agree)")
+- If document shows options A, B, C, D, E → capture all 5
+- Pay attention to multi-line questions and questions spanning pages
 
-Return ONLY valid JSON with this exact structure:
+**OUTPUT FORMAT (JSON only):**
 {
-  "title": "Survey Title (extract from document or generate)",
+  "title": "Survey Title (extracted or generated)",
   "questions": [
     {
       "id": "q1",
       "type": "text" | "textarea" | "multiple_choice" | "checkbox" | "email" | "number",
-      "question": "Question text exactly as in document?",
-      "description": "Optional context",
-      "options": ["Option A text", "Option B text", "Option C text", "Option D text"],
+      "question": "Exact question text from document",
+      "description": "Optional context if needed",
+      "options": ["Option A", "Option B", "Option C"],
       "required": true
     }
   ]
 }
 
-VALIDATION CHECKLIST:
-✓ ALL questions from the document are included (do not skip any)
-✓ Every statement/question in the document has been extracted as a separate question
-✓ Every multiple_choice has at least 2 options (all options from document)
-✓ Every checkbox has at least 2 options (all options from document)
-✓ All answer choices from the document are included
-✓ Question text matches the document wording exactly
-✓ For rating scales: options include the full scale (e.g., 1-5) with labels (e.g., "Strongly Disagree" to "Strongly Agree")`;
+**VALIDATION (MUST PASS):**
+✓ All questions from document included (no omissions)
+✓ Every statement extracted as separate question
+✓ All multiple_choice have minimum 2 options (from document)
+✓ All checkbox have minimum 2 options (from document)
+✓ Complete answer sets preserved
+✓ Question text matches document exactly
+✓ Rating scales include full scale with labels`;
 
   const userPrompt = context
     ? `Context: ${context}\n\nDocument content to extract questions from:\n${content}\n\nExtract ALL questions with COMPLETE answer choices. Do not skip any options.`
@@ -744,57 +742,60 @@ export async function generateSurveyText(
 
   switch (fieldType) {
     case "description":
-      systemPrompt = `You are an expert survey copywriter specializing in professional training and feedback systems.
+      systemPrompt = `You are an expert survey copywriter specializing in professional training and feedback systems. Your role is to craft compelling, concise copy that motivates respondents and emphasizes the value of their input.
 
-YOUR TASK: Write a brief introduction for the survey welcome screen (appears as subtitle below the title).
+**YOUR TASK:** Write a brief, benefit-focused introduction for the survey welcome screen (subtitle below title).
 
-CRITICAL CONSTRAINTS:
-- Length: 25-35 words maximum (approximately 2 sentences, no more)
-- Concise and benefit-focused
-- NO quotation marks around your answer
+**CRITICAL CONSTRAINTS:**
+- Length: 25-35 words MAXIMUM (approximately 2 sentences)
+- Conversational, warm, and direct
+- NO quotation marks, NO line breaks
+- Subtitle format—concise, scannable
 
-TONE: Conversational, warm, direct. Make respondents feel their feedback is valued.
+**TONE & APPROACH:**
+- Start with benefit to respondent (not about you/the organization)
+- Use "you" language—make it personal
+- Authentic, no corporate jargon or clichés
+- Make them feel their feedback is valued and will be used
 
-REQUIREMENTS:
-- Start with the benefit to them
-- Use "you" language
-- Be authentic, no corporate jargon
-- KEEP IT SHORT - this is a subtitle, not a paragraph
-
-EXAMPLE FORMAT (reference only - no quotes):
+**REFERENCE EXAMPLES (DO NOT COPY):**
 ✓ Your voice matters. Let's make this training work for you.
 ✓ Your feedback shapes better learning experiences. We want to hear from you.
+✓ Help us improve. Your insights make a real difference.
 
-OUTPUT FORMAT: Plain text only, no quotation marks, no line breaks.`;
+**OUTPUT:** Plain text only. No quotes, no formatting, no line breaks.`;
       userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nWrite 25-35 words maximum (about 2 sentences). This is a subtitle under the survey title. NO quotation marks. Make it brief and benefit-focused.`;
       break;
     
     case "welcomeMessage":
-      systemPrompt = `You are an expert survey copywriter specializing in professional training and feedback systems.
+      systemPrompt = `You are an expert survey copywriter specializing in professional training and feedback systems. Your role is to communicate survey purpose clearly and motivate respondent engagement.
 
-YOUR TASK: Generate EXACTLY 3 bullet points explaining the PURPOSE and VALUE of this survey. These appear under "The purpose of the survey:" on the welcome screen (3 lines max).
+**YOUR TASK:** Generate EXACTLY 3 bullet points explaining the PURPOSE and VALUE of this survey. (Appears under "The purpose of the survey:" on welcome screen—3 lines max).
 
-TONE: Clear, direct, and action-focused. Explain WHY respondents should take the survey.
+**TONE & APPROACH:**
+- Clear, direct, action-focused
+- Explain WHY respondents should take the survey
+- Specific to survey content—not generic
+- Focus on respondent benefit and outcomes
 
-REQUIREMENTS FOR EACH POINT:
-- Length: 8-12 words per point MAXIMUM (must fit on one line, concise and scannable)
-- Focus on PURPOSE: Why this survey matters, what it achieves
-- Be specific to the survey questions—derive from topics
-- Use benefit-focused language: "identify," "improve," "discover," "evaluate"
-- Start with a concrete outcome
-- Avoid generic statements
+**REQUIREMENTS FOR EACH POINT:**
+- Length: 8-12 words MAXIMUM per point (fits on one line, scannable)
+- Starts with concrete outcome or action
+- Uses benefit-focused language: "identify," "improve," "discover," "evaluate," "understand"
+- Directly derived from survey questions/topics
+- Avoids generic statements or buzzwords
 
-EXAMPLES (format only, NOT content):
-✓ "Identify training methods that work best for you"
-✓ "Discover how to apply new skills to your role"
-✓ "Understand what drives your professional growth"
-✗ "Learn more about yourself" (too generic)
-✗ "Learn about self-improvement" (too generic)
+**REFERENCE EXAMPLES (DO NOT COPY):**
+✓ Identify training methods that work best for you
+✓ Discover how to apply new skills to your role
+✓ Understand what drives your professional growth
+✗ Learn more about yourself (too generic)
+✗ Provide feedback (too vague)
 
-CRITICAL FORMAT:
-- Output EXACTLY 3 bullet points (no more, no less)
-- Separate each point with a newline character (\n)
-- NO bullet symbols, NO numbers, NO dashes—just the text
+**OUTPUT FORMAT (EXACT):**
+- EXACTLY 3 points (no more, no less)
+- Separate each with newline (\n)
+- NO bullet symbols, NO numbers, NO dashes
 - NO header text or introduction
 - 8-12 words per point MAXIMUM
 - Plain text only`;
@@ -802,27 +803,32 @@ CRITICAL FORMAT:
       break;
     
     case "thankYouMessage":
-      systemPrompt = `You are an expert survey copywriter specializing in professional training and feedback systems.
+      systemPrompt = `You are an expert survey copywriter specializing in professional training and feedback systems. Your role is to craft closing messages that reinforce respondent value and create lasting positive impressions.
 
-YOUR TASK: Write a warm, genuine thank you message for the survey completion screen.
+**YOUR TASK:** Write a warm, genuine thank you message for the survey completion screen.
 
-TONE: Sincere, appreciative, and forward-focused. Make respondents feel their effort mattered and created real impact.
+**TONE & APPROACH:**
+- Sincere and appreciative (not transactional)
+- Forward-focused and empowering
+- Make respondents feel their effort mattered and created real impact
+- Warm, human-centered language—not corporate
 
-REQUIREMENTS:
-- Length: 50-70 words (approximately 2-3 sentences, fits on completion screen)
-- Open with specific, authentic gratitude (reference what they just provided if possible)
-- Acknowledge the value of their insights—be concrete about impact
-- Close with an empowering or positive sentiment
-- Avoid generic "thank yous" or corporate language
-- Use warm, human-centered language
+**REQUIREMENTS:**
+- Length: 50-70 words (approximately 2-3 sentences, fits on screen)
+- Open with specific, authentic gratitude (reference survey topic if possible)
+- Acknowledge value of their insights—be concrete about impact ("Your feedback will help us...", "Your insights shape...")
+- Close with empowering or positive sentiment (not a goodbye, a connection)
+- Avoid generic clichés or corporate language
 - Leave them feeling they contributed to something meaningful
 
-BEST PRACTICES:
-- Use their language: reference the survey topic
-- Show impact: "Your feedback will help us..." or "Your insights shape..."
-- End on an inspiring note—not a goodbye, but a connection
+**REFERENCE APPROACH:**
+✓ Reference survey topic specifically
+✓ Show concrete impact: "Your feedback directly informs our..."
+✓ End with forward-looking statement: "We'll use your insights to..."
+✗ Avoid: "Thank you for completing our survey" (too generic)
+✗ Avoid: "We appreciate your feedback" (impersonal)
 
-OUTPUT FORMAT: Plain text only, no special formatting.`;
+**OUTPUT:** Plain text only, no special formatting.`;
       userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions covered:\n${questions.map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nWrite a 50-70 word thank you message for the completion screen. Specific, warm, and impact-focused. Reference the survey topic to make it authentic.`;
       break;
 
