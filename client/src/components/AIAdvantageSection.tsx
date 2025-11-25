@@ -1,7 +1,30 @@
-import { Zap, Brain, BarChart3, Sparkles, MessageCircle, Settings, TrendingUp, Eye } from "lucide-react";
+import { useState } from "react";
+import { Zap, Brain, BarChart3, Sparkles, MessageCircle, Settings, TrendingUp, Eye, Upload, X } from "lucide-react";
 import surveyCreationMockup from "@assets/survey-creation-mockup.png";
 
 export function AIAdvantageSection() {
+  const [cardImages, setCardImages] = useState<{ [key: number]: string | null }>({
+    0: surveyCreationMockup,
+    1: null,
+    2: null,
+    3: null,
+  });
+
+  const handleImageUpload = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setCardImages((prev) => ({ ...prev, [index]: result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setCardImages((prev) => ({ ...prev, [index]: null }));
+  };
   const advantages = [
     {
       icon: Zap,
@@ -150,29 +173,45 @@ export function AIAdvantageSection() {
                     className={`h-1 bg-gradient-to-r ${advantage.cardColor.replace("from-", "from-").replace("to-", "to-")}`}
                   />
 
-                  {/* Image Placeholder Area */}
+                  {/* Image Container */}
                   <div className="relative w-full h-48 bg-gradient-to-br from-slate-100 to-slate-50 border-b border-slate-200 flex items-center justify-center overflow-hidden group">
-                    {/* Show actual image for first card, placeholder for others */}
-                    {index === 0 ? (
-                      <img 
-                        src={surveyCreationMockup} 
-                        alt="Survey Creation Mockup" 
-                        className="w-full h-full object-cover"
-                      />
+                    {cardImages[index] ? (
+                      <>
+                        {/* Display uploaded image */}
+                        <img 
+                          src={cardImages[index]} 
+                          alt={advantage.title} 
+                          className="w-full h-full object-cover"
+                        />
+                        {/* Remove image button on hover */}
+                        <button
+                          onClick={() => removeImage(index)}
+                          className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
+                          data-testid={`button-remove-image-${index}`}
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </>
                     ) : (
                       <>
-                        {/* Placeholder frame */}
-                        <div className="absolute inset-4 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center">
+                        {/* Placeholder with upload option */}
+                        <div className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-100/50 transition-colors">
                           <div className="text-center">
-                            <div className={`inline-block p-3 ${advantage.iconBg} rounded-lg mb-2`}>
-                              <Icon className={`w-6 h-6 ${advantage.iconColor}`} />
+                            <div className={`inline-block p-3 ${advantage.iconBg} rounded-lg mb-3`}>
+                              <Upload className={`w-6 h-6 ${advantage.iconColor}`} />
                             </div>
-                            <p className="text-xs text-slate-500 font-medium">Image placeholder</p>
+                            <p className="text-sm text-slate-600 font-medium">Click to upload image</p>
+                            <p className="text-xs text-slate-500 mt-1">or drag and drop</p>
                           </div>
                         </div>
-                        
-                        {/* Subtle overlay hint on hover */}
-                        <div className="absolute inset-0 bg-slate-900/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        {/* Hidden file input */}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleImageUpload(index, e)}
+                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                          data-testid={`input-image-${index}`}
+                        />
                       </>
                     )}
                   </div>
