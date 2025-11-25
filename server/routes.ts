@@ -4,7 +4,7 @@ import express from "express";
 import path from "path";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { parsePDFWithVision, parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText, suggestScoringConfig, generateSurveySummary } from "./openrouter";
+import { parsePDFWithVision, parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText, suggestScoringConfig, generateSurveySummary, analyzeQuestionQuality } from "./openrouter";
 import { analyzeResponses } from "./responseAnalysis";
 import { getDashboardMetrics } from "./dashboard";
 import { insertSurveySchema, questionSchema } from "@shared/schema";
@@ -402,6 +402,27 @@ ${JSON.stringify(questions, null, 2)}`;
     } catch (error: any) {
       console.error("Tone adjustment error:", error);
       res.status(500).json({ error: error.message || "Failed to adjust tone" });
+    }
+  });
+
+  // Analyze question quality with AI (protected)
+  app.post("/api/questions/analyze", isAuthenticated, async (req, res) => {
+    try {
+      const { question, questionType, options } = req.body;
+
+      if (!question || typeof question !== "string") {
+        return res.status(400).json({ error: "Question text is required" });
+      }
+
+      if (!questionType || typeof questionType !== "string") {
+        return res.status(400).json({ error: "Question type is required" });
+      }
+
+      const analysis = await analyzeQuestionQuality(question, questionType, options);
+      res.json(analysis);
+    } catch (error: any) {
+      console.error("Question analysis error:", error);
+      res.status(500).json({ error: error.message || "Failed to analyze question" });
     }
   });
 

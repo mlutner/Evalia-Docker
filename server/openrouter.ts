@@ -116,6 +116,58 @@ export async function parseDocument(fileContent: string, fileName: string): Prom
 }
 
 /**
+ * Analyze question quality for clarity, neutrality, and bias
+ */
+export async function analyzeQuestionQuality(
+  question: string,
+  questionType: string,
+  options?: string[]
+): Promise<{
+  score: number;
+  issues: string[];
+  suggestions: string;
+}> {
+  const optionsText = options && options.length > 0 ? `\nOptions: ${options.join(", ")}` : "";
+  
+  const systemPrompt = `You are an expert survey designer and question quality analyst. Analyze survey questions for:
+1. Clarity - Is the question understandable and unambiguous?
+2. Neutrality - Is the question free from leading language or bias?
+3. Specificity - Is the question specific and answerable?
+4. Appropriateness - Is the question type suitable for the content?
+
+Consider the question type (${questionType}) when evaluating.
+
+Return ONLY a valid JSON object with these fields:
+- score: number from 0-100 (0=poor, 100=excellent)
+- issues: array of specific issues found (empty if none)
+- suggestions: string with concrete suggestions for improvement (empty if no improvements needed)`;
+
+  const userPrompt = `Analyze this ${questionType} survey question for quality:
+Question: "${question}"${optionsText}
+
+Return JSON with score (0-100), issues array, and suggestions string.`;
+
+  const messages: ChatMessage[] = [
+    { role: "system", content: systemPrompt },
+    { role: "user", content: userPrompt },
+  ];
+
+  try {
+    const response = await callMistral(messages, MODELS.GENERATION, { type: "json_object" });
+    const parsed = JSON.parse(response);
+    return {
+      score: Math.min(100, Math.max(0, parsed.score || 50)),
+      issues: Array.isArray(parsed.issues) ? parsed.issues : [],
+      suggestions: typeof parsed.suggestions === "string" ? parsed.suggestions : "",
+    };
+  } catch (error) {
+    console.error("Question quality analysis error:", error);
+    // Return neutral response on error
+    return { score: 50, issues: [], suggestions: "" };
+  }
+}
+
+/**
  * Calculate scores using AI for intelligent answer analysis
  */
 export async function calculateScoresWithAI(
