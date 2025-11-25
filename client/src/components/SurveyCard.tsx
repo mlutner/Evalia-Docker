@@ -78,19 +78,10 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
 
   const BRAND_DOMAIN = "evaliasurvey.ca";
 
-  const generateShortUrl = async () => {
-    if (shortUrl) return;
-    setLoadingShortUrl(true);
-    try {
-      // Generate brand domain short URL
-      const brandShortUrl = `https://${BRAND_DOMAIN}/survey/${survey.id}`;
-      setShortUrl(brandShortUrl);
-    } catch (err) {
-      console.error("Failed to generate short URL:", err);
-      setShortUrl(shareUrl);
-    } finally {
-      setLoadingShortUrl(false);
-    }
+  const generateShortUrl = () => {
+    if (shortUrl) return; // Already generated
+    const brandShortUrl = `https://${BRAND_DOMAIN}/survey/${survey.id}`;
+    setShortUrl(brandShortUrl);
   };
   
   const badgeStyle = {
@@ -461,7 +452,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
       {/* Share Dialog */}
       <Dialog open={shareDialogOpen} onOpenChange={(open) => {
         setShareDialogOpen(open);
-        if (open && !shortUrl && !loadingShortUrl) {
+        if (open && !shortUrl) {
           generateShortUrl();
         }
       }}>
