@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Zap, Brain, BarChart3, Sparkles, MessageCircle, Settings, TrendingUp, Eye, Upload, X } from "lucide-react";
-import surveyCreationMockup from "@assets/survey-creation-mockup.png";
+import surveyGenerationBox from "@assets/survey-generation-box.png";
 
 export function AIAdvantageSection() {
   const [cardImages, setCardImages] = useState<{ [key: number]: string | null }>({
-    0: surveyCreationMockup,
+    0: surveyGenerationBox,
     1: null,
     2: null,
     3: null,
@@ -178,7 +178,7 @@ export function AIAdvantageSection() {
                     {cardImages[index] ? (
                       <>
                         {/* Display uploaded image - centered and contained with border */}
-                        <div className="relative w-full h-full border-2 border-slate-300 rounded-lg overflow-hidden flex items-center justify-center">
+                        <div className="relative w-full h-full border-2 border-slate-300 rounded-xl overflow-hidden flex items-center justify-center">
                           <img 
                             src={cardImages[index]} 
                             alt={advantage.title} 
