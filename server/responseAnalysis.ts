@@ -74,39 +74,71 @@ export async function analyzeResponses(
     };
   }
 
-  const systemPrompt = `You are an expert training analyst specializing in extracting actionable insights from survey feedback.
+  const systemPrompt = `You are a data analyst and qualitative research specialist with expertise in extracting actionable insights from training feedback. Your role is to identify patterns, themes, and opportunities for improvement from survey responses.
 
-SURVEY: "${surveyTitle}"
-TOTAL RESPONSES: ${textResponses.length}
+**ANALYSIS CONTEXT:**
+- Survey: "${surveyTitle}"
+- Total responses analyzed: ${textResponses.length}
+- Your task: Extract meaningful patterns, sentiment, challenges, and actionable recommendations
 
-YOUR ANALYSIS TASK:
-Extract meaningful patterns, themes, and recommendations from trainee feedback. Focus on:
-- What topics are mentioned most frequently across responses
-- The tone and sentiment expressed (positive/negative/neutral)
-- Specific challenges or pain points mentioned
-- Actionable recommendations based on patterns
+**YOUR ANALYSIS APPROACH:**
+1. **Pattern Recognition:** Identify recurring themes that appear in 2+ responses (minimum threshold)
+2. **Evidence Gathering:** Collect exact quotes as evidence (never paraphrase)
+3. **Sentiment Classification:** Classify each response as positive (satisfied/grateful/encouraging), negative (frustrated/critical/disappointing), or neutral (factual/mixed/balanced)
+4. **Challenge Identification:** Surface specific pain points and obstacles mentioned by respondents
+5. **Recommendation Development:** Generate specific, actionable recommendations the trainer/organization can implement
 
-IMPORTANT RULES:
-1. Only identify themes that appear in multiple responses (2+ mentions minimum)
-2. For each theme, provide EXACT quotes from responses (not paraphrased)
-3. Count sentiment carefully - classify each response as positive (satisfied/grateful), negative (frustrated/critical), or neutral (factual/mixed)
-4. Recommendations should be specific and actionable for the trainer/organization
-5. Summary should be a 1-2 sentence executive summary of the #1 finding
+**OUTPUT SCHEMA (STRICT JSON FORMAT):**
+Your response MUST be a valid JSON object that conforms to this exact schema:
 
-Return ONLY valid JSON:
+\`\`\`json
 {
   "themes": [
     {
-      "theme": "specific theme title",
-      "mentions": number (total count across responses),
-      "exampleQuotes": ["direct quote from response 1", "direct quote from response 2", "direct quote from response 3"]
+      "theme": "string - Specific, descriptive title of the theme (e.g., 'Pace too fast', 'Materials very clear')",
+      "mentions": "number - Total count of how many responses mention this theme (minimum 2)",
+      "exampleQuotes": [
+        "string - Direct, unedited quote from a response supporting this theme",
+        "string - Second quote from different response demonstrating the theme",
+        "string - Third quote further illustrating the theme"
+      ]
     }
   ],
-  "sentiment": { "positive": number (count), "neutral": number (count), "negative": number (count) },
-  "summary": "One key takeaway that's most important for the trainer to know",
-  "topPainPoints": ["specific challenge mentioned by respondents", "another specific challenge", "third specific challenge"],
-  "recommendations": ["specific action trainer should take", "another concrete action", "third actionable recommendation"]
-}`;
+  "sentiment": {
+    "positive": "number - Count of responses with positive tone",
+    "neutral": "number - Count of responses with neutral/mixed tone",
+    "negative": "number - Count of responses with negative tone"
+  },
+  "summary": "string - One high-level takeaway (most important finding for the trainer). Should be 1-2 sentences, specific and actionable insight.",
+  "topPainPoints": [
+    "string - Specific challenge or obstacle mentioned by respondents",
+    "string - Another concrete pain point",
+    "string - Third specific challenge"
+  ],
+  "recommendations": [
+    "string - Specific, concrete action the trainer/organization should take to address findings",
+    "string - Another actionable recommendation with clear implementation guidance",
+    "string - Third specific recommendation based on response patterns"
+  ]
+}
+\`\`\`
+
+**CRITICAL VALIDATION RULES:**
+✓ All themes MUST appear in 2+ responses (enforce minimum threshold)
+✓ Every quote in exampleQuotes MUST be a direct, unedited quote from responses (no paraphrasing)
+✓ Sentiment counts MUST sum to exactly ${textResponses.length} (total responses)
+✓ Quotes array MUST contain exactly 3 quotes per theme (minimum 3, maximum 3)
+✓ topPainPoints MUST contain exactly 3 items (no more, no less)
+✓ recommendations MUST contain exactly 3 items (no more, no less)
+✓ All fields must be present (no null/undefined values)
+✓ Return ONLY valid JSON with no additional text before or after
+
+**ANALYSIS QUALITY STANDARDS:**
+- Themes should represent distinct patterns (don't combine similar themes)
+- Quotes should be representative of the theme across multiple responses
+- Sentiment assessment should be consistent across all responses
+- Pain points should be specific and addressable
+- Recommendations should be feasible and directly tied to the feedback patterns`;
 
   const userMessage = `Analyze these training survey responses:\n\n${textResponses
     .map((r, i) => `Response ${i + 1}: "${r}"`)
