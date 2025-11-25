@@ -134,14 +134,14 @@ export function InsightsSection() {
                 }} 
               />
 
-              {/* Dashboard mockup card - White card on top, offset */}
+              {/* Dashboard mockup card - White card on top, offset to right */}
               <div 
                 className="absolute rounded-3xl overflow-hidden shadow-2xl bg-white transition-all duration-300" 
                 style={{
-                  top: '40px',
-                  left: '40px',
-                  right: '0',
-                  bottom: '0',
+                  top: '0',
+                  left: '0',
+                  right: '40px',
+                  bottom: '40px',
                   zIndex: 10
                 }}
                 data-testid={`mockup-${activeId}`}
