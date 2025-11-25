@@ -76,10 +76,10 @@ export default function QuestionQualityFeedback({
         size="sm"
         onClick={handleGetFeedback}
         disabled={!question.trim() || analyzeMutation.isPending}
-        className="mt-3 w-full gap-2 font-semibold border-2 hover:bg-green-50 dark:hover:bg-green-950/20 transition-colors"
+        className="mt-3 w-full gap-2 font-semibold border-2 transition-colors"
         style={{
-          borderColor: analysis ? scoreColor : "#A3D65C",
-          color: analysis ? scoreColor : "#A3D65C",
+          borderColor: analysis ? scoreColor : "#2F8FA5",
+          color: analysis ? scoreColor : "#2F8FA5",
         }}
         data-testid="button-quality-feedback"
       >
