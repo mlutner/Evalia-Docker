@@ -148,12 +148,12 @@ export function CaseStudiesSection() {
           <div className="relative" style={{ aspectRatio: '1' }}>
             {/* Offset gradient square behind - positioned behind main image */}
             <div 
-              className="absolute rounded-3xl bg-gradient-to-br from-teal-400 to-blue-500 pointer-events-none"
+              className="absolute rounded-3xl bg-gradient-to-br from-teal-300 via-teal-400 to-teal-500 pointer-events-none"
               style={{
                 width: '100%',
                 height: '100%',
-                bottom: '-32px',
-                right: '-32px'
+                bottom: '-40px',
+                right: '-40px'
               }} 
             />
             
