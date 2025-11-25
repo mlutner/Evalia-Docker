@@ -40,7 +40,7 @@ export async function generateSurveyPDF(
     addFooter();
     pdf.addPage();
     pageNumber++;
-    currentY = config.margins.top;
+    currentY = config.margins.top + config.spacing.pageBreakBuffer;
   };
 
   // Helper to check if we need a new page

@@ -37,6 +37,7 @@ export const PDF_CONFIG = {
     betweenOptions: 2, // Between checkbox/radio options
     beforeAnswerArea: 2,
     lineHeight: 1.3, // Multiplier for line spacing
+    pageBreakBuffer: 10, // Space at top of new pages for breathing room
   },
 
   // Answer elements (checkbox, rating boxes, lines)
@@ -88,6 +89,7 @@ export const SURVEY_TYPE_CONFIGS: Record<string, Partial<typeof PDF_CONFIG>> = {
       betweenOptions: 2.5,
       beforeAnswerArea: 2,
       lineHeight: 1.35,
+      pageBreakBuffer: 10,
     },
   },
   customer_satisfaction: {
@@ -99,6 +101,7 @@ export const SURVEY_TYPE_CONFIGS: Record<string, Partial<typeof PDF_CONFIG>> = {
       betweenOptions: 2,
       beforeAnswerArea: 2,
       lineHeight: 1.3,
+      pageBreakBuffer: 10,
     },
   },
   employee_survey: {
@@ -110,6 +113,7 @@ export const SURVEY_TYPE_CONFIGS: Record<string, Partial<typeof PDF_CONFIG>> = {
       betweenOptions: 2.5,
       beforeAnswerArea: 2,
       lineHeight: 1.4,
+      pageBreakBuffer: 10,
     },
   },
   assessment: {
@@ -121,6 +125,7 @@ export const SURVEY_TYPE_CONFIGS: Record<string, Partial<typeof PDF_CONFIG>> = {
       betweenOptions: 3,
       beforeAnswerArea: 2,
       lineHeight: 1.4,
+      pageBreakBuffer: 10,
     },
   },
   nps: {
@@ -132,6 +137,7 @@ export const SURVEY_TYPE_CONFIGS: Record<string, Partial<typeof PDF_CONFIG>> = {
       betweenOptions: 2,
       beforeAnswerArea: 2,
       lineHeight: 1.3,
+      pageBreakBuffer: 10,
     },
   },
 };
