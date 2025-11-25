@@ -121,15 +121,16 @@ export function InsightsSection() {
           {/* Right: Dashboard Mockup */}
           <div className="hidden lg:block sticky top-20">
             <div className="relative" style={{ aspectRatio: '1 / 1' }}>
-              {/* Offset square background - positioned top right */}
+              {/* Offset square background - positioned bottom right */}
               <div 
-                className="absolute rounded-3xl bg-evalia-teal-dark pointer-events-none transition-all duration-300"
+                className="absolute rounded-3xl pointer-events-none transition-all duration-300"
                 style={{
                   width: '110%',
                   height: '110%',
-                  top: '-30px',
+                  bottom: '-40px',
                   right: '-40px',
-                  zIndex: 0
+                  zIndex: 0,
+                  background: 'linear-gradient(135deg, #2F8FA5 0%, #37C0A3 100%)'
                 }} 
               />
               
