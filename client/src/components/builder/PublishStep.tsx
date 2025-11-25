@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown, Clock, BookOpen, ChevronRight, Link2, Unlink2, FileText, BarChart3, GripVertical, HelpCircle, ArrowRight, Eye } from "lucide-react";
+import { Sparkles, Loader2, Upload, X, Plus, Trash2, Award, ChevronDown, Clock, BookOpen, ChevronRight, Link2, Unlink2, FileText, BarChart3, GripVertical, HelpCircle, ArrowRight, Eye, Download } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -15,6 +15,8 @@ import { ScoringConfiguration } from "./ScoringConfiguration";
 import type { Question, SurveyScoreConfig } from "@shared/schema";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { useDraggable } from "@dnd-kit/core";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { generateSurveyPDF, downloadPDF } from "@/lib/pdfGenerator";
 
 interface PublishStepProps {
   title: string;
@@ -87,6 +89,45 @@ export default function PublishStep({
   const [illustrations, setIllustrations] = useState<string[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [expandedRanges, setExpandedRanges] = useState<string[]>([]);
+  const [pdfPreviewOpen, setPdfPreviewOpen] = useState(false);
+  const [generatingPdf, setGeneratingPdf] = useState(false);
+
+  const handleExportPdf = async () => {
+    if (!questions || questions.length === 0) {
+      toast({
+        title: "No questions",
+        description: "Please add questions before exporting to PDF",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setGeneratingPdf(true);
+    try {
+      const pdf = await generateSurveyPDF(
+        title || "Untitled Survey",
+        description || "",
+        questions,
+        welcomeMessage || "",
+        thankYouMessage || "",
+        estimatedMinutes
+      );
+      downloadPDF(pdf, title || "survey");
+      toast({
+        title: "Success",
+        description: "Survey exported as PDF",
+      });
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF",
+        variant: "destructive",
+      });
+    } finally {
+      setGeneratingPdf(false);
+    }
+  };
 
   const {
     isEnabled,
@@ -857,12 +898,12 @@ export default function PublishStep({
         
         {/* Preview Section */}
         {questions && questions.length > 0 && (
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center flex-wrap">
             <Button
               variant="outline"
               size="lg"
               onClick={onPreview}
-              className="flex-1 sm:flex-initial"
+              className="flex-1 sm:flex-initial min-w-max"
               data-testid="button-preview-online"
             >
               <Eye className="w-4 h-4 mr-2" />
@@ -872,11 +913,31 @@ export default function PublishStep({
               variant="outline"
               size="lg"
               onClick={onTestPreview}
-              className="flex-1 sm:flex-initial"
+              className="flex-1 sm:flex-initial min-w-max"
               data-testid="button-preview-test"
             >
               <Eye className="w-4 h-4 mr-2" />
               Preview Test
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={handleExportPdf}
+              disabled={generatingPdf}
+              className="flex-1 sm:flex-initial min-w-max"
+              data-testid="button-export-pdf"
+            >
+              {generatingPdf ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4 mr-2" />
+                  Export as PDF
+                </>
+              )}
             </Button>
           </div>
         )}
