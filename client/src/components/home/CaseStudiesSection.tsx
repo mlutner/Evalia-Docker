@@ -145,30 +145,25 @@ export function CaseStudiesSection() {
           </div>
 
           {/* Right Image Container */}
-          <div className="relative aspect-square">
-            {/* Large gradient square behind - offset */}
-            <div className="absolute inset-0 bg-gradient-to-br from-teal-400 via-teal-500 to-blue-600 rounded-3xl transform translate-x-8 translate-y-8" style={{
-              width: '110%',
-              height: '110%',
-              left: '-5%',
-              top: '-5%'
+          <div className="relative" style={{ aspectRatio: '1' }}>
+            {/* Large gradient square behind - more prominent */}
+            <div className="absolute rounded-3xl bg-gradient-to-br from-teal-400 via-teal-500 to-blue-600" style={{
+              width: '100%',
+              height: '100%',
+              transform: 'translate(32px, 32px)',
+              zIndex: -1
             }} />
             
-            {/* Black border frame */}
-            <div className="absolute inset-0 bg-black rounded-3xl" style={{
-              padding: '12px'
-            }}>
-              {/* Main image container */}
-              <div
-                className="relative w-full h-full rounded-2xl overflow-hidden bg-slate-200 flex items-center justify-center shadow-2xl"
-                data-testid={`image-container-${currentCase.id}`}
-              >
-                <div className="text-center space-y-3">
-                  <div className="text-6xl text-slate-400">📸</div>
-                  <p className="text-slate-500 font-medium">
-                    Case study image<br />{currentCase.tab.toLowerCase()}
-                  </p>
-                </div>
+            {/* Main image container - no frame */}
+            <div
+              className="relative w-full h-full rounded-3xl overflow-hidden bg-slate-200 flex items-center justify-center shadow-2xl"
+              data-testid={`image-container-${currentCase.id}`}
+            >
+              <div className="text-center space-y-3">
+                <div className="text-6xl text-slate-400">📸</div>
+                <p className="text-slate-500 font-medium">
+                  Case study image<br />{currentCase.tab.toLowerCase()}
+                </p>
               </div>
             </div>
 
