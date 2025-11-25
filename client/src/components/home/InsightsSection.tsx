@@ -138,10 +138,10 @@ export function InsightsSection() {
               <div 
                 className="absolute rounded-3xl overflow-hidden shadow-2xl bg-white transition-all duration-300" 
                 style={{
-                  top: '0',
+                  top: '40px',
                   left: '0',
                   right: '40px',
-                  bottom: '40px',
+                  bottom: '0',
                   zIndex: 10
                 }}
                 data-testid={`mockup-${activeId}`}
