@@ -1,42 +1,5 @@
 import type { Question, SurveyResponse } from "@shared/schema";
-
-interface ChatMessage {
-  role: "system" | "user" | "assistant";
-  content: string;
-}
-
-const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
-const MISTRAL_BASE_URL = "https://api.mistral.ai/v1";
-
-async function callMistral(
-  messages: ChatMessage[],
-  model: string = "mistral-medium-latest"
-): Promise<string> {
-  if (!MISTRAL_API_KEY) {
-    throw new Error("Mistral API key not configured");
-  }
-
-  const response = await fetch(`${MISTRAL_BASE_URL}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${MISTRAL_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages,
-      response_format: { type: "json_object" },
-    }),
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`Mistral API error: ${error}`);
-  }
-
-  const data = await response.json();
-  return data.choices[0]?.message?.content || "";
-}
+import { callMistral, safeParseJSON, type ChatMessage } from "./utils/aiClient";
 
 export async function analyzeResponses(
   questions: Question[],
@@ -150,12 +113,18 @@ Your response MUST be a valid JSON object that conforms to this exact schema:
   ];
 
   try {
-    const response = await callMistral(messages, "mistral-large-latest");
-    const parsed = JSON.parse(response);
+    const response = await callMistral(messages, {
+      quality: "best",
+      responseFormat: { type: "json_object" }
+    });
+    const parsed = safeParseJSON(response, null) as any;
+    if (!parsed || !parsed.themes || !Array.isArray(parsed.themes)) {
+      throw new Error("Invalid response analysis format");
+    }
 
     // Calculate percentages
     const totalResponses = textResponses.length;
-    const themes = parsed.themes.map(
+    const themes = (parsed.themes as any[]).map(
       (t: any) => ({
         ...t,
         percentage: Math.round((t.mentions / totalResponses) * 100),
@@ -163,28 +132,26 @@ Your response MUST be a valid JSON object that conforms to this exact schema:
     );
 
     // Normalize sentiment to percentages
-    const sentimentTotal =
-      parsed.sentiment.positive +
-      parsed.sentiment.neutral +
-      parsed.sentiment.negative;
+    const sentimentData = parsed.sentiment as { positive: number; neutral: number; negative: number };
+    const sentimentTotal = (sentimentData.positive || 0) + (sentimentData.neutral || 0) + (sentimentData.negative || 0);
     const sentiment = sentimentTotal > 0 ? {
       positive: Math.round(
-        (parsed.sentiment.positive / sentimentTotal) * 100
+        ((sentimentData.positive || 0) / sentimentTotal) * 100
       ),
       neutral: Math.round(
-        (parsed.sentiment.neutral / sentimentTotal) * 100
+        ((sentimentData.neutral || 0) / sentimentTotal) * 100
       ),
       negative: Math.round(
-        (parsed.sentiment.negative / sentimentTotal) * 100
+        ((sentimentData.negative || 0) / sentimentTotal) * 100
       ),
     } : { positive: 0, neutral: 0, negative: 0 };
 
     return {
       themes,
       sentiment,
-      summary: parsed.summary,
-      topPainPoints: parsed.topPainPoints,
-      recommendations: parsed.recommendations,
+      summary: typeof parsed.summary === "string" ? parsed.summary : "Analysis complete",
+      topPainPoints: Array.isArray(parsed.topPainPoints) ? parsed.topPainPoints : [],
+      recommendations: Array.isArray(parsed.recommendations) ? parsed.recommendations : [],
     };
   } catch (error) {
     console.error("Failed to analyze responses:", error);

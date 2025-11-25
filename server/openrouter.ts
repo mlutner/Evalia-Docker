@@ -200,15 +200,22 @@ export async function calculateScoresWithAI(
         { role: "user", content: userPrompt },
       ];
 
-      const response = await callMistral(messages, MODELS.MEDIUM, { type: "json_object" });
-      const aiScores = JSON.parse(response);
-      
-      // Add AI scores to category scores
-      Object.entries(aiScores).forEach(([catId, score]: [string, any]) => {
-        if (typeof score === "number") {
-          scores[catId] = (scores[catId] || 0) + score;
-        }
+      const response = await callMistral(messages, { 
+        quality: "balanced",
+        responseFormat: { type: "json_object" }
       });
+      const aiScores = safeParseJSON(response, {});
+      if (!aiScores || Object.keys(aiScores).length === 0) {
+        console.warn("Failed to parse AI scores, skipping");
+      } else {
+      
+        // Add AI scores to category scores
+        Object.entries(aiScores).forEach(([catId, score]: [string, any]) => {
+          if (typeof score === "number") {
+            scores[catId] = (scores[catId] || 0) + score;
+          }
+        });
+      }
     } catch (error) {
       console.warn("AI scoring failed, continuing with numeric scores:", error);
     }
@@ -295,7 +302,7 @@ Create a brief, friendly summary (under 100 characters) that describes what this
   ];
 
   try {
-    const response = await callMistral(messages, MODELS.SMALL);
+    const response = await callMistral(messages, { quality: "fast" });
     return response.trim().substring(0, 150); // Trim to reasonable length
   } catch (error) {
     console.warn("Summary generation failed, using title:", error);
@@ -384,8 +391,14 @@ Make interpretations clear and practical - they'll be shown to respondents after
   ];
 
   try {
-    const response = await callMistral(messages, MODELS.LARGE, { type: "json_object" });
-    const parsed = JSON.parse(response);
+    const response = await callMistral(messages, { 
+      quality: "best",
+      responseFormat: { type: "json_object" }
+    });
+    const parsed = safeParseJSON(response, {});
+    if (!parsed || Object.keys(parsed).length === 0) {
+      throw new Error("Failed to parse scoring configuration");
+    }
     
     const theoreticalMax = calculateTheoreticalMaxScore(questions);
     
@@ -496,10 +509,16 @@ export async function generateSurveyFromText(
     { role: "user", content: userPrompt },
   ];
 
-  const response = await callMistral(messages, MODELS.LARGE, { type: "json_object" });
+  const response = await callMistral(messages, { 
+    quality: "best",
+    responseFormat: { type: "json_object" }
+  });
   
   try {
-    const parsed = JSON.parse(response);
+    const parsed = safeParseJSON(response, {});
+    if (!parsed || !parsed.questions) {
+      throw new Error("Invalid survey generation response");
+    }
     
     // Validate that multiple choice questions have adequate options
     let questions = (parsed.questions || []).map((q: any) => {
@@ -724,10 +743,16 @@ ${JSON.stringify(survey.questions, null, 2)}`;
     { role: "user", content: enhancedMessage },
   ];
 
-  const response = await callMistral(messages, MODELS.LARGE, { type: "json_object" });
+  const response = await callMistral(messages, { 
+    quality: "best",
+    responseFormat: { type: "json_object" }
+  });
   
   try {
-    const parsed = JSON.parse(response);
+    const parsed = safeParseJSON(response, {});
+    if (!parsed) {
+      throw new Error("Invalid refinement response");
+    }
     return {
       questions: parsed.questions,
       message: parsed.message || "I've updated the survey based on your request.",
@@ -874,5 +899,5 @@ OUTPUT FORMAT: Plain text only, no special formatting.`;
     { role: "user", content: userPrompt },
   ];
 
-  return callMistral(messages, MODELS.SMALL);
+  return callMistral(messages, { quality: "fast" });
 }
