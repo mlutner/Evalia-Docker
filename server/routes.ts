@@ -15,6 +15,7 @@ import { PDFParse } from "pdf-parse";
 import { emailService } from "./email";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./swagger";
+import aiTestRouter from "./routes/aiTest";
 import "./types";
 
 // Pool of survey illustrations - rotated across surveys
@@ -1058,6 +1059,9 @@ ${JSON.stringify(questions, null, 2)}`;
       res.status(500).json({ message: error.message || "Failed to save template" });
     }
   });
+
+  // AI Test Routes (monitoring and A/B testing)
+  app.use("/api/ai/test", aiTestRouter);
 
   // AI Chat endpoint using Mistral directly with dynamic user data context
   app.post("/api/ai-chat", isAuthenticated, async (req: any, res) => {
