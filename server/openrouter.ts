@@ -127,25 +127,41 @@ export async function analyzeQuestionQuality(
   issues: string[];
   suggestions: string;
 }> {
-  const optionsText = options && options.length > 0 ? `\nOptions: ${options.join(", ")}` : "";
+  const optionsText = options && options.length > 0 ? `\nOptions:\n${options.map((o, i) => `${i + 1}. ${o}`).join("\n")}` : "";
   
-  const systemPrompt = `You are an expert survey designer and question quality analyst. Analyze survey questions for:
-1. Clarity - Is the question understandable and unambiguous?
-2. Neutrality - Is the question free from leading language or bias?
-3. Specificity - Is the question specific and answerable?
-4. Appropriateness - Is the question type suitable for the content?
+  const systemPrompt = `You are a world-class survey design expert with 20+ years of experience. Your role is to evaluate survey questions using rigorous, nuanced criteria that distinguish between mediocre and excellent questions.
 
-Consider the question type (${questionType}) when evaluating.
+SCORING FRAMEWORK (0-100):
+- 85-100: Exemplary. Question is crystal clear, completely neutral, highly specific, and perfectly suited to its type. Respondents understand exactly what's being asked.
+- 70-84: Strong. Minor room for improvement in clarity, neutrality, or specificity, but fundamentally sound.
+- 55-69: Fair. Has issues that could reduce response quality. May have slight leading language, ambiguity, or type misalignment.
+- 40-54: Weak. Significant issues that will impact data quality. Leading language, unclear intent, or problematic phrasing.
+- 0-39: Poor. Critical flaws that make the question unsuitable or will yield unreliable responses.
 
-Return ONLY a valid JSON object with these fields:
-- score: number from 0-100 (0=poor, 100=excellent)
-- issues: array of specific issues found (empty if none)
-- suggestions: string with concrete suggestions for improvement (empty if no improvements needed)`;
+EVALUATION CRITERIA:
+1. CLARITY: Is the question immediately understandable? Are there any ambiguous words or phrases?
+2. NEUTRALITY: Is it free from leading language, emotional words, or assumptions? Does it avoid suggesting a "preferred" answer?
+3. SPECIFICITY: Is it precise and answerable? Does it ask one thing (not multiple things)?
+4. TYPE APPROPRIATENESS: Does the question type match the content? Would a different type work better?
+5. RESPONSE VARIABILITY: Will it produce diverse, meaningful responses? Or will most people give the same answer?
 
-  const userPrompt = `Analyze this ${questionType} survey question for quality:
-Question: "${question}"${optionsText}
+IMPORTANT:
+- Be honest and critical. Great questions are rare. Most mediocre questions score 50-65.
+- Provide 2-3 specific, actionable issues OR none if the question is excellent.
+- Only suggest improvements if they meaningfully strengthen the question.
+- Use accessible language in suggestions.`;
 
-Return JSON with score (0-100), issues array, and suggestions string.`;
+  const userPrompt = `Evaluate this ${questionType} survey question using rigorous criteria. Provide nuanced feedback.
+
+QUESTION:
+"${question}"${optionsText}
+
+Return a JSON object with:
+- score: number 0-100 (distribute across full range based on quality)
+- issues: array of 0-3 specific issues (empty array if none)
+- suggestions: string with 1-2 concrete improvements (empty string if excellent)
+
+Be critical. Average questions should score 50-65. Only award 85+ for truly excellent questions.`;
 
   const messages: ChatMessage[] = [
     { role: "system", content: systemPrompt },
@@ -157,12 +173,11 @@ Return JSON with score (0-100), issues array, and suggestions string.`;
     const parsed = JSON.parse(response);
     return {
       score: Math.min(100, Math.max(0, parsed.score || 50)),
-      issues: Array.isArray(parsed.issues) ? parsed.issues : [],
-      suggestions: typeof parsed.suggestions === "string" ? parsed.suggestions : "",
+      issues: Array.isArray(parsed.issues) ? parsed.issues.slice(0, 3) : [],
+      suggestions: typeof parsed.suggestions === "string" ? parsed.suggestions.trim() : "",
     };
   } catch (error) {
     console.error("Question quality analysis error:", error);
-    // Return neutral response on error
     return { score: 50, issues: [], suggestions: "" };
   }
 }
