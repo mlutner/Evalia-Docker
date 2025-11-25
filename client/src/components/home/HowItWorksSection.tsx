@@ -29,12 +29,23 @@ const steps = [
 
 export function HowItWorksSection() {
   return (
-    <section className="relative py-16 sm:py-24 md:py-32 lg:py-40 bg-evalia-teal-50 overflow-hidden">
+    <section className="relative py-16 sm:py-24 md:py-32 lg:py-40 bg-gradient-to-b from-evalia-teal-50 via-white to-evalia-teal-50 overflow-hidden">
+      {/* Decorative gradient squares - positioned strategically */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-evalia-mint/15 to-evalia-teal-200/5 rounded-3xl pointer-events-none opacity-60" style={{ transform: 'translate(20%, -20%)' }}></div>
+      <div className="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-tr from-evalia-teal-200/10 to-evalia-mint/8 rounded-3xl pointer-events-none opacity-50" style={{ transform: 'translate(-15%, 20%)' }}></div>
+      
       {/* Background blobs */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-0 w-64 sm:w-80 md:w-96 h-64 sm:h-80 md:h-96 bg-evalia-teal-100/30 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-        <div className="absolute bottom-0 right-0 w-56 sm:w-72 md:w-80 h-56 sm:h-72 md:h-80 bg-evalia-mint/10 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div className="absolute top-12 left-1/3 w-96 h-96 bg-gradient-to-br from-evalia-teal-100/20 to-transparent rounded-full mix-blend-multiply filter blur-3xl animate-blob" style={{ animationDuration: '7s' }}></div>
+        <div className="absolute bottom-12 right-1/4 w-80 h-80 bg-gradient-to-tl from-evalia-mint/15 to-transparent rounded-full mix-blend-screen filter blur-3xl animate-blob" style={{ animationDuration: '9s', animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 right-0 w-64 h-64 bg-gradient-to-l from-evalia-teal-300/10 to-transparent rounded-full mix-blend-multiply filter blur-3xl animate-blob" style={{ animationDuration: '8s', animationDelay: '1s' }}></div>
       </div>
+
+      {/* Subtle grid pattern overlay */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.02]" style={{
+        backgroundImage: 'linear-gradient(0deg, transparent 24%, rgba(47, 143, 165, 0.1) 25%, rgba(47, 143, 165, 0.1) 26%, transparent 27%, transparent 74%, rgba(47, 143, 165, 0.1) 75%, rgba(47, 143, 165, 0.1) 76%, transparent 77%, transparent)',
+        backgroundSize: '50px 50px'
+      }}></div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 z-10">
         <div className="text-center mb-12 sm:mb-16 md:mb-20 opacity-0 animate-fade-in" style={{ animationDuration: '0.6s', animationFillMode: 'forwards' }}>
