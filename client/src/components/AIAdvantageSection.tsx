@@ -61,24 +61,24 @@ export function AIAdvantageSection() {
 
           {/* Primary radial gradient - teal to lime */}
           <radialGradient id="radialGrad1" cx="25%" cy="30%">
-            <stop offset="0%" stopColor="#37C0A3" stopOpacity="0.18" />
-            <stop offset="60%" stopColor="#2F8FA5" stopOpacity="0.10" />
-            <stop offset="100%" stopColor="#A3D65C" stopOpacity="0.04" />
+            <stop offset="0%" stopColor="#37C0A3" stopOpacity="0.32" />
+            <stop offset="60%" stopColor="#2F8FA5" stopOpacity="0.22" />
+            <stop offset="100%" stopColor="#A3D65C" stopOpacity="0.10" />
           </radialGradient>
 
           {/* Secondary radial gradient - accent */}
           <radialGradient id="radialGrad2" cx="75%" cy="70%">
-            <stop offset="0%" stopColor="#2F8FA5" stopOpacity="0.12" />
-            <stop offset="70%" stopColor="#37C0A3" stopOpacity="0.06" />
-            <stop offset="100%" stopColor="#1F6F78" stopOpacity="0.02" />
+            <stop offset="0%" stopColor="#2F8FA5" stopOpacity="0.28" />
+            <stop offset="70%" stopColor="#37C0A3" stopOpacity="0.16" />
+            <stop offset="100%" stopColor="#1F6F78" stopOpacity="0.08" />
           </radialGradient>
 
           {/* Smooth linear gradient for wave */}
           <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#2F8FA5" stopOpacity="0.08" />
-            <stop offset="30%" stopColor="#37C0A3" stopOpacity="0.12" />
-            <stop offset="60%" stopColor="#A3D65C" stopOpacity="0.08" />
-            <stop offset="100%" stopColor="#2F8FA5" stopOpacity="0.04" />
+            <stop offset="0%" stopColor="#2F8FA5" stopOpacity="0.18" />
+            <stop offset="30%" stopColor="#37C0A3" stopOpacity="0.26" />
+            <stop offset="60%" stopColor="#A3D65C" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="#2F8FA5" stopOpacity="0.12" />
           </linearGradient>
         </defs>
 
@@ -90,13 +90,13 @@ export function AIAdvantageSection() {
         <path
           d="M 0,200 Q 180,150 360,180 T 720,200 T 1080,180 T 1440,200 L 1440,0 L 0,0 Z"
           fill="url(#waveGrad)"
-          opacity="0.4"
+          opacity="0.75"
         />
 
         <path
           d="M 0,600 Q 180,550 360,580 T 720,600 T 1080,580 T 1440,600 L 1440,800 L 0,800 Z"
           fill="url(#waveGrad)"
-          opacity="0.3"
+          opacity="0.65"
         />
 
         {/* Accent curved line */}
@@ -105,12 +105,12 @@ export function AIAdvantageSection() {
           stroke="#37C0A3"
           strokeWidth="1.5"
           fill="none"
-          opacity="0.12"
+          opacity="0.22"
         />
 
         {/* Subtle gradient mesh rectangles for depth */}
-        <rect x="0" y="0" width="480" height="800" fill="url(#radialGrad1)" opacity="0.3" />
-        <rect x="960" y="0" width="480" height="800" fill="url(#radialGrad2)" opacity="0.25" />
+        <rect x="0" y="0" width="480" height="800" fill="url(#radialGrad1)" opacity="0.6" />
+        <rect x="960" y="0" width="480" height="800" fill="url(#radialGrad2)" opacity="0.55" />
       </svg>
 
       {/* Content */}
