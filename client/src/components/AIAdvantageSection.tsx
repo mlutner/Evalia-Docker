@@ -32,7 +32,7 @@ export function AIAdvantageSection() {
     {
       icon: Zap,
       title: "Instant Survey Creation",
-      description: "Generate professional surveys from training materials, documents, or descriptions. Skip the drafting—let AI do the work in seconds.",
+      description: "Generate professional surveys from training materials, documents, or descriptions.",
       cardColor: "from-blue-50 to-blue-50/50",
       borderColor: "border-blue-200",
       iconBg: "bg-blue-100",
@@ -43,7 +43,7 @@ export function AIAdvantageSection() {
     {
       icon: Brain,
       title: "AI Question Quality Check",
-      description: "Every question is validated for clarity, bias, and effectiveness. Ensure your surveys measure what you actually want to know.",
+      description: "Every question is validated for clarity, bias, and effectiveness. Ensure quality across all surveys.",
       cardColor: "from-emerald-50 to-emerald-50/50",
       borderColor: "border-emerald-200",
       iconBg: "bg-emerald-100",
@@ -54,7 +54,7 @@ export function AIAdvantageSection() {
     {
       icon: BarChart3,
       title: "Intelligent Response Analysis",
-      description: "AI automatically extracts themes, sentiment, and patterns from open-ended feedback. Understand respondent insights in minutes, not hours.",
+      description: "AI extracts themes, sentiment, and patterns from open-ended feedback automatically.",
       cardColor: "from-teal-50 to-teal-50/50",
       borderColor: "border-teal-200",
       iconBg: "bg-teal-100",
@@ -65,7 +65,7 @@ export function AIAdvantageSection() {
     {
       icon: Sparkles,
       title: "Actionable Insights & Reports",
-      description: "Get AI-powered recommendations and professional PDF exports. Transform training feedback into concrete improvement actions.",
+      description: "Get AI-powered recommendations and professional PDF exports for your training data.",
       cardColor: "from-purple-50 to-purple-50/50",
       borderColor: "border-purple-200",
       iconBg: "bg-purple-100",
@@ -136,18 +136,18 @@ export function AIAdvantageSection() {
           stroke="#37C0A3"
           strokeWidth="1.5"
           fill="none"
-          opacity="0.22"
+          opacity="0.12"
         />
 
         {/* Subtle gradient mesh rectangles for depth */}
-        <rect x="0" y="0" width="480" height="800" fill="url(#radialGrad1)" opacity="0.6" />
-        <rect x="960" y="0" width="480" height="800" fill="url(#radialGrad2)" opacity="0.55" />
+        <rect x="0" y="0" width="480" height="800" fill="url(#radialGrad1)" opacity="0.3" />
+        <rect x="960" y="0" width="480" height="800" fill="url(#radialGrad2)" opacity="0.25" />
       </svg>
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-20">
+        <div className="text-center mb-14">
           <h2 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6">
             Your unfair AI advantage
           </h2>
@@ -177,11 +177,11 @@ export function AIAdvantageSection() {
                   />
 
                   {/* Image Container */}
-                  <div className="relative w-full bg-white flex items-center justify-center overflow-hidden group p-3" style={{ aspectRatio: "3 / 2" }}>
+                  <div className="relative w-full bg-white flex items-center justify-center overflow-hidden group p-1" style={{ aspectRatio: "3 / 2" }}>
                     {cardImages[index] ? (
                       <>
-                        {/* Display uploaded image - rounded borders without constraint */}
-                        <div className="relative w-full h-full border-2 border-gray-200 rounded-2xl overflow-hidden flex items-center justify-center">
+                        {/* Display uploaded image - rounded borders with shadow lift */}
+                        <div className="relative w-full h-full border-2 border-gray-200 rounded-2xl overflow-hidden flex items-center justify-center" style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)" }}>
                           <img 
                             src={cardImages[index]} 
                             alt={advantage.title} 
@@ -222,29 +222,29 @@ export function AIAdvantageSection() {
                   </div>
 
                   {/* Header area with title */}
-                  <div className="p-5 pb-3">
+                  <div className="p-5 pb-2">
                     {/* Title */}
-                    <h3 className="text-base font-bold text-slate-900 leading-snug">
+                    <h3 className="text-base font-bold text-slate-900 leading-snug h-11 flex items-start">
                       {advantage.title}
                     </h3>
                   </div>
 
                   {/* Divider */}
-                  <div className="px-5 py-1.5">
+                  <div className="px-5 py-1">
                     <div className="h-px bg-gray-200" />
                   </div>
 
                   {/* Description and footer */}
                   <div className="flex-1 px-5 py-3 flex flex-col">
                     {/* Description */}
-                    <p className="text-xs text-slate-600 mb-4 leading-relaxed flex-1">
+                    <p className="text-xs text-slate-600 mb-4 leading-relaxed flex-1 line-clamp-2">
                       {advantage.description}
                     </p>
 
                     {/* Learn more link */}
-                    <div className="flex items-center text-xs font-semibold group-hover:text-opacity-100 transition-colors">
-                      <span className="text-slate-700 group-hover:text-slate-900">Learn more</span>
-                      <span className="ml-2 text-slate-700 group-hover:text-slate-900 transform group-hover:translate-x-1 transition-transform">→</span>
+                    <div className="flex items-center text-xs font-semibold transition-colors">
+                      <span className="text-slate-800 group-hover:text-slate-900 border-b border-slate-300 group-hover:border-slate-800 transition-colors">Learn more</span>
+                      <span className="ml-2 text-slate-800 group-hover:text-slate-900 transform group-hover:translate-x-1 transition-transform">→</span>
                     </div>
                   </div>
                 </div>
