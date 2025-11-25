@@ -3,6 +3,7 @@ import { ArrowRight } from 'lucide-react';
 import hrTeamsImage from '@assets/pexels-yankrukov-7698715_1764094641849.jpg';
 import learningImage from '@assets/pexels-bertellifotografia-34774352_1764094751636.jpg';
 import salesImage from '@assets/pexels-bertellifotografia-29284262_1764094832290.jpg';
+import productImage from '@assets/pexels-shkrabaanthony-5466235_1764094870675.jpg';
 
 interface CaseStudy {
   id: string;
@@ -70,6 +71,7 @@ export function CaseStudiesSection() {
       title: 'Senior Product Manager',
       company: 'Digital Ventures',
       imagePlaceholderId: 'case-product',
+      imageUrl: productImage,
     },
   ];
 
