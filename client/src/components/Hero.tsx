@@ -1,4 +1,4 @@
-import { ArrowRightIcon } from 'lucide-react';
+import { ArrowRight } from 'phosphor-react';
 import heroIllustration from '@assets/hero-feedback-illustration.png';
 
 export function Hero() {
@@ -61,7 +61,7 @@ export function Hero() {
             <div className="flex flex-col sm:flex-row gap-4 pt-6" style={{ animationDelay: '0.4s' }}>
               <button className="bg-white text-evalia-teal-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-50 transition-all hover:shadow-xl flex items-center justify-center space-x-2 shadow-lg" data-testid="button-get-started-hero">
                 <span>Get started free</span>
-                <ArrowRightIcon className="w-5 h-5" />
+                <ArrowRight size={20} weight="bold" />
               </button>
               <button className="border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white/10 transition-colors" data-testid="button-browse-templates-hero">
                 Browse templates

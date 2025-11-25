@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Zap, Brain, BarChart3, Sparkles, MessageCircle, Settings, TrendingUp, Eye, Upload, X } from "lucide-react";
+import { Lightning, Brain, ChartBar, Sparkle, ChatCircle, Gear, TrendUp, Eye, UploadSimple, X } from "phosphor-react";
 import surveyGenerationFull from "@assets/survey-generation-full.png";
 import qualityCheckMockup from "@assets/quality-check-mockup.png";
 import responseAnalysisMockup from "@assets/response-analysis-mockup.png";
@@ -30,7 +30,7 @@ export function AIAdvantageSection() {
   };
   const advantages = [
     {
-      icon: Zap,
+      icon: Lightning,
       title: "Instant Survey Creation",
       description: "Generate professional surveys from training materials, documents, or descriptions.",
       cardColor: "from-blue-50 to-blue-50/50",
@@ -38,7 +38,7 @@ export function AIAdvantageSection() {
       iconBg: "bg-blue-100",
       iconColor: "text-blue-600",
       imagePlaceholderId: "survey-creation-placeholder",
-      accentIcon: MessageCircle,
+      accentIcon: ChatCircle,
     },
     {
       icon: Brain,
@@ -49,10 +49,10 @@ export function AIAdvantageSection() {
       iconBg: "bg-emerald-100",
       iconColor: "text-emerald-600",
       imagePlaceholderId: "quality-check-placeholder",
-      accentIcon: Settings,
+      accentIcon: Gear,
     },
     {
-      icon: BarChart3,
+      icon: ChartBar,
       title: "Intelligent Response Analysis",
       description: "AI extracts themes, sentiment, and patterns from open-ended feedback automatically.",
       cardColor: "from-teal-50 to-teal-50/50",
@@ -60,10 +60,10 @@ export function AIAdvantageSection() {
       iconBg: "bg-teal-100",
       iconColor: "text-teal-600",
       imagePlaceholderId: "response-analysis-placeholder",
-      accentIcon: TrendingUp,
+      accentIcon: TrendUp,
     },
     {
-      icon: Sparkles,
+      icon: Sparkle,
       title: "Actionable Insights & Reports",
       description: "Get AI-powered recommendations and professional PDF exports for your training data.",
       cardColor: "from-purple-50 to-purple-50/50",
@@ -196,7 +196,7 @@ export function AIAdvantageSection() {
                         <div className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-100/50 transition-colors">
                           <div className="text-center">
                             <div className={`inline-block p-3 ${advantage.iconBg} rounded-lg mb-3`}>
-                              <Upload className={`w-6 h-6 ${advantage.iconColor}`} />
+                              <UploadSimple size={24} weight="bold" className={`${advantage.iconColor}`} />
                             </div>
                             <p className="text-sm text-slate-600 font-medium">Click to upload image</p>
                             <p className="text-xs text-slate-500 mt-1">or drag and drop</p>

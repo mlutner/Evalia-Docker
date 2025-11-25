@@ -1,4 +1,4 @@
-import { MenuIcon } from 'lucide-react';
+import { List } from 'phosphor-react';
 import evaliaLogo from '@assets/evalia-logo.png';
 
 export function Navigation() {
@@ -33,7 +33,7 @@ export function Navigation() {
               Start free trial
             </button>
             <button className="md:hidden text-white hover:text-white/80 transition-colors" data-testid="button-menu">
-              <MenuIcon className="w-6 h-6" />
+              <List size={24} weight="bold" />
             </button>
           </div>
         </div>
