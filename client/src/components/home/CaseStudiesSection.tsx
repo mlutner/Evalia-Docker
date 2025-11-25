@@ -145,16 +145,24 @@ export function CaseStudiesSection() {
           </div>
 
           {/* Right Image Container */}
-          <div className="relative h-full">
-            {/* Offset decorative square behind image */}
-            <div className="absolute inset-0 bg-gradient-to-br from-teal-400/40 to-teal-500/30 rounded-3xl transform translate-x-6 translate-y-6 -z-10" />
+          <div className="relative aspect-square">
+            {/* Large gradient square behind - offset */}
+            <div className="absolute inset-0 bg-gradient-to-br from-teal-400 via-teal-500 to-blue-600 rounded-3xl transform translate-x-8 translate-y-8" style={{
+              width: '110%',
+              height: '110%',
+              left: '-5%',
+              top: '-5%'
+            }} />
             
-            {/* Main image container */}
-            <div
-              className="relative w-full rounded-3xl overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 p-1 aspect-square shadow-2xl"
-              data-testid={`image-container-${currentCase.id}`}
-            >
-              <div className="w-full h-full bg-slate-200 rounded-3xl flex items-center justify-center">
+            {/* Black border frame */}
+            <div className="absolute inset-0 bg-black rounded-3xl" style={{
+              padding: '12px'
+            }}>
+              {/* Main image container */}
+              <div
+                className="relative w-full h-full rounded-2xl overflow-hidden bg-slate-200 flex items-center justify-center shadow-2xl"
+                data-testid={`image-container-${currentCase.id}`}
+              >
                 <div className="text-center space-y-3">
                   <div className="text-6xl text-slate-400">📸</div>
                   <p className="text-slate-500 font-medium">
