@@ -12,221 +12,276 @@ export async function generateSurveyPDF(
   const pdf = new jsPDF();
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
-  const margin = 16;
+  const margin = 13; // ~0.5 inch
   const contentWidth = pageWidth - 2 * margin;
+  const leftColWidth = contentWidth * 0.55;
+  const rightColStart = margin + leftColWidth + 4;
+  const rightColWidth = pageWidth - rightColStart - margin;
+  
   let currentY = margin;
+  let pageNumber = 1;
+  const totalPages = estimateTotalPages(questions);
 
-  // Helper function to check if we need a new page
-  const checkNewPage = (spaceBefore: number = 12) => {
-    if (currentY + spaceBefore > pageHeight - margin) {
-      pdf.addPage();
-      currentY = margin;
+  // Helper to add footer
+  const addFooter = () => {
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(8);
+    pdf.setTextColor(150, 150, 150);
+    const footerY = pageHeight - 8;
+    pdf.text(`${title} — Page ${pageNumber} of ${totalPages}`, margin, footerY);
+  };
+
+  // Helper to add new page
+  const addNewPage = () => {
+    addFooter();
+    pdf.addPage();
+    pageNumber++;
+    currentY = margin;
+  };
+
+  // Helper to check if we need a new page
+  const checkNewPage = (spaceBefore: number = 14) => {
+    if (currentY + spaceBefore > pageHeight - 14) {
+      addNewPage();
     }
   };
 
-  // Helper function to add text with word wrapping
+  // Helper to add wrapped text
   const addWrappedText = (
     text: string,
     fontSize: number,
     fontStyle: "normal" | "bold" = "normal",
     maxWidth: number = contentWidth,
-    lineSpacing: number = 1.4
-  ) => {
-    pdf.setFontSize(fontSize);
+    startX: number = margin
+  ): number => {
     pdf.setFont("helvetica", fontStyle);
+    pdf.setFontSize(fontSize);
+    pdf.setTextColor(0, 0, 0);
     const lines = pdf.splitTextToSize(text, maxWidth);
-    const lineHeight = fontSize * 0.353 * lineSpacing; // Convert to mm with spacing
-    const requiredHeight = lines.length * lineHeight;
-
-    checkNewPage(requiredHeight + 2);
-
-    pdf.text(lines, margin, currentY);
-    currentY += requiredHeight + 2;
+    const lineHeight = fontSize * 0.353 * 1.3;
+    pdf.text(lines, startX, currentY);
+    const height = lines.length * lineHeight;
+    currentY += height + 2;
+    return height;
   };
 
-  // Title
+  // === TITLE ===
   pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(22);
-  pdf.setTextColor(20, 20, 20);
+  pdf.setFontSize(20);
+  pdf.setTextColor(0, 0, 0);
   const titleLines = pdf.splitTextToSize(title, contentWidth);
   pdf.text(titleLines, margin, currentY);
-  currentY += titleLines.length * 8 + 4;
+  currentY += titleLines.length * 7 + 4;
 
-  // Estimated time
-  if (estimatedMinutes) {
+  // === DESCRIPTION ===
+  if (description) {
     pdf.setFont("helvetica", "normal");
     pdf.setFontSize(10);
-    pdf.setTextColor(120, 120, 120);
-    addWrappedText(`Estimated time: ${estimatedMinutes} minutes`, 10, "normal", contentWidth, 1.2);
-    currentY += 2;
-  }
-
-  // Description
-  if (description) {
-    checkNewPage(12);
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(11);
     pdf.setTextColor(60, 60, 60);
     const descLines = pdf.splitTextToSize(description, contentWidth);
     pdf.text(descLines, margin, currentY);
     currentY += descLines.length * 5.5 + 6;
   }
 
-  // Welcome message section
+  // === WELCOME SECTION ===
   if (welcomeMessage) {
-    checkNewPage(18);
+    checkNewPage(16);
     pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(13);
+    pdf.setFontSize(12);
     pdf.setTextColor(0, 0, 0);
     pdf.text("Welcome", margin, currentY);
-    currentY += 7;
+    currentY += 6;
 
     pdf.setFont("helvetica", "normal");
     pdf.setFontSize(10);
-    pdf.setTextColor(80, 80, 80);
-
-    // Handle welcome message - split by line breaks and format as bullets
+    pdf.setTextColor(50, 50, 50);
+    
     const welcomeLines = welcomeMessage.split("\n").filter((line) => line.trim());
     welcomeLines.forEach((line) => {
-      const trimmedLine = line.trim();
+      const trimmedLine = line.replace(/^[•\-]\s*/, "").trim();
       if (trimmedLine) {
-        checkNewPage(6);
-        const wrappedLines = pdf.splitTextToSize(trimmedLine, contentWidth - 8);
-        pdf.text("•", margin + 2, currentY);
-        pdf.text(wrappedLines, margin + 8, currentY);
+        checkNewPage(5);
+        const wrappedLines = pdf.splitTextToSize(trimmedLine, contentWidth - 6);
+        pdf.text("•", margin + 1, currentY);
+        pdf.text(wrappedLines, margin + 6, currentY);
         currentY += wrappedLines.length * 4.5 + 1;
       }
     });
     currentY += 4;
   }
 
-  // Questions header
+  // === QUESTIONS HEADER ===
   checkNewPage(12);
   pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(15);
+  pdf.setFontSize(14);
   pdf.setTextColor(0, 0, 0);
   pdf.text("Questions", margin, currentY);
-  currentY += 9;
+  currentY += 8;
 
-  // Questions
+  // === QUESTIONS ===
   questions.forEach((question, index) => {
     checkNewPage(18);
 
-    // Question number and text
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(11);
-    pdf.setTextColor(0, 0, 0);
-    const questionPrefix = `${index + 1}. `;
-    const questionLines = pdf.splitTextToSize(
-      questionPrefix + question.question,
-      contentWidth - 5
-    );
-    pdf.text(questionLines, margin, currentY);
-    currentY += questionLines.length * 5 + 3;
+    const isRequired = question.required ? " *" : "";
+    const questionNumber = `${index + 1}.`;
 
-    // Question type and required indicator on same line
+    // Question text (left column)
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(10);
+    pdf.setTextColor(0, 0, 0);
+
+    const questionText = `${questionNumber} ${question.question}${isRequired}`;
+    const qLines = pdf.splitTextToSize(questionText, leftColWidth - 4);
+    pdf.text(qLines, margin, currentY);
+    const qHeight = qLines.length * 4.8;
+
+    // Answer area (right column) - starts at same Y as question
+    const answerStartY = currentY;
+    let answerY = answerStartY;
+
     pdf.setFont("helvetica", "normal");
     pdf.setFontSize(9);
-    pdf.setTextColor(110, 110, 110);
-    let typeLabel = question.type
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+    pdf.setTextColor(20, 20, 20);
 
-    if (question.type === "multiple_choice") {
-      typeLabel = "Multiple Choice";
-    } else if (question.type === "checkbox") {
-      typeLabel = "Checkbox (Select Multiple)";
-    } else if (question.type === "rating") {
-      typeLabel = "Rating Scale";
-    } else if (question.type === "nps") {
-      typeLabel = "NPS Scale";
-    } else if (question.type === "matrix") {
-      typeLabel = "Matrix Question";
-    } else if (question.type === "ranking") {
-      typeLabel = "Ranking";
-    } else if (question.type === "textarea") {
-      typeLabel = "Text Area";
-    } else if (question.type === "text") {
-      typeLabel = "Text Input";
-    }
-
-    let typeText = `[${typeLabel}]`;
-    if (question.required) {
-      typeText += " *Required";
-      pdf.setTextColor(200, 20, 20);
-    }
-    pdf.text(typeText, margin + 2, currentY);
-    currentY += 5;
-
-    // Options for choice-based questions
+    // Render answer options
     if (
       question.options &&
       (question.type === "multiple_choice" ||
         question.type === "checkbox" ||
         question.type === "ranking")
     ) {
-      checkNewPage(question.options.length * 5 + 4);
-      pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(10);
-      pdf.setTextColor(70, 70, 70);
-
       question.options.forEach((option) => {
-        const wrappedLines = pdf.splitTextToSize(option, contentWidth - 12);
-        pdf.text("○", margin + 5, currentY);
-        pdf.text(wrappedLines, margin + 11, currentY);
-        currentY += wrappedLines.length * 4.2 + 1;
+        const wrappedLines = pdf.splitTextToSize(option, rightColWidth - 8);
+        
+        // Draw checkbox
+        const boxSize = 3.5;
+        pdf.setDrawColor(100, 100, 100);
+        pdf.setLineWidth(0.3);
+        pdf.rect(rightColStart, answerY - 2.5, boxSize, boxSize);
+        
+        // Option text
+        pdf.text(wrappedLines, rightColStart + 6, answerY);
+        answerY += wrappedLines.length * 4 + 2;
       });
-      currentY += 2;
-    }
-
-    // Rating scale info
-    if (question.type === "rating" || question.type === "nps") {
-      checkNewPage(6);
+    } else if (question.type === "rating" || question.type === "nps") {
+      // Horizontal rating scale
       pdf.setFont("helvetica", "normal");
       pdf.setFontSize(9);
+      const scale = question.type === "nps" ? 10 : (question.ratingScale || 5);
+      const labelLeft = question.type === "nps" ? "Not likely" : "Disagree";
+      const labelRight = question.type === "nps" ? "Extremely likely" : "Agree";
+      const boxSpacing = (rightColWidth - 20) / scale;
+      
+      // Draw rating boxes
+      for (let i = 0; i <= scale; i++) {
+        const x = rightColStart + i * boxSpacing;
+        const boxSize = 3.5;
+        pdf.setDrawColor(100, 100, 100);
+        pdf.setLineWidth(0.3);
+        pdf.rect(x, answerY - 2, boxSize, boxSize);
+        
+        // Number label
+        pdf.setFontSize(8);
+        pdf.text((i).toString(), x + 0.8, answerY + 5.5);
+      }
+      
+      // Scale labels
+      pdf.setFontSize(8);
       pdf.setTextColor(100, 100, 100);
-      const scale =
-        question.type === "nps"
-          ? "0 – 10 (0 = Not likely, 10 = Extremely likely)"
-          : `1 – ${question.ratingScale || 5}`;
-      pdf.text(`Scale: ${scale}`, margin + 5, currentY);
-      currentY += 5;
+      pdf.text(labelLeft, rightColStart, answerY + 9.5);
+      pdf.text(labelRight, rightColStart + rightColWidth - 15, answerY + 9.5);
+      
+      answerY += 16;
+    } else if (question.type === "textarea" || question.type === "text") {
+      // Draw lines for text input
+      pdf.setDrawColor(150, 150, 150);
+      pdf.setLineWidth(0.2);
+      const lineSpacing = 5;
+      const maxLines = question.type === "textarea" ? 4 : 2;
+      
+      for (let i = 0; i < maxLines; i++) {
+        pdf.line(
+          rightColStart,
+          answerY + i * lineSpacing,
+          pageWidth - margin,
+          answerY + i * lineSpacing
+        );
+      }
+      answerY += maxLines * lineSpacing + 2;
+    } else if (question.type === "matrix" && question.rowLabels && question.colLabels) {
+      // Matrix question
+      pdf.setFontSize(8);
+      const colWidth = (rightColWidth - 20) / question.colLabels.length;
+      
+      // Column headers
+      question.colLabels.forEach((col, i) => {
+        const x = rightColStart + 20 + i * colWidth;
+        const wrappedCols = pdf.splitTextToSize(col, colWidth - 2);
+        pdf.text(wrappedCols, x, answerY);
+      });
+      answerY += 5;
+      
+      // Rows with checkboxes
+      question.rowLabels.forEach((row) => {
+        const wrappedRows = pdf.splitTextToSize(row, 18);
+        pdf.text(wrappedRows, rightColStart, answerY);
+        
+        question.colLabels?.forEach((col, i) => {
+          const x = rightColStart + 20 + i * colWidth + colWidth / 2 - 1.75;
+          const boxSize = 3.5;
+          pdf.setDrawColor(100, 100, 100);
+          pdf.setLineWidth(0.3);
+          pdf.rect(x, answerY - 2.5, boxSize, boxSize);
+        });
+        
+        answerY += wrappedRows.length * 4 + 3;
+      });
     }
 
-    // Matrix question details
-    if (question.type === "matrix" && question.rowLabels && question.colLabels) {
-      checkNewPage(10);
-      pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(9);
-      pdf.setTextColor(100, 100, 100);
-      pdf.text(`Rows: ${question.rowLabels.join(", ")}`, margin + 5, currentY);
-      currentY += 4;
-      pdf.text(`Columns: ${question.colLabels.join(", ")}`, margin + 5, currentY);
-      currentY += 5;
-    }
-
-    currentY += 6;
+    // Move Y position based on whichever side is taller
+    currentY = Math.max(currentY + qHeight, answerY) + 8;
   });
 
-  // Thank you message section
-  if (thankYouMessage) {
-    checkNewPage(18);
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(13);
-    pdf.setTextColor(0, 0, 0);
-    pdf.text("Thank You", margin, currentY);
-    currentY += 7;
+  // === THANK YOU SECTION ===
+  checkNewPage(16);
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(12);
+  pdf.setTextColor(0, 0, 0);
+  pdf.text("Thank You", margin, currentY);
+  currentY += 6;
 
+  if (thankYouMessage) {
     pdf.setFont("helvetica", "normal");
     pdf.setFontSize(10);
-    pdf.setTextColor(80, 80, 80);
-    const thankYouLines = pdf.splitTextToSize(thankYouMessage, contentWidth);
-    pdf.text(thankYouLines, margin, currentY);
-    currentY += thankYouLines.length * 5 + 2;
+    pdf.setTextColor(50, 50, 50);
+    const tyLines = pdf.splitTextToSize(thankYouMessage, contentWidth);
+    pdf.text(tyLines, margin, currentY);
   }
 
+  // Add final footer
+  addFooter();
+
   return pdf;
+}
+
+// Estimate total pages (rough calculation)
+function estimateTotalPages(questions: Question[]): number {
+  let estimatedHeight = 80; // Title, welcome, questions header
+  
+  questions.forEach((q) => {
+    if (q.type === "textarea") {
+      estimatedHeight += 30;
+    } else if (q.options) {
+      estimatedHeight += 15 + q.options.length * 6;
+    } else {
+      estimatedHeight += 18;
+    }
+  });
+  
+  estimatedHeight += 40; // Thank you section
+  
+  const pageHeight = 277; // 11" - margins
+  return Math.ceil(estimatedHeight / pageHeight);
 }
 
 export function downloadPDF(pdf: jsPDF, fileName: string) {
