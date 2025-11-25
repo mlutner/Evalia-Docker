@@ -176,7 +176,7 @@ export function AIAdvantageSection() {
                   />
 
                   {/* Image Container */}
-                  <div className="relative w-full bg-gray-50 flex items-center justify-center overflow-hidden group p-4" style={{ aspectRatio: "3 / 1.4" }}>
+                  <div className="relative w-full bg-gray-50 flex items-center justify-center overflow-hidden group p-4" style={{ aspectRatio: "4 / 2" }}>
                     {cardImages[index] ? (
                       <>
                         {/* Display uploaded image - taller with rounded borders */}
