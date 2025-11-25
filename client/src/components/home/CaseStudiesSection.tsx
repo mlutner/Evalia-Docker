@@ -146,11 +146,19 @@ export function CaseStudiesSection() {
 
           {/* Right Image Container */}
           <div className="relative" style={{ aspectRatio: '1' }}>
-            {/* Large gradient square behind - more prominent */}
+            {/* Larger offset square - further back */}
             <div className="absolute rounded-3xl bg-gradient-to-br from-teal-400 via-teal-500 to-blue-600" style={{
               width: '100%',
               height: '100%',
-              transform: 'translate(32px, 32px)',
+              transform: 'translate(48px, 48px)',
+              zIndex: -2
+            }} />
+            
+            {/* Secondary offset square - closer */}
+            <div className="absolute rounded-3xl bg-gradient-to-br from-teal-400/80 via-teal-500/80 to-blue-600/80" style={{
+              width: '100%',
+              height: '100%',
+              transform: 'translate(24px, 24px)',
               zIndex: -1
             }} />
             
