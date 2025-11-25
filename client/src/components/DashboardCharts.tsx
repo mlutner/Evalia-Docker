@@ -1,4 +1,5 @@
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { theme } from "@/theme";
 
 const COLORS = {
   primary: 'var(--color-primary)',
@@ -13,11 +14,11 @@ interface TrendData {
 }
 
 export function ResponseTrendsChart({ data }: { data: TrendData[] }) {
-  const primaryColor = '#37C0A3';
-  const accentColor = '#37C0A3';
-  const axisColor = '#6A7789';
+  const primaryColor = theme.colors.iconTeal;
+  const accentColor = theme.colors.iconTeal;
+  const axisColor = theme.colors.textSecondary;
   const surfaceColor = '#FFFFFF';
-  const borderColor = '#E2E7EF';
+  const borderColor = theme.colors.border;
 
   return (
     <ResponsiveContainer width="100%" height={250}>
@@ -43,10 +44,10 @@ interface SurveyData {
 }
 
 export function CategoryBreakdownChart({ data }: { data: SurveyData[] }) {
-  const primaryColor = '#1F6F78';
-  const axisColor = '#6A7789';
+  const primaryColor = theme.colors.primary;
+  const axisColor = theme.colors.textSecondary;
   const surfaceColor = '#FFFFFF';
-  const borderColor = '#E2E7EF';
+  const borderColor = theme.colors.border;
 
   return (
     <ResponsiveContainer width="100%" height={250}>
@@ -72,10 +73,10 @@ interface DistributionData {
 }
 
 export function DistributionChart({ data }: { data: DistributionData[] }) {
-  const primaryColor = '#A3D65C';
-  const axisColor = '#6A7789';
+  const primaryColor = theme.colors.lime;
+  const axisColor = theme.colors.textSecondary;
   const surfaceColor = '#FFFFFF';
-  const borderColor = '#E2E7EF';
+  const borderColor = theme.colors.border;
 
   return (
     <ResponsiveContainer width="100%" height={250}>
@@ -101,10 +102,10 @@ interface ResponseVolumeData {
 }
 
 export function ResponseVolumeChart({ data }: { data: ResponseVolumeData[] }) {
-  const primaryColor = '#2F8FA5';
-  const axisColor = '#6A7789';
+  const primaryColor = theme.colors.primary;
+  const axisColor = theme.colors.textSecondary;
   const surfaceColor = '#FFFFFF';
-  const borderColor = '#E2E7EF';
+  const borderColor = theme.colors.border;
 
   return (
     <ResponsiveContainer width="100%" height={250}>

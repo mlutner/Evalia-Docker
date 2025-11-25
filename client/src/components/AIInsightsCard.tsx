@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Sparkles, AlertCircle, ChevronDown, Lightbulb, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
+import { theme } from "@/theme";
 
 interface AIInsight {
   themes: Array<{ theme: string; mentions: number; percentage: number; exampleQuotes: string[] }>;
@@ -25,15 +26,15 @@ export default function AIInsightsCard({ insights, isLoading, error }: AIInsight
 
   if (error) {
     return (
-      <Card className="border-[#E2E7EF] bg-[#F7F9FC] mb-8" style={{ borderRadius: '12px' }}>
+      <Card className="mb-8" style={{ borderColor: theme.colors.border, borderRadius: '12px', backgroundColor: theme.colors.bg }}>
         <CardHeader className="pb-3 px-5 pt-4">
           <div className="flex items-center gap-3">
-            <AlertCircle className="w-5 h-5" style={{ color: '#A3D65C' }} />
+            <AlertCircle className="w-5 h-5" style={{ color: theme.colors.lime }} />
             <CardTitle className="text-sm font-semibold">Analysis Unavailable</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="px-5 pb-4">
-          <p className="text-sm" style={{ color: '#6A7789' }}>{error}</p>
+          <p className="text-sm" style={{ color: theme.colors.textSecondary }}>{error}</p>
         </CardContent>
       </Card>
     );
@@ -41,18 +42,18 @@ export default function AIInsightsCard({ insights, isLoading, error }: AIInsight
 
   if (isLoading) {
     return (
-      <Card className="border-[#E2E7EF] mb-8" style={{ borderRadius: '12px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+      <Card className="mb-8" style={{ borderColor: theme.colors.border, borderRadius: '12px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
         <CardHeader className="pb-3 px-5 pt-4">
           <div className="flex items-center gap-3">
-            <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: '#E2E7EF', borderTopColor: '#2F8FA5' }} />
+            <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: theme.colors.border, borderTopColor: theme.colors.primary }} />
             <CardTitle className="text-sm font-semibold">Analyzing Responses</CardTitle>
           </div>
-          <p className="text-xs" style={{ color: '#6A7789', marginTop: '4px' }}>Extracting themes and patterns...</p>
+          <p className="text-xs" style={{ color: theme.colors.textSecondary, marginTop: '4px' }}>Extracting themes and patterns...</p>
         </CardHeader>
         <CardContent className="px-5 pb-4">
           <div className="space-y-2">
-            <div className="h-2 rounded-full w-full" style={{ backgroundColor: '#E2E7EF' }} />
-            <div className="h-2 rounded-full w-5/6" style={{ backgroundColor: '#E2E7EF' }} />
+            <div className="h-2 rounded-full w-full" style={{ backgroundColor: theme.colors.border }} />
+            <div className="h-2 rounded-full w-5/6" style={{ backgroundColor: theme.colors.border }} />
           </div>
         </CardContent>
       </Card>
@@ -64,16 +65,16 @@ export default function AIInsightsCard({ insights, isLoading, error }: AIInsight
   const sentimentTotal = insights.sentiment.positive + insights.sentiment.neutral + insights.sentiment.negative;
 
   return (
-    <Card className="border-[#E2E7EF] mb-8 hover-elevate" style={{ borderRadius: '12px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+    <Card className="mb-8 hover-elevate" style={{ borderColor: theme.colors.border, borderRadius: '12px', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
       <CardHeader className="pb-4 px-5 pt-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 flex-1">
-            <div className="w-8 h-8 rounded-[8px] flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: '#2F8FA5' }}>
+            <div className="w-8 h-8 rounded-[8px] flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: theme.colors.primary }}>
               <Sparkles className="w-4 h-4 text-white" />
             </div>
             <div className="flex-1 min-w-0">
               <CardTitle className="text-base font-semibold">AI Analysis</CardTitle>
-              <p className="text-sm mt-1 leading-relaxed" style={{ color: '#6A7789' }}>{insights.summary}</p>
+              <p className="text-sm mt-1 leading-relaxed" style={{ color: theme.colors.textSecondary }}>{insights.summary}</p>
             </div>
           </div>
           <Button
@@ -91,23 +92,23 @@ export default function AIInsightsCard({ insights, isLoading, error }: AIInsight
       <div className="px-5 pb-4 space-y-4">
         {/* Sentiment Bars */}
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: '#6A7789' }}>Sentiment</p>
-          <div className="flex h-2 rounded-full overflow-hidden gap-0.5" style={{ backgroundColor: '#E2E7EF' }}>
+          <p className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: theme.colors.textSecondary }}>Sentiment</p>
+          <div className="flex h-2 rounded-full overflow-hidden gap-0.5" style={{ backgroundColor: theme.colors.border }}>
             {insights.sentiment.positive > 0 && (
               <div
-                style={{ width: `${(insights.sentiment.positive / sentimentTotal) * 100}%`, backgroundColor: '#37C0A3' }}
+                style={{ width: `${(insights.sentiment.positive / sentimentTotal) * 100}%`, backgroundColor: theme.colors.iconTeal }}
                 title={`${insights.sentiment.positive}% Positive`}
               />
             )}
             {insights.sentiment.neutral > 0 && (
               <div
-                style={{ width: `${(insights.sentiment.neutral / sentimentTotal) * 100}%`, backgroundColor: '#A3D65C' }}
+                style={{ width: `${(insights.sentiment.neutral / sentimentTotal) * 100}%`, backgroundColor: theme.colors.lime }}
                 title={`${insights.sentiment.neutral}% Neutral`}
               />
             )}
             {insights.sentiment.negative > 0 && (
               <div
-                style={{ width: `${(insights.sentiment.negative / sentimentTotal) * 100}%`, backgroundColor: '#2F8FA5' }}
+                style={{ width: `${(insights.sentiment.negative / sentimentTotal) * 100}%`, backgroundColor: theme.colors.primary }}
                 title={`${insights.sentiment.negative}% Negative`}
               />
             )}
@@ -115,14 +116,14 @@ export default function AIInsightsCard({ insights, isLoading, error }: AIInsight
           <div className="flex gap-4 mt-2 text-xs">
             {insights.sentiment.positive > 0 && (
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#37C0A3' }} />
-                <span className="font-medium" style={{ color: '#1C2635' }}>{insights.sentiment.positive}%</span>
-                <span style={{ color: '#6A7789' }}>Positive</span>
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: theme.colors.iconTeal }} />
+                <span className="font-medium" style={{ color: theme.colors.textPrimary }}>{insights.sentiment.positive}%</span>
+                <span style={{ color: theme.colors.textSecondary }}>Positive</span>
               </div>
             )}
             {insights.sentiment.neutral > 0 && (
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#A3D65C' }} />
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: theme.colors.lime }} />
                 <span className="font-medium" style={{ color: '#1C2635' }}>{insights.sentiment.neutral}%</span>
                 <span style={{ color: '#6A7789' }}>Neutral</span>
               </div>

@@ -12,7 +12,7 @@ import type { Question, SurveyWithCounts } from "@shared/schema";
 import { generateSurveyPDF, downloadPDF } from "@/lib/pdfGenerator";
 
 // Constants
-const BADGE_STYLE = { backgroundColor: '#F7F9FC', color: '#1C2635', borderColor: '#E2E7EF', fontSize: '12px', fontWeight: 500, padding: '6px 10px', borderRadius: '6px', border: '1px solid #E2E7EF' };
+const getBadgeStyle = (theme: typeof import('@/theme').theme) => ({ backgroundColor: theme.colors.bg, color: theme.colors.textPrimary, borderColor: theme.colors.border, fontSize: '12px', fontWeight: 500, padding: '6px 10px', borderRadius: '6px', border: `1px solid ${theme.colors.border}` });
 const THEME_KEYWORDS = [
   { keywords: ["confident", "familiar"], label: "Confidence" },
   { keywords: ["satisf", "meet"], label: "Satisfaction" },
@@ -34,9 +34,10 @@ const generateSurveySummary = (questions?: Question[]): string => {
 const StatusBadge = ({ status, published }: { status?: string; published?: string }) => {
   const icons = { Active: CheckCircle, Paused: Pause, Closed: Lock };
   const labels = { Active: "Live", Paused: "Paused", Closed: "Closed" };
-  if (!published) return <Badge variant="outline" style={BADGE_STYLE}>Edit Survey</Badge>;
+  const badgeStyle = getBadgeStyle(theme);
+  if (!published) return <Badge variant="outline" style={badgeStyle}>Edit Survey</Badge>;
   const Icon = icons[status as keyof typeof icons];
-  return Icon ? <Badge variant="outline" style={BADGE_STYLE} className="gap-1"><Icon className="w-3 h-3" />{labels[status as keyof typeof labels]}</Badge> : null;
+  return Icon ? <Badge variant="outline" style={badgeStyle} className="gap-1"><Icon className="w-3 h-3" />{labels[status as keyof typeof labels]}</Badge> : null;
 };
 
 interface SurveyCardProps {
@@ -89,7 +90,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
       {/* Header */}
       <div className="px-6 pt-5 pb-3">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="heading-3 flex-1 text-lg" style={{ fontSize: '20px', fontWeight: 700 }}>{survey.title}</h3>
+          <h3 className="heading-3 flex-1 text-lg" style={{ fontSize: '20px', fontWeight: 700, color: theme.colors.textPrimary }}>{survey.title}</h3>
           <div className="flex gap-1 flex-shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
