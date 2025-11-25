@@ -46,63 +46,71 @@ export function AIAdvantageSection() {
 
   return (
     <section className="relative py-24 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
-      {/* Dynamic animated background shape */}
+      {/* Sophisticated SVG background */}
       <svg
         className="absolute inset-0 w-full h-full"
-        style={{ filter: "blur(0px)" }}
         viewBox="0 0 1440 800"
         preserveAspectRatio="xMidYMid slice"
+        style={{ filter: "url(#smoothFilter)" }}
       >
         <defs>
-          <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#2F8FA5" stopOpacity="0.25" />
-            <stop offset="50%" stopColor="#37C0A3" stopOpacity="0.20" />
-            <stop offset="100%" stopColor="#A3D65C" stopOpacity="0.15" />
-          </linearGradient>
-
-          <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="1" />
+          {/* Smooth filter for refined appearance */}
+          <filter id="smoothFilter">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" />
           </filter>
+
+          {/* Primary radial gradient - teal to lime */}
+          <radialGradient id="radialGrad1" cx="25%" cy="30%">
+            <stop offset="0%" stopColor="#37C0A3" stopOpacity="0.18" />
+            <stop offset="60%" stopColor="#2F8FA5" stopOpacity="0.10" />
+            <stop offset="100%" stopColor="#A3D65C" stopOpacity="0.04" />
+          </radialGradient>
+
+          {/* Secondary radial gradient - accent */}
+          <radialGradient id="radialGrad2" cx="75%" cy="70%">
+            <stop offset="0%" stopColor="#2F8FA5" stopOpacity="0.12" />
+            <stop offset="70%" stopColor="#37C0A3" stopOpacity="0.06" />
+            <stop offset="100%" stopColor="#1F6F78" stopOpacity="0.02" />
+          </radialGradient>
+
+          {/* Smooth linear gradient for wave */}
+          <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#2F8FA5" stopOpacity="0.08" />
+            <stop offset="30%" stopColor="#37C0A3" stopOpacity="0.12" />
+            <stop offset="60%" stopColor="#A3D65C" stopOpacity="0.08" />
+            <stop offset="100%" stopColor="#2F8FA5" stopOpacity="0.04" />
+          </linearGradient>
         </defs>
 
-        {/* Main curved wave shapes */}
+        {/* Background circles - large blurred shapes */}
+        <circle cx="20%" cy="25%" r="400" fill="url(#radialGrad1)" />
+        <circle cx="85%" cy="75%" r="350" fill="url(#radialGrad2)" />
+
+        {/* Organic wave shapes */}
         <path
-          d="M 0,300 Q 360,200 720,250 T 1440,300 L 1440,0 L 0,0 Z"
-          fill="url(#grad1)"
-          opacity="1"
+          d="M 0,200 Q 180,150 360,180 T 720,200 T 1080,180 T 1440,200 L 1440,0 L 0,0 Z"
+          fill="url(#waveGrad)"
+          opacity="0.4"
         />
 
         <path
-          d="M 0,400 Q 360,320 720,380 T 1440,400 L 1440,800 L 0,800 Z"
-          fill="url(#grad1)"
-          opacity="0.85"
+          d="M 0,600 Q 180,550 360,580 T 720,600 T 1080,580 T 1440,600 L 1440,800 L 0,800 Z"
+          fill="url(#waveGrad)"
+          opacity="0.3"
         />
 
-        {/* Accent blob shapes */}
-        <circle
-          cx="1200"
-          cy="150"
-          r="150"
-          fill="#37C0A3"
+        {/* Accent curved line */}
+        <path
+          d="M 0,450 Q 360,420 720,450 T 1440,450"
+          stroke="#37C0A3"
+          strokeWidth="1.5"
+          fill="none"
           opacity="0.12"
         />
 
-        <circle
-          cx="200"
-          cy="650"
-          r="120"
-          fill="#2F8FA5"
-          opacity="0.14"
-        />
-
-        {/* Decorative line accent */}
-        <path
-          d="M 0,500 Q 360,480 720,500 T 1440,500"
-          stroke="#A3D65C"
-          strokeWidth="2"
-          fill="none"
-          opacity="0.20"
-        />
+        {/* Subtle gradient mesh rectangles for depth */}
+        <rect x="0" y="0" width="480" height="800" fill="url(#radialGrad1)" opacity="0.3" />
+        <rect x="960" y="0" width="480" height="800" fill="url(#radialGrad2)" opacity="0.25" />
       </svg>
 
       {/* Content */}
@@ -130,7 +138,7 @@ export function AIAdvantageSection() {
               >
                 {/* Card Container */}
                 <div
-                  className={`relative bg-white backdrop-blur-sm border ${advantage.borderColor} rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:border-opacity-100 flex flex-col h-full hover:scale-105`}
+                  className={`relative bg-white/80 backdrop-blur-sm border ${advantage.borderColor} rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:border-opacity-100 flex flex-col h-full hover:scale-105`}
                 >
                   {/* Top colored accent bar */}
                   <div
