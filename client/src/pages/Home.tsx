@@ -9,6 +9,7 @@ import { ArrowRightIcon, CheckCircle2Icon } from 'lucide-react';
 import { SocialProofSection } from '@/components/home/SocialProofSection';
 import { HowItWorksSection } from '@/components/home/HowItWorksSection';
 import { CaseStudiesSection } from '@/components/home/CaseStudiesSection';
+import { InsightsSection } from '@/components/home/InsightsSection';
 import { Footer } from '@/components/home/Footer';
 
 export default function Home() {
@@ -41,6 +42,7 @@ export default function Home() {
       <HowItWorksSection />
       <AIAdvantageSection />
       <CaseStudiesSection />
+      <InsightsSection />
 
       {/* Features section */}
       <section className="py-16 sm:py-24 md:py-32 lg:py-40 bg-gray-50">
