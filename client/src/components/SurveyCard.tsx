@@ -89,7 +89,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
       {/* Header */}
       <div className="px-6 pt-5 pb-3">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="heading-4 flex-1">{survey.title}</h3>
+          <h3 className="heading-3 flex-1 text-lg" style={{ fontSize: '20px', fontWeight: 700 }}>{survey.title}</h3>
           <div className="flex gap-1 flex-shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -156,7 +156,7 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
       {/* Stats */}
       <div className="px-6 py-4 flex gap-8 flex-1">
         <div>
-          <p className="text-tertiary uppercase tracking-wider text-xs font-semibold">Qs</p>
+          <p className="text-tertiary uppercase tracking-wider text-xs font-semibold">Questions</p>
           <p className="text-2xl font-bold" data-testid="text-question-count">{survey.questionCount || 0}</p>
         </div>
         <div>
