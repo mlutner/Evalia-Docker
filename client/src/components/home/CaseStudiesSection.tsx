@@ -146,18 +146,22 @@ export function CaseStudiesSection() {
 
           {/* Right Image Container */}
           <div className="relative" style={{ aspectRatio: '1' }}>
-            {/* Offset gradient square behind */}
-            <div className="absolute rounded-3xl bg-gradient-to-br from-teal-400 to-blue-500" style={{
-              width: '100%',
-              height: '100%',
-              transform: 'translate(32px, 32px)',
-              zIndex: -1
-            }} />
+            {/* Offset gradient square behind - positioned behind main image */}
+            <div 
+              className="absolute rounded-3xl bg-gradient-to-br from-teal-400 to-blue-500 pointer-events-none"
+              style={{
+                width: '100%',
+                height: '100%',
+                bottom: '-32px',
+                right: '-32px'
+              }} 
+            />
             
             {/* Main image container */}
             <div
               className="relative w-full h-full rounded-3xl overflow-hidden bg-blue-50 flex items-center justify-center shadow-lg"
               data-testid={`image-container-${currentCase.id}`}
+              style={{ zIndex: 10 }}
             >
               <div className="text-center space-y-3">
                 <div className="text-6xl">📸</div>
