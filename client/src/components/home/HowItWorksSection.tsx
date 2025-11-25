@@ -1,11 +1,11 @@
-import { Wand2, Share2, BarChart3 } from 'lucide-react';
+import { MagicWand, ShareNetwork, ChartBar } from 'phosphor-react';
 
 const steps = [
   {
     number: "01",
     title: "Create with AI",
     description: "Upload your training materials or describe your session. Our AI generates relevant survey questions instantly.",
-    icon: Wand2,
+    icon: MagicWand,
     gradient: "from-evalia-teal-500 to-evalia-teal-600",
     testId: "text-step-1-title",
   },
@@ -13,7 +13,7 @@ const steps = [
     number: "02",
     title: "Share & Collect",
     description: "Send your survey via link, email, or QR code. Mobile-friendly design ensures high response rates.",
-    icon: Share2,
+    icon: ShareNetwork,
     gradient: "from-evalia-teal-600 to-evalia-mint",
     testId: "text-step-2-title",
   },
@@ -21,7 +21,7 @@ const steps = [
     number: "03",
     title: "Analyze & Improve",
     description: "Get instant insights with beautiful visualizations. Identify what works and what needs improvement.",
-    icon: BarChart3,
+    icon: ChartBar,
     gradient: "from-evalia-mint to-evalia-teal-400",
     testId: "text-step-3-title",
   },
@@ -76,7 +76,7 @@ export function HowItWorksSection() {
               >
                 <div className="flex flex-col items-center mb-8">
                   <div className={`flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-br ${step.gradient} flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-110`}>
-                    <Icon className="w-8 h-8 text-white transition-transform duration-300 group-hover:rotate-12" />
+                    <Icon size={32} weight="bold" className="text-white transition-transform duration-300 group-hover:rotate-12" />
                   </div>
                   <div className="text-4xl font-bold text-evalia-teal-100/40 mt-3">{step.number}</div>
                 </div>

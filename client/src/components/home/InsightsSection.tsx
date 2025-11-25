@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { BarChart3Icon, Users2Icon, TrendingUpIcon, ArrowRightIcon } from 'lucide-react';
+import { ChartBar, UsersThree, TrendUp } from 'phosphor-react';
+import { ArrowRightIcon } from 'lucide-react';
 import dashboardAnalytics from '@assets/ChatGPT Image Nov 25, 2025, 11_18_30 AM_1764098321565.png';
 import dashboardRespondents from '@assets/ChatGPT Image Nov 25, 2025, 11_05_22 AM_1764097552873.png';
 import dashboardScoring from '@assets/ChatGPT Image Nov 25, 2025, 11_06_48 AM_1764097630621.png';
@@ -8,7 +9,7 @@ interface Insight {
   id: string;
   title: string;
   description: string;
-  icon: typeof BarChart3Icon;
+  icon: React.ComponentType<any>;
   iconBg: string;
   iconColor: string;
   mockupImage?: string;
@@ -19,7 +20,7 @@ const insights: Insight[] = [
     id: 'analytics',
     title: 'Smart Analytics',
     description: 'Dig deeper into every response and metric to make smarter decisions with confidence.',
-    icon: BarChart3Icon,
+    icon: ChartBar,
     iconBg: 'bg-evalia-teal/10',
     iconColor: 'text-evalia-teal',
     mockupImage: dashboardAnalytics,
@@ -28,7 +29,7 @@ const insights: Insight[] = [
     id: 'respondents',
     title: 'Respondent Tracking',
     description: 'Monitor who responded and when with complete visibility into your survey responses.',
-    icon: Users2Icon,
+    icon: UsersThree,
     iconBg: 'bg-evalia-mint/10',
     iconColor: 'text-evalia-mint',
     mockupImage: dashboardRespondents,
@@ -37,7 +38,7 @@ const insights: Insight[] = [
     id: 'scoring',
     title: 'AI Question Scoring',
     description: 'Get AI-powered quality scores to optimize your questions and improve response rates.',
-    icon: TrendingUpIcon,
+    icon: TrendUp,
     iconBg: 'bg-evalia-teal-dark/10',
     iconColor: 'text-evalia-teal-dark',
     mockupImage: dashboardScoring,
@@ -94,7 +95,7 @@ export function InsightsSection() {
                     <div className="flex items-start gap-4">
                       <div className="flex-shrink-0">
                         <div className={`flex items-center justify-center h-10 w-10 rounded-lg ${insight.iconBg}`}>
-                          <IconComponent className={`h-6 w-6 ${insight.iconColor}`} />
+                          <IconComponent size={24} weight="bold" className={`${insight.iconColor}`} />
                         </div>
                       </div>
                       <div className="flex-1">
