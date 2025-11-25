@@ -174,14 +174,14 @@ export function AIAdvantageSection() {
                   />
 
                   {/* Image Container */}
-                  <div className="relative w-full h-48 bg-gradient-to-br from-slate-100 to-slate-50 border-b border-slate-200 flex items-center justify-center overflow-hidden group">
+                  <div className="relative w-full h-48 bg-gradient-to-br from-slate-100 to-slate-50 border-b border-slate-200 flex items-center justify-center overflow-hidden group p-4">
                     {cardImages[index] ? (
                       <>
-                        {/* Display uploaded image */}
+                        {/* Display uploaded image - centered and contained */}
                         <img 
                           src={cardImages[index]} 
                           alt={advantage.title} 
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain"
                         />
                         {/* Remove image button on hover */}
                         <button
