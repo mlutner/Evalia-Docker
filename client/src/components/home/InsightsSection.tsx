@@ -49,7 +49,7 @@ export function InsightsSection() {
   const activeInsight = insights.find(i => i.id === activeId) || insights[0];
 
   return (
-    <section className="py-16 sm:py-24 md:py-32 lg:py-40 bg-white">
+    <section className="py-16 sm:py-24 md:py-32 lg:py-40 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Header */}
         <div className="text-center mb-12 sm:mb-16 md:mb-20 max-w-3xl mx-auto">
