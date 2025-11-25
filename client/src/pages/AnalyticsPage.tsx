@@ -1,6 +1,7 @@
 import { useParams, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { theme } from "@/theme";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -329,43 +330,43 @@ export default function AnalyticsPage() {
 
         {/* Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="card-professional" style={{ backgroundColor: '#F7F9FC', border: '1px solid #E2E7EF' }}>
+          <Card className="card-professional" style={{ backgroundColor: theme.colors.bg, border: `1px solid ${theme.colors.border}` }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
               <CardTitle className="heading-4">Total Responses</CardTitle>
-              <div className="w-12 h-12 rounded-[10px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#E1F6F3' }}>
-                <Users className="w-6 h-6" style={{ color: '#2F8FA5' }} strokeWidth={1.5} />
+              <div className="w-12 h-12 rounded-[10px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: theme.colors.surfaceHighlightTeal }}>
+                <Users className="w-6 h-6" style={{ color: theme.colors.primary }} strokeWidth={1.5} />
               </div>
             </CardHeader>
             <CardContent>
               <div className="heading-1 mb-1" data-testid="text-response-count">{count}</div>
               <p className="body-small text-tertiary">total responses collected</p>
-              <p className="text-xs mt-2" style={{ color: '#2F8FA5' }}>
+              <p className="text-xs mt-2" style={{ color: theme.colors.primary }}>
                 {count >= 50 ? 'Great engagement! 🎉' : count >= 20 ? 'Good progress so far' : 'Keep collecting responses'}
               </p>
             </CardContent>
           </Card>
 
-          <Card className="card-professional" style={{ backgroundColor: '#F7F9FC', border: '1px solid #E2E7EF' }}>
+          <Card className="card-professional" style={{ backgroundColor: theme.colors.bg, border: `1px solid ${theme.colors.border}` }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
               <CardTitle className="heading-4">Completion Rate</CardTitle>
-              <div className="w-12 h-12 rounded-[10px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#F0FDF4' }}>
+              <div className="w-12 h-12 rounded-[10px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: theme.colors.surfaceHighlightLime }}>
                 <TrendingUp className="w-6 h-6 text-green-600" strokeWidth={1.5} />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="heading-1 mb-1" style={{ color: '#37C0A3' }}>{survey.questions.length > 0 ? Math.round((count / survey.questions.length) * 100) : 0}%</div>
+              <div className="heading-1 mb-1" style={{ color: theme.colors.iconTeal }}>{survey.questions.length > 0 ? Math.round((count / survey.questions.length) * 100) : 0}%</div>
               <p className="body-small text-tertiary">{count} of {survey.questions.length} questions answered</p>
-              <p className="text-xs mt-2" style={{ color: '#2F8FA5' }}>
+              <p className="text-xs mt-2" style={{ color: theme.colors.primary }}>
                 {survey.questions.length > 0 && count > 0 ? `Excellent response rate! Above typical survey average.` : `Keep sharing to increase response count`}
               </p>
             </CardContent>
           </Card>
 
-          <Card className="card-professional" style={{ backgroundColor: '#F7F9FC', border: '1px solid #E2E7EF' }}>
+          <Card className="card-professional" style={{ backgroundColor: theme.colors.bg, border: `1px solid ${theme.colors.border}` }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
               <CardTitle className="heading-4">Response Span</CardTitle>
-              <div className="w-12 h-12 rounded-[10px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#EFF6FF' }}>
-                <Clock className="w-6 h-6" style={{ color: '#2F8FA5' }} strokeWidth={1.5} />
+              <div className="w-12 h-12 rounded-[10px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: theme.colors.surfaceHighlightTeal }}>
+                <Clock className="w-6 h-6" style={{ color: theme.colors.primary }} strokeWidth={1.5} />
               </div>
             </CardHeader>
             <CardContent>
@@ -373,7 +374,7 @@ export default function AnalyticsPage() {
                 <>
                   <div className="heading-1 mb-1">{Math.round((new Date(data.responses[data.responses.length - 1].completedAt).getTime() - new Date(data.responses[0].completedAt).getTime()) / (1000 * 60 * 60 * 24))}</div>
                   <p className="body-small text-tertiary">days from first to last</p>
-                  <p className="text-xs mt-2" style={{ color: '#2F8FA5' }}>
+                  <p className="text-xs mt-2" style={{ color: theme.colors.primary }}>
                     {Math.round((new Date(data.responses[data.responses.length - 1].completedAt).getTime() - new Date(data.responses[0].completedAt).getTime()) / (1000 * 60 * 60 * 24)) > 7 ? 'Long-term engagement observed' : 'Recent responses'}
                   </p>
                 </>
@@ -383,11 +384,11 @@ export default function AnalyticsPage() {
             </CardContent>
           </Card>
 
-          <Card className="card-professional" style={{ backgroundColor: '#F7F9FC', border: '1px solid #E2E7EF' }}>
+          <Card className="card-professional" style={{ backgroundColor: theme.colors.bg, border: `1px solid ${theme.colors.border}` }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
               <CardTitle className="heading-4">Total Questions</CardTitle>
-              <div className="w-12 h-12 rounded-[10px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#F3F4F6' }}>
-                <FileText className="w-6 h-6" style={{ color: '#2F8FA5' }} strokeWidth={1.5} />
+              <div className="w-12 h-12 rounded-[10px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: theme.colors.bg }}>
+                <FileText className="w-6 h-6" style={{ color: theme.colors.primary }} strokeWidth={1.5} />
               </div>
             </CardHeader>
             <CardContent>
