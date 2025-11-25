@@ -72,11 +72,15 @@ export default function QuestionQualityFeedback({
   return (
     <>
       <Button
-        variant="ghost"
+        variant="outline"
         size="sm"
         onClick={handleGetFeedback}
         disabled={!question.trim() || analyzeMutation.isPending}
-        className="mt-2 w-full gap-2"
+        className="mt-3 w-full gap-2 font-semibold border-2 hover:bg-green-50 dark:hover:bg-green-950/20 transition-colors"
+        style={{
+          borderColor: analysis ? scoreColor : "#A3D65C",
+          color: analysis ? scoreColor : "#A3D65C",
+        }}
         data-testid="button-quality-feedback"
       >
         {analyzeMutation.isPending ? (
@@ -87,17 +91,17 @@ export default function QuestionQualityFeedback({
         ) : analysis ? (
           <>
             <div
-              className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-semibold"
+              className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold"
               style={{ backgroundColor: scoreColor }}
             >
               {analysis.score}
             </div>
-            Quality: {scoreLabel}
+            Score: {scoreLabel}
           </>
         ) : (
           <>
             <Zap className="w-4 h-4" />
-            Get Quality Feedback
+            Get AI Feedback on Question
           </>
         )}
       </Button>
