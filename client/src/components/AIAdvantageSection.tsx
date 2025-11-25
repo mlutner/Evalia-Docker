@@ -4,8 +4,8 @@ export function AIAdvantageSection() {
   const advantages = [
     {
       icon: Zap,
-      title: "AI Survey Generation",
-      description: "Transform documents into perfectly structured surveys instantly. Let AI handle the heavy lifting.",
+      title: "Instant Survey Creation",
+      description: "Generate professional surveys from training materials, documents, or descriptions. Skip the drafting—let AI do the work in seconds.",
       cardColor: "from-blue-50 to-blue-50/50",
       borderColor: "border-blue-200",
       iconBg: "bg-blue-100",
@@ -14,8 +14,8 @@ export function AIAdvantageSection() {
     },
     {
       icon: Brain,
-      title: "Question Quality Scoring",
-      description: "Prompt new Anthropic models in Claude. Ensure every question is clear and effective.",
+      title: "AI Question Quality Check",
+      description: "Every question is validated for clarity, bias, and effectiveness. Ensure your surveys measure what you actually want to know.",
       cardColor: "from-emerald-50 to-emerald-50/50",
       borderColor: "border-emerald-200",
       iconBg: "bg-emerald-100",
@@ -24,8 +24,8 @@ export function AIAdvantageSection() {
     },
     {
       icon: BarChart3,
-      title: "Smart Analytics",
-      description: "Transform your respondents into action. Unlock deeper insights from feedback data.",
+      title: "Intelligent Response Analysis",
+      description: "AI automatically extracts themes, sentiment, and patterns from open-ended feedback. Understand respondent insights in minutes, not hours.",
       cardColor: "from-teal-50 to-teal-50/50",
       borderColor: "border-teal-200",
       iconBg: "bg-teal-100",
@@ -34,8 +34,8 @@ export function AIAdvantageSection() {
     },
     {
       icon: Sparkles,
-      title: "AI-Driven Recommendations",
-      description: "Reveal how LLMs talk about your brand across every touchpoint. Act with confidence.",
+      title: "Actionable Insights & Reports",
+      description: "Get AI-powered recommendations and professional PDF exports. Transform training feedback into concrete improvement actions.",
       cardColor: "from-purple-50 to-purple-50/50",
       borderColor: "border-purple-200",
       iconBg: "bg-purple-100",
@@ -121,7 +121,7 @@ export function AIAdvantageSection() {
             Your unfair AI advantage
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto font-light leading-relaxed">
-            Learn deeper, act faster, and grow like never before. With AI at every step, you'll create better surveys and understand your respondents like never before.
+            Build better surveys faster. Understand your training effectiveness like never before. From creation to insights, AI handles the heavy lifting so you can focus on improving outcomes.
           </p>
         </div>
 
