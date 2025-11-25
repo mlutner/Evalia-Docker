@@ -117,8 +117,13 @@ export async function generateSurveyPDF(
     const questionNumber = `${index + 1}.`;
     const questionText = `${questionNumber} ${question.question}${isRequired}`;
 
+    // Track question rendering position
+    const questionStartY = currentY;
+    let questionEndY = questionStartY;
+
     // Question text (left column)
     const qLines = pdf.splitTextToSize(questionText, leftColWidth - 4);
+    const lineHeightPx = config.fonts.questionText * config.spacing.lineHeight * 0.353;
     
     if (isRequired) {
       // Split to handle required asterisk differently
@@ -135,18 +140,18 @@ export async function generateSurveyPDF(
         const lastLine = lines[lines.length - 1];
         pdf.text(" *", margin + pdf.getTextWidth(lastLine), currentY + (lines.length - 1) * 5);
       }
-      currentY += lines.length * config.fonts.questionText * config.spacing.lineHeight * 0.353;
+      questionEndY = currentY + lines.length * lineHeightPx;
     } else {
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(config.fonts.questionText);
       pdf.setTextColor(config.colors.questionText[0], config.colors.questionText[1], config.colors.questionText[2]);
       pdf.text(qLines, margin, currentY);
-      currentY += qLines.length * config.fonts.questionText * config.spacing.lineHeight * 0.353;
+      questionEndY = currentY + qLines.length * lineHeightPx;
     }
 
-    // Answer area (right column)
-    const answerStartY = currentY - (qLines.length * config.fonts.questionText * config.spacing.lineHeight * 0.353);
-    let answerY = answerStartY + config.spacing.beforeAnswerArea;
+    // Answer area (right column) - starts BELOW question text
+    const answerStartY = questionEndY + config.spacing.beforeAnswerArea;
+    let answerY = answerStartY;
 
     pdf.setFont("helvetica", "normal");
     pdf.setFontSize(config.fonts.answerOption);
@@ -251,8 +256,8 @@ export async function generateSurveyPDF(
       });
     }
 
-    // Move Y position based on content
-    currentY = Math.max(currentY, answerY) + config.spacing.betweenQuestions;
+    // Move Y position based on the maximum of question end or answer end
+    currentY = Math.max(questionEndY, answerY) + config.spacing.betweenQuestions;
   });
 
   // === THANK YOU SECTION ===
