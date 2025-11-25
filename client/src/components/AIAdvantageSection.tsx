@@ -169,23 +169,24 @@ export function AIAdvantageSection() {
               >
                 {/* Card Container */}
                 <div
-                  className={`relative bg-slate-700 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full hover:scale-105`}
+                  className={`relative rounded-2xl overflow-hidden transition-all duration-300 flex flex-col h-full hover:scale-105 -translate-y-6`}
+                  style={{ backgroundColor: "#243539" }}
                 >
-                  {/* Top colored accent bar */}
+                  {/* Top teal accent bar */}
                   <div
-                    className={`h-1 bg-gradient-to-r ${advantage.cardColor.replace("from-", "from-").replace("to-", "to-")}`}
+                    className="h-1.5 bg-gradient-to-r from-teal-500 to-teal-400"
                   />
 
                   {/* Image Container */}
-                  <div className="relative w-full bg-slate-700 flex items-center justify-center overflow-hidden group p-1" style={{ aspectRatio: "3 / 2" }}>
+                  <div className="relative w-full flex items-center justify-center overflow-hidden group p-1" style={{ aspectRatio: "3 / 2", backgroundColor: "#152A2C" }}>
                     {cardImages[index] ? (
                       <>
-                        {/* Display uploaded image - rounded corners with shadow lift */}
-                        <div className="relative w-full h-full rounded-2xl overflow-hidden flex items-center justify-center" style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)" }}>
+                        {/* Display uploaded image - rounded corners */}
+                        <div className="relative w-full h-full rounded-2xl overflow-hidden flex items-center justify-center">
                           <img 
                             src={cardImages[index]} 
                             alt={advantage.title} 
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover brightness-110"
                           />
                         </div>
                       </>
@@ -221,9 +222,9 @@ export function AIAdvantageSection() {
                     </h3>
                   </div>
 
-                  {/* Divider */}
+                  {/* Divider with teal tint */}
                   <div className="px-5 py-1">
-                    <div className="h-px bg-gray-200" />
+                    <div className="h-px bg-gradient-to-r from-teal-500/30 via-teal-500/20 to-transparent" />
                   </div>
 
                   {/* Description and footer */}
