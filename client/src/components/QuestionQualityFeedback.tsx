@@ -25,10 +25,17 @@ interface QuestionQualityFeedbackProps {
 }
 
 function getScoreColor(score: number): string {
-  if (score >= 85) return "#22c55e"; // green
-  if (score >= 70) return "#10b981"; // emerald
-  if (score >= 55) return "#eab308"; // yellow
-  return "#ef4444"; // red
+  if (score >= 85) return "#37C0A3"; // Icon Teal - Exemplary
+  if (score >= 70) return "#2F8FA5"; // Primary Teal - Strong
+  if (score >= 55) return "#A3D65C"; // Accent Lime - Fair
+  return "#EF4444"; // Red - Weak/Poor
+}
+
+function getScoreBackground(score: number): string {
+  if (score >= 85) return "#E1F6F3"; // Teal light background
+  if (score >= 70) return "#E1F6F3"; // Teal light background
+  if (score >= 55) return "#F3FDE3"; // Lime light background
+  return "#FEE2E2"; // Red light background
 }
 
 function getScoreLabel(score: number): string {
@@ -118,7 +125,13 @@ export default function QuestionQualityFeedback({
           {analysis && (
             <div className="space-y-6 py-4">
               {/* Quality Score */}
-              <div className="flex items-center gap-4 p-4 rounded-lg border">
+              <div
+                className="flex items-center gap-4 p-4 rounded-lg border"
+                style={{
+                  backgroundColor: getScoreBackground(analysis.score),
+                  borderColor: scoreColor,
+                }}
+              >
                 <div
                   className="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl"
                   style={{ backgroundColor: scoreColor }}
@@ -126,7 +139,9 @@ export default function QuestionQualityFeedback({
                   {analysis.score}
                 </div>
                 <div>
-                  <p className="text-lg font-semibold">{scoreLabel}</p>
+                  <p className="text-lg font-semibold" style={{ color: scoreColor }}>
+                    {scoreLabel}
+                  </p>
                   <p className="text-sm text-muted-foreground">
                     {analysis.score >= 85
                       ? "Excellent question with clear wording and neutrality"
@@ -145,7 +160,7 @@ export default function QuestionQualityFeedback({
               {analysis.issues.length > 0 && (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-destructive" />
+                    <AlertCircle className="w-4 h-4" style={{ color: "#A3D65C" }} />
                     <p className="font-semibold text-sm">Issues Detected</p>
                   </div>
                   <ul className="space-y-2 ml-6">
@@ -163,13 +178,19 @@ export default function QuestionQualityFeedback({
 
               {/* Suggestions */}
               {analysis.suggestions && (
-                <div className="flex gap-3 p-3 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <Lightbulb className="w-5 h-5 flex-shrink-0 mt-0.5 text-blue-600 dark:text-blue-400" />
+                <div
+                  className="flex gap-3 p-3 rounded-lg border"
+                  style={{
+                    backgroundColor: "#F3FDE3",
+                    borderColor: "#A3D65C",
+                  }}
+                >
+                  <Lightbulb className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#A3D65C" }} />
                   <div>
-                    <p className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">
+                    <p className="text-sm font-semibold mb-1" style={{ color: "#1C2635" }}>
                       Suggestion for Improvement
                     </p>
-                    <p className="text-sm text-blue-800 dark:text-blue-200 leading-relaxed">
+                    <p className="text-sm text-muted-foreground leading-relaxed">
                       {analysis.suggestions}
                     </p>
                   </div>
@@ -178,9 +199,15 @@ export default function QuestionQualityFeedback({
 
               {/* Success State */}
               {analysis.issues.length === 0 && !analysis.suggestions && (
-                <div className="flex gap-3 p-3 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
-                  <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5 text-green-600 dark:text-green-400" />
-                  <p className="text-sm text-green-800 dark:text-green-200 font-medium">
+                <div
+                  className="flex gap-3 p-3 rounded-lg border"
+                  style={{
+                    backgroundColor: "#E1F6F3",
+                    borderColor: "#37C0A3",
+                  }}
+                >
+                  <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#37C0A3" }} />
+                  <p className="text-sm font-medium" style={{ color: "#1C2635" }}>
                     Excellent question! It's clear, neutral, and well-structured.
                   </p>
                 </div>
