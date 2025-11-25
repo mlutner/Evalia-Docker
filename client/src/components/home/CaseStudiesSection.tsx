@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
+import hrTeamsImage from '@assets/pexels-yankrukov-7698715_1764094641849.jpg';
 
 interface CaseStudy {
   id: string;
@@ -12,6 +13,7 @@ interface CaseStudy {
   title: string;
   company: string;
   imagePlaceholderId: string;
+  imageUrl?: string;
 }
 
 export function CaseStudiesSection() {
@@ -39,6 +41,7 @@ export function CaseStudiesSection() {
       title: 'Head of People Operations',
       company: 'NextGen Corp',
       imagePlaceholderId: 'case-hr',
+      imageUrl: hrTeamsImage,
     },
     {
       id: 'sales',
@@ -163,12 +166,20 @@ export function CaseStudiesSection() {
               data-testid={`image-container-${currentCase.id}`}
               style={{ zIndex: 10 }}
             >
-              <div className="text-center space-y-3">
-                <div className="text-6xl">📸</div>
-                <p className="text-slate-500 font-medium text-sm">
-                  Case study image<br />{currentCase.tab.toLowerCase()}
-                </p>
-              </div>
+              {currentCase.imageUrl ? (
+                <img 
+                  src={currentCase.imageUrl} 
+                  alt={currentCase.headline}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="text-center space-y-3">
+                  <div className="text-6xl">📸</div>
+                  <p className="text-slate-500 font-medium text-sm">
+                    Case study image<br />{currentCase.tab.toLowerCase()}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Navigation dots */}
