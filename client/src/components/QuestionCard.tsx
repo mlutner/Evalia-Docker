@@ -198,13 +198,17 @@ export default function QuestionCard({ question, onAnswer, initialAnswer, onAuto
         )}
 
         {question.type === "multiple_choice" && question.options && (
-          <RadioGroup value={answer as string} onValueChange={handleMultipleChoice}>
-            <div className="space-y-3">
-              {question.options.map((option, index) => (
+          <div className="space-y-3">
+            {question.options.map((option, index) => {
+              const isSelected = answer === option;
+              return (
                 <div 
                   key={index} 
                   className="flex items-center space-x-4 p-3.5 rounded-lg hover-elevate active-elevate-2 border transition-all cursor-pointer" 
-                  style={{ borderColor: '#E2E7EF', backgroundColor: '#F7F9FC' }}
+                  style={{ 
+                    borderColor: isSelected ? '#2F8FA5' : '#E2E7EF',
+                    backgroundColor: isSelected ? '#E1F6F3' : '#F7F9FC'
+                  }}
                   data-testid={`option-${index}`}
                   onClick={() => handleMultipleChoice(option)}
                   onMouseEnter={(e) => {
@@ -212,18 +216,17 @@ export default function QuestionCard({ question, onAnswer, initialAnswer, onAuto
                     e.currentTarget.style.borderColor = '#2F8FA5';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#F7F9FC';
-                    e.currentTarget.style.borderColor = '#E2E7EF';
+                    e.currentTarget.style.backgroundColor = isSelected ? '#E1F6F3' : '#F7F9FC';
+                    e.currentTarget.style.borderColor = isSelected ? '#2F8FA5' : '#E2E7EF';
                   }}
                 >
-                  <RadioGroupItem value={option} id={`option-${index}`} className="w-4 h-4 shrink-0" />
-                  <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer text-sm sm:text-base font-normal">
+                  <span className="text-sm sm:text-base font-normal" style={{ color: '#1C2635', flex: 1 }}>
                     {option}
-                  </Label>
+                  </span>
                 </div>
-              ))}
-            </div>
-          </RadioGroup>
+              );
+            })}
+          </div>
         )}
 
         {question.type === "checkbox" && question.options && (
