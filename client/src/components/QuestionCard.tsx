@@ -328,38 +328,67 @@ export default function QuestionCard({ question, onAnswer, initialAnswer, onAuto
 
         {question.type === "nps" && (
           <>
-            <div className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-6">
               <div className="flex justify-between items-center gap-1">
                 <span className="text-xs font-medium" style={{ color: '#6A7789' }}>Not likely</span>
                 <span className="text-xs font-medium" style={{ color: '#6A7789' }}>Extremely likely</span>
               </div>
-              <div className="grid grid-cols-6 gap-1">
-                {Array.from({ length: 11 }).map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => {
-                      const val = i.toString();
-                      setAnswer(val);
-                      onAnswer(val);
-                      triggerAutoAdvance();
-                    }}
-                    data-testid={`button-nps-${i}`}
-                    style={{
-                      height: '40px',
-                      borderRadius: '8px',
-                      border: answer === i.toString() ? '2px solid #1F6F78' : '1px solid #E2E7EF',
-                      backgroundColor: answer === i.toString() ? '#2F8FA5' : '#F7F9FC',
-                      color: answer === i.toString() ? 'white' : '#1C2635',
-                      fontSize: '14px',
-                      fontWeight: 500,
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease'
-                    }}
-                    className="hover-elevate active-elevate-2"
-                  >
-                    {i}
-                  </button>
-                ))}
+              <div className="grid grid-cols-6 gap-2.5">
+                {Array.from({ length: 11 }).map((_, i) => {
+                  const isSelected = answer === i.toString();
+                  // Sentiment coloring: red (0-3), gray (4-6), green (7-10)
+                  let sentimentColor = '#6A7789'; // neutral gray
+                  let sentimentBg = '#F7F9FC';
+                  if (i <= 3) {
+                    sentimentColor = '#EF4444'; // red
+                    sentimentBg = '#FEE2E2'; // light red
+                  } else if (i >= 7) {
+                    sentimentColor = '#10B981'; // green
+                    sentimentBg = '#ECFDF5'; // light green
+                  }
+                  
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        const val = i.toString();
+                        setAnswer(val);
+                        onAnswer(val);
+                        triggerAutoAdvance();
+                      }}
+                      data-testid={`button-nps-${i}`}
+                      style={{
+                        height: '48px',
+                        borderRadius: '8px',
+                        border: isSelected ? `3px solid #2F8FA5` : `2px solid ${sentimentColor}`,
+                        backgroundColor: isSelected ? '#E1F6F3' : sentimentBg,
+                        color: isSelected ? '#2F8FA5' : sentimentColor,
+                        fontSize: '15px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        boxShadow: isSelected ? '0 0 0 3px rgba(47, 143, 165, 0.1)' : 'none'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isSelected) {
+                          e.currentTarget.style.borderColor = '#2F8FA5';
+                          e.currentTarget.style.boxShadow = '0 0 0 3px rgba(47, 143, 165, 0.15)';
+                          e.currentTarget.style.transform = 'scale(1.05)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isSelected) {
+                          e.currentTarget.style.borderColor = sentimentColor;
+                          e.currentTarget.style.boxShadow = 'none';
+                          e.currentTarget.style.transform = 'scale(1)';
+                        }
+                      }}
+                      className="active-elevate-2"
+                    >
+                      {i}
+                    </button>
+                  );
+                })}
               </div>
             </div>
             <p className="text-xs" style={{ color: theme.colors.textSecondary }}>How likely are you to recommend this training? (0 = Not likely, 10 = Extremely likely)</p>
