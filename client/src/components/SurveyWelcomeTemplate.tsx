@@ -73,16 +73,20 @@ const PurposeList = ({
   if (purposePoints.length === 0) return null;
 
   return (
-    <>
-      <h2 className="hero-section-title" data-testid="text-survey-purpose">The purpose of the survey:</h2>
-      <ul className="hero-benefits">
+    <div className="mt-10 animate-fade-in">
+      <h2 className="text-base font-semibold text-gray-900 mb-5 flex items-center gap-2" data-testid="text-survey-purpose">
+        <span className="inline-block w-1 h-1 bg-teal-600 rounded-full"></span>
+        Survey purpose
+      </h2>
+      <ul className="space-y-3">
         {purposePoints.map((point, idx) => (
-          <li key={idx} data-testid={`text-purpose-${idx}`}>
-            {point.trim()}
+          <li key={idx} data-testid={`text-purpose-${idx}`} className="flex gap-3 text-sm text-gray-700 leading-relaxed">
+            <span className="text-teal-600 font-bold mt-0.5 flex-shrink-0">✓</span>
+            <span>{point.trim()}</span>
           </li>
         ))}
       </ul>
-    </>
+    </div>
   );
 };
 
@@ -141,17 +145,15 @@ const PrivacyDataLink = ({
   if (!privacyStatement && !dataUsageStatement) return null;
 
   return (
-    <div className="text-center mt-6 flex items-center justify-center gap-2">
+    <button
+      onClick={onClick}
+      className="inline-flex items-center justify-center gap-2 text-sm font-medium text-gray-500 hover:text-teal-600 transition-colors cursor-pointer"
+      data-testid="button-privacy-link"
+      type="button"
+    >
       <ShieldCheckered weight="bold" size={14} className="text-gray-400" />
-      <button
-        onClick={onClick}
-        className="text-xs font-medium text-gray-500 hover:text-teal-600 transition-colors underline cursor-pointer"
-        data-testid="button-privacy-link"
-        type="button"
-      >
-        Privacy & Data
-      </button>
-    </div>
+      Privacy & Data
+    </button>
   );
 };
 
@@ -171,69 +173,86 @@ export default function SurveyWelcomeTemplate({
 
   return (
     <>
-      {/* Header */}
-      <header className="survey-header mt-[0px] mb-[0px] pt-[29px] pb-[16px]">
-        <h1
-          id="survey-title"
-          data-testid="text-survey-title"
-          className="survey-title text-center text-[40px]"
-        >
-          {title}
-        </h1>
-      </header>
+      {/* Main Content Card */}
+      <div className="animate-fade-in">
+        {/* Header */}
+        <header className="mb-8 pt-6 pb-2">
+          <h1
+            id="survey-title"
+            data-testid="text-survey-title"
+            className="text-center text-4xl font-bold text-gray-900 tracking-tight mb-4"
+          >
+            {title}
+          </h1>
+        </header>
 
-      {/* Quick Info */}
-      <QuickInfoBadges estimatedMinutes={estimatedMinutes} questionCount={questionCount} />
+        {/* Quick Info Badges */}
+        <div className="mb-8">
+          <QuickInfoBadges estimatedMinutes={estimatedMinutes} questionCount={questionCount} />
+        </div>
 
-      {/* Description */}
-      {description && (
-        <p className="hero-subtitle ml-[40px] mr-[40px] mt-[0px] mb-[0px] text-[14px]" data-testid="text-survey-description">
-          {description}
-        </p>
-      )}
-
-      {/* Body */}
-      <div className="survey-body">
-        {illustration && (
-          <div className="hero-illustration">
-            <img
-              src={illustration}
-              alt="Survey illustration"
-              data-testid="img-survey-illustration"
-              className="mt-[10px] mb-[10px]"
-            />
+        {/* Description */}
+        {description && (
+          <div className="mb-10 px-6">
+            <p 
+              className="text-center text-base text-gray-600 leading-relaxed max-w-2xl mx-auto" 
+              data-testid="text-survey-description"
+            >
+              {description}
+            </p>
           </div>
         )}
-        <PurposeList welcomeMessage={welcomeMessage} />
+
+        {/* Visual Divider */}
+        {(illustration || welcomeMessage) && (
+          <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-8"></div>
+        )}
+
+        {/* Body */}
+        <div className="px-6">
+          {illustration && (
+            <div className="mb-10 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+              <img
+                src={illustration}
+                alt="Survey illustration"
+                data-testid="img-survey-illustration"
+                className="w-full max-w-md mx-auto rounded-lg"
+              />
+            </div>
+          )}
+          <PurposeList welcomeMessage={welcomeMessage} />
+        </div>
+
+        {/* Footer Section */}
+        <div className="mt-12 pt-8 border-t border-gray-100">
+          <footer className="flex flex-col items-center gap-8">
+            {/* Primary CTA Button */}
+            <button
+              onClick={onStart}
+              data-testid="button-start-survey"
+              className="px-8 py-3.5 rounded-lg font-semibold text-white shadow-md hover:shadow-lg hover-elevate active-elevate-2 transition-all duration-200"
+              type="button"
+              style={{
+                backgroundColor: theme.colors.primaryHex,
+              }}
+            >
+              Begin Survey
+            </button>
+
+            {/* Privacy Link */}
+            <PrivacyDataLink
+              onClick={() => setIsPrivacyModalOpen(true)}
+              privacyStatement={privacyStatement}
+              dataUsageStatement={dataUsageStatement}
+            />
+          </footer>
+        </div>
       </div>
 
-      {/* Modal and Link */}
+      {/* Modal */}
       <PrivacyDataModal
         open={isPrivacyModalOpen}
         onOpenChange={setIsPrivacyModalOpen}
-        privacyStatement={privacyStatement}
-        dataUsageStatement={dataUsageStatement}
-      />
-
-      {/* Footer */}
-      <footer className="survey-footer mt-12 flex flex-col items-center gap-6" style={{ justifyContent: 'center' }}>
-        <button
-          onClick={onStart}
-          data-testid="button-start-survey"
-          className="survey-primary-evalia px-12 py-3 rounded-lg font-semibold text-white hover-elevate active-elevate-2 transition-all"
-          type="button"
-          style={{
-            backgroundColor: theme.colors.primaryHex,
-            boxShadow: '0 4px 12px rgba(47, 143, 165, 0.3)'
-          }}
-        >
-          Begin Survey
-        </button>
-      </footer>
-
-      {/* Privacy Link */}
-      <PrivacyDataLink
-        onClick={() => setIsPrivacyModalOpen(true)}
         privacyStatement={privacyStatement}
         dataUsageStatement={dataUsageStatement}
       />
