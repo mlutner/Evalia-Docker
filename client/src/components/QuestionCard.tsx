@@ -70,10 +70,10 @@ export default function QuestionCard({ question, onAnswer, initialAnswer, onAuto
   const [answer, setAnswer] = useState<string | string[]>(initialAnswer || (question.type === 'checkbox' ? [] : ''));
   const [hoverRating, setHoverRating] = useState<number | null>(null);
 
-  // Helper to trigger auto-advance with 200ms delay for single-choice questions
+  // Helper to trigger auto-advance with 500ms delay for single-choice questions
   const triggerAutoAdvance = () => {
     if (onAutoAdvance) {
-      setTimeout(() => onAutoAdvance(), 200);
+      setTimeout(() => onAutoAdvance(), 500);
     }
   };
 
@@ -360,14 +360,14 @@ export default function QuestionCard({ question, onAnswer, initialAnswer, onAuto
                       style={{
                         height: '48px',
                         borderRadius: '8px',
-                        border: isSelected ? `3px solid #2F8FA5` : `2px solid ${sentimentColor}`,
-                        backgroundColor: isSelected ? '#E1F6F3' : sentimentBg,
-                        color: isSelected ? '#2F8FA5' : sentimentColor,
+                        border: `3px solid ${isSelected ? '#2F8FA5' : sentimentColor}`,
+                        backgroundColor: isSelected ? '#2F8FA5' : sentimentBg,
+                        color: isSelected ? 'white' : sentimentColor,
                         fontSize: '15px',
                         fontWeight: 600,
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
-                        boxShadow: isSelected ? '0 0 0 3px rgba(47, 143, 165, 0.1)' : 'none'
+                        boxShadow: isSelected ? '0 0 0 4px rgba(47, 143, 165, 0.2)' : 'none'
                       }}
                       onMouseEnter={(e) => {
                         if (!isSelected) {
