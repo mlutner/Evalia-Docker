@@ -70,10 +70,10 @@ export default function QuestionCard({ question, onAnswer, initialAnswer, onAuto
   const [answer, setAnswer] = useState<string | string[]>(initialAnswer || (question.type === 'checkbox' ? [] : ''));
   const [hoverRating, setHoverRating] = useState<number | null>(null);
 
-  // Helper to trigger auto-advance with 500ms delay for single-choice questions
+  // Helper to trigger auto-advance with 300ms delay for single-choice questions
   const triggerAutoAdvance = () => {
     if (onAutoAdvance) {
-      setTimeout(() => onAutoAdvance(), 500);
+      setTimeout(() => onAutoAdvance(), 300);
     }
   };
 
@@ -351,8 +351,8 @@ export default function QuestionCard({ question, onAnswer, initialAnswer, onAuto
                         height: '48px',
                         borderRadius: '8px',
                         border: `${isSelected ? '3px' : '2px'} solid #2F8FA5`,
-                        backgroundColor: isSelected ? '#E1F6F3' : '#F7F9FC',
-                        color: isSelected ? '#2F8FA5' : '#1C2635',
+                        backgroundColor: isSelected ? '#FFFFFF' : '#F7F9FC',
+                        color: '#2F8FA5',
                         fontSize: '15px',
                         fontWeight: 600,
                         cursor: 'pointer',
