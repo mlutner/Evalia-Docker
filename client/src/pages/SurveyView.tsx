@@ -317,33 +317,55 @@ export default function SurveyView() {
               question={visibleCurrentQuestion}
               onAnswer={handleAnswer}
               initialAnswer={answers[visibleCurrentQuestion.id]}
+              onAutoAdvance={handleNext}
             />
           )}
         </div>
 
-        {/* Footer */}
-        <footer className="survey-footer">
-          <button 
-            onClick={handleBack}
-            disabled={currentStep <= 0}
-            className="survey-back"
-            type="button"
-            data-testid="button-back"
-            style={{ opacity: currentStep === 0 ? 0.5 : 1, cursor: currentStep === 0 ? 'default' : 'pointer' }}
-          >
-            Back
-          </button>
-          <button
-            onClick={handleNext}
-            disabled={!canGoNext() || submitMutation.isPending}
-            className="survey-primary"
-            type="button"
-            data-testid="button-next"
-            style={{ opacity: (!canGoNext() || submitMutation.isPending) ? 0.6 : 1 }}
-          >
-            {submitMutation.isPending ? 'Sending...' : (currentStep === questions.length - 1 ? 'Send' : 'Next')}
-          </button>
-        </footer>
+        {/* Footer - Show Next/Send button only for multi-answer questions */}
+        {visibleCurrentQuestion && ['text', 'email', 'number', 'textarea', 'checkbox', 'ranking'].includes(visibleCurrentQuestion.type) && (
+          <footer className="survey-footer">
+            <button 
+              onClick={handleBack}
+              disabled={currentStep <= 0}
+              className="survey-back"
+              type="button"
+              data-testid="button-back"
+              style={{ opacity: currentStep === 0 ? 0.5 : 1, cursor: currentStep === 0 ? 'default' : 'pointer' }}
+            >
+              Back
+            </button>
+            <button
+              onClick={handleNext}
+              disabled={!canGoNext() || submitMutation.isPending}
+              className="survey-primary"
+              type="button"
+              data-testid="button-next"
+              style={{ opacity: (!canGoNext() || submitMutation.isPending) ? 0.6 : 1 }}
+            >
+              {submitMutation.isPending ? 'Sending...' : (currentStep === visibleQuestions.length - 1 ? 'Send' : 'Next')}
+            </button>
+          </footer>
+        )}
+
+        {/* Footer - Show only Back for single-choice questions (auto-advance enabled) */}
+        {visibleCurrentQuestion && !['text', 'email', 'number', 'textarea', 'checkbox', 'ranking'].includes(visibleCurrentQuestion.type) && (
+          <footer className="survey-footer">
+            <button 
+              onClick={handleBack}
+              disabled={currentStep <= 0}
+              className="survey-back"
+              type="button"
+              data-testid="button-back"
+              style={{ opacity: currentStep === 0 ? 0.5 : 1, cursor: currentStep === 0 ? 'default' : 'pointer' }}
+            >
+              Back
+            </button>
+            <span className="text-xs text-muted-foreground" data-testid="text-auto-advance-hint">
+              Auto-advancing...
+            </span>
+          </footer>
+        )}
 
         <p className="survey-footnote" data-testid="text-exit-hint">
           <button

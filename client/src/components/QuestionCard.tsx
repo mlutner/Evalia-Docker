@@ -16,6 +16,7 @@ interface QuestionCardProps {
   question: Question;
   onAnswer: (answer: string | string[]) => void;
   initialAnswer?: string | string[];
+  onAutoAdvance?: () => void;
 }
 
 function getQuestionTypeIcon(type: QuestionType) {
@@ -65,9 +66,16 @@ function getQuestionTypeLabel(type: QuestionType) {
   return labels[type] || type;
 }
 
-export default function QuestionCard({ question, onAnswer, initialAnswer }: QuestionCardProps) {
+export default function QuestionCard({ question, onAnswer, initialAnswer, onAutoAdvance }: QuestionCardProps) {
   const [answer, setAnswer] = useState<string | string[]>(initialAnswer || (question.type === 'checkbox' ? [] : ''));
   const [hoverRating, setHoverRating] = useState<number | null>(null);
+
+  // Helper to trigger auto-advance with 200ms delay for single-choice questions
+  const triggerAutoAdvance = () => {
+    if (onAutoAdvance) {
+      setTimeout(() => onAutoAdvance(), 200);
+    }
+  };
 
   // Reset answer state when moving to a new question
   useEffect(() => {
@@ -83,6 +91,7 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
   const handleMultipleChoice = (value: string) => {
     setAnswer(value);
     onAnswer(value);
+    triggerAutoAdvance();
   };
 
   const handleCheckboxChange = (option: string, checked: boolean) => {
@@ -268,8 +277,11 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
                   <button
                     key={star}
                     onClick={() => {
-                      handleMultipleChoice(star.toString());
+                      const val = star.toString();
+                      setAnswer(val);
+                      onAnswer(val);
                       setHoverRating(null);
+                      triggerAutoAdvance();
                     }}
                     onMouseEnter={() => setHoverRating(star)}
                     onMouseLeave={() => setHoverRating(null)}
@@ -326,6 +338,7 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
                       const val = i.toString();
                       setAnswer(val);
                       onAnswer(val);
+                      triggerAutoAdvance();
                     }}
                     data-testid={`button-nps-${i}`}
                     style={{
@@ -384,7 +397,10 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
                         return (
                           <td key={`${row}-${col}`} className="border p-2 text-center" style={{ borderColor: theme.colors.border }}>
                             <button
-                              onClick={() => handleMatrixChange(row, col)}
+                              onClick={() => {
+                                handleMatrixChange(row, col);
+                                triggerAutoAdvance();
+                              }}
                               data-testid={`button-matrix-${row}-${col}`}
                               style={{
                                 width: '24px',
@@ -455,7 +471,10 @@ export default function QuestionCard({ question, onAnswer, initialAnswer }: Ques
             <Input
               type="date"
               value={answer as string}
-              onChange={(e) => handleTextChange(e.target.value)}
+              onChange={(e) => {
+                handleTextChange(e.target.value);
+                triggerAutoAdvance();
+              }}
               className="text-base h-11 sm:h-12 border border-border/60 transition-colors bg-white"
               style={{ borderColor: '#E2E7EF' }}
               data-testid="input-date-answer"
