@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Clock, BookOpen, Shield } from "lucide-react";
+import { Clock, Books, ShieldCheckered } from "phosphor-react";
+import { theme } from "@/theme";
 import {
   Dialog,
   DialogContent,
@@ -30,9 +31,9 @@ const QuickInfoBadge = ({
   label: string; 
   testId: string;
 }) => (
-  <div className="flex items-center gap-1 px-1.5 py-0.5 bg-muted rounded-full text-xs leading-none" data-testid={testId}>
-    <Icon className="w-2.5 h-2.5 text-muted-foreground" />
-    <span className="font-medium text-foreground text-[11px]">{label}</span>
+  <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-teal-50 to-teal-50/80 rounded-full text-xs leading-none border border-teal-200 hover-elevate transition-all" data-testid={testId}>
+    <Icon weight="bold" size={14} className="text-teal-600" />
+    <span className="font-semibold text-teal-900 text-[12px]">{label}</span>
   </div>
 );
 
@@ -47,12 +48,12 @@ const QuickInfoBadges = ({
   if (!estimatedMinutes && !questionCount) return null;
   
   return (
-    <div className="flex justify-center gap-1.5 mb-[12px]" data-testid="quick-info-badges">
+    <div className="flex justify-center gap-3 mb-6 flex-wrap" data-testid="quick-info-badges">
       {estimatedMinutes && (
         <QuickInfoBadge icon={Clock} label={`~${estimatedMinutes} min`} testId="badge-estimated-time" />
       )}
       {questionCount && (
-        <QuickInfoBadge icon={BookOpen} label={`${questionCount}`} testId="badge-question-count" />
+        <QuickInfoBadge icon={Books} label={`${questionCount} questions`} testId="badge-question-count" />
       )}
     </div>
   );
@@ -140,10 +141,11 @@ const PrivacyDataLink = ({
   if (!privacyStatement && !dataUsageStatement) return null;
 
   return (
-    <div className="text-center mt-[12px]">
+    <div className="text-center mt-6 flex items-center justify-center gap-2">
+      <ShieldCheckered weight="bold" size={14} className="text-gray-400" />
       <button
         onClick={onClick}
-        className="text-xs text-muted-foreground hover:text-foreground transition-colors underline cursor-pointer"
+        className="text-xs font-medium text-gray-500 hover:text-teal-600 transition-colors underline cursor-pointer"
         data-testid="button-privacy-link"
         type="button"
       >
@@ -214,12 +216,16 @@ export default function SurveyWelcomeTemplate({
       />
 
       {/* Footer */}
-      <footer className="survey-footer" style={{ justifyContent: 'center' }}>
+      <footer className="survey-footer mt-12 flex flex-col items-center gap-6" style={{ justifyContent: 'center' }}>
         <button
           onClick={onStart}
           data-testid="button-start-survey"
-          className="survey-primary mt-[10px] mb-[10px] pt-[10px] pb-[10px]"
+          className="survey-primary-evalia px-12 py-3 rounded-lg font-semibold text-white hover-elevate active-elevate-2 transition-all"
           type="button"
+          style={{
+            backgroundColor: theme.colors.primaryHex,
+            boxShadow: '0 4px 12px rgba(47, 143, 165, 0.3)'
+          }}
         >
           Begin Survey
         </button>
