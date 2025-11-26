@@ -1,6 +1,6 @@
 import { useParams, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { apiRequest, queryClient, debounce } from "@/lib/queryClient";
 import { theme } from "@/theme";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,10 +10,10 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ResponseDetailModal } from "@/components/ResponseDetailModal";
 import AIInsightsCard from "@/components/AIInsightsCard";
-import { ArrowLeft, Users, FileText, Calendar, Download, Loader2, Trash2, AlertTriangle, TrendingUp, ChevronDown, Zap, Clock, Eye, RotateCcw } from "lucide-react";
+import { ArrowLeft, Users, FileText, Calendar, Download, Loader2, Trash2, AlertTriangle, TrendingUp, ChevronDown, Zap, Clock, Eye, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useResponseAnalysis } from "@/hooks/useResponseAnalysis";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import type { Survey, SurveyResponse } from "@shared/schema";
 
 interface AnalyticsData {
@@ -25,7 +25,10 @@ interface AnalyticsData {
 export default function AnalyticsPage() {
   const { id } = useParams();
   const [, setLocation] = useLocation();
+  const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const ITEMS_PER_PAGE = 50;
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [selectedResponse, setSelectedResponse] = useState<SurveyResponse | null>(null);
   const [dateFrom, setDateFrom] = useState("");
@@ -33,11 +36,22 @@ export default function AnalyticsPage() {
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "fastest" | "slowest">("newest");
   const { toast } = useToast();
 
+  // Debounced search handler
+  const debouncedSearch = useCallback(
+    debounce((term: string) => {
+      setSearchTerm(term);
+      setPage(1); // Reset to first page on new search
+    }, 300),
+    []
+  );
+
   const { data, isLoading, error } = useQuery<AnalyticsData>({
-    queryKey: ["/api/surveys", id, "responses", searchTerm],
+    queryKey: ["/api/surveys", id, "responses", searchTerm, page],
     enabled: !!id,
     queryFn: async () => {
-      const url = `/api/surveys/${id}/responses${searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : ""}`;
+      const offset = (page - 1) * ITEMS_PER_PAGE;
+      let url = `/api/surveys/${id}/responses?limit=${ITEMS_PER_PAGE}&offset=${offset}`;
+      if (searchTerm) url += `&search=${encodeURIComponent(searchTerm)}`;
       return fetch(url).then(r => r.json());
     }
   });
