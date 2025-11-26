@@ -123,7 +123,7 @@ export default function QuestionCard({ question, onAnswer, initialAnswer, onAuto
       </p>
 
       {/* Question Title */}
-      <h2 className="question-title" data-testid="text-question">
+      <h2 className="question-title" style={{ fontSize: '24px', lineHeight: '1.4', marginBottom: '20px' }} data-testid="text-question">
         {question.question}
         {question.required && (
           <span className="required" title="This field is required">*</span>
@@ -131,7 +131,7 @@ export default function QuestionCard({ question, onAnswer, initialAnswer, onAuto
       </h2>
 
       {question.description && (
-        <p className="text-sm mt-2 mb-4" style={{ color: theme.colors.textSecondary }} data-testid="text-question-description">{question.description}</p>
+        <p className="text-sm mt-2 mb-6" style={{ color: theme.colors.textSecondary }} data-testid="text-question-description">{question.description}</p>
       )}
 
       <div className="space-y-6">
@@ -336,16 +336,6 @@ export default function QuestionCard({ question, onAnswer, initialAnswer, onAuto
               <div className="grid grid-cols-6 gap-2.5">
                 {Array.from({ length: 11 }).map((_, i) => {
                   const isSelected = answer === i.toString();
-                  // Sentiment coloring: red (0-3), gray (4-6), green (7-10)
-                  let sentimentColor = '#6A7789'; // neutral gray
-                  let sentimentBg = '#F7F9FC';
-                  if (i <= 3) {
-                    sentimentColor = '#EF4444'; // red
-                    sentimentBg = '#FEE2E2'; // light red
-                  } else if (i >= 7) {
-                    sentimentColor = '#10B981'; // green
-                    sentimentBg = '#ECFDF5'; // light green
-                  }
                   
                   return (
                     <button
@@ -360,25 +350,27 @@ export default function QuestionCard({ question, onAnswer, initialAnswer, onAuto
                       style={{
                         height: '48px',
                         borderRadius: '8px',
-                        border: `3px solid ${isSelected ? '#2F8FA5' : sentimentColor}`,
-                        backgroundColor: isSelected ? '#E1F6F3' : sentimentBg,
-                        color: isSelected ? '#2F8FA5' : sentimentColor,
+                        border: `${isSelected ? '3px' : '2px'} solid #2F8FA5`,
+                        backgroundColor: isSelected ? '#E1F6F3' : '#F7F9FC',
+                        color: isSelected ? '#2F8FA5' : '#1C2635',
                         fontSize: '15px',
                         fontWeight: 600,
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
-                        boxShadow: isSelected ? '0 0 0 4px rgba(47, 143, 165, 0.2)' : 'none'
+                        boxShadow: isSelected ? '0 0 0 5px rgba(47, 143, 165, 0.2)' : 'none'
                       }}
                       onMouseEnter={(e) => {
                         if (!isSelected) {
                           e.currentTarget.style.borderColor = '#2F8FA5';
-                          e.currentTarget.style.boxShadow = '0 0 0 3px rgba(47, 143, 165, 0.15)';
+                          e.currentTarget.style.borderWidth = '3px';
+                          e.currentTarget.style.boxShadow = '0 0 0 5px rgba(47, 143, 165, 0.2)';
                           e.currentTarget.style.transform = 'scale(1.05)';
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!isSelected) {
-                          e.currentTarget.style.borderColor = sentimentColor;
+                          e.currentTarget.style.borderColor = '#2F8FA5';
+                          e.currentTarget.style.borderWidth = '2px';
                           e.currentTarget.style.boxShadow = 'none';
                           e.currentTarget.style.transform = 'scale(1)';
                         }
