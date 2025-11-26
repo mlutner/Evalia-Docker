@@ -378,6 +378,24 @@ export default function SurveyView() {
           </button>
         </p>
       </main>
+      {/* Back Warning Dialog */}
+      <AlertDialog open={showBackWarning} onOpenChange={setShowBackWarning}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Go back to previous question?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You can change your answer to the previous question if needed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-back">Continue</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmBack} data-testid="button-confirm-back">
+              Go Back
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      
       {/* Exit Warning Dialog */}
       <AlertDialog open={showExitWarning} onOpenChange={setShowExitWarning}>
         <AlertDialogContent>
