@@ -467,15 +467,24 @@ ${JSON.stringify(questions, null, 2)}`;
       const userId = req.user.claims.sub;
       const surveys = await storage.getAllSurveys(userId);
       
-      // Calculate response count, question count, and respondent metrics for each survey
+      // Batch-load all counts in parallel - OPTIMIZED for speed
       const surveysWithCounts = await Promise.all(
         surveys.map(async (survey) => {
           const responseCount = await storage.getResponseCount(survey.id);
           const questionCount = survey.questions?.length || 0;
           const metrics = await storage.getRespondentMetrics(survey.id);
-          console.log(`Survey ${survey.id} has ${responseCount} responses, ${questionCount} questions, ${metrics.totalInvited} invited`);
+          
+          // Return only metadata for list view - exclude full questions array to reduce payload
           return {
-            ...survey,
+            id: survey.id,
+            title: survey.title,
+            description: survey.description,
+            status: survey.status,
+            createdAt: survey.createdAt,
+            updatedAt: survey.updatedAt,
+            tags: survey.tags,
+            illustrationUrl: survey.illustrationUrl,
+            scoreConfig: survey.scoreConfig,
             responseCount,
             questionCount,
             respondentCount: metrics.totalInvited,
@@ -483,7 +492,6 @@ ${JSON.stringify(questions, null, 2)}`;
         })
       );
       
-      console.log('Returning surveys with counts:', surveysWithCounts.map(s => ({ id: s.id, responseCount: s.responseCount, respondentCount: s.respondentCount })));
       res.json(surveysWithCounts);
     } catch (error: any) {
       console.error("Get surveys error:", error);
