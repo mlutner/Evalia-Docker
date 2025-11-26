@@ -105,7 +105,7 @@ const PrivacyDataModal = ({
       <DialogContent className="max-w-md" data-testid="privacy-data-modal">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Shield className="w-4 h-4" />
+            <ShieldCheckered weight="bold" size={16} className="text-teal-600" />
             Privacy & Data
           </DialogTitle>
         </DialogHeader>
