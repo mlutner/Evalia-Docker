@@ -158,7 +158,7 @@ export function AIAdvantageSection() {
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {advantages.map((advantage, index) => {
             const Icon = advantage.icon;
             const AccentIcon = advantage.accentIcon;
@@ -170,10 +170,10 @@ export function AIAdvantageSection() {
               >
                 {/* Card Container */}
                 <div
-                  className={`relative rounded-2xl overflow-hidden transition-all duration-300 flex flex-col h-full hover:scale-105 -translate-y-6 min-h-[420px]`}
+                  className={`relative rounded-2xl overflow-hidden transition-all duration-300 flex flex-col h-full hover:scale-105 -translate-y-6 min-h-[360px]`}
                   style={{ 
-                    backgroundColor: "#243539", 
-                    backgroundImage: "linear-gradient(to bottom, #243539 0%, #243539 100%)",
+                    backgroundColor: "#2d3f47", 
+                    backgroundImage: "linear-gradient(to bottom, #2d3f47 0%, #2d3f47 100%)",
                     borderLeft: `4px solid ${[theme.colors.primary, theme.colors.lime, theme.colors.iconTeal, theme.colors.primary][index]}`
                   }}
                 >
@@ -184,7 +184,7 @@ export function AIAdvantageSection() {
                   />
 
                   {/* Image Container */}
-                  <div className="relative w-full flex items-center justify-center overflow-hidden group" style={{ aspectRatio: "3 / 2", backgroundColor: "#243539", padding: "0.375rem" }}>
+                  <div className="relative w-full flex items-center justify-center overflow-hidden group" style={{ aspectRatio: "3 / 2", backgroundColor: "#2d3f47", padding: "0.375rem" }}>
                     {cardImages[index] ? (
                       <>
                         {/* Display uploaded image - rounded corners */}
@@ -221,27 +221,27 @@ export function AIAdvantageSection() {
                   </div>
 
                   {/* Header area with title */}
-                  <div className="p-8 pb-3">
+                  <div className="p-5 pb-2">
                     {/* Title */}
-                    <h3 className="text-lg font-bold text-white leading-snug h-14 flex items-start">
+                    <h3 className="text-base font-bold text-white leading-snug h-11 flex items-start">
                       {advantage.title}
                     </h3>
                   </div>
 
                   {/* Divider with teal tint */}
-                  <div className="px-8 py-2">
+                  <div className="px-5 py-1">
                     <div className="h-px bg-gradient-to-r from-teal-500/40 via-teal-500/20 to-transparent" />
                   </div>
 
                   {/* Description and footer */}
-                  <div className="flex-1 px-8 py-5 flex flex-col">
+                  <div className="flex-1 px-5 py-4 flex flex-col">
                     {/* Description */}
-                    <p className="text-sm text-gray-100 mb-6 leading-relaxed flex-1">
+                    <p className="text-xs text-gray-100 mb-4 leading-relaxed flex-1">
                       {advantage.description}
                     </p>
 
                     {/* Learn more link */}
-                    <div className="flex items-center text-sm font-semibold transition-colors">
+                    <div className="flex items-center text-xs font-semibold transition-colors">
                       <span className="text-white border-b border-gray-400 group-hover:border-white transition-colors">Learn more</span>
                       <span className="ml-2 text-white transform group-hover:translate-x-1 transition-transform">→</span>
                     </div>
