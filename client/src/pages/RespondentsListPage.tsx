@@ -102,7 +102,7 @@ export default function RespondentsListPage() {
                         <div className="grid grid-cols-3 gap-4">
                           <div>
                             <p className="text-xs text-muted-foreground mb-1">Questions</p>
-                            <p className="text-2xl font-bold">{survey.questions.length}</p>
+                            <p className="text-2xl font-bold">{survey.questionCount || 0}</p>
                           </div>
                           <div>
                             <p className="text-xs text-muted-foreground mb-1">Responses</p>
@@ -111,7 +111,7 @@ export default function RespondentsListPage() {
                           <div>
                             <p className="text-xs text-muted-foreground mb-1">Status</p>
                             <p className="text-sm font-semibold capitalize">
-                              {survey.publishedAt ? "Live" : "Draft"}
+                              {survey.status || "Draft"}
                             </p>
                           </div>
                         </div>

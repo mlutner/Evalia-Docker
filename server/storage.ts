@@ -30,6 +30,7 @@ export interface IStorage {
   createResponse(surveyId: string, answers: Record<string, string | string[]>): Promise<SurveyResponse>;
   getResponses(surveyId: string): Promise<SurveyResponse[]>;
   getResponseCount(surveyId: string): Promise<number>;
+  getResponseCountsByIds(surveyIds: string[]): Promise<Record<string, number>>;
   deleteResponse(id: string): Promise<boolean>;
   deleteResponsesBulk(ids: string[]): Promise<number>;
   clearSurveyResponses(surveyId: string): Promise<number>;
@@ -624,6 +625,26 @@ export class DbStorage implements IStorage {
     // Cache the result
     this.setResponseCountCache(surveyId, count);
     return count;
+  }
+
+  async getResponseCountsByIds(surveyIds: string[]): Promise<Record<string, number>> {
+    if (surveyIds.length === 0) return {};
+
+    // Batch query all response counts in a single database call
+    const result = await db.select({
+      surveyId: surveyResponses.surveyId,
+      count: sql<number>`cast(count(*) as integer)`,
+    })
+      .from(surveyResponses)
+      .where(sql`${surveyResponses.surveyId} IN (${sql.join(surveyIds)})`)
+      .groupBy(surveyResponses.surveyId);
+
+    const counts: Record<string, number> = {};
+    surveyIds.forEach(id => counts[id] = 0);
+    result.forEach(r => {
+      counts[r.surveyId] = r.count;
+    });
+    return counts;
   }
 
   async deleteResponse(id: string): Promise<boolean> {
