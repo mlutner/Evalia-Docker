@@ -121,20 +121,12 @@ export default function SurveyView() {
       setShowExitWarning(true);
       return;
     }
-    // Show warning if user has answered any questions and is leaving the question flow
-    if (currentStep >= 0 && Object.keys(answers).length > 0) {
-      setShowBackWarning(true);
-    } else if (currentStep > -1) {
+    // Go back to previous question without warning
+    if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
 
-  const confirmBack = () => {
-    setShowBackWarning(false);
-    if (currentStep > -1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
 
   const handleExit = () => {
     if (Object.keys(answers).length > 0) {
@@ -378,24 +370,6 @@ export default function SurveyView() {
           </button>
         </p>
       </main>
-      {/* Back Warning Dialog */}
-      <AlertDialog open={showBackWarning} onOpenChange={setShowBackWarning}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Go back to previous question?</AlertDialogTitle>
-            <AlertDialogDescription>
-              You can change your answer to the previous question if needed.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel data-testid="button-cancel-back">Continue</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmBack} data-testid="button-confirm-back">
-              Go Back
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-      
       {/* Exit Warning Dialog */}
       <AlertDialog open={showExitWarning} onOpenChange={setShowExitWarning}>
         <AlertDialogContent>
