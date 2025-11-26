@@ -73,20 +73,16 @@ const PurposeList = ({
   if (purposePoints.length === 0) return null;
 
   return (
-    <div className="mt-10 animate-fade-in">
-      <h2 className="text-base font-semibold text-gray-900 mb-5 flex items-center gap-2" data-testid="text-survey-purpose">
-        <span className="inline-block w-1 h-1 bg-teal-600 rounded-full"></span>
-        Survey purpose
-      </h2>
-      <ul className="space-y-3">
+    <>
+      <h2 className="hero-section-title" data-testid="text-survey-purpose">The purpose of the survey:</h2>
+      <ul className="hero-benefits">
         {purposePoints.map((point, idx) => (
-          <li key={idx} data-testid={`text-purpose-${idx}`} className="flex gap-3 text-sm text-gray-700 leading-relaxed">
-            <span className="text-teal-600 font-bold mt-0.5 flex-shrink-0">✓</span>
-            <span>{point.trim()}</span>
+          <li key={idx} data-testid={`text-purpose-${idx}`}>
+            {point.trim()}
           </li>
         ))}
       </ul>
-    </div>
+    </>
   );
 };
 
@@ -145,15 +141,16 @@ const PrivacyDataLink = ({
   if (!privacyStatement && !dataUsageStatement) return null;
 
   return (
-    <button
-      onClick={onClick}
-      className="inline-flex items-center justify-center gap-2 text-sm font-medium text-gray-500 hover:text-teal-600 transition-colors cursor-pointer"
-      data-testid="button-privacy-link"
-      type="button"
-    >
-      <ShieldCheckered weight="bold" size={14} className="text-gray-400" />
-      Privacy & Data
-    </button>
+    <div className="text-center mt-[12px]">
+      <button
+        onClick={onClick}
+        className="text-xs text-muted-foreground hover:text-foreground transition-colors underline cursor-pointer"
+        data-testid="button-privacy-link"
+        type="button"
+      >
+        Privacy & Data
+      </button>
+    </div>
   );
 };
 
@@ -173,86 +170,65 @@ export default function SurveyWelcomeTemplate({
 
   return (
     <>
-      {/* Main Content Card */}
-      <div className="animate-fade-in">
-        {/* Header */}
-        <header className="mb-8 pt-6 pb-2">
-          <h1
-            id="survey-title"
-            data-testid="text-survey-title"
-            className="text-center text-4xl font-bold text-gray-900 tracking-tight mb-4"
-          >
-            {title}
-          </h1>
-        </header>
+      {/* Header */}
+      <header className="survey-header mt-[0px] mb-[0px] pt-[29px] pb-[16px]">
+        <h1
+          id="survey-title"
+          data-testid="text-survey-title"
+          className="survey-title text-center text-[40px]"
+        >
+          {title}
+        </h1>
+      </header>
 
-        {/* Quick Info Badges */}
-        <div className="mb-8">
-          <QuickInfoBadges estimatedMinutes={estimatedMinutes} questionCount={questionCount} />
-        </div>
+      {/* Quick Info */}
+      <QuickInfoBadges estimatedMinutes={estimatedMinutes} questionCount={questionCount} />
 
-        {/* Description */}
-        {description && (
-          <div className="mb-10 px-6">
-            <p 
-              className="text-center text-base text-gray-600 leading-relaxed max-w-2xl mx-auto" 
-              data-testid="text-survey-description"
-            >
-              {description}
-            </p>
+      {/* Description */}
+      {description && (
+        <p className="hero-subtitle ml-[40px] mr-[40px] mt-[0px] mb-[0px] text-[14px]" data-testid="text-survey-description">
+          {description}
+        </p>
+      )}
+
+      {/* Body */}
+      <div className="survey-body">
+        {illustration && (
+          <div className="hero-illustration">
+            <img
+              src={illustration}
+              alt="Survey illustration"
+              data-testid="img-survey-illustration"
+              className="mt-[10px] mb-[10px] max-w-xs mx-auto"
+            />
           </div>
         )}
-
-        {/* Visual Divider */}
-        {(illustration || welcomeMessage) && (
-          <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-8"></div>
-        )}
-
-        {/* Body */}
-        <div className="px-6">
-          {illustration && (
-            <div className="mb-10 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-              <img
-                src={illustration}
-                alt="Survey illustration"
-                data-testid="img-survey-illustration"
-                className="w-full max-w-md mx-auto rounded-lg"
-              />
-            </div>
-          )}
-          <PurposeList welcomeMessage={welcomeMessage} />
-        </div>
-
-        {/* Footer Section */}
-        <div className="mt-12 pt-8 border-t border-gray-100">
-          <footer className="flex flex-col items-center gap-8">
-            {/* Primary CTA Button */}
-            <button
-              onClick={onStart}
-              data-testid="button-start-survey"
-              className="px-8 py-3.5 rounded-lg font-semibold text-white shadow-md hover:shadow-lg hover-elevate active-elevate-2 transition-all duration-200"
-              type="button"
-              style={{
-                backgroundColor: theme.colors.primaryHex,
-              }}
-            >
-              Begin Survey
-            </button>
-
-            {/* Privacy Link */}
-            <PrivacyDataLink
-              onClick={() => setIsPrivacyModalOpen(true)}
-              privacyStatement={privacyStatement}
-              dataUsageStatement={dataUsageStatement}
-            />
-          </footer>
-        </div>
+        <PurposeList welcomeMessage={welcomeMessage} />
       </div>
 
-      {/* Modal */}
+      {/* Modal and Link */}
       <PrivacyDataModal
         open={isPrivacyModalOpen}
         onOpenChange={setIsPrivacyModalOpen}
+        privacyStatement={privacyStatement}
+        dataUsageStatement={dataUsageStatement}
+      />
+
+      {/* Footer */}
+      <footer className="survey-footer" style={{ justifyContent: 'center' }}>
+        <button
+          onClick={onStart}
+          data-testid="button-start-survey"
+          className="survey-primary mt-[10px] mb-[10px] pt-[10px] pb-[10px]"
+          type="button"
+        >
+          Begin Survey
+        </button>
+      </footer>
+
+      {/* Privacy Link */}
+      <PrivacyDataLink
+        onClick={() => setIsPrivacyModalOpen(true)}
         privacyStatement={privacyStatement}
         dataUsageStatement={dataUsageStatement}
       />
