@@ -6,17 +6,21 @@ Evalia is an AI-powered survey builder for trainers to create, manage, and analy
 ## Current Version: v1.0.0 (Nov 27, 2025)
 
 ### Version Tracking Protocol
+**⚠️ CRITICAL: Version MUST be updated before EVERY deployment/republish!**
+
 The app uses semantic versioning stored in `shared/version.ts`:
 - **Major (X.0.0)**: Breaking changes, major redesigns
-- **Minor (1.X.0)**: New features, improvements
+- **Minor (1.X.0)**: New features, improvements  
 - **Patch (1.0.X)**: Bug fixes, small tweaks
 
-**To release a new version:**
-1. Update `APP_VERSION` in `shared/version.ts`
-2. Update `BUILD_DATE` to current date
-3. Add entry to `CHANGELOG` array with version, date, and changes
+**MANDATORY steps before EVERY deployment:**
+1. Update `APP_VERSION` in `shared/version.ts` (increment appropriately)
+2. Update `BUILD_DATE` to current date (YYYY-MM-DD format)
+3. Add entry to `CHANGELOG` array with version, date, and list of changes
 4. Commit with message: `[RELEASE] v1.x.x - Brief description`
-5. Deploy
+5. Deploy/Republish
+
+**Why this matters:** Users see the version in the footer and can verify they have the latest updates. The changelog at `/api/version` provides full history.
 
 **Version is displayed:**
 - In app footer (bottom-right, subtle)

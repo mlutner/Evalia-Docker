@@ -1,5 +1,6 @@
 // Evalia Application Version
-// Update this file with each release
+// ⚠️ CRITICAL: Update this file BEFORE EVERY deployment/republish!
+// This ensures users always know what version they're using.
 
 export const APP_VERSION = "1.0.0";
 export const BUILD_DATE = "2025-11-27";
