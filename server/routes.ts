@@ -8,6 +8,7 @@ import { parsePDFWithVision, parseDocument, generateSurveyFromText, refineSurvey
 import { analyzeResponses } from "./responseAnalysis";
 import { getDashboardMetrics } from "./dashboard";
 import { insertSurveySchema, questionSchema } from "@shared/schema";
+import { getVersionInfo, APP_VERSION, BUILD_DATE, CHANGELOG } from "@shared/version";
 import { fromZodError } from "zod-validation-error";
 import multer from "multer";
 import mammoth from "mammoth";
@@ -38,8 +39,7 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
 
-// App version - increment this when deploying updates
-const APP_VERSION = process.env.APP_VERSION || Date.now().toString();
+// App version is now imported from @shared/version
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -63,7 +63,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Get app version (public endpoint - no auth required)
   app.get("/api/version", (req: any, res) => {
-    res.json({ version: APP_VERSION });
+    res.json({
+      version: APP_VERSION,
+      buildDate: BUILD_DATE,
+      changelog: CHANGELOG
+    });
   });
 
   // Get current authenticated user

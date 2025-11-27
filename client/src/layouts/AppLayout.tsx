@@ -2,6 +2,7 @@ import { ReactNode, useState } from "react";
 import { AppSidebar } from "@/components/AppSidebar";
 import Header from "@/components/Header";
 import { theme } from "@/theme";
+import { APP_VERSION } from "@shared/version";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -30,7 +31,19 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Main content */}
       <div className="flex-1 flex flex-col w-full lg:w-auto">
         <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} sidebarOpen={sidebarOpen} />
-        {children}
+        <div className="flex-1 relative">
+          {children}
+        </div>
+        {/* Version footer */}
+        <div className="px-4 py-2 text-right">
+          <span 
+            className="text-xs opacity-40 hover:opacity-70 transition-opacity cursor-default"
+            style={{ color: theme.text.secondary }}
+            data-testid="text-app-version"
+          >
+            v{APP_VERSION}
+          </span>
+        </div>
       </div>
     </div>
   );

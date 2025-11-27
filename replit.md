@@ -3,7 +3,26 @@
 ## Project Overview
 Evalia is an AI-powered survey builder for trainers to create, manage, and analyze surveys with a Typeform-inspired conversational interface. Features AI-assisted generation from documents, one-question-at-a-time UI, comprehensive analytics, and respondent tracking.
 
-## Current Status (Nov 24, 2025)
+## Current Version: v1.0.0 (Nov 27, 2025)
+
+### Version Tracking Protocol
+The app uses semantic versioning stored in `shared/version.ts`:
+- **Major (X.0.0)**: Breaking changes, major redesigns
+- **Minor (1.X.0)**: New features, improvements
+- **Patch (1.0.X)**: Bug fixes, small tweaks
+
+**To release a new version:**
+1. Update `APP_VERSION` in `shared/version.ts`
+2. Update `BUILD_DATE` to current date
+3. Add entry to `CHANGELOG` array with version, date, and changes
+4. Commit with message: `[RELEASE] v1.x.x - Brief description`
+5. Deploy
+
+**Version is displayed:**
+- In app footer (bottom-right, subtle)
+- Via API: `GET /api/version`
+
+## Current Status
 - ✅ Core survey builder with AI assistance
 - ✅ Response analytics with visual breakdown
 - ✅ Respondent tracking system
@@ -11,6 +30,7 @@ Evalia is an AI-powered survey builder for trainers to create, manage, and analy
 - ✅ Email invitation infrastructure in place
 - ✅ Comprehensive testing suite (Vitest + Playwright)
 - ✅ API documentation (Swagger/OpenAPI)
+- ✅ Version tracking system with changelog
 - ⏳ Email sending: Configured to use Resend (awaiting API key setup)
 
 ## Recent Accomplishments
@@ -219,7 +239,8 @@ server/
 
 shared/
 ├── schema.ts                  # Zod schemas + Drizzle tables
-└── templates.ts               # Survey templates
+├── templates.ts               # Survey templates
+└── version.ts                 # App version + changelog
 ```
 
 ## Development Notes
@@ -242,6 +263,7 @@ shared/
 - **PostgreSQL/Drizzle**: Production database
 
 ---
-**Last Updated**: Nov 22, 2025
+**Last Updated**: Nov 27, 2025
+**Current Version**: v1.0.0
 **Current Phase**: Respondent email integration
 **Blocking**: Waiting for user Resend API key
