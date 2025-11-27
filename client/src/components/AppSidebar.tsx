@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { queryClient } from "@/lib/queryClient";
 import type { User as UserType } from "@shared/schema";
 import evaliaLogo from "@assets/Heading (300 x 50 px) (1000 x 250 px) (3)_1763943705026.png";
+import { APP_VERSION } from "@shared/version";
 
 interface AppSidebarProps {
   onNavigate?: () => void;
@@ -122,6 +123,14 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
             <SignOut size={20} weight="bold" style={{ color: '#6A7789' }} className="mr-2" />
             {sidebarExpanded && <span style={{ color: '#6A7789' }}>Logout</span>}
           </Button>
+          {/* Version Display */}
+          <div 
+            className={`text-xs pt-2 ${sidebarExpanded ? 'text-center' : 'text-center'}`}
+            style={{ color: '#4A5568', opacity: 0.6 }}
+            data-testid="text-app-version"
+          >
+            {sidebarExpanded ? `v${APP_VERSION}` : `v${APP_VERSION.split('.')[0]}`}
+          </div>
         </div>
       )}
     </aside>
