@@ -2,7 +2,7 @@
 // Update this file with each release
 
 export const APP_VERSION = "1.0.0";
-export const BUILD_DATE = "2024-11-27";
+export const BUILD_DATE = "2025-11-27";
 
 export interface ChangelogEntry {
   version: string;
@@ -13,7 +13,7 @@ export interface ChangelogEntry {
 export const CHANGELOG: ChangelogEntry[] = [
   {
     version: "1.0.0",
-    date: "2024-11-27",
+    date: "2025-11-27",
     changes: [
       "Initial stable release",
       "Survey creation with AI assistance",
