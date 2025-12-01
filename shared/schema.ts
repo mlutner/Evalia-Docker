@@ -350,3 +350,13 @@ export const insertTemplateSchema = createInsertSchema(templates).omit({
 });
 
 export type InsertTemplate = z.infer<typeof insertTemplateSchema>;
+
+// Short URLs table (maps short codes to survey IDs)
+export const shortUrls = pgTable("short_urls", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  code: varchar("code").notNull().unique(),
+  surveyId: varchar("survey_id").notNull().references(() => surveys.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export type ShortUrl = typeof shortUrls.$inferSelect;

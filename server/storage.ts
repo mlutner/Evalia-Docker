@@ -1,4 +1,4 @@
-import { type User, type UpsertUser, type Survey, type InsertSurvey, users, surveys, surveyResponses, surveyRespondents, type SurveyResponse, type SurveyRespondent, type InsertSurveyRespondent, templates, type Template, type InsertTemplate } from "@shared/schema";
+import { type User, type UpsertUser, type Survey, type InsertSurvey, users, surveys, surveyResponses, surveyRespondents, type SurveyResponse, type SurveyRespondent, type InsertSurveyRespondent, templates, type Template, type InsertTemplate, shortUrls } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
 import { eq, sql } from "drizzle-orm";
@@ -744,6 +744,59 @@ export class DbStorage implements IStorage {
   async getTemplate(id: string): Promise<Template | undefined> {
     const result = await db.select().from(templates).where(eq(templates.id, id)).limit(1);
     return result[0];
+  }
+
+  async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
+    const result = await db.update(users)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(users.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async saveAsTemplate(survey: Survey, title: string, description: string, category: string): Promise<Template> {
+    const result = await db.insert(templates).values({
+      title,
+      description,
+      category,
+      questions: survey.questions,
+      scoreConfig: survey.scoreConfig,
+    }).returning();
+    return result[0];
+  }
+
+  async createShortUrl(surveyId: string): Promise<string> {
+    // Check if we already have a short URL for this survey
+    const existing = await db.select({ code: shortUrls.code })
+      .from(shortUrls)
+      .where(eq(shortUrls.surveyId, surveyId))
+      .limit(1);
+    
+    if (existing[0]) {
+      return existing[0].code;
+    }
+    
+    // Generate a new short code (6 random alphanumeric characters)
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let code = '';
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    
+    const result = await db.insert(shortUrls).values({
+      code,
+      surveyId,
+    }).returning();
+    
+    return result[0].code;
+  }
+
+  async getShortUrlSurveyId(code: string): Promise<string | undefined> {
+    const result = await db.select({ surveyId: shortUrls.surveyId })
+      .from(shortUrls)
+      .where(eq(shortUrls.code, code))
+      .limit(1);
+    return result[0]?.surveyId;
   }
 }
 

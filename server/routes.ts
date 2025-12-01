@@ -1,6 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import express from "express";
+import cors from "cors";
 import path from "path";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
@@ -43,6 +44,16 @@ const upload = multer({
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
+  // Enable CORS for custom domains and local development
+  app.use(cors({
+    origin: process.env.NODE_ENV === 'production' 
+      ? ['https://evaliasurvey.ca', 'https://www.evaliasurvey.ca']
+      : ['http://localhost:5000', 'http://localhost:3000'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  }));
+
   // Serve static assets from attached_assets directory
   const assetsPath = path.resolve(import.meta.dirname, "..", "attached_assets");
   app.use("/attached_assets", express.static(assetsPath));
