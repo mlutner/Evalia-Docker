@@ -339,6 +339,8 @@ export default function Builder() {
             welcomeMessage={surveyState.welcomeMessage}
             thankYouMessage={surveyState.thankYouMessage}
             illustrationUrl={surveyState.illustrationUrl}
+            trainerName={surveyState.trainerName}
+            trainingDate={surveyState.trainingDate}
             generatingField={aiChat.generatingField}
             questions={surveyState.currentQuestions}
             scoreConfig={surveyState.scoreConfig}
@@ -349,6 +351,8 @@ export default function Builder() {
             onDescriptionChange={surveyState.setCurrentSurveyDescription}
             onWelcomeChange={surveyState.setWelcomeMessage}
             onThankYouChange={surveyState.setThankYouMessage}
+            onTrainerNameChange={surveyState.setTrainerName}
+            onTrainingDateChange={surveyState.setTrainingDate}
             onIllustrationChange={surveyState.setIllustrationUrl}
             onGenerateText={handleGenerateText}
             onScoreConfigChange={surveyState.setScoreConfig}

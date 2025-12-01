@@ -26,6 +26,8 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
   const [privacyStatement, setPrivacyStatement] = useState("");
   const [dataUsageStatement, setDataUsageStatement] = useState("");
   const [tone, setTone] = useState<"formal" | "casual" | "encouraging" | "technical">("casual");
+  const [trainerName, setTrainerName] = useState("");
+  const [trainingDate, setTrainingDate] = useState("");
 
   // Wizard state - start at step 3 if editing, step 1 if creating
   const [currentWizardStep, setCurrentWizardStep] = useState(isEditMode ? 3 : 1);
@@ -51,6 +53,8 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       privacyStatement?: string;
       dataUsageStatement?: string;
       tone?: string;
+      trainerName?: string;
+      trainingDate?: string;
     }) => {
       return apiRequest("POST", "/api/surveys", data);
     },
@@ -90,6 +94,8 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       privacyStatement?: string;
       dataUsageStatement?: string;
       tone?: string;
+      trainerName?: string;
+      trainingDate?: string;
     }) => {
       return apiRequest("PUT", `/api/surveys/${surveyId}`, data);
     },
@@ -179,6 +185,8 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
         estimatedMinutes: estimatedMinutes || undefined,
         privacyStatement: privacyStatement || undefined,
         dataUsageStatement: dataUsageStatement || undefined,
+        trainerName: trainerName || undefined,
+        trainingDate: trainingDate || undefined,
       };
 
       setIsAutoSaving(true);
@@ -203,6 +211,8 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
     estimatedMinutes,
     privacyStatement,
     dataUsageStatement,
+    trainerName,
+    trainingDate,
   ]);
 
   // Question handlers
@@ -305,6 +315,8 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
       privacyStatement: privacyStatement || undefined,
       dataUsageStatement: dataUsageStatement || undefined,
       tone: tone || undefined,
+      trainerName: trainerName || undefined,
+      trainingDate: trainingDate || undefined,
     };
 
     if (isEditMode) {
@@ -340,6 +352,10 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
     setDataUsageStatement,
     tone,
     setTone,
+    trainerName,
+    setTrainerName,
+    trainingDate,
+    setTrainingDate,
     currentWizardStep,
     setCurrentWizardStep,
     hasLoadedSurvey,
