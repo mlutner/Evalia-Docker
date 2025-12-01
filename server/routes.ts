@@ -45,10 +45,25 @@ const upload = multer({
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // Enable CORS for custom domains and local development
+  const corsOrigins = ['http://localhost:5000', 'http://localhost:3000', 'https://evaliasurvey.ca', 'https://www.evaliasurvey.ca'];
+  
   app.use(cors({
-    origin: process.env.NODE_ENV === 'production' 
-      ? ['https://evaliasurvey.ca', 'https://www.evaliasurvey.ca']
-      : ['http://localhost:5000', 'http://localhost:3000'],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      // Check if origin is in allowed list
+      if (corsOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      
+      // In development, allow all origins
+      if (process.env.NODE_ENV !== 'production') {
+        return callback(null, true);
+      }
+      
+      return callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
