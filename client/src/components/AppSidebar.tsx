@@ -125,7 +125,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
           </Button>
           {/* Version Display */}
           <div 
-            className={`text-xs pt-2 ${sidebarExpanded ? 'text-center' : 'text-center'}`}
+            className="text-xs pt-2 text-center text-[#ffffff]"
             style={{ color: '#4A5568', opacity: 0.6 }}
             data-testid="text-app-version"
           >
