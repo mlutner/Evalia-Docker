@@ -302,29 +302,29 @@ export default function PublishStep({
     }
   }, [isEnabled]);
 
-  // Calculate estimated time based on question type
+  // Calculate estimated time based on question type (realistic defaults)
   const calculateEstimatedTime = (qs: Question[]): number => {
     let totalSeconds = 0;
     
     // Add time for each question based on type
     qs.forEach(q => {
       if (q.type === 'section') {
-        totalSeconds += 10; // Section headers are quick
+        totalSeconds += 3; // Section headers are minimal
       } else if (q.type === 'text' || q.type === 'textarea') {
-        totalSeconds += 90; // Free text takes longer
+        totalSeconds += 30; // Short text responses
       } else if (q.type === 'multiple_choice' || q.type === 'checkbox') {
-        totalSeconds += 30; // Quick selection
+        totalSeconds += 12; // Quick selection
       } else if (q.type === 'rating' || q.type === 'nps') {
-        totalSeconds += 20; // Fast rating scales
+        totalSeconds += 8; // Very fast rating scales
       } else if (q.type === 'number' || q.type === 'email' || q.type === 'date') {
-        totalSeconds += 25; // Quick input
+        totalSeconds += 10; // Quick input
       } else if (q.type === 'matrix' || q.type === 'ranking') {
-        totalSeconds += 45; // Complex questions take longer
+        totalSeconds += 25; // Complex but reasonable
       }
     });
     
-    // Add welcome/thank you time: ~60 seconds
-    totalSeconds += 60;
+    // Add welcome/thank you time: minimal overhead
+    totalSeconds += 15;
     
     // Convert to minutes and round up
     return Math.max(1, Math.ceil(totalSeconds / 60));
