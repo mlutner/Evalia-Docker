@@ -6,6 +6,11 @@ import { callMistral, safeParseJSON, type ChatMessage } from "./utils/aiClient";
 const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
 const MISTRAL_OCR_URL = "https://api.mistral.ai/v1/ocr";
 
+// Model definitions
+const MODELS = {
+  OCR: "pixtral-12b-2409",
+};
+
 /**
  * Parse PDF using Mistral OCR native API
  */
@@ -68,7 +73,7 @@ export async function parseDocument(fileContent: string, fileName: string): Prom
     },
   ];
 
-  return callMistral(messages, MODELS.OCR);
+  return callMistral(messages, { quality: "best" });
 }
 
 /**
