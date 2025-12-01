@@ -45,7 +45,7 @@ const upload = multer({
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // Enable CORS for custom domains and local development
-  const corsOrigins = ['http://localhost:5000', 'http://localhost:3000', 'https://evaliasurvey.ca', 'https://www.evaliasurvey.ca'];
+  const corsOrigins = ['http://localhost:5000', 'http://localhost:3000', 'https://evaliasurvey.ca', 'https://www.evaliasurvey.ca', 'https://evalia-survey-mike913.replit.app'];
   
   app.use(cors({
     origin: (origin, callback) => {

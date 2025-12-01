@@ -64,8 +64,8 @@ const SurveyCardComponent = function SurveyCard({ survey, onEdit, onView, onAnal
   const [exporting, setExporting] = useState(false);
 
   const shareUrl = `${window.location.origin}/survey/${survey.id}`;
-  const brandUrl = `https://evaliasurvey.ca/survey/${survey.id}`;
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(shareUrl)}`;
+  const brandUrl = `https://evalia-survey-mike913.replit.app/survey/${survey.id}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(brandUrl)}`;
 
   const handleExportPdf = async () => {
     if (!survey.questions?.length) {
