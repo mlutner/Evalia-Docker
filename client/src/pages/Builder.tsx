@@ -80,10 +80,7 @@ export default function Builder() {
       surveyState.setEstimatedMinutes(existingSurvey.estimatedMinutes ?? undefined);
       surveyState.setPrivacyStatement(existingSurvey.privacyStatement || "");
       surveyState.setDataUsageStatement(existingSurvey.dataUsageStatement || "");
-      // Only set wizard step to 2 if we're at step 1, otherwise preserve current step
-      if (surveyState.currentWizardStep === 1) {
-        surveyState.setCurrentWizardStep(2);
-      }
+      surveyState.setScoreConfig(existingSurvey.scoreConfig);
       aiChat.setMessages([
         {
           id: "1",
@@ -93,7 +90,7 @@ export default function Builder() {
       ]);
       surveyState.setHasLoadedSurvey(true);
     }
-  }, [existingSurvey, isEditMode, surveyState.hasLoadedSurvey, surveyState.currentWizardStep]);
+  }, [existingSurvey, isEditMode, surveyState.hasLoadedSurvey]);
 
   // Handlers for file processing
   const handleFileSelect = async (file: File) => {

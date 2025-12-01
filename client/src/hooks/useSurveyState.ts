@@ -27,8 +27,8 @@ export function useSurveyState({ surveyId, isEditMode }: UseSurveyStateProps) {
   const [dataUsageStatement, setDataUsageStatement] = useState("");
   const [tone, setTone] = useState<"formal" | "casual" | "encouraging" | "technical">("casual");
 
-  // Wizard state
-  const [currentWizardStep, setCurrentWizardStep] = useState(1);
+  // Wizard state - start at step 3 if editing, step 1 if creating
+  const [currentWizardStep, setCurrentWizardStep] = useState(isEditMode ? 3 : 1);
   const [hasLoadedSurvey, setHasLoadedSurvey] = useState(false);
 
   // Auto-save state
