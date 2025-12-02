@@ -8,7 +8,7 @@ const MISTRAL_OCR_URL = "https://api.mistral.ai/v1/ocr";
 
 // Model definitions
 const MODELS = {
-  OCR: "pixtral-12b-2409",
+  OCR: "mistral-ocr-latest",
 };
 
 /**
