@@ -45,6 +45,9 @@ export interface IStorage {
   // Short URL operations
   createShortUrl(surveyId: string): Promise<string>;
   getShortUrlSurveyId(code: string): Promise<string | undefined>;
+  
+  // Health check
+  healthCheck(): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -482,6 +485,11 @@ export class MemStorage implements IStorage {
   async deleteRespondent(id: string): Promise<boolean> {
     return this.respondents.delete(id);
   }
+
+  async healthCheck(): Promise<boolean> {
+    // Memory storage is always healthy if we got here
+    return true;
+  }
 }
 
 export class DbStorage implements IStorage {
@@ -797,6 +805,17 @@ export class DbStorage implements IStorage {
       .where(eq(shortUrls.code, code))
       .limit(1);
     return result[0]?.surveyId;
+  }
+
+  async healthCheck(): Promise<boolean> {
+    try {
+      // Execute a simple query to verify database connectivity
+      await db.execute(sql`SELECT 1`);
+      return true;
+    } catch (error) {
+      console.error("[Storage] Health check failed:", error);
+      return false;
+    }
   }
 }
 

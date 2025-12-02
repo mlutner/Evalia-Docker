@@ -1,5 +1,15 @@
+/**
+ * Response Analysis Service - AI-powered analysis of survey responses
+ * 
+ * @version 2.0.0
+ */
+
 import type { Question, SurveyResponse } from "@shared/schema";
 import { callMistral, safeParseJSON, type ChatMessage } from "./utils/aiClient";
+
+// Task type for monitoring
+const TASK_TYPE = "responseAnalysis";
+const PROMPT_VERSION = "v2.0.0";
 
 export async function analyzeResponses(
   questions: Question[],
@@ -115,7 +125,10 @@ Your response MUST be a valid JSON object that conforms to this exact schema:
   try {
     const response = await callMistral(messages, {
       quality: "best",
-      responseFormat: { type: "json_object" }
+      taskType: TASK_TYPE,
+      promptVersion: PROMPT_VERSION,
+      responseFormat: { type: "json_object" },
+      temperature: 0.4,
     });
     const parsed = safeParseJSON(response, null) as any;
     if (!parsed || !parsed.themes || !Array.isArray(parsed.themes)) {

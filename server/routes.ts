@@ -5,7 +5,7 @@ import cors from "cors";
 import path from "path";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { parsePDFWithVision, parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText, suggestScoringConfig, generateSurveySummary, analyzeQuestionQuality } from "./openrouter";
+import { parsePDFWithVision, parseDocument, generateSurveyFromText, refineSurvey, generateSurveyText, suggestScoringConfig, generateSurveySummary, analyzeQuestionQuality, processAIChatMessage } from "./aiService";
 import { analyzeResponses } from "./responseAnalysis";
 import { getDashboardMetrics } from "./dashboard";
 import { insertSurveySchema, questionSchema } from "@shared/schema";
@@ -68,6 +68,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   }));
+
+  // ━━━ HEALTH CHECK ENDPOINTS ━━━
+  // Liveness probe - is the process alive?
+  app.get("/healthz", (_req, res) => {
+    res.status(200).json({ 
+      status: "ok", 
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime()
+    });
+  });
+
+  // Readiness probe - is the app ready to serve traffic?
+  app.get("/readyz", async (_req, res) => {
+    try {
+      // Check database connectivity
+      const dbHealthy = await storage.healthCheck();
+      
+      if (!dbHealthy) {
+        return res.status(503).json({
+          status: "not ready",
+          timestamp: new Date().toISOString(),
+          checks: {
+            database: "unhealthy"
+          }
+        });
+      }
+      
+      res.status(200).json({
+        status: "ready",
+        timestamp: new Date().toISOString(),
+        checks: {
+          database: "healthy"
+        }
+      });
+    } catch (error) {
+      res.status(503).json({
+        status: "not ready",
+        timestamp: new Date().toISOString(),
+        error: "Health check failed"
+      });
+    }
+  });
 
   // Serve static assets from attached_assets directory
   const assetsPath = path.resolve(import.meta.dirname, "..", "attached_assets");
@@ -1184,36 +1226,12 @@ Be concise, helpful, and guide users toward their goals. When possible, referenc
         content: m.content,
       }));
 
-      const response = await fetch("https://api.mistral.ai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${process.env.MISTRAL_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "mistral-medium-latest",
-          messages: [
-            { role: "system", content: enrichedContext },
-            ...conversationHistory,
-            { role: "user", content: message },
-          ],
-          temperature: 0.7,
-          max_tokens: 1024,
-        }),
-      });
-
-      if (!response.ok) {
-        const error = await response.text();
-        console.error("Mistral API error:", error);
-        return res.status(500).json({ message: "Failed to get AI response" });
-      }
-
-      const data = await response.json();
-      const assistantMessage = data.choices?.[0]?.message?.content;
-
-      if (!assistantMessage) {
-        return res.status(500).json({ error: "No response from AI model" });
-      }
+      // Use the centralized AI service for retry/monitoring/logging
+      const assistantMessage = await processAIChatMessage(
+        message,
+        conversationHistory,
+        enrichedContext
+      );
 
       return res.json({ message: assistantMessage });
     } catch (error: any) {

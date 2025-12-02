@@ -7,6 +7,9 @@ import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 
+// Check if we're running locally (not on Replit)
+const isLocalDev = !process.env.REPL_ID;
+
 const getOidcConfig = memoize(
   async () => {
     return await client.discovery(
@@ -33,7 +36,7 @@ export function getSession() {
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       maxAge: sessionTtl,
     },
   });
@@ -59,12 +62,63 @@ async function upsertUser(claims: any) {
   });
 }
 
+// Local dev mock user
+const LOCAL_DEV_USER = {
+  claims: {
+    sub: "local-dev-user",
+    email: "dev@localhost",
+    first_name: "Local",
+    last_name: "Developer",
+  },
+  expires_at: Math.floor(Date.now() / 1000) + 86400 * 365, // 1 year from now
+};
+
 export async function setupAuth(app: Express) {
   app.set("trust proxy", 1);
   app.use(getSession());
   app.use(passport.initialize());
   app.use(passport.session());
 
+  // Local development bypass
+  if (isLocalDev) {
+    console.log("[Auth] Running in LOCAL DEV mode - Replit Auth bypassed");
+    
+    // Create local dev user in database
+    await storage.upsertUser({
+      id: LOCAL_DEV_USER.claims.sub,
+      email: LOCAL_DEV_USER.claims.email,
+      firstName: LOCAL_DEV_USER.claims.first_name,
+      lastName: LOCAL_DEV_USER.claims.last_name,
+    });
+
+    passport.serializeUser((user: Express.User, cb) => cb(null, user));
+    passport.deserializeUser((user: Express.User, cb) => cb(null, user));
+
+    // Auto-login endpoint for local dev
+    app.get("/api/login", (req, res) => {
+      req.login(LOCAL_DEV_USER, (err) => {
+        if (err) {
+          console.error("[Auth] Local login error:", err);
+          return res.status(500).json({ error: "Login failed" });
+        }
+        res.redirect("/");
+      });
+    });
+
+    app.get("/api/callback", (req, res) => {
+      res.redirect("/");
+    });
+
+    app.get("/api/logout", (req, res) => {
+      req.logout(() => {
+        res.redirect("/");
+      });
+    });
+
+    return;
+  }
+
+  // Production Replit Auth setup
   const config = await getOidcConfig();
 
   const verify: VerifyFunction = async (
@@ -158,6 +212,14 @@ export async function setupAuth(app: Express) {
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
+  // Local dev bypass - auto-authenticate
+  if (isLocalDev) {
+    if (!req.user) {
+      req.user = LOCAL_DEV_USER;
+    }
+    return next();
+  }
+
   const user = req.user as any;
 
   if (!req.isAuthenticated() || !user.expires_at) {
