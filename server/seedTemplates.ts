@@ -23,9 +23,18 @@ const mapQuestionType = (type: string): Question['type'] => {
 
 // Helper to convert user's question format to Evalia Question schema
 const convertQuestion = (q: any, index: number): Question => {
+  const questionType = mapQuestionType(q.question_type);
+  
+  // Check if this should be a likert scale (agreement-based labels)
+  const isAgreementScale = q.options?.min_label?.toLowerCase()?.includes('disagree') ||
+                           q.options?.max_label?.toLowerCase()?.includes('agree');
+  
+  // Use likert type for agreement scales, rating for everything else
+  const finalType = (questionType === 'rating' && isAgreementScale) ? 'likert' : questionType;
+  
   const baseQuestion: Question = {
     id: `q${index + 1}`,
-    type: mapQuestionType(q.question_type),
+    type: finalType,
     question: q.question_text,
     required: true,
   };
@@ -49,6 +58,17 @@ const convertQuestion = (q: any, index: number): Question => {
       baseQuestion.rowLabels = q.options.rows;
       baseQuestion.colLabels = q.options.columns;
     }
+  }
+
+  // For rating type questions, always set ratingStyle to 'number' (not stars)
+  if (finalType === 'rating') {
+    baseQuestion.ratingStyle = 'number';
+  }
+  
+  // For likert type questions, set the likert points
+  if (finalType === 'likert') {
+    baseQuestion.likertPoints = q.options?.scale || 5;
+    baseQuestion.likertType = 'agreement';
   }
 
   return baseQuestion;
@@ -668,12 +688,22 @@ async function seedCanadianTemplates() {
   try {
     console.log("Seeding Canadian templates...");
     
-    // Insert templates, using onConflictDoUpdate to handle existing IDs
+    // Insert templates, using onConflictDoUpdate to update existing templates with new question types
     for (const template of canadianTemplates) {
-      await db.insert(templates).values(template).onConflictDoNothing();
+      await db.insert(templates).values(template)
+        .onConflictDoUpdate({
+          target: templates.id,
+          set: {
+            title: template.title,
+            description: template.description,
+            questions: template.questions,
+            category: template.category,
+            scoreConfig: template.scoreConfig,
+          }
+        });
     }
     
-    console.log(`Successfully seeded ${canadianTemplates.length} Canadian templates!`);
+    console.log(`Successfully seeded/updated ${canadianTemplates.length} Canadian templates!`);
   } catch (error) {
     console.error("Error seeding templates:", error);
     throw error;

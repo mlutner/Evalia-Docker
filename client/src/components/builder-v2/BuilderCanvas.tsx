@@ -761,7 +761,7 @@ function QuestionPreview({
   // ========== RATING & SCALE TYPES ==========
   if (type === 'rating') {
     const scale = question.ratingScale || 5;
-    const style = question.ratingStyle || 'star';
+    const style = question.ratingStyle || 'number'; // Default to number scale, not stars
     
     return (
       <div>
