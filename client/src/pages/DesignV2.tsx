@@ -1638,6 +1638,207 @@ function CollapsibleSection({
 // PREVIEW COMPONENTS
 // ═══════════════════════════════════════════════════════════════════════════════
 
+// Simplified question preview for Design page
+function DesignQuestionPreview({ question, themeColor }: { question: any; themeColor: string }) {
+  const OPTION_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+  const type = question.type;
+
+  // Multiple choice / checkbox / dropdown
+  if (question.options && (type === 'multiple_choice' || type === 'checkbox' || type === 'dropdown')) {
+    const isCheckbox = type === 'checkbox';
+    return (
+      <div className="space-y-3 mt-6">
+        {question.options.slice(0, 4).map((option: string, idx: number) => (
+          <label key={idx} className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl cursor-pointer transition-all hover:border-gray-300 hover:shadow-sm group">
+            <div className={`w-5 h-5 ${isCheckbox ? 'rounded' : 'rounded-full'} border-2 border-gray-300 flex items-center justify-center flex-shrink-0`} />
+            <span className="w-8 h-8 flex items-center justify-center text-sm font-semibold text-gray-600 bg-gray-100 rounded-lg">{OPTION_LETTERS[idx]}</span>
+            <span className="text-gray-800 font-medium">{option}</span>
+          </label>
+        ))}
+        {question.options.length > 4 && (
+          <p className="text-xs text-gray-400 text-center">+{question.options.length - 4} more options</p>
+        )}
+      </div>
+    );
+  }
+
+  // Yes/No
+  if (type === 'yes_no') {
+    return (
+      <div className="flex gap-4 mt-6">
+        <button className="flex-1 p-4 rounded-xl border-2 border-gray-200 hover:border-green-400 font-semibold text-gray-700">
+          {question.yesLabel || 'Yes'}
+        </button>
+        <button className="flex-1 p-4 rounded-xl border-2 border-gray-200 hover:border-red-400 font-semibold text-gray-700">
+          {question.noLabel || 'No'}
+        </button>
+      </div>
+    );
+  }
+
+  // Rating
+  if (type === 'rating') {
+    const scale = question.ratingScale || 5;
+    const style = question.ratingStyle || 'number';
+    return (
+      <div className="mt-6">
+        <div className="flex justify-center gap-2">
+          {Array.from({ length: scale }, (_, i) => i + 1).map((num) => (
+            <div key={num} className="w-10 h-10 rounded-lg border-2 border-gray-200 flex items-center justify-center font-bold text-gray-600">
+              {style === 'star' ? '⭐' : style === 'heart' ? '❤️' : num}
+            </div>
+          ))}
+        </div>
+        {question.ratingLabels && (
+          <div className="flex justify-between mt-2 text-xs text-gray-500">
+            <span>{question.ratingLabels.low}</span>
+            <span>{question.ratingLabels.high}</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // NPS
+  if (type === 'nps') {
+    return (
+      <div className="mt-6">
+        <div className="flex justify-center gap-1">
+          {Array.from({ length: 11 }, (_, i) => i).map((num) => (
+            <div
+              key={num}
+              className={`w-8 h-8 rounded-lg border text-xs font-semibold flex items-center justify-center ${
+                num <= 6 ? 'border-red-200 text-red-500' : num <= 8 ? 'border-amber-200 text-amber-500' : 'border-green-200 text-green-500'
+              }`}
+            >
+              {num}
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-between mt-2 text-xs">
+          <span className="text-red-500">{question.npsLabels?.detractor || 'Not likely'}</span>
+          <span className="text-green-500">{question.npsLabels?.promoter || 'Extremely likely'}</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Likert
+  if (type === 'likert') {
+    const labels = question.customLabels || ['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'];
+    return (
+      <div className="mt-6 space-y-2">
+        {labels.slice(0, 5).map((label: string, idx: number) => (
+          <div key={idx} className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg">
+            <div className="w-4 h-4 rounded-full border-2 border-gray-300" />
+            <span className="text-gray-700 text-sm">{label}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // Slider
+  if (type === 'slider') {
+    const min = question.min || 0;
+    const max = question.max || 100;
+    return (
+      <div className="mt-6 px-2">
+        <div className="flex justify-between text-xs text-gray-500 mb-2">
+          <span>{question.ratingLabels?.low || min}{question.unit || ''}</span>
+          <span>{question.ratingLabels?.high || max}{question.unit || ''}</span>
+        </div>
+        <div className="h-2 bg-gray-200 rounded-full">
+          <div className="h-2 rounded-full w-1/2" style={{ backgroundColor: themeColor }} />
+        </div>
+        <div className="text-center mt-2 text-lg font-semibold" style={{ color: themeColor }}>
+          {Math.round((min + max) / 2)}{question.unit || ''}
+        </div>
+      </div>
+    );
+  }
+
+  // Opinion Scale
+  if (type === 'opinion_scale') {
+    const scale = question.ratingScale || 5;
+    return (
+      <div className="mt-6">
+        <div className="flex justify-center gap-2">
+          {Array.from({ length: scale }, (_, i) => i + 1).map((num) => (
+            <div key={num} className="w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center font-bold text-gray-600">
+              {num}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Matrix
+  if (type === 'matrix') {
+    const rows = question.rowLabels || ['Row 1', 'Row 2'];
+    const cols = question.colLabels || ['Col 1', 'Col 2', 'Col 3'];
+    return (
+      <div className="mt-6 overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr>
+              <th className="p-2"></th>
+              {cols.map((col: string, idx: number) => (
+                <th key={idx} className="p-2 text-center text-gray-600 font-medium text-xs">{col}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.slice(0, 3).map((row: string, rowIdx: number) => (
+              <tr key={rowIdx} className="border-t border-gray-100">
+                <td className="p-2 text-gray-700 text-xs">{row}</td>
+                {cols.map((_: string, colIdx: number) => (
+                  <td key={colIdx} className="p-2 text-center">
+                    <div className="w-4 h-4 rounded-full border-2 border-gray-300 mx-auto" />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  // Textarea
+  if (type === 'textarea') {
+    return (
+      <textarea
+        placeholder={question.placeholder || 'Type your detailed answer here...'}
+        className="w-full p-4 mt-6 bg-white border border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-200 min-h-[100px]"
+        readOnly
+      />
+    );
+  }
+
+  // Date/Time
+  if (type === 'date' || type === 'time' || type === 'datetime') {
+    return (
+      <input
+        type={type === 'datetime' ? 'datetime-local' : type}
+        className="w-full p-4 mt-6 bg-white border border-gray-200 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-200"
+        readOnly
+      />
+    );
+  }
+
+  // Default: text input
+  return (
+    <input
+      type="text"
+      placeholder={question.placeholder || 'Type your answer here...'}
+      className="w-full p-4 mt-6 bg-white border border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-200"
+      readOnly
+    />
+  );
+}
+
 interface SurveyBodyPreviewProps {
   questions: any[];
   settings: WelcomePageSettings;
@@ -1730,36 +1931,8 @@ function SurveyBodyPreview({
                 </p>
               )}
               
-              {/* Options */}
-              {firstQuestion.options ? (
-                <div className="space-y-3 mt-6">
-                  {firstQuestion.options.map((option: string, idx: number) => (
-                    <label
-                      key={idx}
-                      className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl cursor-pointer transition-all hover:border-gray-300 hover:shadow-sm group"
-                    >
-                      {/* Radio Button */}
-                      <div className="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center flex-shrink-0 group-hover:border-gray-400">
-                        <div className="w-2.5 h-2.5 rounded-full bg-transparent group-hover:bg-gray-200 transition-colors" />
-                      </div>
-                      
-                      {/* Letter Badge */}
-                      <span className="w-8 h-8 flex items-center justify-center text-sm font-semibold text-gray-600 bg-gray-100 rounded-lg flex-shrink-0">
-                        {OPTION_LETTERS[idx] || idx + 1}
-                      </span>
-                      
-                      {/* Option Text */}
-                      <span className="text-gray-800 font-medium">{option}</span>
-                    </label>
-                  ))}
-                </div>
-              ) : (
-                <input
-                  type="text"
-                  placeholder="Type your answer here..."
-                  className="w-full p-4 mt-6 bg-white border border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-200"
-                />
-              )}
+              {/* Question Input Preview - based on type */}
+              <DesignQuestionPreview question={firstQuestion} themeColor={settings.colors.primary} />
             </>
           ) : (
             <div className="text-center py-16 text-gray-400">

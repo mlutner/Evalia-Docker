@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { useRoute, useLocation } from 'wouter';
 import {
   Monitor, Smartphone, Tablet, CheckCircle2, Copy, ExternalLink,
-  Mail, QrCode, Share2, Download
+  Mail, QrCode, Share2, Download, Star, Heart, ThumbsUp, ThumbsDown
 } from 'lucide-react';
-import { SurveyBuilderProvider, useSurveyBuilder } from '@/contexts/SurveyBuilderContext';
+import { SurveyBuilderProvider, useSurveyBuilder, type BuilderQuestion } from '@/contexts/SurveyBuilderContext';
 import { ProgressFlowStepper } from '@/components/builder-v2/ProgressFlowStepper';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { Slider } from '@/components/ui/slider';
 
 export default function PreviewV2() {
   const [, params] = useRoute('/preview-v2/:id');
@@ -529,29 +531,8 @@ function InteractiveSurveyPreview({
           <p className="text-gray-500 mb-6">{currentQuestion.description}</p>
         )}
 
-        {currentQuestion.options && (
-          <div className="space-y-3">
-            {currentQuestion.options.map((option: string, idx: number) => (
-              <label
-                key={idx}
-                className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl cursor-pointer transition-all hover:border-gray-300 hover:shadow-sm group"
-              >
-                {/* Radio Button */}
-                <div className="w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center flex-shrink-0 group-hover:border-gray-400">
-                  <div className="w-2.5 h-2.5 rounded-full bg-transparent group-hover:bg-gray-200 transition-colors" />
-                </div>
-                
-                {/* Letter Badge */}
-                <span className="w-8 h-8 flex items-center justify-center text-sm font-semibold text-gray-600 bg-gray-100 rounded-lg flex-shrink-0">
-                  {OPTION_LETTERS[idx] || idx + 1}
-                </span>
-                
-                {/* Option Text */}
-                <span className="text-gray-800 font-medium">{option}</span>
-              </label>
-            ))}
-          </div>
-        )}
+        {/* Render question input based on type */}
+        <QuestionInput question={currentQuestion} themeColors={themeColors} />
       </div>
 
       {/* Navigation - fixed at bottom */}
@@ -568,6 +549,340 @@ function InteractiveSurveyPreview({
         </Button>
       </div>
     </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// QUESTION INPUT COMPONENT - Renders all question types
+// ═══════════════════════════════════════════════════════════════════════════════
+
+interface QuestionInputProps {
+  question: BuilderQuestion;
+  themeColors: { primary: string; background: string; text: string; buttonText: string };
+}
+
+function QuestionInput({ question, themeColors }: QuestionInputProps) {
+  const [selectedValue, setSelectedValue] = useState<string | number | null>(null);
+  const [sliderValue, setSliderValue] = useState<number>(question.min || 0);
+  const OPTION_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+
+  const type = question.type;
+
+  // Text inputs
+  if (type === 'text' || type === 'email' || type === 'phone' || type === 'url' || type === 'number') {
+    return (
+      <Input
+        type={type === 'number' ? 'number' : 'text'}
+        placeholder={question.placeholder || `Enter your ${type === 'text' ? 'answer' : type}...`}
+        className="mt-4 p-4 text-base"
+      />
+    );
+  }
+
+  // Long text
+  if (type === 'textarea') {
+    return (
+      <Textarea
+        placeholder={question.placeholder || 'Type your detailed answer here...'}
+        className="mt-4 min-h-[120px] text-base"
+        rows={question.rows || 4}
+      />
+    );
+  }
+
+  // Multiple choice / Dropdown
+  if (type === 'multiple_choice' || type === 'dropdown' || type === 'checkbox') {
+    const isCheckbox = type === 'checkbox';
+    return (
+      <div className="space-y-3 mt-4">
+        {(question.options || []).map((option: string, idx: number) => (
+          <label
+            key={idx}
+            className="flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl cursor-pointer transition-all hover:border-gray-300 hover:shadow-sm group"
+          >
+            <div className={`w-5 h-5 ${isCheckbox ? 'rounded' : 'rounded-full'} border-2 border-gray-300 flex items-center justify-center flex-shrink-0 group-hover:border-gray-400`}>
+              <div className={`${isCheckbox ? 'w-3 h-3 rounded-sm' : 'w-2.5 h-2.5 rounded-full'} bg-transparent group-hover:bg-gray-200 transition-colors`} />
+            </div>
+            <span className="w-8 h-8 flex items-center justify-center text-sm font-semibold text-gray-600 bg-gray-100 rounded-lg flex-shrink-0">
+              {OPTION_LETTERS[idx] || idx + 1}
+            </span>
+            <span className="text-gray-800 font-medium">{option}</span>
+          </label>
+        ))}
+      </div>
+    );
+  }
+
+  // Yes/No
+  if (type === 'yes_no') {
+    return (
+      <div className="flex gap-4 mt-4">
+        <button
+          className="flex-1 p-4 rounded-xl border-2 border-gray-200 hover:border-green-400 hover:bg-green-50 transition-all font-semibold text-gray-700"
+          onClick={() => setSelectedValue('yes')}
+        >
+          {question.yesLabel || 'Yes'}
+        </button>
+        <button
+          className="flex-1 p-4 rounded-xl border-2 border-gray-200 hover:border-red-400 hover:bg-red-50 transition-all font-semibold text-gray-700"
+          onClick={() => setSelectedValue('no')}
+        >
+          {question.noLabel || 'No'}
+        </button>
+      </div>
+    );
+  }
+
+  // Rating (stars, numbers, etc.)
+  if (type === 'rating') {
+    const scale = question.ratingScale || 5;
+    const style = question.ratingStyle || 'number';
+    
+    return (
+      <div className="mt-4">
+        <div className="flex justify-center gap-2">
+          {Array.from({ length: scale }, (_, i) => i + 1).map((num) => {
+            if (style === 'star') {
+              return (
+                <button
+                  key={num}
+                  onClick={() => setSelectedValue(num)}
+                  className="p-2 transition-all hover:scale-110"
+                >
+                  <Star
+                    size={32}
+                    className={selectedValue && num <= (selectedValue as number) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}
+                  />
+                </button>
+              );
+            }
+            if (style === 'heart') {
+              return (
+                <button
+                  key={num}
+                  onClick={() => setSelectedValue(num)}
+                  className="p-2 transition-all hover:scale-110"
+                >
+                  <Heart
+                    size={32}
+                    className={selectedValue && num <= (selectedValue as number) ? 'fill-red-500 text-red-500' : 'text-gray-300'}
+                  />
+                </button>
+              );
+            }
+            // Default: numbers
+            return (
+              <button
+                key={num}
+                onClick={() => setSelectedValue(num)}
+                className={`w-12 h-12 rounded-lg border-2 font-bold transition-all ${
+                  selectedValue === num
+                    ? 'border-2 text-white'
+                    : 'border-gray-200 text-gray-600 hover:border-gray-400'
+                }`}
+                style={selectedValue === num ? { backgroundColor: themeColors.primary, borderColor: themeColors.primary } : {}}
+              >
+                {num}
+              </button>
+            );
+          })}
+        </div>
+        {question.ratingLabels && (
+          <div className="flex justify-between mt-2 text-xs text-gray-500">
+            <span>{question.ratingLabels.low}</span>
+            <span>{question.ratingLabels.high}</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // NPS (0-10)
+  if (type === 'nps') {
+    return (
+      <div className="mt-4">
+        <div className="flex justify-center gap-1">
+          {Array.from({ length: 11 }, (_, i) => i).map((num) => (
+            <button
+              key={num}
+              onClick={() => setSelectedValue(num)}
+              className={`w-9 h-9 rounded-lg border font-semibold text-sm transition-all ${
+                selectedValue === num
+                  ? 'text-white'
+                  : num <= 6
+                    ? 'border-red-200 text-red-600 hover:bg-red-50'
+                    : num <= 8
+                      ? 'border-amber-200 text-amber-600 hover:bg-amber-50'
+                      : 'border-green-200 text-green-600 hover:bg-green-50'
+              }`}
+              style={selectedValue === num ? { backgroundColor: themeColors.primary, borderColor: themeColors.primary } : {}}
+            >
+              {num}
+            </button>
+          ))}
+        </div>
+        <div className="flex justify-between mt-2 text-xs">
+          <span className="text-red-500">{question.npsLabels?.detractor || 'Not likely'}</span>
+          <span className="text-green-500">{question.npsLabels?.promoter || 'Extremely likely'}</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Likert
+  if (type === 'likert') {
+    const points = question.likertPoints || 5;
+    const labels = question.customLabels || ['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'];
+    
+    return (
+      <div className="mt-4 space-y-2">
+        {labels.slice(0, points).map((label, idx) => (
+          <label
+            key={idx}
+            className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg cursor-pointer transition-all hover:border-gray-300 group"
+          >
+            <div className="w-4 h-4 rounded-full border-2 border-gray-300 flex items-center justify-center flex-shrink-0 group-hover:border-gray-400">
+              <div className="w-2 h-2 rounded-full bg-transparent group-hover:bg-gray-200 transition-colors" />
+            </div>
+            <span className="text-gray-700">{label}</span>
+          </label>
+        ))}
+      </div>
+    );
+  }
+
+  // Slider
+  if (type === 'slider') {
+    const min = question.min || 0;
+    const max = question.max || 100;
+    const step = question.step || 1;
+    const unit = question.unit || '';
+    
+    return (
+      <div className="mt-6 px-2">
+        <div className="flex justify-between text-xs text-gray-500 mb-2">
+          <span>{question.ratingLabels?.low || min}{unit}</span>
+          <span>{question.ratingLabels?.high || max}{unit}</span>
+        </div>
+        <Slider
+          value={[sliderValue]}
+          onValueChange={(v) => setSliderValue(v[0])}
+          min={min}
+          max={max}
+          step={step}
+          className="w-full"
+        />
+        <div className="text-center mt-2 text-lg font-semibold" style={{ color: themeColors.primary }}>
+          {sliderValue}{unit}
+        </div>
+      </div>
+    );
+  }
+
+  // Opinion Scale (1-5 or 1-10)
+  if (type === 'opinion_scale') {
+    const scale = question.ratingScale || 5;
+    return (
+      <div className="mt-4">
+        <div className="flex justify-center gap-2">
+          {Array.from({ length: scale }, (_, i) => i + 1).map((num) => (
+            <button
+              key={num}
+              onClick={() => setSelectedValue(num)}
+              className={`w-12 h-12 rounded-full border-2 font-bold transition-all ${
+                selectedValue === num
+                  ? 'text-white'
+                  : 'border-gray-200 text-gray-600 hover:border-gray-400'
+              }`}
+              style={selectedValue === num ? { backgroundColor: themeColors.primary, borderColor: themeColors.primary } : {}}
+            >
+              {num}
+            </button>
+          ))}
+        </div>
+        {question.ratingLabels && (
+          <div className="flex justify-between mt-2 text-xs text-gray-500">
+            <span>{question.ratingLabels.low}</span>
+            <span>{question.ratingLabels.high}</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Date
+  if (type === 'date') {
+    return (
+      <Input type="date" className="mt-4 p-4" />
+    );
+  }
+
+  // Time
+  if (type === 'time') {
+    return (
+      <Input type="time" className="mt-4 p-4" />
+    );
+  }
+
+  // Matrix (simplified preview)
+  if (type === 'matrix') {
+    const rows = question.rowLabels || ['Row 1', 'Row 2'];
+    const cols = question.colLabels || ['Col 1', 'Col 2', 'Col 3'];
+    
+    return (
+      <div className="mt-4 overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr>
+              <th className="p-2"></th>
+              {cols.map((col, idx) => (
+                <th key={idx} className="p-2 text-center text-gray-600 font-medium">{col}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, rowIdx) => (
+              <tr key={rowIdx} className="border-t border-gray-100">
+                <td className="p-2 text-gray-700">{row}</td>
+                {cols.map((_, colIdx) => (
+                  <td key={colIdx} className="p-2 text-center">
+                    <div className="w-4 h-4 rounded-full border-2 border-gray-300 mx-auto hover:border-gray-400 cursor-pointer" />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  // Ranking (simplified preview)
+  if (type === 'ranking') {
+    return (
+      <div className="mt-4 space-y-2">
+        {(question.options || ['Option 1', 'Option 2', 'Option 3']).map((option: string, idx: number) => (
+          <div
+            key={idx}
+            className="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-lg cursor-move"
+          >
+            <span className="w-6 h-6 flex items-center justify-center text-xs font-bold text-gray-500 bg-white rounded border">
+              {idx + 1}
+            </span>
+            <span className="text-gray-700">{option}</span>
+          </div>
+        ))}
+        <p className="text-xs text-gray-400 mt-2">Drag to reorder</p>
+      </div>
+    );
+  }
+
+  // Default fallback: text input
+  return (
+    <Input
+      placeholder="Type your answer here..."
+      className="mt-4 p-4 text-base"
+    />
   );
 }
 

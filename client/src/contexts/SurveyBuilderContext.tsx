@@ -103,6 +103,9 @@ export interface BuilderQuestion {
   ratingLabels?: { low?: string; mid?: string; high?: string };
   showLabelsOnly?: boolean;
   
+  // === NPS OPTIONS ===
+  npsLabels?: { detractor?: string; promoter?: string };
+  
   // === LIKERT OPTIONS ===
   likertType?: 'agreement' | 'frequency' | 'importance' | 'satisfaction' | 'quality';
   likertPoints?: number;
