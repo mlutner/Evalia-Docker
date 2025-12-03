@@ -101,18 +101,21 @@ function DesignContent({ surveyId }: { surveyId?: string }) {
     enabled: survey.welcomeScreen.enabled !== false,
     showEstimatedTime: survey.welcomeScreen.showTimeEstimate ?? DEFAULT_WELCOME_SETTINGS.showEstimatedTime,
     showQuestionCount: survey.welcomeScreen.showQuestionCount ?? DEFAULT_WELCOME_SETTINGS.showQuestionCount,
-    // Load theme colors from context
-    colors: survey.welcomeScreen.themeColors || DEFAULT_WELCOME_SETTINGS.colors,
+    // Load theme colors from context (ensure accent is included)
+    colors: survey.welcomeScreen.themeColors 
+      ? { ...DEFAULT_WELCOME_SETTINGS.colors, ...survey.welcomeScreen.themeColors }
+      : DEFAULT_WELCOME_SETTINGS.colors,
     // Load logo settings
     logo: {
       ...DEFAULT_WELCOME_SETTINGS.logo,
       url: survey.welcomeScreen.imageUrl || null,
     },
-    // Load privacy settings
+    // Load privacy settings (ensure all required fields from WelcomePageSettings are included)
     privacy: {
+      ...DEFAULT_WELCOME_SETTINGS.privacy,
       enabled: !!survey.welcomeScreen.privacyText,
       text: survey.welcomeScreen.privacyText || DEFAULT_WELCOME_SETTINGS.privacy.text,
-      linkUrl: survey.welcomeScreen.privacyLinkUrl,
+      linkUrl: survey.welcomeScreen.privacyLinkUrl || DEFAULT_WELCOME_SETTINGS.privacy.linkUrl,
     },
   }));
 
@@ -143,99 +146,73 @@ function DesignContent({ surveyId }: { surveyId?: string }) {
   }));
 
   // Helper to update design settings with optional sync AND persist to context
-  const updateDesignSetting = (key: string, value: string | number | null) => {
+  const updateDesignSetting = useCallback((key: string, value: string | number | null) => {
+    // First, update local state and get the new state for context sync
     setDesignSettings(prev => {
-      let newState = { ...prev };
-      
       if (prev.syncAllScreens) {
         // If syncing, update all screens
         if (key.includes('HeaderImage')) {
-          newState = {
+          return {
             ...prev,
             welcomeHeaderImage: value as string | null,
             surveyHeaderImage: value as string | null,
             thankYouHeaderImage: value as string | null,
           };
-          // Sync to context
-          updateWelcomeScreen({ headerImage: value as string | undefined });
-          updateThankYouScreen({ headerImage: value as string | undefined });
         } else if (key.includes('Background') && !key.includes('Overlay')) {
-          newState = {
+          return {
             ...prev,
             welcomeBackground: value as string | null,
             surveyBackground: value as string | null,
             thankYouBackground: value as string | null,
           };
-          // Sync to context - update backgroundImage.url
-          const bgSettings = { url: value as string | undefined, overlayColor: prev.welcomeOverlayColor, overlayOpacity: prev.welcomeOverlayOpacity };
-          updateWelcomeScreen({ backgroundImage: bgSettings });
-          updateThankYouScreen({ backgroundImage: bgSettings });
         } else if (key.includes('OverlayOpacity')) {
-          newState = {
+          return {
             ...prev,
             welcomeOverlayOpacity: value as number,
             surveyOverlayOpacity: value as number,
             thankYouOverlayOpacity: value as number,
           };
-          // Sync overlay to context
-          updateWelcomeScreen({ 
-            backgroundImage: { 
-              url: prev.welcomeBackground || undefined, 
-              overlayColor: prev.welcomeOverlayColor, 
-              overlayOpacity: value as number 
-            } 
-          });
-          updateThankYouScreen({ 
-            backgroundImage: { 
-              url: prev.thankYouBackground || undefined, 
-              overlayColor: prev.thankYouOverlayColor, 
-              overlayOpacity: value as number 
-            } 
-          });
         } else if (key.includes('OverlayColor')) {
-          newState = {
+          return {
             ...prev,
             welcomeOverlayColor: value as string,
             surveyOverlayColor: value as string,
             thankYouOverlayColor: value as string,
           };
-          // Sync overlay to context
-          updateWelcomeScreen({ 
-            backgroundImage: { 
-              url: prev.welcomeBackground || undefined, 
-              overlayColor: value as string, 
-              overlayOpacity: prev.welcomeOverlayOpacity 
-            } 
-          });
-          updateThankYouScreen({ 
-            backgroundImage: { 
-              url: prev.thankYouBackground || undefined, 
-              overlayColor: value as string, 
-              overlayOpacity: prev.thankYouOverlayOpacity 
-            } 
-          });
-        }
-      } else {
-        newState = { ...prev, [key]: value };
-        // Sync individual screen to context
-        if (key === 'welcomeHeaderImage') {
-          updateWelcomeScreen({ headerImage: value as string | undefined });
-        } else if (key === 'welcomeBackground') {
-          updateWelcomeScreen({ backgroundImage: { url: value as string | undefined, overlayColor: prev.welcomeOverlayColor, overlayOpacity: prev.welcomeOverlayOpacity } });
-        } else if (key === 'welcomeOverlayColor' || key === 'welcomeOverlayOpacity') {
-          updateWelcomeScreen({ backgroundImage: { url: prev.welcomeBackground || undefined, overlayColor: key === 'welcomeOverlayColor' ? value as string : prev.welcomeOverlayColor, overlayOpacity: key === 'welcomeOverlayOpacity' ? value as number : prev.welcomeOverlayOpacity } });
-        } else if (key === 'thankYouHeaderImage') {
-          updateThankYouScreen({ headerImage: value as string | undefined });
-        } else if (key === 'thankYouBackground') {
-          updateThankYouScreen({ backgroundImage: { url: value as string | undefined, overlayColor: prev.thankYouOverlayColor, overlayOpacity: prev.thankYouOverlayOpacity } });
-        } else if (key === 'thankYouOverlayColor' || key === 'thankYouOverlayOpacity') {
-          updateThankYouScreen({ backgroundImage: { url: prev.thankYouBackground || undefined, overlayColor: key === 'thankYouOverlayColor' ? value as string : prev.thankYouOverlayColor, overlayOpacity: key === 'thankYouOverlayOpacity' ? value as number : prev.thankYouOverlayOpacity } });
         }
       }
-      
-      return newState;
+      return { ...prev, [key]: value };
     });
-  };
+    
+    // Sync to context AFTER state update (not inside setState)
+    // Use setTimeout to ensure state is updated before context sync
+    setTimeout(() => {
+      setDesignSettings(currentState => {
+        // Now sync the current state to context
+        if (currentState.syncAllScreens || key.startsWith('welcome')) {
+          updateWelcomeScreen({ 
+            headerImage: currentState.welcomeHeaderImage || undefined,
+            backgroundImage: {
+              url: currentState.welcomeBackground || undefined,
+              overlayColor: currentState.welcomeOverlayColor,
+              overlayOpacity: currentState.welcomeOverlayOpacity,
+            },
+          });
+        }
+        if (currentState.syncAllScreens || key.startsWith('thankYou')) {
+          updateThankYouScreen({ 
+            headerImage: currentState.thankYouHeaderImage || undefined,
+            backgroundImage: {
+              url: currentState.thankYouBackground || undefined,
+              overlayColor: currentState.thankYouOverlayColor,
+              overlayOpacity: currentState.thankYouOverlayOpacity,
+            },
+          });
+        }
+        return currentState; // Don't actually change state, just read it
+      });
+    }, 0);
+  }, [updateWelcomeScreen, updateThankYouScreen]);
   
   // Get current screen's overlay settings
   const getCurrentOverlay = () => {
