@@ -312,7 +312,21 @@ function evaliaToBuilder(q: EvaliaQuestion, index: number): BuilderQuestion {
   const type = normalizeQuestionType(q.type);
   const displayType = getDisplayNameForType(type);
   
+  // Get defaults for this question type
+  const typeConfig = QUESTION_TYPES[type];
+  const typeDefaults = typeConfig?.defaultParams || {};
+  
+  // Apply type-specific defaults for rating questions
+  const ratingDefaults = type === 'rating' ? {
+    ratingScale: 5,
+    ratingStyle: 'number' as const,
+  } : {};
+  
   return {
+    // Type defaults first (lowest priority)
+    ...typeDefaults,
+    ...ratingDefaults,
+    // Then question-specific values (override defaults)
     id: q.id,
     type,
     displayType,
@@ -321,7 +335,7 @@ function evaliaToBuilder(q: EvaliaQuestion, index: number): BuilderQuestion {
     required: q.required || false,
     hasLogic: !!q.skipCondition,
     order: index,
-    // Copy all schema parameters
+    // Copy all schema parameters (explicit values override defaults)
     placeholder: q.placeholder,
     minLength: q.minLength,
     maxLength: q.maxLength,
@@ -339,8 +353,8 @@ function evaliaToBuilder(q: EvaliaQuestion, index: number): BuilderQuestion {
     imageSize: q.imageSize,
     showLabels: q.showLabels,
     columns: q.columns,
-    ratingScale: q.ratingScale,
-    ratingStyle: q.ratingStyle,
+    ratingScale: q.ratingScale ?? ratingDefaults.ratingScale,
+    ratingStyle: q.ratingStyle ?? ratingDefaults.ratingStyle,
     ratingLabels: q.ratingLabels,
     showLabelsOnly: q.showLabelsOnly,
     likertType: q.likertType,

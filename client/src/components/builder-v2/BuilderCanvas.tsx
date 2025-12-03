@@ -762,43 +762,72 @@ function QuestionPreview({
   if (type === 'rating') {
     const scale = question.ratingScale || 5;
     const style = question.ratingStyle || 'number'; // Default to number scale, not stars
+    const lowLabel = question.ratingLabels?.low;
+    const highLabel = question.ratingLabels?.high;
+    
+    // Calculate button size based on scale
+    const getButtonSize = () => {
+      if (scale <= 5) return 'w-14 h-14 text-lg';
+      if (scale <= 7) return 'w-12 h-12 text-base';
+      return 'w-10 h-10 text-sm';
+    };
+    const buttonSize = getButtonSize();
     
     return (
-      <div>
-        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Rating Scale</p>
-        <div className="flex gap-3 justify-center p-4">
-          {Array.from({ length: scale }, (_, i) => {
-            if (style === 'heart') {
-              return (
-                <button key={i} className="hover:scale-110 transition-transform">
-                  <Heart size={32} className="text-gray-300 hover:text-red-400 hover:fill-red-400 transition-colors" />
-                </button>
-              );
-            }
-            if (style === 'number') {
-              return (
-                <button
-                  key={i}
-                  className="w-10 h-10 border-2 border-gray-200 rounded-lg flex items-center justify-center 
-                           text-base font-bold text-gray-900 bg-white hover:border-purple-400 
-                           hover:bg-purple-50 hover:text-purple-600 transition-all"
-                >
-                  {i + 1}
-                </button>
-              );
-            }
-            return (
-              <button key={i} className="hover:scale-110 transition-transform">
-              <Star size={32} className="text-gray-300 hover:text-yellow-400 hover:fill-yellow-400 transition-colors" />
+      <div className="py-2">
+        {/* Stars / Hearts Style */}
+        {(style === 'star' || style === 'heart') && (
+          <div className="flex gap-2 justify-center py-4">
+            {Array.from({ length: scale }, (_, i) => (
+              <button 
+                key={i} 
+                className="p-2 hover:scale-110 transition-transform rounded-lg hover:bg-gray-50"
+              >
+                {style === 'heart' ? (
+                  <Heart size={36} className="text-gray-300 hover:text-red-400 hover:fill-red-400 transition-colors" />
+                ) : (
+                  <Star size={36} className="text-gray-300 hover:text-amber-400 hover:fill-amber-400 transition-colors" />
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+        
+        {/* Thumbs Style */}
+        {style === 'thumb' && (
+          <div className="flex gap-3 justify-center py-4">
+            <button className="p-4 rounded-xl border-2 border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all">
+              <ThumbsDown size={32} className="text-gray-400 hover:text-red-500" />
             </button>
-            );
-          })}
-        </div>
-        {question.ratingLabels && (
-        <div className="flex justify-between text-xs text-gray-500 mt-3 px-2">
-            <span>{question.ratingLabels.low || 'Poor'}</span>
-            <span>{question.ratingLabels.high || 'Excellent'}</span>
-        </div>
+            <button className="p-4 rounded-xl border-2 border-gray-200 hover:border-green-300 hover:bg-green-50 transition-all">
+              <ThumbsUp size={32} className="text-gray-400 hover:text-green-500" />
+            </button>
+          </div>
+        )}
+        
+        {/* Number Style - Clean horizontal scale */}
+        {style === 'number' && (
+          <div className="flex justify-center gap-2 py-4">
+            {Array.from({ length: scale }, (_, i) => (
+              <button
+                key={i}
+                className={`${buttonSize} rounded-xl border-2 border-gray-200 
+                         flex items-center justify-center font-bold text-gray-600
+                         bg-white hover:border-purple-400 hover:bg-purple-50 
+                         hover:text-purple-600 transition-all shadow-sm`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        )}
+        
+        {/* Labels */}
+        {(lowLabel || highLabel) && (
+          <div className="flex justify-between text-sm text-gray-500 mt-2 px-2">
+            <span className="font-medium">{lowLabel || ''}</span>
+            <span className="font-medium">{highLabel || ''}</span>
+          </div>
         )}
       </div>
     );

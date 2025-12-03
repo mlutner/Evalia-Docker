@@ -348,12 +348,12 @@ export const QUESTION_TYPES: Record<string, QuestionTypeConfig> = {
   // ============================================
   rating: {
     type: 'rating',
-    displayName: 'Star Rating',
-    icon: Star,
+    displayName: 'Rating Scale',
+    icon: BarChart3,
     category: 'rating_scale',
-    description: 'Visual rating scale (1-N)',
+    description: 'Numeric rating scale (1-N)',
     defaultQuestion: 'How would you rate your experience?',
-    defaultParams: { ratingScale: 5, ratingStyle: 'star' },
+    defaultParams: { ratingScale: 5, ratingStyle: 'number' },
     isScoreable: true,
     supportsOptions: false,
     supportsValidation: false,
@@ -361,25 +361,25 @@ export const QUESTION_TYPES: Record<string, QuestionTypeConfig> = {
     parameters: [
       { 
         key: 'ratingScale', 
-        label: 'Number of Stars', 
+        label: 'Scale Points', 
         type: 'select',
         defaultValue: 5,
         options: [
-          { value: '3', label: '3 Stars' },
-          { value: '5', label: '5 Stars' },
-          { value: '7', label: '7 Stars' },
-          { value: '10', label: '10 Stars' },
+          { value: '3', label: '3 points' },
+          { value: '5', label: '5 points' },
+          { value: '7', label: '7 points' },
+          { value: '10', label: '10 points' },
         ]
       },
       { 
         key: 'ratingStyle', 
         label: 'Rating Style', 
         type: 'select',
-        defaultValue: 'star',
+        defaultValue: 'number',
         options: [
+          { value: 'number', label: '123 Numbers' },
           { value: 'star', label: '⭐ Stars' },
           { value: 'heart', label: '❤️ Hearts' },
-          { value: 'number', label: 'Numbers' },
           { value: 'thumb', label: '👍 Thumbs' },
         ]
       },
