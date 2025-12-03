@@ -22,7 +22,7 @@
  * @module pages/DesignV2
  */
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useRoute, useLocation } from 'wouter';
 import { 
   Monitor, Smartphone, Tablet, Upload, Image as ImageIcon, Palette, Type, Layout, 
@@ -127,10 +127,22 @@ const LOGO_SIZES = [
  * @see PreviewV2 for how these settings are rendered
  */
 function DesignContent({ surveyId }: { surveyId?: string }) {
-  const { survey, questions, updateWelcomeScreen, updateThankYouScreen } = useSurveyBuilder();
+  const { survey, questions, updateWelcomeScreen, updateThankYouScreen, saveSurvey, isDirty } = useSurveyBuilder();
   const [deviceView, setDeviceView] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [activeScreen, setActiveScreen] = useState<'welcome' | 'survey' | 'thankyou'>('welcome');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // AUTO-SAVE: Save when navigating away or unmounting
+  // ─────────────────────────────────────────────────────────────────────────────
+  useEffect(() => {
+    return () => {
+      // Auto-save on unmount if there are unsaved changes
+      if (isDirty && surveyId && surveyId !== 'new') {
+        saveSurvey();
+      }
+    };
+  }, [isDirty, surveyId, saveSurvey]);
 
   // ─────────────────────────────────────────────────────────────────────────────
   // WELCOME PAGE SETTINGS - Content & branding (syncs to context)
@@ -1649,7 +1661,7 @@ function SurveyBodyPreview({
   const OPTION_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
   return (
-    <div className="shadow-2xl overflow-hidden rounded-2xl relative">
+    <div className="shadow-2xl overflow-hidden rounded-2xl relative h-[500px]">
       {/* Background Layer */}
       {isImageBackground && (
         <>
@@ -1659,7 +1671,7 @@ function SurveyBodyPreview({
           />
           <div 
             className="absolute inset-0"
-      style={{ 
+            style={{ 
               backgroundColor: overlayColor,
               opacity: overlayOpacity / 100,
             }}
@@ -1668,13 +1680,13 @@ function SurveyBodyPreview({
       )}
 
       <div 
-        className="relative z-10 flex flex-col min-h-[500px]"
+        className="relative z-10 flex flex-col h-full"
         style={{ 
           backgroundColor: isSolidBackground ? backgroundImage : (isImageBackground ? 'transparent' : '#FFFFFF')
         }}
       >
-        {/* Dark Header Bar */}
-        <div className="h-3 bg-[#1e293b]" />
+        {/* Dark Header Bar - Always visible default styling */}
+        <div className="h-3" style={{ backgroundColor: settings.colors.primary }} />
 
         {/* Header Image */}
         {headerImage && (
@@ -1799,7 +1811,7 @@ function ThankYouPreview({
   const isSolidBackground = backgroundImage && backgroundImage.startsWith('#');
 
   return (
-    <div className="shadow-2xl overflow-hidden rounded-2xl relative">
+    <div className="shadow-2xl overflow-hidden rounded-2xl relative h-[500px]">
       {/* Background Layer */}
       {isImageBackground && (
         <>
@@ -1809,7 +1821,7 @@ function ThankYouPreview({
           />
           <div 
             className="absolute inset-0"
-      style={{ 
+            style={{ 
               backgroundColor: overlayColor,
               opacity: overlayOpacity / 100,
             }}
@@ -1818,30 +1830,22 @@ function ThankYouPreview({
       )}
 
       <div
-        className="relative z-10"
+        className="relative z-10 h-full flex flex-col"
         style={{ 
           backgroundColor: isSolidBackground ? backgroundImage : (isImageBackground ? 'transparent' : settings.colors.background)
         }}
       >
-        {/* Header Image */}
-        {headerImage && (
-          <div className="relative h-32 overflow-hidden">
-            <img 
-              src={headerImage} 
-              alt="Thank you header" 
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/30" />
-        </div>
-      )}
+        {/* Header Bar - Always visible default styling */}
+        <div className="h-3" style={{ backgroundColor: settings.colors.primary }} />
 
-        <div className={`p-8 text-center min-h-[300px] flex flex-col items-center justify-center ${isImageBackground ? 'text-white' : ''}`}>
+        {/* Content */}
+        <div className={`flex-1 p-8 text-center flex flex-col items-center justify-center ${isImageBackground ? 'text-white' : ''}`}>
           <div 
             className={`w-16 h-16 rounded-full flex items-center justify-center mb-6 ${isImageBackground ? 'bg-white/20' : ''}`}
             style={{ backgroundColor: isImageBackground ? undefined : settings.colors.primary + '20' }}
           >
             <Check size={32} style={{ color: isImageBackground ? '#FFFFFF' : settings.colors.primary }} />
-              </div>
+          </div>
           <h1 
             className="text-2xl font-bold mb-3" 
             style={{ color: isImageBackground ? '#FFFFFF' : settings.colors.text }}
@@ -1859,7 +1863,7 @@ function ThankYouPreview({
         {/* Footer */}
         <div className={`px-8 py-4 text-center border-t ${isImageBackground ? 'border-white/10 bg-black/20' : 'border-gray-100 bg-gray-50'}`}>
           <p className={`text-xs ${isImageBackground ? 'text-white/50' : 'text-gray-400'}`}>
-            Powered by Evalia • Your data is secure
+            Powered by Evalia
           </p>
         </div>
       </div>
@@ -1893,7 +1897,7 @@ function WelcomePagePreviewEnhanced({
   const estimatedTime = Math.max(1, Math.ceil(questionCount * 0.5));
 
   return (
-    <div className="shadow-2xl overflow-hidden rounded-2xl relative">
+    <div className="shadow-2xl overflow-hidden rounded-2xl relative h-[500px]">
       {/* Background Layer */}
       {isImageBackground && (
         <>
@@ -1903,7 +1907,7 @@ function WelcomePagePreviewEnhanced({
           />
           <div 
             className="absolute inset-0"
-                    style={{ 
+            style={{ 
               backgroundColor: overlayColor,
               opacity: overlayOpacity / 100,
             }}
@@ -1912,39 +1916,16 @@ function WelcomePagePreviewEnhanced({
       )}
 
       <div
-        className="relative z-10"
+        className="relative z-10 h-full flex flex-col"
         style={{ 
           backgroundColor: isSolidBackground ? backgroundImage : (isImageBackground ? 'transparent' : settings.colors.background)
         }}
       >
-        {/* Header Image */}
-        {headerImage && (
-          <div className="relative h-40 overflow-hidden">
-            <img 
-              src={headerImage} 
-              alt="Welcome header" 
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40" />
-              </div>
-            )}
-
-        {/* Logo */}
-        {settings.logo.url && (
-          <div className={`flex justify-${settings.logo.position} px-8 ${headerImage ? '-mt-8 relative z-10' : 'pt-8'}`}>
-            <img 
-              src={settings.logo.url} 
-              alt="Logo"
-              className={`object-contain ${headerImage ? 'bg-white/90 p-2 rounded-lg shadow-lg' : ''}`}
-                style={{ 
-                height: settings.logo.size === 'small' ? 40 : settings.logo.size === 'medium' ? 64 : 96 
-              }}
-            />
-          </div>
-        )}
+        {/* Header Bar - Always visible default styling */}
+        <div className="h-3" style={{ backgroundColor: settings.colors.primary }} />
 
         {/* Content */}
-        <div className={`p-8 text-center ${headerImage && settings.logo.url ? 'pt-4' : ''} ${isImageBackground ? 'text-white' : ''}`}>
+        <div className={`flex-1 p-8 text-center flex flex-col items-center justify-center ${isImageBackground ? 'text-white' : ''}`}>
           <h1 
             className="text-3xl font-bold mb-4"
             style={{ color: isImageBackground ? '#FFFFFF' : settings.colors.text }}

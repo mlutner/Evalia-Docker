@@ -392,8 +392,8 @@ function InteractiveSurveyPreview({
   if (showWelcome && survey.welcomeScreen.enabled) {
     return (
       <div className="bg-white rounded-xl shadow-lg overflow-hidden h-[500px] flex flex-col">
-        {/* Dark Header Bar - consistent with question view */}
-        <div className="h-3 bg-[#1e293b]" />
+        {/* Header Bar - uses theme primary color */}
+        <div className="h-3" style={{ backgroundColor: themeColors.primary }} />
 
         {/* Content */}
         <div className="flex-1 p-8 text-center flex flex-col items-center justify-center">
@@ -404,7 +404,8 @@ function InteractiveSurveyPreview({
             {survey.welcomeScreen.title || 'Welcome'}
           </h1>
           <p 
-            className="mb-6 max-w-md text-gray-600"
+            className="mb-6 max-w-md"
+            style={{ color: themeColors.text, opacity: 0.7 }}
           >
             {survey.welcomeScreen.description || 'Your feedback helps us improve'}
           </p>
@@ -440,13 +441,16 @@ function InteractiveSurveyPreview({
   if (showThankYou) {
     return (
       <div className="bg-white rounded-xl shadow-lg overflow-hidden h-[500px] flex flex-col">
-        {/* Dark Header Bar - consistent */}
-        <div className="h-3 bg-[#1e293b]" />
+        {/* Header Bar - uses theme primary color */}
+        <div className="h-3" style={{ backgroundColor: themeColors.primary }} />
 
         {/* Content */}
         <div className="flex-1 p-8 text-center flex flex-col items-center justify-center">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-green-100">
-            <CheckCircle2 size={32} className="text-green-500" />
+          <div 
+            className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+            style={{ backgroundColor: themeColors.primary + '20' }}
+          >
+            <CheckCircle2 size={32} style={{ color: themeColors.primary }} />
           </div>
           <h1 
             className="text-2xl font-bold mb-3"
@@ -454,7 +458,10 @@ function InteractiveSurveyPreview({
           >
             {survey.thankYouScreen.title || 'Thank you!'}
           </h1>
-          <p className="mb-6 text-gray-600">
+          <p 
+            className="mb-6"
+            style={{ color: themeColors.text, opacity: 0.7 }}
+          >
             {survey.thankYouScreen.message || 'Your response has been recorded.'}
           </p>
           <Button variant="outline" onClick={handleRestart}>
@@ -478,7 +485,7 @@ function InteractiveSurveyPreview({
   if (!currentQuestion) {
     return (
       <div className="bg-white rounded-xl shadow-lg overflow-hidden h-[500px] flex flex-col">
-        <div className="h-3 bg-[#1e293b]" />
+        <div className="h-3" style={{ backgroundColor: themeColors.primary }} />
         <div className="flex-1 flex items-center justify-center">
           <p className="text-gray-500">No questions to preview. Add questions in the Builder.</p>
         </div>
@@ -488,8 +495,8 @@ function InteractiveSurveyPreview({
 
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden h-[500px] flex flex-col">
-      {/* Dark Header Bar */}
-      <div className="h-3 bg-[#1e293b]" />
+      {/* Header Bar - uses theme primary color */}
+      <div className="h-3" style={{ backgroundColor: themeColors.primary }} />
 
       {/* Progress Bar */}
       <div className="h-1.5 bg-gray-200">
