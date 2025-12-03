@@ -92,13 +92,28 @@ function DesignContent({ surveyId }: { surveyId?: string }) {
   const [activeScreen, setActiveScreen] = useState<'welcome' | 'survey' | 'thankyou'>('welcome');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Welcome page settings state
+  // Welcome page settings state - load from context to preserve saved settings
   const [welcomeSettings, setWelcomeSettings] = useState<WelcomePageSettings>(() => ({
     ...DEFAULT_WELCOME_SETTINGS,
     title: survey.welcomeScreen.title || DEFAULT_WELCOME_SETTINGS.title,
     description: survey.welcomeScreen.description || DEFAULT_WELCOME_SETTINGS.description,
     buttonText: survey.welcomeScreen.buttonText || DEFAULT_WELCOME_SETTINGS.buttonText,
     enabled: survey.welcomeScreen.enabled !== false,
+    showEstimatedTime: survey.welcomeScreen.showTimeEstimate ?? DEFAULT_WELCOME_SETTINGS.showEstimatedTime,
+    showQuestionCount: survey.welcomeScreen.showQuestionCount ?? DEFAULT_WELCOME_SETTINGS.showQuestionCount,
+    // Load theme colors from context
+    colors: survey.welcomeScreen.themeColors || DEFAULT_WELCOME_SETTINGS.colors,
+    // Load logo settings
+    logo: {
+      ...DEFAULT_WELCOME_SETTINGS.logo,
+      url: survey.welcomeScreen.imageUrl || null,
+    },
+    // Load privacy settings
+    privacy: {
+      enabled: !!survey.welcomeScreen.privacyText,
+      text: survey.welcomeScreen.privacyText || DEFAULT_WELCOME_SETTINGS.privacy.text,
+      linkUrl: survey.welcomeScreen.privacyLinkUrl,
+    },
   }));
 
   // AI Chat state
@@ -106,63 +121,119 @@ function DesignContent({ surveyId }: { surveyId?: string }) {
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
 
   // Unified design state for all screens (Welcome, Survey, Thank You)
-  // These settings apply globally across all screens for consistency
-  const [designSettings, setDesignSettings] = useState({
-    // Welcome screen specific
-    welcomeHeaderImage: null as string | null,
-    welcomeBackground: null as string | null,
-    welcomeOverlayColor: '#000000',
-    welcomeOverlayOpacity: 40,
-    // Survey screen specific
-    surveyHeaderImage: null as string | null,
-    surveyBackground: null as string | null,
-    surveyOverlayColor: '#000000',
-    surveyOverlayOpacity: 40,
-    // Thank You screen specific
-    thankYouHeaderImage: null as string | null,
-    thankYouBackground: null as string | null,
-    thankYouOverlayColor: '#000000',
-    thankYouOverlayOpacity: 40,
+  // Initialize from context to preserve saved settings
+  const [designSettings, setDesignSettings] = useState(() => ({
+    // Welcome screen specific - load from context
+    welcomeHeaderImage: survey.welcomeScreen.headerImage || null,
+    welcomeBackground: survey.welcomeScreen.backgroundImage?.url || null,
+    welcomeOverlayColor: survey.welcomeScreen.backgroundImage?.overlayColor || '#000000',
+    welcomeOverlayOpacity: survey.welcomeScreen.backgroundImage?.overlayOpacity ?? 40,
+    // Survey screen specific - initially sync with welcome
+    surveyHeaderImage: survey.welcomeScreen.headerImage || null,
+    surveyBackground: survey.welcomeScreen.backgroundImage?.url || null,
+    surveyOverlayColor: survey.welcomeScreen.backgroundImage?.overlayColor || '#000000',
+    surveyOverlayOpacity: survey.welcomeScreen.backgroundImage?.overlayOpacity ?? 40,
+    // Thank You screen specific - load from context
+    thankYouHeaderImage: survey.thankYouScreen.headerImage || null,
+    thankYouBackground: survey.thankYouScreen.backgroundImage?.url || null,
+    thankYouOverlayColor: survey.thankYouScreen.backgroundImage?.overlayColor || '#000000',
+    thankYouOverlayOpacity: survey.thankYouScreen.backgroundImage?.overlayOpacity ?? 40,
     // Option to sync all screens to use same design
     syncAllScreens: true,
-  });
+  }));
 
-  // Helper to update design settings with optional sync
+  // Helper to update design settings with optional sync AND persist to context
   const updateDesignSetting = (key: string, value: string | number | null) => {
     setDesignSettings(prev => {
+      let newState = { ...prev };
+      
       if (prev.syncAllScreens) {
         // If syncing, update all screens
         if (key.includes('HeaderImage')) {
-          return {
+          newState = {
             ...prev,
             welcomeHeaderImage: value as string | null,
             surveyHeaderImage: value as string | null,
             thankYouHeaderImage: value as string | null,
           };
+          // Sync to context
+          updateWelcomeScreen({ headerImage: value as string | undefined });
+          updateThankYouScreen({ headerImage: value as string | undefined });
         } else if (key.includes('Background') && !key.includes('Overlay')) {
-          return {
+          newState = {
             ...prev,
             welcomeBackground: value as string | null,
             surveyBackground: value as string | null,
             thankYouBackground: value as string | null,
           };
+          // Sync to context - update backgroundImage.url
+          const bgSettings = { url: value as string | undefined, overlayColor: prev.welcomeOverlayColor, overlayOpacity: prev.welcomeOverlayOpacity };
+          updateWelcomeScreen({ backgroundImage: bgSettings });
+          updateThankYouScreen({ backgroundImage: bgSettings });
         } else if (key.includes('OverlayOpacity')) {
-          return {
+          newState = {
             ...prev,
             welcomeOverlayOpacity: value as number,
             surveyOverlayOpacity: value as number,
             thankYouOverlayOpacity: value as number,
           };
+          // Sync overlay to context
+          updateWelcomeScreen({ 
+            backgroundImage: { 
+              url: prev.welcomeBackground || undefined, 
+              overlayColor: prev.welcomeOverlayColor, 
+              overlayOpacity: value as number 
+            } 
+          });
+          updateThankYouScreen({ 
+            backgroundImage: { 
+              url: prev.thankYouBackground || undefined, 
+              overlayColor: prev.thankYouOverlayColor, 
+              overlayOpacity: value as number 
+            } 
+          });
         } else if (key.includes('OverlayColor')) {
-          return {
+          newState = {
             ...prev,
             welcomeOverlayColor: value as string,
             surveyOverlayColor: value as string,
             thankYouOverlayColor: value as string,
           };
+          // Sync overlay to context
+          updateWelcomeScreen({ 
+            backgroundImage: { 
+              url: prev.welcomeBackground || undefined, 
+              overlayColor: value as string, 
+              overlayOpacity: prev.welcomeOverlayOpacity 
+            } 
+          });
+          updateThankYouScreen({ 
+            backgroundImage: { 
+              url: prev.thankYouBackground || undefined, 
+              overlayColor: value as string, 
+              overlayOpacity: prev.thankYouOverlayOpacity 
+            } 
+          });
+        }
+      } else {
+        newState = { ...prev, [key]: value };
+        // Sync individual screen to context
+        if (key === 'welcomeHeaderImage') {
+          updateWelcomeScreen({ headerImage: value as string | undefined });
+        } else if (key === 'welcomeBackground') {
+          updateWelcomeScreen({ backgroundImage: { url: value as string | undefined, overlayColor: prev.welcomeOverlayColor, overlayOpacity: prev.welcomeOverlayOpacity } });
+        } else if (key === 'welcomeOverlayColor' || key === 'welcomeOverlayOpacity') {
+          updateWelcomeScreen({ backgroundImage: { url: prev.welcomeBackground || undefined, overlayColor: key === 'welcomeOverlayColor' ? value as string : prev.welcomeOverlayColor, overlayOpacity: key === 'welcomeOverlayOpacity' ? value as number : prev.welcomeOverlayOpacity } });
+        } else if (key === 'thankYouHeaderImage') {
+          updateThankYouScreen({ headerImage: value as string | undefined });
+        } else if (key === 'thankYouBackground') {
+          updateThankYouScreen({ backgroundImage: { url: value as string | undefined, overlayColor: prev.thankYouOverlayColor, overlayOpacity: prev.thankYouOverlayOpacity } });
+        } else if (key === 'thankYouOverlayColor' || key === 'thankYouOverlayOpacity') {
+          updateThankYouScreen({ backgroundImage: { url: prev.thankYouBackground || undefined, overlayColor: key === 'thankYouOverlayColor' ? value as string : prev.thankYouOverlayColor, overlayOpacity: key === 'thankYouOverlayOpacity' ? value as number : prev.thankYouOverlayOpacity } });
         }
       }
-      return { ...prev, [key]: value };
+      
+      return newState;
     });
   };
   
@@ -182,12 +253,18 @@ function DesignContent({ surveyId }: { surveyId?: string }) {
   const handleWelcomeSettingsChange = (changes: Partial<WelcomePageSettings>) => {
     setWelcomeSettings(prev => {
       const updated = { ...prev, ...changes };
-      // Sync with context
+      // Sync ALL settings with context for persistence
       updateWelcomeScreen({
         title: updated.title,
         description: updated.description,
         buttonText: updated.buttonText,
         enabled: updated.enabled,
+        showTimeEstimate: updated.showEstimatedTime,
+        showQuestionCount: updated.showQuestionCount,
+        themeColors: updated.colors,
+        imageUrl: updated.logo?.url || undefined,
+        privacyText: updated.privacy?.enabled ? updated.privacy.text : undefined,
+        privacyLinkUrl: updated.privacy?.linkUrl,
       });
       return updated;
     });
