@@ -1,166 +1,184 @@
 # Evalia Survey Builder - Changelog
 
-## [Unreleased] - 2025-12-03
+## December 3, 2025 - Major Updates
 
-### 🗃️ Database & Infrastructure
+### Repository Configuration
+- **Primary Repository:** https://github.com/mlutner/Evalia-Docker.git
+- **Local Path:** `/Users/mikelutner/EvaliaSurvey`
+- **Database:** Docker PostgreSQL (localhost:5432)
 
-#### Template Question Field Names (FIXED)
-- **Problem**: Templates stored questions with `matrixRows` and `matrixColumns` but the schema expects `rowLabels` and `colLabels`. This caused matrix questions to not render properly.
-- **Solution**: 
-  - Ran SQL migration to update all 26 templates in the database
-  - Fixed `server/seedTemplates.ts` (lines 48-51) to use correct field names
-- **Files Changed**: `server/seedTemplates.ts`, `shared/templates.ts`
+---
 
-#### Database Connection Safeguards (NEW)
-- Added warning banner in `server/db.ts` showing which database is connected
-- Created `DATABASE_SETUP.md` documentation
-- Created `env.example.txt` template file
-- **Purpose**: Prevent confusion between local Docker database and production Neon database
+## Features & Fixes Implemented
 
-### 📋 Question Bank (MAJOR UPDATE)
+### 1. Survey Title Flow to Welcome Screen
+**Commit:** `066c0af`
 
-#### Expanded Question Library
-- **Before**: 30 questions
-- **After**: 161 questions (5x increase!)
+- When loading templates or AI-generated surveys, the survey title now automatically populates the welcome screen title
+- Survey description also flows to welcome screen description
+- Added survey title to footer across all preview screens: `{survey.title} • Powered by Evalia`
 
-#### New Categories (23 total):
-| Category | Description |
-|----------|-------------|
-| engagement | Employee engagement and satisfaction |
-| management | Manager effectiveness and support |
-| training | Training and development feedback |
-| workload | Workload and stress management |
-| culture | Organizational culture and values |
-| onboarding | New employee experience |
-| pulse | Quick check-in surveys |
-| belonging | Inclusion and belonging |
-| wellbeing | Employee wellbeing and mental health |
-| compensation | Pay and benefits |
-| career | Career development |
-| feedback | General feedback collection |
-| mission | Mission alignment |
-| innovation | Innovation culture |
-| agility | Organizational agility |
-| communication | Communication effectiveness |
-| leadership | Leadership effectiveness |
-| challenges | Work challenges |
-| satisfaction | Customer satisfaction |
-| advocacy | Employee advocacy |
-| improvement | Improvement suggestions |
-| relationships | Workplace relationships |
-| diversity | Diversity and inclusion |
+**Files Modified:**
+- `client/src/contexts/SurveyBuilderContext.tsx`
 
-#### Question Type Mappings:
-| Input Type | Scale Type | Output Type | Display Name |
-|------------|------------|-------------|--------------|
-| rating | likert_5 | likert | Likert Scale |
-| rating | nps | nps | NPS |
-| rating | emoji | emoji_rating | Emoji Rating |
-| rating | thumbs | rating | Thumbs Rating |
-| open_ended | - | textarea | Long Text |
-| multiple_choice | - | multiple_choice | Multiple Choice |
+### 2. Header Image Rendering
+**Commit:** `066c0af`
 
-#### Files Changed:
-- `client/src/data/questionBank.ts` - Regenerated with 161 questions
-- `scripts/convertQuestionBank.ts` - Fixed ESM `__dirname` bug
-- `scripts/questionBankInput.json` - Source data (161 questions)
+- Fixed missing header image rendering in `WelcomePagePreviewEnhanced` component
+- Fixed missing header image rendering in `ThankYouPreview` component  
+- Added header image support in `PreviewV2.tsx` for both welcome and thank you screens
+- Header images now display as a 96px tall banner below the header bar
 
-### 🐳 Docker Configuration
+**Files Modified:**
+- `client/src/pages/DesignV2.tsx`
+- `client/src/pages/PreviewV2.tsx`
 
-#### Current Setup:
-```yaml
-# docker-compose.yml
-services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: evalia-postgres
-    environment:
-      POSTGRES_USER: evalia
-      POSTGRES_PASSWORD: password  # For local dev only
-      POSTGRES_DB: evalia
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+### 3. Configurable Header Bar Color
+**Commit:** `066c0af`
+
+- Added `headerBar` color field to the `WelcomePageSettings` interface
+- Added "Header Bar" color picker in design settings (Colors section)
+- Updated all 6 color presets to include `headerBar` color
+- Header bar strip at top of all screens is now fully customizable
+- Falls back to primary color if headerBar not set
+
+**Files Modified:**
+- `client/src/components/builder-v2/WelcomePageEditor.tsx` - Added interface field & color presets
+- `client/src/pages/DesignV2.tsx` - Updated COLOR_PRESETS and preview components
+- `client/src/pages/PreviewV2.tsx` - Updated themeColors defaults and header bar rendering
+- `client/src/contexts/SurveyBuilderContext.tsx` - Added secondary color field
+
+### 4. Question Bank (161 Questions)
+**Previous commits**
+
+- 161 pre-built questions across 24 categories
+- Categories: Engagement, Management, Training, Workload, Culture, Onboarding, Pulse, Belonging, Wellbeing, Compensation, Career, Feedback, Mission, Innovation, Agility, Communication, Leadership, Challenges, Satisfaction, Advocacy, Improvement, Relationships, Diversity
+- Search functionality
+- Category filtering
+- Drag-and-drop to add questions
+
+**Files:**
+- `client/src/data/questionBank.ts`
+- `client/src/components/builder-v2/QuestionLibrary.tsx`
+
+### 5. Consistent Preview Sizing
+**Commit:** `e7abf9a`
+
+- All preview screens (Welcome, Survey, Thank You) maintain consistent `h-[500px]` height
+- Default header bar with theme primary color on all screens
+- Auto-save when navigating away from design page
+
+### 6. Question Type Rendering
+**Commit:** `e7abf9a`
+
+- Comprehensive `QuestionInput` component in PreviewV2 for all question types
+- `DesignQuestionPreview` component for design page previews
+- Proper rendering for: text, textarea, number, email, phone, url, multiple_choice, checkbox, dropdown, yes_no, rating, nps, likert, opinion_scale, slider, date, time, matrix, ranking
+
+### 7. NPS Labels Configuration
+**Previous commits**
+
+- Added `npsLabels` field to question schema (detractor/promoter labels)
+- Added NPS configuration UI in QuestionEditor
+- Updated QuestionCard to use npsLabels
+
+### 8. Slider Endpoint Labels
+**Previous commits**
+
+- Added Low/High label configuration UI for slider questions
+- Maps to `question.ratingLabels.low` and `question.ratingLabels.high`
+
+### 9. Rating Style Defaults
+**Previous commits**
+
+- Changed default `ratingStyle` from 'star' to 'number' for rating questions
+- Updated template seeding to explicitly set `ratingStyle: "number"`
+- Templates with Likert patterns now correctly set `type: "likert"`
+
+---
+
+## Color Presets Available
+
+| Preset | Primary | Header Bar | Background | Text |
+|--------|---------|------------|------------|------|
+| Evalia | #2F8FA5 | #2F8FA5 | #FFFFFF | #1e293b |
+| Professional | #1e3a5f | #1e3a5f | #f8fafc | #1e293b |
+| Modern Purple | #8b5cf6 | #8b5cf6 | #faf5ff | #1f2937 |
+| Warm | #f59e0b | #f59e0b | #fffbeb | #451a03 |
+| Nature | #22c55e | #22c55e | #f0fdf4 | #14532d |
+| Dark Elegant | #6366f1 | #6366f1 | #0f172a | #f1f5f9 |
+
+---
+
+## Database Configuration
+
+### Local Development (Docker)
+```
+DATABASE_URL=postgresql://evalia:password@localhost:5432/evalia
 ```
 
-#### Running Locally:
+### To Start Local Database:
 ```bash
-# Start Docker database
-docker-compose up -d postgres
-
-# Run the app
-PORT=4000 DATABASE_URL="postgresql://evalia:password@localhost:5432/evalia" SESSION_SECRET="dev-secret-key-12345" npm run dev
+docker run -d --name evalia-db \
+  -e POSTGRES_USER=evalia \
+  -e POSTGRES_PASSWORD=password \
+  -e POSTGRES_DB=evalia \
+  -p 5432:5432 \
+  postgres:16-alpine
 ```
 
-### 📁 New Files Created This Session
-
-| File | Purpose |
-|------|---------|
-| `DATABASE_SETUP.md` | Database configuration guide |
-| `env.example.txt` | Environment variable template |
-| `scripts/questionBankInput.json` | 161 question source data |
-| `scripts/convertQuestionBank.ts` | Question conversion script |
-| `scripts/generateQuestionBank.cjs` | Question bank generator |
-| `QUESTION_TYPES_SPECIFICATION.md` | Question type documentation |
-| `UI_ENHANCEMENT_ROADMAP.md` | UI improvement plans |
-| `CHANGELOG.md` | This file |
-
-### 📁 Modified Files
-
-| File | Changes |
-|------|---------|
-| `server/seedTemplates.ts` | Fixed field names (matrixRows → rowLabels) |
-| `server/db.ts` | Added database connection warnings |
-| `shared/templates.ts` | Template structure updates |
-| `shared/schema.ts` | Schema improvements |
-| `client/src/data/questionBank.ts` | Regenerated with 161 questions |
-
-### 🔧 Scripts
-
-#### Question Bank Conversion
+### To Run Dev Server:
 ```bash
-# Convert questions from JSON to TypeScript
-npx tsx scripts/convertQuestionBank.ts
+export DATABASE_URL="postgresql://evalia:password@localhost:5432/evalia"
+export SESSION_SECRET="local-development-session-secret-min-32-characters"
+npm run dev
 ```
 
-#### Template Seeding
-```bash
-# Seed templates to database
-DATABASE_URL="your-url" npm run seed:templates
+Server runs at: http://127.0.0.1:5000
+
+---
+
+## File Structure Overview
+
+```
+/Users/mikelutner/EvaliaSurvey/
+├── client/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── builder-v2/
+│   │   │   │   ├── QuestionLibrary.tsx    # Question Bank UI
+│   │   │   │   ├── WelcomePageEditor.tsx  # Welcome screen config
+│   │   │   │   └── BuilderCanvas.tsx      # Builder preview
+│   │   │   ├── QuestionCard.tsx           # Question rendering
+│   │   │   └── QuestionEditor.tsx         # Question configuration
+│   │   ├── contexts/
+│   │   │   └── SurveyBuilderContext.tsx   # Global state management
+│   │   ├── data/
+│   │   │   ├── questionBank.ts            # 161 questions
+│   │   │   └── questionTypeConfig.ts      # Question type definitions
+│   │   └── pages/
+│   │       ├── DesignV2.tsx               # Design customization page
+│   │       └── PreviewV2.tsx              # Live preview page
+├── server/
+│   ├── seedTemplates.ts                   # Template seeding
+│   └── db.ts                              # Database connection
+├── shared/
+│   └── schema.ts                          # Database schema
+├── docker-compose.yml
+├── CHANGELOG.md                           # This file
+└── env.example.txt                        # Environment template
 ```
 
 ---
 
-## Database State
+## Git History (Recent)
 
-### Local Docker (localhost:5432)
-- **Templates**: 26 (Canadian HR templates)
-- **Surveys**: 0
-- **Users**: 0 (use Replit OAuth for production)
-
-### Production (Neon)
-- Check Replit for current state
-- Contains actual survey data
+```
+066c0af Fix: Survey title flows to welcome screen, header images render, header bar color configurable
+e7abf9a fix: Comprehensive question type rendering in Preview and Design
+6add0b6 fix: Consistent preview sizing, default styling, and auto-save
+```
 
 ---
 
-## Quick Reference
-
-### Start Development
-```bash
-# 1. Ensure Docker is running
-docker-compose up -d postgres
-
-# 2. Start the app
-PORT=4000 DATABASE_URL="postgresql://evalia:password@localhost:5432/evalia" SESSION_SECRET="dev-secret-key-12345" npm run dev
-
-# 3. Open browser
-open http://localhost:4000
-```
-
-### Verify Database
-```bash
-docker exec evalia-survey-builder-magic-patterns-postgres-1 psql -U evalia -d evalia -c "SELECT COUNT(*) FROM templates;"
-```
-
+*Last Updated: December 3, 2025*
