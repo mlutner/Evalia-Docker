@@ -103,6 +103,7 @@ export default function QuestionEditor({
 
   const needsOptions = ["multiple_choice", "checkbox", "dropdown", "ranking", "constant_sum"].includes(question.type);
   const isRatingType = question.type === "rating";
+  const isNpsType = question.type === "nps";
   const isLikertType = question.type === "likert";
   const isSliderType = question.type === "slider";
   const isOpinionScale = question.type === "opinion_scale";
@@ -388,6 +389,53 @@ export default function QuestionEditor({
         </CardContent>
       )}
 
+      {/* NPS Options */}
+      {isNpsType && (
+        <CardContent className="pl-12 pr-4 pt-0 space-y-4">
+          <p className="text-xs text-muted-foreground mb-2">
+            Net Promoter Score (0-10 scale) measures customer loyalty and satisfaction
+          </p>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor={`nps-detractor-${question.id}`}>Low Label (0)</Label>
+              <Input
+                id={`nps-detractor-${question.id}`}
+                value={question.npsLabels?.detractor || ""}
+                onChange={(e) => updateField("npsLabels", { 
+                  ...question.npsLabels, 
+                  detractor: e.target.value || undefined 
+                })}
+                placeholder="Not likely"
+                className="mt-1"
+                data-testid="input-nps-detractor"
+              />
+            </div>
+            <div>
+              <Label htmlFor={`nps-promoter-${question.id}`}>High Label (10)</Label>
+              <Input
+                id={`nps-promoter-${question.id}`}
+                value={question.npsLabels?.promoter || ""}
+                onChange={(e) => updateField("npsLabels", { 
+                  ...question.npsLabels, 
+                  promoter: e.target.value || undefined 
+                })}
+                placeholder="Extremely likely"
+                className="mt-1"
+                data-testid="input-nps-promoter"
+              />
+            </div>
+          </div>
+          <div className="text-xs p-2 rounded" style={{ backgroundColor: '#F0F2F5' }}>
+            <span className="font-medium">Score interpretation:</span>
+            <span className="ml-2 text-red-500">0-6 Detractor</span>
+            <span className="mx-1">•</span>
+            <span className="text-amber-500">7-8 Passive</span>
+            <span className="mx-1">•</span>
+            <span className="text-green-500">9-10 Promoter</span>
+          </div>
+        </CardContent>
+      )}
+
       {/* Slider Options */}
       {isSliderType && (
         <CardContent className="pl-12 pr-4 pt-0 space-y-4">
@@ -425,6 +473,38 @@ export default function QuestionEditor({
                 onChange={(e) => updateField("step", parseInt(e.target.value, 10) || 1)}
                 className="mt-1"
                 data-testid="input-slider-step"
+              />
+            </div>
+          </div>
+
+          {/* Endpoint Labels */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor={`slider-low-label-${question.id}`}>Low Label</Label>
+              <Input
+                id={`slider-low-label-${question.id}`}
+                value={question.ratingLabels?.low || ""}
+                onChange={(e) => updateField("ratingLabels", { 
+                  ...question.ratingLabels, 
+                  low: e.target.value || undefined 
+                })}
+                placeholder="e.g., Poor, Low, Never"
+                className="mt-1"
+                data-testid="input-slider-low-label"
+              />
+            </div>
+            <div>
+              <Label htmlFor={`slider-high-label-${question.id}`}>High Label</Label>
+              <Input
+                id={`slider-high-label-${question.id}`}
+                value={question.ratingLabels?.high || ""}
+                onChange={(e) => updateField("ratingLabels", { 
+                  ...question.ratingLabels, 
+                  high: e.target.value || undefined 
+                })}
+                placeholder="e.g., Excellent, High, Always"
+                className="mt-1"
+                data-testid="input-slider-high-label"
               />
             </div>
           </div>

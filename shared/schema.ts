@@ -121,6 +121,12 @@ export const questionSchema = z.object({
   }).optional(),
   showLabelsOnly: z.boolean().optional(), // hide numbers, show only labels
   
+  // === NPS OPTIONS ===
+  npsLabels: z.object({
+    detractor: z.string().optional(), // Label for 0 end (default: "Not likely")
+    promoter: z.string().optional(),  // Label for 10 end (default: "Extremely likely")
+  }).optional(),
+  
   // === LIKERT OPTIONS ===
   likertType: z.enum(["agreement", "frequency", "importance", "satisfaction", "quality"]).optional(),
   likertPoints: z.number().optional(), // 5 or 7

@@ -485,10 +485,10 @@ export default function QuestionCard({ question, onAnswer, initialAnswer, onAuto
               {/* Labels below the scale */}
               <div className="flex justify-between items-center px-1">
                 <span className="text-xs font-medium" style={{ color: '#EF4444' }}>
-                  {question.customLabels?.detractor || "Not likely"}
+                  {question.npsLabels?.detractor || "Not likely"}
                 </span>
                 <span className="text-xs font-medium" style={{ color: '#10B981' }}>
-                  {question.customLabels?.promoter || "Extremely likely"}
+                  {question.npsLabels?.promoter || "Extremely likely"}
                 </span>
               </div>
               

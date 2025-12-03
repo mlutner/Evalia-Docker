@@ -1,3 +1,27 @@
+/**
+ * DesignV2.tsx - Survey Visual Customization Page
+ * 
+ * Part of the Build → Design → Preview → Save flow.
+ * 
+ * RESPONSIBILITIES:
+ * - Customize welcome screen (title, description, button, logo, privacy)
+ * - Set visual theme (colors, backgrounds, headers, overlays)
+ * - Configure thank you screen
+ * - Preview changes in real-time across device sizes
+ * 
+ * DATA PERSISTENCE:
+ * - All settings sync to SurveyBuilderContext
+ * - Context exports via exportToEvalia() to API
+ * - Stored in surveys.designSettings (JSONB) column
+ * 
+ * RELATED FILES:
+ * - SurveyBuilderContext.tsx - State management & persistence
+ * - PreviewV2.tsx - Live preview of design settings
+ * - shared/schema.ts - Database schema (designSettingsSchema)
+ * 
+ * @module pages/DesignV2
+ */
+
 import React, { useState, useRef, useCallback } from 'react';
 import { useRoute, useLocation } from 'wouter';
 import { 
@@ -86,13 +110,31 @@ const LOGO_SIZES = [
 // MAIN DESIGN CONTENT
 // ═══════════════════════════════════════════════════════════════════════════════
 
+/**
+ * DesignContent - Main component for survey visual customization
+ * 
+ * DATA FLOW:
+ * 1. On mount: Load saved design settings from SurveyBuilderContext
+ * 2. On change: Update local state → Sync to context (via setTimeout)
+ * 3. On save: Context exports designSettings to API → Database
+ * 
+ * STATE MANAGEMENT:
+ * - welcomeSettings: Content (title, description, button, privacy)
+ * - designSettings: Visual styling (backgrounds, headers, overlays)
+ * - Both sync to context for persistence
+ * 
+ * @see SurveyBuilderContext for persistence logic
+ * @see PreviewV2 for how these settings are rendered
+ */
 function DesignContent({ surveyId }: { surveyId?: string }) {
   const { survey, questions, updateWelcomeScreen, updateThankYouScreen } = useSurveyBuilder();
   const [deviceView, setDeviceView] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [activeScreen, setActiveScreen] = useState<'welcome' | 'survey' | 'thankyou'>('welcome');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Welcome page settings state - load from context to preserve saved settings
+  // ─────────────────────────────────────────────────────────────────────────────
+  // WELCOME PAGE SETTINGS - Content & branding (syncs to context)
+  // ─────────────────────────────────────────────────────────────────────────────
   const [welcomeSettings, setWelcomeSettings] = useState<WelcomePageSettings>(() => ({
     ...DEFAULT_WELCOME_SETTINGS,
     title: survey.welcomeScreen.title || DEFAULT_WELCOME_SETTINGS.title,
@@ -101,16 +143,13 @@ function DesignContent({ surveyId }: { surveyId?: string }) {
     enabled: survey.welcomeScreen.enabled !== false,
     showEstimatedTime: survey.welcomeScreen.showTimeEstimate ?? DEFAULT_WELCOME_SETTINGS.showEstimatedTime,
     showQuestionCount: survey.welcomeScreen.showQuestionCount ?? DEFAULT_WELCOME_SETTINGS.showQuestionCount,
-    // Load theme colors from context (ensure accent is included)
     colors: survey.welcomeScreen.themeColors 
       ? { ...DEFAULT_WELCOME_SETTINGS.colors, ...survey.welcomeScreen.themeColors }
       : DEFAULT_WELCOME_SETTINGS.colors,
-    // Load logo settings
     logo: {
       ...DEFAULT_WELCOME_SETTINGS.logo,
       url: survey.welcomeScreen.imageUrl || null,
     },
-    // Load privacy settings (ensure all required fields from WelcomePageSettings are included)
     privacy: {
       ...DEFAULT_WELCOME_SETTINGS.privacy,
       enabled: !!survey.welcomeScreen.privacyText,
@@ -119,76 +158,67 @@ function DesignContent({ surveyId }: { surveyId?: string }) {
     },
   }));
 
-  // AI Chat state
+  // ─────────────────────────────────────────────────────────────────────────────
+  // AI CHAT STATE
+  // ─────────────────────────────────────────────────────────────────────────────
   const [aiMessage, setAiMessage] = useState('');
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
 
-  // Unified design state for all screens (Welcome, Survey, Thank You)
-  // Initialize from context to preserve saved settings
+  // ─────────────────────────────────────────────────────────────────────────────
+  // DESIGN SETTINGS - Visual styling for all screens
+  // Loads from context on mount, syncs back on change
+  // ─────────────────────────────────────────────────────────────────────────────
   const [designSettings, setDesignSettings] = useState(() => ({
-    // Welcome screen specific - load from context
+    // Welcome screen
     welcomeHeaderImage: survey.welcomeScreen.headerImage || null,
     welcomeBackground: survey.welcomeScreen.backgroundImage?.url || null,
     welcomeOverlayColor: survey.welcomeScreen.backgroundImage?.overlayColor || '#000000',
     welcomeOverlayOpacity: survey.welcomeScreen.backgroundImage?.overlayOpacity ?? 40,
-    // Survey screen specific - initially sync with welcome
+    // Survey screen (initially syncs with welcome)
     surveyHeaderImage: survey.welcomeScreen.headerImage || null,
     surveyBackground: survey.welcomeScreen.backgroundImage?.url || null,
     surveyOverlayColor: survey.welcomeScreen.backgroundImage?.overlayColor || '#000000',
     surveyOverlayOpacity: survey.welcomeScreen.backgroundImage?.overlayOpacity ?? 40,
-    // Thank You screen specific - load from context
+    // Thank You screen
     thankYouHeaderImage: survey.thankYouScreen.headerImage || null,
     thankYouBackground: survey.thankYouScreen.backgroundImage?.url || null,
     thankYouOverlayColor: survey.thankYouScreen.backgroundImage?.overlayColor || '#000000',
     thankYouOverlayOpacity: survey.thankYouScreen.backgroundImage?.overlayOpacity ?? 40,
-    // Option to sync all screens to use same design
+    // Sync toggle - when true, all screens use same design
     syncAllScreens: true,
   }));
 
-  // Helper to update design settings with optional sync AND persist to context
+  // ─────────────────────────────────────────────────────────────────────────────
+  // UPDATE DESIGN SETTING - Updates local state + syncs to context
+  // 
+  // Pattern: Update local state first, then sync to context in setTimeout
+  // This avoids React anti-patterns (calling context methods inside setState)
+  // ─────────────────────────────────────────────────────────────────────────────
   const updateDesignSetting = useCallback((key: string, value: string | number | null) => {
-    // First, update local state and get the new state for context sync
+    // Step 1: Update local state
     setDesignSettings(prev => {
       if (prev.syncAllScreens) {
-        // If syncing, update all screens
+        // When syncing, update all screens at once
         if (key.includes('HeaderImage')) {
-          return {
-            ...prev,
-            welcomeHeaderImage: value as string | null,
-            surveyHeaderImage: value as string | null,
-            thankYouHeaderImage: value as string | null,
-          };
-        } else if (key.includes('Background') && !key.includes('Overlay')) {
-          return {
-            ...prev,
-            welcomeBackground: value as string | null,
-            surveyBackground: value as string | null,
-            thankYouBackground: value as string | null,
-          };
-        } else if (key.includes('OverlayOpacity')) {
-          return {
-            ...prev,
-            welcomeOverlayOpacity: value as number,
-            surveyOverlayOpacity: value as number,
-            thankYouOverlayOpacity: value as number,
-          };
-        } else if (key.includes('OverlayColor')) {
-          return {
-            ...prev,
-            welcomeOverlayColor: value as string,
-            surveyOverlayColor: value as string,
-            thankYouOverlayColor: value as string,
-          };
+          return { ...prev, welcomeHeaderImage: value as string | null, surveyHeaderImage: value as string | null, thankYouHeaderImage: value as string | null };
+        }
+        if (key.includes('Background') && !key.includes('Overlay')) {
+          return { ...prev, welcomeBackground: value as string | null, surveyBackground: value as string | null, thankYouBackground: value as string | null };
+        }
+        if (key.includes('OverlayOpacity')) {
+          return { ...prev, welcomeOverlayOpacity: value as number, surveyOverlayOpacity: value as number, thankYouOverlayOpacity: value as number };
+        }
+        if (key.includes('OverlayColor')) {
+          return { ...prev, welcomeOverlayColor: value as string, surveyOverlayColor: value as string, thankYouOverlayColor: value as string };
         }
       }
       return { ...prev, [key]: value };
     });
     
-    // Sync to context AFTER state update (not inside setState)
-    // Use setTimeout to ensure state is updated before context sync
+    // Step 2: Sync to context (deferred to next tick to ensure state is updated)
     setTimeout(() => {
       setDesignSettings(currentState => {
-        // Now sync the current state to context
+        // Sync welcome screen to context
         if (currentState.syncAllScreens || key.startsWith('welcome')) {
           updateWelcomeScreen({ 
             headerImage: currentState.welcomeHeaderImage || undefined,
@@ -199,6 +229,7 @@ function DesignContent({ surveyId }: { surveyId?: string }) {
             },
           });
         }
+        // Sync thank you screen to context
         if (currentState.syncAllScreens || key.startsWith('thankYou')) {
           updateThankYouScreen({ 
             headerImage: currentState.thankYouHeaderImage || undefined,
@@ -209,7 +240,7 @@ function DesignContent({ surveyId }: { surveyId?: string }) {
             },
           });
         }
-        return currentState; // Don't actually change state, just read it
+        return currentState; // Read-only, don't change state
       });
     }, 0);
   }, [updateWelcomeScreen, updateThankYouScreen]);
