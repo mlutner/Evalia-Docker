@@ -400,8 +400,12 @@ function QuestionBankTab({ searchQuery, layout }: { searchQuery: string; layout:
 
   // Handle adding a bank question to the survey
   const handleAddBankQuestion = (bankQ: any) => {
-    // Use the schema type directly
-    addQuestion(bankQ.questionType);
+    // Use the schema type and pass the bank question text/options as overrides
+    addQuestion(bankQ.questionType, {
+      text: bankQ.text,
+      options: bankQ.options,
+      description: bankQ.description,
+    });
   };
 
   const handleDragStart = (e: React.DragEvent, bankQ: any) => {

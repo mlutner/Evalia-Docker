@@ -383,19 +383,32 @@ function InteractiveSurveyPreview({
   };
 
   // Extract theme colors with fallbacks
-  const themeColors = survey.welcomeScreen.themeColors || {
+  const themeColors = {
     primary: '#2F8FA5',
+    headerBar: '#2F8FA5', // Header bar defaults to primary
     background: '#FFFFFF',
     text: '#1e293b',
     buttonText: '#FFFFFF',
+    ...survey.welcomeScreen.themeColors,
   };
 
   // Welcome Screen - clean, consistent design
   if (showWelcome && survey.welcomeScreen.enabled) {
     return (
       <div className="bg-white rounded-xl shadow-lg overflow-hidden h-[500px] flex flex-col">
-        {/* Header Bar - uses theme primary color */}
-        <div className="h-3" style={{ backgroundColor: themeColors.primary }} />
+        {/* Header Bar - uses configurable header bar color */}
+        <div className="h-3" style={{ backgroundColor: themeColors.headerBar || themeColors.primary }} />
+
+        {/* Header Image */}
+        {survey.welcomeScreen.headerImage && (
+          <div className="relative h-24 overflow-hidden flex-shrink-0">
+            <img 
+              src={survey.welcomeScreen.headerImage} 
+              alt="Welcome header" 
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
 
         {/* Content */}
         <div className="flex-1 p-8 text-center flex flex-col items-center justify-center">
@@ -432,7 +445,7 @@ function InteractiveSurveyPreview({
         {/* Footer */}
         <div className="px-8 py-4 text-center border-t border-gray-100">
           <p className="text-xs text-gray-400">
-            Powered by Evalia
+            {survey.title} • Powered by Evalia
           </p>
         </div>
       </div>
@@ -443,8 +456,19 @@ function InteractiveSurveyPreview({
   if (showThankYou) {
     return (
       <div className="bg-white rounded-xl shadow-lg overflow-hidden h-[500px] flex flex-col">
-        {/* Header Bar - uses theme primary color */}
-        <div className="h-3" style={{ backgroundColor: themeColors.primary }} />
+        {/* Header Bar - uses configurable header bar color */}
+        <div className="h-3" style={{ backgroundColor: themeColors.headerBar || themeColors.primary }} />
+
+        {/* Header Image */}
+        {survey.thankYouScreen.headerImage && (
+          <div className="relative h-24 overflow-hidden flex-shrink-0">
+            <img 
+              src={survey.thankYouScreen.headerImage} 
+              alt="Thank you header" 
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
 
         {/* Content */}
         <div className="flex-1 p-8 text-center flex flex-col items-center justify-center">
@@ -474,7 +498,7 @@ function InteractiveSurveyPreview({
         {/* Footer */}
         <div className="px-8 py-4 text-center border-t border-gray-100">
           <p className="text-xs text-gray-400">
-            Powered by Evalia
+            {survey.title} • Powered by Evalia
           </p>
         </div>
       </div>
@@ -487,7 +511,7 @@ function InteractiveSurveyPreview({
   if (!currentQuestion) {
     return (
       <div className="bg-white rounded-xl shadow-lg overflow-hidden h-[500px] flex flex-col">
-        <div className="h-3" style={{ backgroundColor: themeColors.primary }} />
+        <div className="h-3" style={{ backgroundColor: themeColors.headerBar || themeColors.primary }} />
         <div className="flex-1 flex items-center justify-center">
           <p className="text-gray-500">No questions to preview. Add questions in the Builder.</p>
         </div>
@@ -497,8 +521,8 @@ function InteractiveSurveyPreview({
 
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden h-[500px] flex flex-col">
-      {/* Header Bar - uses theme primary color */}
-      <div className="h-3" style={{ backgroundColor: themeColors.primary }} />
+      {/* Header Bar - uses configurable header bar color */}
+      <div className="h-3" style={{ backgroundColor: themeColors.headerBar || themeColors.primary }} />
 
       {/* Progress Bar */}
       <div className="h-1.5 bg-gray-200">

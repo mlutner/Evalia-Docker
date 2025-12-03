@@ -261,7 +261,7 @@ interface SurveyBuilderContextType {
   isSaving: boolean;
   
   // Question operations
-  addQuestion: (type: string) => void;
+  addQuestion: (type: string, overrides?: { text?: string; options?: string[]; description?: string }) => void;
   removeQuestion: (id: string) => void;
   reorderQuestions: (fromIndex: number, toIndex: number) => void;
   updateQuestion: (id: string, updates: Partial<BuilderQuestion>) => void;
@@ -528,6 +528,7 @@ const createInitialSurvey = (): BuilderSurvey => ({
     },
     themeColors: {
       primary: '#2F8FA5',
+      secondary: '#2F8FA5', // Header bar color - defaults to primary
       background: '#FFFFFF',
       text: '#1e293b',
       buttonText: '#FFFFFF',
@@ -591,12 +592,18 @@ export function SurveyBuilderProvider({
             order: idx,
           }));
           
+          const surveyTitle = parsed.title || 'AI Generated Survey';
           setSurvey({
             ...createInitialSurvey(),
-            title: parsed.title || 'AI Generated Survey',
+            title: surveyTitle,
             description: parsed.description || '',
             questions: builderQuestions,
             scoreConfig: parsed.scoreConfig,
+            welcomeScreen: {
+              ...createInitialSurvey().welcomeScreen,
+              title: surveyTitle, // Use survey title as welcome screen title
+              description: parsed.description || 'Your feedback helps us improve',
+            },
           });
           setIsDirty(true);
           sessionStorage.removeItem('aiGeneratedSurvey');
@@ -623,12 +630,18 @@ export function SurveyBuilderProvider({
             }, idx)
           );
           
+          const surveyTitle = parsed.title || 'Template Survey';
           setSurvey({
             ...createInitialSurvey(),
-            title: parsed.title || 'Template Survey',
+            title: surveyTitle,
             description: parsed.description || '',
             questions: builderQuestions,
             scoreConfig: parsed.scoreConfig,
+            welcomeScreen: {
+              ...createInitialSurvey().welcomeScreen,
+              title: surveyTitle, // Use survey title as welcome screen title
+              description: parsed.description || 'Your feedback helps us improve',
+            },
           });
           setIsDirty(true);
           sessionStorage.removeItem('templateSurvey');
@@ -686,6 +699,7 @@ export function SurveyBuilderProvider({
           privacyLinkUrl: welcomeDs?.privacyLinkUrl,
           themeColors: ds?.themeColors || {
             primary: '#2F8FA5',
+            secondary: '#2F8FA5', // Header bar color
             background: '#FFFFFF',
             text: '#1e293b',
             buttonText: '#FFFFFF',
@@ -761,7 +775,7 @@ export function SurveyBuilderProvider({
   // QUESTION OPERATIONS
   // ============================================
 
-  const addQuestion = useCallback((typeInput: string) => {
+  const addQuestion = useCallback((typeInput: string, overrides?: { text?: string; options?: string[]; description?: string }) => {
     if (survey.questions.length >= 200) {
       toast({
         title: 'Maximum questions reached',
@@ -781,8 +795,9 @@ export function SurveyBuilderProvider({
       id: generateId(),
       type,
       displayType,
-      text: typeConfig?.defaultQuestion || `New ${displayType} question`,
-      options: defaultOptions,
+      text: overrides?.text || typeConfig?.defaultQuestion || `New ${displayType} question`,
+      description: overrides?.description,
+      options: overrides?.options || defaultOptions,
       required: false,
       hasLogic: false,
       order: survey.questions.length,

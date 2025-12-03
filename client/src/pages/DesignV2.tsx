@@ -71,32 +71,32 @@ const COLOR_PRESETS = [
   {
     id: 'evalia',
     name: 'Evalia',
-    colors: { primary: '#2F8FA5', accent: '#A3D65C', background: '#FFFFFF', text: '#1e293b', buttonText: '#FFFFFF' },
+    colors: { primary: '#2F8FA5', accent: '#A3D65C', headerBar: '#2F8FA5', background: '#FFFFFF', text: '#1e293b', buttonText: '#FFFFFF' },
   },
   {
     id: 'professional',
     name: 'Professional',
-    colors: { primary: '#1e3a5f', accent: '#2563eb', background: '#f8fafc', text: '#1e293b', buttonText: '#FFFFFF' },
+    colors: { primary: '#1e3a5f', accent: '#2563eb', headerBar: '#1e3a5f', background: '#f8fafc', text: '#1e293b', buttonText: '#FFFFFF' },
   },
   {
     id: 'modern-purple',
     name: 'Modern',
-    colors: { primary: '#8b5cf6', accent: '#c084fc', background: '#faf5ff', text: '#1f2937', buttonText: '#FFFFFF' },
+    colors: { primary: '#8b5cf6', accent: '#c084fc', headerBar: '#8b5cf6', background: '#faf5ff', text: '#1f2937', buttonText: '#FFFFFF' },
   },
   {
     id: 'warm',
     name: 'Warm',
-    colors: { primary: '#f59e0b', accent: '#ef4444', background: '#fffbeb', text: '#451a03', buttonText: '#FFFFFF' },
+    colors: { primary: '#f59e0b', accent: '#ef4444', headerBar: '#f59e0b', background: '#fffbeb', text: '#451a03', buttonText: '#FFFFFF' },
   },
   {
     id: 'nature',
     name: 'Nature',
-    colors: { primary: '#22c55e', accent: '#16a34a', background: '#f0fdf4', text: '#14532d', buttonText: '#FFFFFF' },
+    colors: { primary: '#22c55e', accent: '#16a34a', headerBar: '#22c55e', background: '#f0fdf4', text: '#14532d', buttonText: '#FFFFFF' },
   },
   {
     id: 'dark-elegant',
     name: 'Dark',
-    colors: { primary: '#6366f1', accent: '#22d3ee', background: '#0f172a', text: '#f1f5f9', buttonText: '#FFFFFF' },
+    colors: { primary: '#6366f1', accent: '#22d3ee', headerBar: '#6366f1', background: '#0f172a', text: '#f1f5f9', buttonText: '#FFFFFF' },
   },
 ];
 
@@ -1886,8 +1886,8 @@ function SurveyBodyPreview({
           backgroundColor: isSolidBackground ? backgroundImage : (isImageBackground ? 'transparent' : '#FFFFFF')
         }}
       >
-        {/* Dark Header Bar - Always visible default styling */}
-        <div className="h-3" style={{ backgroundColor: settings.colors.primary }} />
+        {/* Header Bar - Configurable color strip */}
+        <div className="h-3" style={{ backgroundColor: settings.colors.headerBar || settings.colors.primary }} />
 
         {/* Header Image */}
         {headerImage && (
@@ -2008,8 +2008,19 @@ function ThankYouPreview({
           backgroundColor: isSolidBackground ? backgroundImage : (isImageBackground ? 'transparent' : settings.colors.background)
         }}
       >
-        {/* Header Bar - Always visible default styling */}
-        <div className="h-3" style={{ backgroundColor: settings.colors.primary }} />
+        {/* Header Bar - Configurable color strip */}
+        <div className="h-3" style={{ backgroundColor: settings.colors.headerBar || settings.colors.primary }} />
+
+        {/* Header Image */}
+        {headerImage && (
+          <div className="relative h-24 overflow-hidden flex-shrink-0">
+            <img 
+              src={headerImage} 
+              alt="Thank you header" 
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
 
         {/* Content */}
         <div className={`flex-1 p-8 text-center flex flex-col items-center justify-center ${isImageBackground ? 'text-white' : ''}`}>
@@ -2094,8 +2105,19 @@ function WelcomePagePreviewEnhanced({
           backgroundColor: isSolidBackground ? backgroundImage : (isImageBackground ? 'transparent' : settings.colors.background)
         }}
       >
-        {/* Header Bar - Always visible default styling */}
-        <div className="h-3" style={{ backgroundColor: settings.colors.primary }} />
+        {/* Header Bar - Configurable color strip */}
+        <div className="h-3" style={{ backgroundColor: settings.colors.headerBar || settings.colors.primary }} />
+
+        {/* Header Image */}
+        {headerImage && (
+          <div className="relative h-24 overflow-hidden flex-shrink-0">
+            <img 
+              src={headerImage} 
+              alt="Welcome header" 
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
 
         {/* Content */}
         <div className={`flex-1 p-8 text-center flex flex-col items-center justify-center ${isImageBackground ? 'text-white' : ''}`}>
