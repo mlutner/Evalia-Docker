@@ -1,3 +1,12 @@
+/**
+ * LEGACY WIZARD BUILDER (OLDEST BACKUP)
+ * Deprecated. Do not use for new features.
+ * 
+ * Original 3-step builder implementation. Kept for reference only.
+ * 
+ * @deprecated Use SurveyBuilderV2 instead
+ * @see client/src/pages/SurveyBuilderV2.tsx
+ */
 import { useState, useEffect } from "react";
 import { useRoute, useLocation } from "wouter";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -8,7 +17,7 @@ import TemplateCard from "@/components/TemplateCard";
 import TemplatePreviewModal from "@/components/TemplatePreviewModal";
 import SurveyPreviewDialog from "@/components/SurveyPreviewDialog";
 import QuestionEditor from "@/components/QuestionEditor";
-import WizardSteps from "@/components/WizardSteps";
+import WizardSteps from "@/legacy/wizard/WizardSteps";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

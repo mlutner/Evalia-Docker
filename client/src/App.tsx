@@ -16,8 +16,8 @@ import TemplatesPage from "@/pages/TemplatesPage";
 import AiAssistPage from "@/pages/AiAssistPage";
 import AiSurveyGenerator from "@/pages/AiSurveyGenerator";
 import SettingsPage from "@/pages/SettingsPage";
-// Legacy builder archived - now using SurveyBuilderV2 (3-panel layout) for all builder routes
-// import Builder from "@/pages/Builder";
+// Legacy wizard builder moved to src/legacy/builder/Builder.tsx
+// Now using SurveyBuilderV2 (3-panel layout) for all builder routes
 import SurveyBuilderV2 from "@/pages/SurveyBuilderV2";
 import DesignV2 from "@/pages/DesignV2";
 import PreviewV2 from "@/pages/PreviewV2";

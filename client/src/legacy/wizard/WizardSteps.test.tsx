@@ -1,6 +1,12 @@
+/**
+ * LEGACY TEST FILE
+ * Tests for the deprecated WizardSteps component.
+ * 
+ * @deprecated
+ */
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import WizardSteps from '@/components/WizardSteps';
+import WizardSteps from '@/legacy/wizard/WizardSteps';
 
 describe('WizardSteps Component', () => {
   const mockSteps = [

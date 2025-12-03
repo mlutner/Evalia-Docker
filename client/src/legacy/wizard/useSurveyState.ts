@@ -1,3 +1,13 @@
+/**
+ * LEGACY WIZARD HOOK
+ * Deprecated. Do not use for new features.
+ * 
+ * State management hook for the old wizard builder.
+ * The V2 builder uses SurveyBuilderContext instead.
+ * 
+ * @deprecated Use SurveyBuilderContext instead
+ * @see client/src/contexts/SurveyBuilderContext.tsx
+ */
 import { useState, useEffect, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";

@@ -1,3 +1,12 @@
+/**
+ * LEGACY WIZARD HOOK
+ * Deprecated. Do not use for new features.
+ * 
+ * AI chat hook for the old wizard builder.
+ * The V2 builder uses different AI integration patterns.
+ * 
+ * @deprecated
+ */
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import type { Message } from "@/components/ChatPanel";

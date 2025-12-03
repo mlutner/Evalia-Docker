@@ -1,3 +1,13 @@
+/**
+ * LEGACY WIZARD COMPONENT
+ * Deprecated. Do not use for new features.
+ * 
+ * Step indicator component for the old wizard builder.
+ * The V2 builder uses ProgressFlowStepper instead.
+ * 
+ * @deprecated Use ProgressFlowStepper instead
+ * @see client/src/components/builder-v2/ProgressFlowStepper.tsx
+ */
 import { Check } from "lucide-react";
 import { theme } from "@/theme";
 

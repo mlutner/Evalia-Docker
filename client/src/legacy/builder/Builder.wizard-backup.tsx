@@ -1,8 +1,17 @@
+/**
+ * LEGACY WIZARD BUILDER (BACKUP)
+ * Deprecated. Do not use for new features.
+ * 
+ * Earlier backup of the wizard builder. Kept for reference only.
+ * 
+ * @deprecated Use SurveyBuilderV2 instead
+ * @see client/src/pages/SurveyBuilderV2.tsx
+ */
 import { useState, useEffect, useRef } from "react";
 import { useRoute, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, Save, Loader2 } from "lucide-react";
-import WizardSteps from "@/components/WizardSteps";
+import WizardSteps from "@/legacy/wizard/WizardSteps";
 import SurveyStartFlow from "@/components/builder/SurveyStartFlow";
 import QuestionsStep from "@/components/builder/QuestionsStep";
 import PublishStep from "@/components/builder/PublishStep";
@@ -16,9 +25,9 @@ import { useToast } from "@/hooks/use-toast";
 import type { Message } from "@/components/ChatPanel";
 import type { SurveyTemplate } from "@shared/templates";
 import type { Question, Survey } from "@shared/schema";
-import { useSurveyState } from "@/hooks/useSurveyState";
+import { useSurveyState } from "@/legacy/wizard/useSurveyState";
 import { useFileProcessing } from "@/hooks/useFileProcessing";
-import { useAIChat } from "@/hooks/useAIChat";
+import { useAIChat } from "@/legacy/wizard/useAIChat";
 
 const WIZARD_STEPS = [
   { number: 1, title: "Choose Type", description: "Select survey or assessment", detailedDescription: "Decide whether you're collecting feedback or measuring performance" },
