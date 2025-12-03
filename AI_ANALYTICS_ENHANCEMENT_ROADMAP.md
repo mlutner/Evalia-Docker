@@ -321,3 +321,222 @@ This would include:
 **Estimated build time**: 3-4 hours
 **Mistral API calls**: ~1-2 per survey view
 **Cost**: <$0.50 per survey analyzed
+
+---
+
+## PHASE 4: Admin Panel & AI Operations Dashboard (Weeks 7-8)
+**Goal**: Provide operational control and visibility into AI systems without requiring code changes
+
+### 4.1 AI Monitoring Dashboard
+**What**: Visual dashboard showing AI performance metrics in real-time
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ AI OPERATIONS DASHBOARD                                          │
+├─────────────────────────────────────────────────────────────────┤
+│ OVERVIEW (Last 24 Hours)                                        │
+│ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐            │
+│ │ 247      │ │ 98.2%    │ │ 1.2s     │ │ $4.82    │            │
+│ │ AI Calls │ │ Success  │ │ Avg Time │ │ Cost     │            │
+│ └──────────┘ └──────────┘ └──────────┘ └──────────┘            │
+│                                                                  │
+│ CALLS BY MODEL          CALLS BY TASK TYPE                      │
+│ ┌─────────────────┐     ┌─────────────────────────┐             │
+│ │ █████ small 45% │     │ surveyGeneration: 89    │             │
+│ │ ████ medium 35% │     │ questionQuality: 67     │             │
+│ │ ██ large 20%    │     │ responseAnalysis: 45    │             │
+│ └─────────────────┘     └─────────────────────────┘             │
+│                                                                  │
+│ RECENT CALLS (Last 10)                                          │
+│ ┌─────────────────────────────────────────────────────────────┐ │
+│ │ Time       Task              Model      Latency  Cost  ✓/✗  │ │
+│ │ 2:34 PM    surveyGeneration  medium     1.2s     $0.02  ✓   │ │
+│ │ 2:32 PM    questionQuality   small      0.8s     $0.01  ✓   │ │
+│ └─────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Implementation**:
+- New page: `client/src/pages/AdminAIPage.tsx`
+- Fetch from existing `/api/ai/test/monitoring` endpoint
+- Charts using recharts (already in project)
+- Auto-refresh every 30 seconds
+
+### 4.2 Model Configuration UI
+**What**: Allow changing default model routing without code changes
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ MODEL CONFIGURATION                                              │
+├─────────────────────────────────────────────────────────────────┤
+│ Quality Level Mapping:                                           │
+│                                                                  │
+│ Fast (Quick tasks):      [mistral-small-latest     ▼]           │
+│ Balanced (Standard):     [mistral-medium-latest    ▼]           │
+│ Best (Complex tasks):    [mistral-large-latest     ▼]           │
+│                                                                  │
+│ Task-Specific Overrides:                                         │
+│ ┌─────────────────────────────────────────────────────────────┐ │
+│ │ Task Type          Quality Level    Enabled                 │ │
+│ │ surveyGeneration   [Balanced ▼]     [✓]                     │ │
+│ │ questionQuality    [Fast ▼]         [✓]                     │ │
+│ │ responseAnalysis   [Best ▼]         [✓]                     │ │
+│ └─────────────────────────────────────────────────────────────┘ │
+│                                                                  │
+│ [Save Configuration]                                             │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Implementation**:
+- Store config in database (new `ai_config` table)
+- Load at server startup, cache in memory
+- API endpoints: `GET/PUT /api/admin/ai-config`
+
+### 4.3 A/B Testing Management UI
+**What**: Create and manage experiments through the UI
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ A/B TESTING                                                      │
+├─────────────────────────────────────────────────────────────────┤
+│ Active Experiments:                                              │
+│ ┌─────────────────────────────────────────────────────────────┐ │
+│ │ surveyGeneration - Prompt V2 Test                           │ │
+│ │ Status: Running (3 days) | Calls: 156 | Significance: 72%   │ │
+│ │ ┌───────────────────────────────────────────────────────┐   │ │
+│ │ │ Variant      Traffic  Success  Latency   Winner?     │   │ │
+│ │ │ Control      50%      94.2%    1.1s                   │   │ │
+│ │ │ NewPrompt    50%      97.8%    1.3s      Leading ⭐   │   │ │
+│ │ └───────────────────────────────────────────────────────┘   │ │
+│ │ [Promote Winner] [Stop Experiment] [View Details]           │ │
+│ └─────────────────────────────────────────────────────────────┘ │
+│                                                                  │
+│ [+ Create New Experiment]                                        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 4.4 Cost Alerts & Budgets
+**What**: Set spending limits and receive alerts
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ COST MANAGEMENT                                                  │
+├─────────────────────────────────────────────────────────────────┤
+│ Current Period: December 2024                                    │
+│                                                                  │
+│ Spending:  $47.23 / $100.00 budget                              │
+│ ████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 47%             │
+│                                                                  │
+│ Alerts:                                                          │
+│ [✓] Email when 75% of budget reached                            │
+│ [✓] Email when 100% of budget reached                           │
+│ [ ] Auto-pause AI features at budget limit                      │
+│                                                                  │
+│ Budget Settings:                                                 │
+│ Monthly Budget: [$100.00    ]                                    │
+│ Alert Email:    [admin@company.com]                              │
+│                                                                  │
+│ [Save Settings]                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## PHASE 5: Performance & UX Enhancements (Weeks 9-12)
+**Goal**: Improve survey builder speed, responsiveness, and user experience
+
+### 5.1 Streaming AI Responses
+**What**: Show AI-generated text as it streams (like ChatGPT)
+
+**Current**: User clicks "Generate" → waits 10-20s → sees complete result
+**After**: User clicks "Generate" → text appears word-by-word in real-time
+
+**Implementation**:
+- Use Mistral's streaming API (`stream: true`)
+- Server-sent events (SSE) endpoint: `POST /api/ai/generate-stream`
+- React hook: `useStreamingResponse()` with progressive updates
+- Update `ChatPanel.tsx` to render streaming content
+
+**Backend Changes**:
+```typescript
+// New streaming endpoint
+app.post("/api/ai/generate-stream", async (req, res) => {
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  
+  for await (const chunk of streamMistral(messages, options)) {
+    res.write(`data: ${JSON.stringify({ content: chunk })}\n\n`);
+  }
+  res.write("data: [DONE]\n\n");
+  res.end();
+});
+```
+
+### 5.2 Live Preview Pane
+**What**: Split-screen showing survey as respondents will see it
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ BUILDER (Left)                  │ PREVIEW (Right)               │
+├─────────────────────────────────┼───────────────────────────────┤
+│ Q1: How satisfied are you?      │ ┌─────────────────────────┐   │
+│ Type: [Rating ▼]                │ │    How satisfied are    │   │
+│ Style: [★ Stars ▼]              │ │       you?              │   │
+│ Scale: [1-5 ▼]                  │ │    ★ ★ ★ ★ ★           │   │
+│                                 │ │                         │   │
+│ [+ Add Question]                │ │    Question 1 of 5      │   │
+├─────────────────────────────────┤ └─────────────────────────┘   │
+│ Q2: Any suggestions?            │                               │
+│ Type: [Textarea ▼]              │                               │
+└─────────────────────────────────┴───────────────────────────────┘
+```
+
+### 5.3 Question Bank / Library
+**What**: Save and reuse frequently used questions
+
+- Store questions as templates
+- Tag-based organization
+- Quick insert into current survey
+- Share across surveys
+
+### 5.4 Keyboard Shortcuts
+**What**: Power user productivity features
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+Enter` | Add new question |
+| `Ctrl+D` | Duplicate question |
+| `↑ / ↓` | Navigate questions |
+| `Ctrl+P` | Toggle preview |
+| `Ctrl+S` | Save survey |
+| `Esc` | Close modals |
+
+---
+
+## Implementation Priority Matrix
+
+| Phase | Feature | Impact | Effort | Priority |
+|-------|---------|--------|--------|----------|
+| 4.1 | AI Monitoring Dashboard | High | Low | 🔴 High |
+| 4.2 | Model Configuration UI | Medium | Low | 🟠 Medium |
+| 5.1 | Streaming AI Responses | High | Medium | 🔴 High |
+| 5.2 | Live Preview Pane | High | Medium | 🟠 Medium |
+| 4.3 | A/B Testing UI | Medium | Medium | 🟡 Low |
+| 4.4 | Cost Alerts | Medium | Low | 🟡 Low |
+| 5.3 | Question Bank | Medium | High | 🟡 Low |
+| 5.4 | Keyboard Shortcuts | Low | Low | 🟢 Quick Win |
+
+---
+
+## Quick Start: Admin Panel MVP
+
+**Recommended first implementation** (1-2 days):
+
+1. Create `/admin` route (protected, admin-only)
+2. Add `AdminAIPage.tsx` with:
+   - Real-time stats from `/api/ai/test/monitoring`
+   - Model selector dropdowns
+   - Recent calls log
+3. Add navigation link in sidebar for admin users
+
+This provides immediate value with minimal backend changes.

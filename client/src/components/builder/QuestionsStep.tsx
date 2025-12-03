@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import React from "react";
 import ChatPanel from "@/components/ChatPanel";
 import QuestionEditor from "@/components/QuestionEditor";
 import FloatingAIChat from "@/components/FloatingAIChat";
 import { ToneAdjuster } from "@/components/ToneAdjuster";
+import { QuestionConfigPanelLite } from "@/components/builder/QuestionConfigPanelLite";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Plus, Bot, FileQuestion, ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { Plus, Bot, FileQuestion, ChevronLeft, ChevronRight, Eye, Settings, PanelRight } from "lucide-react";
 import { theme } from "@/theme";
 import type { Message } from "@/components/ChatPanel";
 import type { Question } from "@shared/schema";
@@ -57,9 +58,47 @@ export default function QuestionsStep({
   onUpdateQuestions,
   onNext,
 }: QuestionsStepProps) {
-  const [chatOpen, setChatOpen] = useState(true);
+  const [chatOpen, setChatOpen] = useState(false); // Chat starts collapsed, config panel is primary
+  const [configPanelOpen, setConfigPanelOpen] = useState(true);
   const [chatExpanded, setChatExpanded] = useState(false);
   const [isMobileChat, setIsMobileChat] = useState(false);
+  const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
+  const [isEnhancing, setIsEnhancing] = useState(false);
+
+  // Get the currently selected question
+  const selectedQuestion = questions.find(q => q.id === selectedQuestionId) || null;
+  const selectedQuestionIndex = selectedQuestion ? questions.findIndex(q => q.id === selectedQuestionId) : -1;
+
+  // Handle question selection
+  const handleSelectQuestion = useCallback((questionId: string) => {
+    setSelectedQuestionId(questionId);
+    // Ensure config panel is open when selecting a question
+    setConfigPanelOpen(true);
+  }, []);
+
+  // Handle updating selected question from config panel
+  const handleUpdateSelectedQuestion = useCallback((updates: Partial<Question>) => {
+    if (selectedQuestionIndex >= 0 && selectedQuestion) {
+      onUpdateQuestion(selectedQuestionIndex, { ...selectedQuestion, ...updates });
+    }
+  }, [selectedQuestionIndex, selectedQuestion, onUpdateQuestion]);
+
+  // AI enhance question handler
+  const handleEnhanceQuestion = useCallback(async () => {
+    if (!selectedQuestion) return;
+    setIsEnhancing(true);
+    try {
+      await onSendMessage(`Please enhance and improve this question: "${selectedQuestion.question}"`);
+    } finally {
+      setIsEnhancing(false);
+    }
+  }, [selectedQuestion, onSendMessage]);
+
+  // Generate follow-up question handler
+  const handleGenerateFollowUp = useCallback(async () => {
+    if (!selectedQuestion) return;
+    await onSendMessage(`Generate a follow-up question for: "${selectedQuestion.question}"`);
+  }, [selectedQuestion, onSendMessage]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -118,7 +157,7 @@ export default function QuestionsStep({
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <p className="font-medium text-lg" style={{ color: theme.colors.textPrimary }}>{questions.length} {questions.length === 1 ? 'question' : 'questions'} created</p>
-          <p className="text-sm" style={{ color: theme.colors.textSecondary }}>Edit your questions and refine with AI</p>
+          <p className="text-sm" style={{ color: theme.colors.textSecondary }}>Click a question to configure • Edit with AI</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
           {/* Mobile: AI Chat Button */}
@@ -157,6 +196,17 @@ export default function QuestionsStep({
             </Button>
           )}
 
+          {/* Desktop: Toggle Config Panel */}
+          <Button
+            variant="outline"
+            onClick={() => setConfigPanelOpen(!configPanelOpen)}
+            className="hidden md:flex"
+            data-testid="button-toggle-config"
+          >
+            <PanelRight className="w-4 h-4 mr-2" />
+            {configPanelOpen ? 'Hide' : 'Show'} Config
+          </Button>
+
           {/* Desktop: Toggle Chat Panel */}
           <Button
             variant="outline"
@@ -164,23 +214,20 @@ export default function QuestionsStep({
             className="hidden md:flex"
             data-testid="button-toggle-chat"
           >
-            {chatOpen ? <ChevronLeft className="w-4 h-4 mr-2" /> : <ChevronRight className="w-4 h-4 mr-2" />}
+            <Bot className="w-4 h-4 mr-2" />
             {chatOpen ? 'Hide' : 'Show'} Chat
           </Button>
         </div>
       </div>
 
-      <div className={`grid gap-6 transition-all duration-300 ${
-        chatOpen 
-          ? chatExpanded 
-            ? 'md:grid-cols-[1fr,500px] lg:grid-cols-[1fr,600px]' 
-            : 'md:grid-cols-[1fr,350px] lg:grid-cols-[1fr,400px]'
-          : 'grid-cols-1'
-      }`}>
+      {/* Main Content Area with Config Panel */}
+      <div className="flex gap-6">
         {/* Questions Editor - Main Area */}
-        <div className="space-y-4 p-4 rounded-lg" style={{ backgroundColor: theme.colors.bg }}>
+        <div className={`flex-1 space-y-4 p-4 rounded-lg transition-all duration-300 ${
+          configPanelOpen ? 'md:mr-0' : ''
+        }`} style={{ backgroundColor: theme.colors.bg }}>
           <div className="text-xs font-medium text-muted-foreground" style={{ color: theme.colors.textSecondary }}>
-            💡 Tip: Press <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-semibold">Cmd+N</kbd> (Mac) or <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-semibold">Ctrl+N</kbd> (Windows) to add a new question
+            💡 Tip: Click a question to configure it • Press <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-semibold">Cmd+N</kbd> (Mac) or <kbd className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-semibold">Ctrl+N</kbd> (Windows) to add new
           </div>
           {questions.length === 0 ? (
             <Card className="border-dashed" data-testid="card-no-questions">
@@ -215,13 +262,22 @@ export default function QuestionsStep({
                   strategy={verticalListSortingStrategy}
                 >
                   {questions.map((question, index) => (
-                    <QuestionEditor
+                    <div
                       key={question.id}
-                      question={question}
-                      index={index}
-                      onUpdate={(updated) => onUpdateQuestion(index, updated)}
-                      onDelete={() => onDeleteQuestion(index)}
-                    />
+                      onClick={() => handleSelectQuestion(question.id)}
+                      className={`cursor-pointer transition-all duration-200 rounded-lg ${
+                        selectedQuestionId === question.id 
+                          ? 'ring-2 ring-purple-500 ring-offset-2' 
+                          : 'hover:ring-1 hover:ring-gray-300'
+                      }`}
+                    >
+                      <QuestionEditor
+                        question={question}
+                        index={index}
+                        onUpdate={(updated) => onUpdateQuestion(index, updated)}
+                        onDelete={() => onDeleteQuestion(index)}
+                      />
+                    </div>
                   ))}
                 </SortableContext>
               </DndContext>
@@ -239,43 +295,58 @@ export default function QuestionsStep({
           )}
         </div>
 
-        {/* AI Tools Panel - Desktop Side Panel */}
-        {chatOpen && (
-          <div className="hidden md:block">
-            <div className="sticky top-20 h-[calc(100vh-8rem)] overflow-y-auto space-y-4">
-              {/* Tone Adjuster */}
-              <ToneAdjuster 
-                questions={questions} 
-                onApplyTone={onUpdateQuestions}
-                disabled={questions.length === 0}
-              />
-              
-              {/* AI Chat */}
-              <Card className="flex flex-col max-h-[432px]">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <Bot className="w-4 h-4" />
-                    AI Assistant
-                  </CardTitle>
-                  <CardDescription className="text-xs">
-                    Refine your questions
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 overflow-auto p-0">
-                  <ChatPanel
-                    messages={messages}
-                    onSendMessage={onSendMessage}
-                    isLoading={isProcessing}
-                    showHeader={false}
-                    isExpanded={chatExpanded}
-                    onToggleExpand={() => setChatExpanded(!chatExpanded)}
-                  />
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        )}
+        {/* Configuration Panel - Desktop Right Side */}
+        <div className="hidden md:flex flex-col sticky top-20 h-[calc(100vh-10rem)]">
+          <QuestionConfigPanelLite
+            question={selectedQuestion}
+            questions={questions}
+            surveyTitle={title}
+            onUpdateQuestion={handleUpdateSelectedQuestion}
+            onEnhanceQuestion={handleEnhanceQuestion}
+            onGenerateFollowUp={handleGenerateFollowUp}
+            isOpen={configPanelOpen}
+            onToggle={() => setConfigPanelOpen(!configPanelOpen)}
+            isEnhancing={isEnhancing}
+          />
+        </div>
       </div>
+
+      {/* AI Tools Panel - Collapsible Chat */}
+      {chatOpen && (
+        <div className="hidden md:block mt-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* Tone Adjuster */}
+            <ToneAdjuster 
+              questions={questions} 
+              onApplyTone={onUpdateQuestions}
+              disabled={questions.length === 0}
+            />
+            
+            {/* AI Chat */}
+            <Card className="flex flex-col max-h-[400px]">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Bot className="w-4 h-4" />
+                  AI Assistant
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Ask AI to refine your questions
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-1 overflow-auto p-0">
+                <ChatPanel
+                  messages={messages}
+                  onSendMessage={onSendMessage}
+                  isLoading={isProcessing}
+                  showHeader={false}
+                  isExpanded={chatExpanded}
+                  onToggleExpand={() => setChatExpanded(!chatExpanded)}
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

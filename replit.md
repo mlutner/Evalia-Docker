@@ -1,5 +1,23 @@
 # Evalia - Survey Builder Project
 
+## ⚠️ CRITICAL: Database Configuration
+
+**READ THIS FIRST** before running the app locally!
+
+| Database | URL Pattern | Contains |
+|----------|-------------|----------|
+| **Production (Replit/Neon)** | `postgresql://...neon.tech...` | **Real survey data** |
+| **Local Docker** | `postgresql://...localhost:5432...` | Empty/test data only |
+
+### To access REAL data:
+1. Get `DATABASE_URL` from Replit Secrets (https://replit.com → your project → Secrets tab)
+2. Create `.env` file with that URL (see `env.example.txt`)
+3. Run: `npm run dev`
+
+### See `DATABASE_SETUP.md` for full details.
+
+---
+
 ## Project Overview
 Evalia is an AI-powered survey builder for trainers to create, manage, and analyze surveys with a Typeform-inspired conversational interface. Features AI-assisted generation from documents, one-question-at-a-time UI, comprehensive analytics, and respondent tracking.
 

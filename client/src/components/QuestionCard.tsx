@@ -49,19 +49,41 @@ function getQuestionTypeIcon(type: QuestionType) {
 }
 
 function getQuestionTypeLabel(type: QuestionType) {
-  const labels: Record<QuestionType, string> = {
+  const labels: Record<string, string> = {
+    // Text inputs
     text: "Short answer",
-    email: "Email",
-    number: "Number",
     textarea: "Long answer",
+    email: "Email",
+    phone: "Phone number",
+    url: "Website URL",
+    number: "Number",
+    // Selection
     multiple_choice: "Multiple choice",
     checkbox: "Select all that apply",
+    dropdown: "Select one",
+    image_choice: "Choose an image",
+    yes_no: "Yes or No",
+    // Rating & scales
     rating: "Rating scale",
     nps: "Net Promoter Score",
+    likert: "Agreement scale",
+    opinion_scale: "Opinion scale",
+    slider: "Slider",
+    // Advanced
     matrix: "Matrix/Grid",
     ranking: "Ranking",
+    constant_sum: "Distribute points",
+    // Date & time
     date: "Date picker",
+    time: "Time picker",
+    datetime: "Date & time",
+    // Media
+    file_upload: "File upload",
+    signature: "Signature",
+    // Structural
     section: "Section divider",
+    statement: "Information",
+    legal: "Consent",
   };
   return labels[type] || type;
 }
@@ -270,72 +292,151 @@ export default function QuestionCard({ question, onAnswer, initialAnswer, onAuto
 
         {question.type === "rating" && (
           <div className="space-y-6">
-            {/* Star Rating UI */}
-            <div className="flex items-center justify-center gap-3 py-6">
-              {[1, 2, 3, 4, 5].map((star) => {
-                const isSelected = answer === star.toString();
-                const isHovered = hoverRating !== null && star <= hoverRating;
-                
+            {/* Get rating scale and style */}
+            {(() => {
+              const scale = question.ratingScale || 5;
+              const ratingStyle = question.ratingStyle || "number"; // Default to number, not stars
+              const lowLabel = question.ratingLabels?.low || "Strongly Disagree";
+              const highLabel = question.ratingLabels?.high || "Strongly Agree";
+              const ratingValues = Array.from({ length: scale }, (_, i) => i + 1);
+
+              // Star Rating UI
+              if (ratingStyle === "star") {
                 return (
-                  <button
-                    key={star}
-                    onClick={() => {
-                      const val = star.toString();
-                      setAnswer(val);
-                      onAnswer(val);
-                      setHoverRating(null);
-                      triggerAutoAdvance();
-                    }}
-                    onMouseEnter={() => setHoverRating(star)}
-                    onMouseLeave={() => setHoverRating(null)}
-                    data-testid={`rating-${star}`}
-                    className="transition-transform active-elevate-2"
-                  >
-                    <Star
-                      style={{
-                        fill: isSelected || isHovered ? '#37C0A3' : '#E2E7EF',
-                        stroke: isSelected || isHovered ? '#37C0A3' : '#A3D65C',
-                        transform: (isSelected || isHovered) ? 'scale(1.1)' : 'scale(1)',
-                        transition: 'all 0.2s ease'
-                      }}
-                      className="w-12 h-12"
-                    />
-                  </button>
+                  <>
+                    <div className="flex items-center justify-center gap-3 py-6">
+                      {ratingValues.map((star) => {
+                        const isSelected = answer === star.toString();
+                        const isHovered = hoverRating !== null && star <= hoverRating;
+                        
+                        return (
+                          <button
+                            key={star}
+                            onClick={() => {
+                              const val = star.toString();
+                              setAnswer(val);
+                              onAnswer(val);
+                              setHoverRating(null);
+                              triggerAutoAdvance();
+                            }}
+                            onMouseEnter={() => setHoverRating(star)}
+                            onMouseLeave={() => setHoverRating(null)}
+                            data-testid={`rating-${star}`}
+                            className="transition-transform active-elevate-2"
+                          >
+                            <Star
+                              style={{
+                                fill: isSelected || isHovered ? '#37C0A3' : '#E2E7EF',
+                                stroke: isSelected || isHovered ? '#37C0A3' : '#A3D65C',
+                                transform: (isSelected || isHovered) ? 'scale(1.1)' : 'scale(1)',
+                                transition: 'all 0.2s ease'
+                              }}
+                              className="w-12 h-12"
+                            />
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="flex items-center justify-center gap-2 text-xs font-medium" style={{ color: '#6A7789' }}>
+                      <span>{lowLabel}</span>
+                      <span style={{ color: '#A3D65C' }}>•</span>
+                      <span>{highLabel}</span>
+                    </div>
+                    {answer && (
+                      <div className="text-center p-3 rounded-lg" style={{ backgroundColor: '#F0F2F5', border: '1px solid #E2E7EF' }}>
+                        <div className="text-sm font-medium" style={{ color: '#37C0A3' }}>
+                          {answer} out of {scale}
+                        </div>
+                      </div>
+                    )}
+                  </>
                 );
-              })}
-            </div>
+              }
 
-            {/* Labels below stars */}
-            <div className="flex items-center justify-center gap-2 text-xs font-medium" style={{ color: '#6A7789' }}>
-              <span>Not at all</span>
-              <span style={{ color: '#A3D65C' }}>•</span>
-              <span>Very much</span>
-            </div>
-
-            {/* Selected rating display */}
-            {answer && (
-              <div className="text-center p-3 rounded-lg" style={{ backgroundColor: '#F0F2F5', border: '1px solid #E2E7EF' }}>
-                <div className="text-sm font-medium" style={{ color: '#37C0A3' }}>
-                  {['', 'Not at all', 'Slightly', 'Moderately', 'Mostly', 'Very much'][parseInt(answer as string)]}
-                </div>
-                <div className="text-xs mt-1" style={{ color: '#6A7789' }}>
-                  {answer} out of 5
-                </div>
-              </div>
-            )}
+              // Number/Scale Rating UI (default)
+              return (
+                <>
+                  <div className="flex flex-col space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-medium" style={{ color: '#6A7789' }}>{lowLabel}</span>
+                      <span className="text-xs font-medium" style={{ color: '#6A7789' }}>{highLabel}</span>
+                    </div>
+                    <div className={`grid gap-2 ${scale <= 5 ? 'grid-cols-5' : scale <= 7 ? 'grid-cols-7' : 'grid-cols-10'}`}>
+                      {ratingValues.map((value) => {
+                        const isSelected = answer === value.toString();
+                        
+                        return (
+                          <button
+                            key={value}
+                            onClick={() => {
+                              const val = value.toString();
+                              setAnswer(val);
+                              onAnswer(val);
+                              triggerAutoAdvance();
+                            }}
+                            data-testid={`rating-${value}`}
+                            style={{
+                              height: '48px',
+                              borderRadius: '8px',
+                              border: `${isSelected ? '3px' : '2px'} solid #2F8FA5`,
+                              backgroundColor: isSelected ? '#E1F6F3' : '#F7F9FC',
+                              color: '#2F8FA5',
+                              fontSize: '15px',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                              boxShadow: isSelected ? '0 0 0 4px rgba(47, 143, 165, 0.2)' : 'none'
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!isSelected) {
+                                e.currentTarget.style.borderWidth = '3px';
+                                e.currentTarget.style.boxShadow = '0 0 0 4px rgba(47, 143, 165, 0.15)';
+                                e.currentTarget.style.transform = 'scale(1.05)';
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              if (!isSelected) {
+                                e.currentTarget.style.borderWidth = '2px';
+                                e.currentTarget.style.boxShadow = 'none';
+                                e.currentTarget.style.transform = 'scale(1)';
+                              }
+                            }}
+                            className="active-elevate-2"
+                          >
+                            {value}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  {answer && (
+                    <div className="text-center p-3 rounded-lg" style={{ backgroundColor: '#F0F2F5', border: '1px solid #E2E7EF' }}>
+                      <div className="text-sm font-medium" style={{ color: '#2F8FA5' }}>
+                        {answer} out of {scale}
+                      </div>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
           </div>
         )}
 
         {question.type === "nps" && (
           <>
-            <div className="flex flex-col space-y-6">
-              <div className="flex justify-between items-center gap-1">
-                <span className="text-xs font-medium" style={{ color: '#6A7789' }}>Not likely</span>
-                <span className="text-xs font-medium" style={{ color: '#6A7789' }}>Extremely likely</span>
-              </div>
-              <div className="grid grid-cols-6 gap-2.5">
+            <div className="flex flex-col space-y-4">
+              {/* NPS Scale - Always horizontal per best practices */}
+              <div className="flex flex-wrap sm:flex-nowrap gap-1 sm:gap-2 justify-between">
                 {Array.from({ length: 11 }).map((_, i) => {
                   const isSelected = answer === i.toString();
+                  // Color coding: 0-6 Detractors (red), 7-8 Passives (yellow), 9-10 Promoters (green)
+                  const colorZone = i <= 6 ? 'detractor' : i <= 8 ? 'passive' : 'promoter';
+                  const zoneColors = {
+                    detractor: { border: '#EF4444', bg: '#FEE2E2', text: '#DC2626' },
+                    passive: { border: '#F59E0B', bg: '#FEF3C7', text: '#D97706' },
+                    promoter: { border: '#10B981', bg: '#D1FAE5', text: '#059669' },
+                  };
+                  const colors = zoneColors[colorZone];
                   
                   return (
                     <button
@@ -347,43 +448,62 @@ export default function QuestionCard({ question, onAnswer, initialAnswer, onAuto
                         triggerAutoAdvance();
                       }}
                       data-testid={`button-nps-${i}`}
+                      className="flex-1 min-w-[32px] sm:min-w-[40px] active-elevate-2 transition-all"
                       style={{
-                        height: '48px',
-                        borderRadius: '8px',
-                        border: `${isSelected ? '3px' : '2px'} solid #2F8FA5`,
-                        backgroundColor: isSelected ? '#FFFFFF' : '#F7F9FC',
-                        color: '#2F8FA5',
-                        fontSize: '15px',
-                        fontWeight: 600,
+                        height: '44px',
+                        borderRadius: '6px',
+                        border: `2px solid ${isSelected ? colors.border : '#E2E7EF'}`,
+                        backgroundColor: isSelected ? colors.bg : '#F7F9FC',
+                        color: isSelected ? colors.text : '#6A7789',
+                        fontSize: '14px',
+                        fontWeight: isSelected ? 700 : 600,
                         cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        boxShadow: isSelected ? '0 0 0 5px rgba(47, 143, 165, 0.2)' : 'none'
+                        boxShadow: isSelected ? `0 0 0 3px ${colors.border}33` : 'none',
+                        transform: isSelected ? 'scale(1.05)' : 'scale(1)',
                       }}
                       onMouseEnter={(e) => {
                         if (!isSelected) {
-                          e.currentTarget.style.borderColor = '#2F8FA5';
-                          e.currentTarget.style.borderWidth = '3px';
-                          e.currentTarget.style.boxShadow = '0 0 0 5px rgba(47, 143, 165, 0.2)';
-                          e.currentTarget.style.transform = 'scale(1.05)';
+                          e.currentTarget.style.borderColor = colors.border;
+                          e.currentTarget.style.backgroundColor = colors.bg + '80';
+                          e.currentTarget.style.transform = 'scale(1.02)';
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!isSelected) {
-                          e.currentTarget.style.borderColor = '#2F8FA5';
-                          e.currentTarget.style.borderWidth = '2px';
-                          e.currentTarget.style.boxShadow = 'none';
+                          e.currentTarget.style.borderColor = '#E2E7EF';
+                          e.currentTarget.style.backgroundColor = '#F7F9FC';
                           e.currentTarget.style.transform = 'scale(1)';
                         }
                       }}
-                      className="active-elevate-2"
                     >
                       {i}
                     </button>
                   );
                 })}
               </div>
+              
+              {/* Labels below the scale */}
+              <div className="flex justify-between items-center px-1">
+                <span className="text-xs font-medium" style={{ color: '#EF4444' }}>
+                  {question.customLabels?.detractor || "Not likely"}
+                </span>
+                <span className="text-xs font-medium" style={{ color: '#10B981' }}>
+                  {question.customLabels?.promoter || "Extremely likely"}
+                </span>
+              </div>
+              
+              {/* Selected value indicator with NPS zone */}
+              {answer && (
+                <div className="text-center p-3 rounded-lg" style={{ backgroundColor: '#F0F2F5', border: '1px solid #E2E7EF' }}>
+                  <span className="text-sm font-medium" style={{ color: '#1C2635' }}>
+                    You selected: <strong>{answer}</strong>
+                    {parseInt(answer as string, 10) <= 6 && <span className="ml-2" style={{ color: '#EF4444' }}>(Detractor)</span>}
+                    {parseInt(answer as string, 10) >= 7 && parseInt(answer as string, 10) <= 8 && <span className="ml-2" style={{ color: '#F59E0B' }}>(Passive)</span>}
+                    {parseInt(answer as string, 10) >= 9 && <span className="ml-2" style={{ color: '#10B981' }}>(Promoter)</span>}
+                  </span>
+                </div>
+              )}
             </div>
-            <p className="text-xs" style={{ color: theme.colors.textSecondary }}>How likely are you to recommend this training? (0 = Not likely, 10 = Extremely likely)</p>
           </>
         )}
 
@@ -506,6 +626,368 @@ export default function QuestionCard({ question, onAnswer, initialAnswer, onAuto
             />
             <p className="text-xs" style={{ color: '#6A7789' }}>Select a date</p>
           </>
+        )}
+
+        {/* Likert Scale */}
+        {question.type === "likert" && (
+          <div className="space-y-4">
+            {(() => {
+              const points = question.likertPoints || 5;
+              const likertType = question.likertType || "agreement";
+              
+              // Default labels by type
+              const defaultLabels: Record<string, string[]> = {
+                agreement: ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"],
+                frequency: ["Never", "Rarely", "Sometimes", "Often", "Always"],
+                importance: ["Not Important", "Slightly", "Moderately", "Very", "Extremely"],
+                satisfaction: ["Very Dissatisfied", "Dissatisfied", "Neutral", "Satisfied", "Very Satisfied"],
+                quality: ["Very Poor", "Poor", "Fair", "Good", "Excellent"],
+              };
+              
+              const labels = question.customLabels || defaultLabels[likertType] || defaultLabels.agreement;
+              // Create displayLabels array that matches the number of points
+              // For 7-point scale: show label at positions 0, 3 (middle), and 6 (end)
+              const displayLabels = points === 7 
+                ? [labels[0], "", "", labels[Math.floor(labels.length/2)], "", "", labels[labels.length-1]]
+                : labels;
+
+              return (
+                <div className="flex flex-col gap-4">
+                  <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${points}, 1fr)` }}>
+                    {Array.from({ length: points }).map((_, idx) => {
+                      const isSelected = answer === (idx + 1).toString();
+                      const label = displayLabels[idx] || "";
+                      
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            const val = (idx + 1).toString();
+                            setAnswer(val);
+                            onAnswer(val);
+                            triggerAutoAdvance();
+                          }}
+                          className="flex flex-col items-center gap-2 p-3 rounded-lg border transition-all"
+                          style={{
+                            borderColor: isSelected ? '#2F8FA5' : '#E2E7EF',
+                            backgroundColor: isSelected ? '#E1F6F3' : '#F7F9FC',
+                          }}
+                          data-testid={`likert-${idx + 1}`}
+                        >
+                          <span className="text-lg font-semibold" style={{ color: '#2F8FA5' }}>{idx + 1}</span>
+                          {label && <span className="text-xs text-center" style={{ color: '#6A7789' }}>{label}</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        )}
+
+        {/* Slider */}
+        {question.type === "slider" && (
+          <div className="space-y-6">
+            {(() => {
+              const min = question.min || 0;
+              const max = question.max || 100;
+              const step = question.step || 1;
+              const unit = question.unit || "";
+              const currentValue = answer ? parseInt(answer as string, 10) : (question.defaultValue || min);
+
+              return (
+                <>
+                  <div className="flex justify-between text-xs font-medium" style={{ color: '#6A7789' }}>
+                    <span>{question.ratingLabels?.low || min}{unit}</span>
+                    <span>{question.ratingLabels?.high || max}{unit}</span>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="range"
+                      min={min}
+                      max={max}
+                      step={step}
+                      value={currentValue}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setAnswer(val);
+                        onAnswer(val);
+                      }}
+                      className="w-full h-3 rounded-full appearance-none cursor-pointer"
+                      style={{
+                        background: `linear-gradient(to right, #2F8FA5 0%, #2F8FA5 ${((currentValue - min) / (max - min)) * 100}%, #E2E7EF ${((currentValue - min) / (max - min)) * 100}%, #E2E7EF 100%)`,
+                      }}
+                      data-testid="slider-input"
+                    />
+                  </div>
+                  {question.showValue !== false && (
+                    <div className="text-center p-4 rounded-lg" style={{ backgroundColor: '#F0F2F5', border: '1px solid #E2E7EF' }}>
+                      <span className="text-2xl font-bold" style={{ color: '#2F8FA5' }}>{currentValue}{unit}</span>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
+          </div>
+        )}
+
+        {/* Yes/No */}
+        {question.type === "yes_no" && (
+          <div className="flex gap-4 justify-center">
+            {(() => {
+              const yesLabel = question.yesLabel || "Yes";
+              const noLabel = question.noLabel || "No";
+              
+              return (
+                <>
+                  <button
+                    onClick={() => {
+                      setAnswer(yesLabel);
+                      onAnswer(yesLabel);
+                      triggerAutoAdvance();
+                    }}
+                    className="flex-1 max-w-[200px] p-4 rounded-lg border-2 transition-all"
+                    style={{
+                      borderColor: answer === yesLabel ? '#37C0A3' : '#E2E7EF',
+                      backgroundColor: answer === yesLabel ? '#E1F6F3' : '#F7F9FC',
+                    }}
+                    data-testid="yes-button"
+                  >
+                    <span className="text-lg font-semibold" style={{ color: answer === yesLabel ? '#37C0A3' : '#1C2635' }}>
+                      {yesLabel}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setAnswer(noLabel);
+                      onAnswer(noLabel);
+                      triggerAutoAdvance();
+                    }}
+                    className="flex-1 max-w-[200px] p-4 rounded-lg border-2 transition-all"
+                    style={{
+                      borderColor: answer === noLabel ? '#EF4444' : '#E2E7EF',
+                      backgroundColor: answer === noLabel ? '#FEE2E2' : '#F7F9FC',
+                    }}
+                    data-testid="no-button"
+                  >
+                    <span className="text-lg font-semibold" style={{ color: answer === noLabel ? '#EF4444' : '#1C2635' }}>
+                      {noLabel}
+                    </span>
+                  </button>
+                </>
+              );
+            })()}
+          </div>
+        )}
+
+        {/* Dropdown */}
+        {question.type === "dropdown" && question.options && (
+          <div className="space-y-3">
+            <select
+              value={answer as string}
+              onChange={(e) => {
+                setAnswer(e.target.value);
+                onAnswer(e.target.value);
+                if (e.target.value) triggerAutoAdvance();
+              }}
+              className="w-full h-12 px-4 rounded-lg border bg-white text-base"
+              style={{ borderColor: '#E2E7EF' }}
+              data-testid="dropdown-select"
+            >
+              <option value="">{question.placeholder || "Select an option..."}</option>
+              {question.options.map((option, idx) => (
+                <option key={idx} value={option}>{option}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Opinion Scale (Semantic Differential) */}
+        {question.type === "opinion_scale" && (
+          <div className="space-y-4">
+            {(() => {
+              const scale = question.ratingScale || 5;
+              const leftLabel = question.leftLabel || "Low";
+              const rightLabel = question.rightLabel || "High";
+
+              return (
+                <>
+                  <div className="flex justify-between text-sm font-medium" style={{ color: '#6A7789' }}>
+                    <span>{leftLabel}</span>
+                    <span>{rightLabel}</span>
+                  </div>
+                  <div className="flex gap-2 justify-between">
+                    {Array.from({ length: scale }).map((_, idx) => {
+                      const value = idx + 1;
+                      const isSelected = answer === value.toString();
+                      
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            const val = value.toString();
+                            setAnswer(val);
+                            onAnswer(val);
+                            triggerAutoAdvance();
+                          }}
+                          className="flex-1 h-12 rounded-lg border-2 transition-all font-semibold"
+                          style={{
+                            borderColor: isSelected ? '#2F8FA5' : '#E2E7EF',
+                            backgroundColor: isSelected ? '#E1F6F3' : '#F7F9FC',
+                            color: '#2F8FA5',
+                          }}
+                          data-testid={`opinion-${value}`}
+                        >
+                          {question.showNumbers !== false ? value : ''}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        )}
+
+        {/* Constant Sum (Point Distribution) */}
+        {question.type === "constant_sum" && question.options && (
+          <div className="space-y-4">
+            {(() => {
+              const total = question.totalPoints || 100;
+              const currentValues = Array.isArray(answer) ? answer.map(v => parseInt(v, 10) || 0) : question.options.map(() => 0);
+              const currentSum = currentValues.reduce((a, b) => a + b, 0);
+              const remaining = total - currentSum;
+
+              return (
+                <>
+                  <div className="flex justify-between items-center p-3 rounded-lg" style={{ backgroundColor: remaining === 0 ? '#E1F6F3' : '#FEF3C7', border: '1px solid #E2E7EF' }}>
+                    <span className="text-sm font-medium">Points remaining:</span>
+                    <span className="text-lg font-bold" style={{ color: remaining === 0 ? '#37C0A3' : '#D97706' }}>{remaining} / {total}</span>
+                  </div>
+                  {question.options.map((option, idx) => (
+                    <div key={idx} className="flex items-center gap-4">
+                      <span className="flex-1 text-sm" style={{ color: '#1C2635' }}>{option}</span>
+                      <Input
+                        type="number"
+                        min={0}
+                        max={total}
+                        value={currentValues[idx] || 0}
+                        onChange={(e) => {
+                          const newValues = [...currentValues];
+                          newValues[idx] = parseInt(e.target.value, 10) || 0;
+                          const strValues = newValues.map(String);
+                          setAnswer(strValues);
+                          onAnswer(strValues);
+                        }}
+                        className="w-24 text-center"
+                        data-testid={`constant-sum-${idx}`}
+                      />
+                      {question.showPercentage && (
+                        <span className="w-12 text-xs text-right" style={{ color: '#6A7789' }}>
+                          {currentSum > 0 ? Math.round((currentValues[idx] / currentSum) * 100) : 0}%
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </>
+              );
+            })()}
+          </div>
+        )}
+
+        {/* Time Picker */}
+        {question.type === "time" && (
+          <>
+            <Input
+              type="time"
+              value={answer as string}
+              onChange={(e) => {
+                handleTextChange(e.target.value);
+                triggerAutoAdvance();
+              }}
+              className="text-base h-11 sm:h-12 border border-border/60 transition-colors bg-white"
+              style={{ borderColor: '#E2E7EF' }}
+              data-testid="input-time-answer"
+              autoFocus
+            />
+            <p className="text-xs" style={{ color: '#6A7789' }}>Select a time</p>
+          </>
+        )}
+
+        {/* Phone Number */}
+        {question.type === "phone" && (
+          <>
+            <Input
+              type="tel"
+              value={answer as string}
+              onChange={(e) => handleTextChange(e.target.value)}
+              placeholder={question.placeholder || "Enter phone number..."}
+              className="text-base h-11 sm:h-12 border border-border/60 transition-colors bg-white"
+              style={{ borderColor: '#E2E7EF' }}
+              data-testid="input-phone-answer"
+              autoFocus
+            />
+            <p className="text-xs" style={{ color: '#6A7789' }}>Phone number</p>
+          </>
+        )}
+
+        {/* URL */}
+        {question.type === "url" && (
+          <>
+            <Input
+              type="url"
+              value={answer as string}
+              onChange={(e) => handleTextChange(e.target.value)}
+              placeholder={question.placeholder || "https://example.com"}
+              className="text-base h-11 sm:h-12 border border-border/60 transition-colors bg-white"
+              style={{ borderColor: '#E2E7EF' }}
+              data-testid="input-url-answer"
+              autoFocus
+            />
+            <p className="text-xs" style={{ color: '#6A7789' }}>Website URL</p>
+          </>
+        )}
+
+        {/* Section Divider */}
+        {question.type === "section" && (
+          <div className="py-4 border-b" style={{ borderColor: '#E2E7EF' }}>
+            <p className="text-muted-foreground">{question.description}</p>
+          </div>
+        )}
+
+        {/* Statement (Information Display) */}
+        {question.type === "statement" && (
+          <div className="p-4 rounded-lg" style={{ backgroundColor: '#F7F9FC', border: '1px solid #E2E7EF' }}>
+            <p className="text-sm" style={{ color: '#1C2635' }}>{question.description}</p>
+          </div>
+        )}
+
+        {/* Legal/Consent */}
+        {question.type === "legal" && (
+          <div className="space-y-4">
+            <div className="flex items-start gap-3 p-4 rounded-lg" style={{ backgroundColor: '#F7F9FC', border: '1px solid #E2E7EF' }}>
+              <Checkbox
+                id="legal-consent"
+                checked={answer === "true"}
+                onCheckedChange={(checked) => {
+                  const val = checked ? "true" : "false";
+                  setAnswer(val);
+                  onAnswer(val);
+                }}
+                className="mt-1"
+                data-testid="legal-checkbox"
+              />
+              <label htmlFor="legal-consent" className="text-sm cursor-pointer" style={{ color: '#1C2635' }}>
+                {question.description || "I agree to the terms and conditions"}
+                {question.linkUrl && (
+                  <a href={question.linkUrl} target="_blank" rel="noopener noreferrer" className="ml-1 underline" style={{ color: '#2F8FA5' }}>
+                    {question.linkText || "Read more"}
+                  </a>
+                )}
+              </label>
+            </div>
+          </div>
         )}
       </div>
     </div>

@@ -33,10 +33,19 @@ export default function ChatPanel({ messages, onSendMessage, isLoading = false, 
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Support images, PDFs, and documents
-    const supportedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'text/plain', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-    if (!supportedTypes.includes(file.type)) {
-      alert('Unsupported file type. Please upload an image, PDF, TXT, or DOCX file.');
+    // Support images, PDFs, documents, and presentations
+    const supportedTypes = [
+      'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+      'application/pdf', 'text/plain', 
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+    ];
+    // Also check by file extension for edge cases
+    const supportedExtensions = ['.pdf', '.txt', '.docx', '.pptx', '.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    const hasValidExtension = supportedExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+    
+    if (!supportedTypes.includes(file.type) && !hasValidExtension) {
+      alert('Unsupported file type. Please upload an image, PDF, TXT, DOCX, or PPTX file.');
       return;
     }
 
@@ -101,11 +110,14 @@ export default function ChatPanel({ messages, onSendMessage, isLoading = false, 
           {messages.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-sm" style={{ color: '#6A7789' }}>
-                Start a conversation to refine your survey
+                Refine your survey with AI assistance
               </p>
               <div className="mt-4 space-y-2 text-xs" style={{ color: '#6A7789' }}>
                 <p>Try: "Add 3 open-ended questions"</p>
                 <p>Try: "Make it more focused on feedback"</p>
+                <p className="mt-3 pt-2 border-t border-dashed" style={{ borderColor: '#E2E7EF' }}>
+                  💡 Upload a document to add more questions from existing content
+                </p>
               </div>
             </div>
           ) : (
@@ -176,7 +188,7 @@ export default function ChatPanel({ messages, onSendMessage, isLoading = false, 
             disabled={isLoading}
             onClick={() => fileInputRef.current?.click()}
             data-testid="button-upload-file"
-            title="Upload file (image, PDF, or document)"
+            title="Add document to expand survey (PDF, Word, PowerPoint, or image)"
           >
             <Upload className="w-4 h-4" />
           </Button>
@@ -187,7 +199,7 @@ export default function ChatPanel({ messages, onSendMessage, isLoading = false, 
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*,.pdf,.txt,.docx"
+          accept="image/*,.pdf,.txt,.docx,.pptx"
           onChange={handleFileSelect}
           className="hidden"
           data-testid="input-file-upload"

@@ -30,6 +30,7 @@ export function useFileProcessing() {
       const response = await fetch("/api/parse-document", {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -77,14 +78,17 @@ export function useFileProcessing() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ prompt, fileData }),
+        credentials: "include",
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || "Failed to generate survey");
+        console.error("Survey generation API error:", response.status, error);
+        throw new Error(error.error || error.message || "Failed to generate survey");
       }
 
       const data = await response.json();
+      console.log("Survey generated successfully:", data.title, data.questions.length, "questions");
       onSuccess(data, data.questions.length);
 
       if (data.questions.length > 0) {
@@ -120,14 +124,17 @@ export function useFileProcessing() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ prompt: pastedText }),
+        credentials: "include",
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || "Failed to process text");
+        console.error("Text processing API error:", response.status, error);
+        throw new Error(error.error || error.message || "Failed to process text");
       }
 
       const data = await response.json();
+      console.log("Text processed successfully:", data.title, data.questions.length, "questions");
       onSuccess(data, data.questions.length);
 
       if (data.questions.length > 0) {

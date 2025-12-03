@@ -8,6 +8,7 @@ import { queryClient } from "@/lib/queryClient";
 import type { User as UserType } from "@shared/schema";
 import evaliaLogo from "@assets/Heading (300 x 50 px) (1000 x 250 px) (3)_1763943705026.png";
 import { APP_VERSION } from "@shared/version";
+import { CreateSurveyModal } from "./builder-v2/CreateSurveyModal";
 
 interface AppSidebarProps {
   onNavigate?: () => void;
@@ -15,6 +16,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ onNavigate }: AppSidebarProps) {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [location, setLocation] = useLocation();
   const { user } = useAuth();
   const typedUser = user as UserType | null | undefined;
@@ -24,22 +26,30 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
     onNavigate?.();
   };
 
+  const handleNewSurvey = () => {
+    setShowCreateModal(true);
+  };
+
   const handleLogout = () => {
     queryClient.clear();
     window.location.href = "/api/logout";
   };
 
   const sidebarItems = [
-    { id: "dashboard", label: "Dashboard", icon: SquaresFour, href: "/dashboard", tooltip: "Overview and key metrics" },
-    { id: "surveys", label: "Surveys", icon: ChartBar, href: "/surveys", tooltip: "Create, manage, and analyze surveys" },
-    { id: "respondents", label: "Respondent Groups", icon: Users, href: "/respondents", tooltip: "Manage respondent lists and segments" },
+    { id: "home", label: "Home", icon: SquaresFour, href: "/dashboard", tooltip: "Surveys overview and metrics" },
+    { id: "analytics", label: "Analytics", icon: ChartBar, href: "/analytics", tooltip: "View survey analytics and insights" },
     { id: "templates", label: "Templates", icon: TextT, href: "/templates", tooltip: "Pre-built survey templates" },
     { id: "ai-assist", label: "AI Assist", icon: Lightning, href: "/ai-assist", tooltip: "Generate surveys with AI" },
-    { id: "scoring", label: "Scoring Models", icon: Book, href: "/scoring", tooltip: "Set up scoring rules for questions" },
     { id: "settings", label: "Settings", icon: Gear, href: "/settings", tooltip: "Account and workspace settings" },
   ];
 
-  const isActive = (href: string) => location === href;
+  // Check if current location matches sidebar item (handle dashboard/surveys both mapping to home)
+  const isActive = (href: string) => {
+    if (href === "/dashboard") {
+      return location === "/dashboard" || location === "/surveys";
+    }
+    return location === href;
+  };
 
   return (
     <aside className={`flex flex-col h-screen transition-all duration-300 ${
@@ -63,7 +73,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
       {/* New Survey Button */}
       <div className="px-4 py-6">
         <Button
-          onClick={() => handleNavigation("/builder")}
+          onClick={handleNewSurvey}
           className="w-full font-semibold transition-colors hover:bg-[#37C0A3] active:bg-[#1F6F78] border-0 outline-none"
           style={{ backgroundColor: '#2F8FA5', color: '#FFFFFF' }}
           size={sidebarExpanded ? "default" : "icon"}
@@ -73,6 +83,12 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
           {sidebarExpanded && <span className="ml-2">New Survey</span>}
         </Button>
       </div>
+
+      {/* Create Survey Modal */}
+      <CreateSurveyModal 
+        isOpen={showCreateModal} 
+        onClose={() => setShowCreateModal(false)} 
+      />
       {/* Navigation */}
       <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
         {sidebarItems.map((item) => {

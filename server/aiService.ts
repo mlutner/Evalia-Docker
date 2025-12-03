@@ -38,6 +38,8 @@ export const PROMPT_VERSIONS = {
   surveyText: "v1.0.0",
   documentOCR: "v1.0.0",
   aiChat: "v2.0.0",
+  promptEnhancement: "v1.0.0",
+  toneAdjustment: "v1.0.0",
 } as const;
 
 // Task types for monitoring
@@ -51,6 +53,8 @@ export const TASK_TYPES = {
   SURVEY_TEXT: "surveyText",
   DOCUMENT_OCR: "documentOCR",
   AI_CHAT: "aiChat",
+  PROMPT_ENHANCEMENT: "promptEnhancement",
+  TONE_ADJUSTMENT: "toneAdjustment",
 } as const;
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -717,15 +721,46 @@ export async function generateSurveyFromText(
 - For rating scales: preserve full scale (e.g., "1 (Strongly Disagree) to 5 (Strongly Agree)")
 - Pay attention to multi-line questions and questions spanning pages
 
-**QUESTION TYPES:**
+**QUESTION TYPES (Choose the most appropriate for each question):**
+
+TEXT INPUTS:
 - "text": Short text input (1-2 sentences)
-- "textarea": Long text input (paragraphs)
-- "multiple_choice": Single selection from options
+- "textarea": Long text input (paragraphs, open feedback)
+- "email": Email address with validation
+- "phone": Phone number input
+- "url": Website URL input
+- "number": Numeric input (quantities, counts)
+
+SELECTION (Single/Multiple):
+- "multiple_choice": Single selection from options (3-6 options ideal)
 - "checkbox": Multiple selections from options
-- "rating": Numeric scale (1-5 or 1-10)
-- "nps": Net Promoter Score (0-10)
-- "email": Email address input
-- "number": Numeric input
+- "dropdown": Single selection from longer list (7+ options)
+- "yes_no": Binary choice (Yes/No, True/False, Agree/Disagree)
+
+RATING & SCALES (Best for measuring attitudes/opinions):
+- "rating": Numeric scale with customizable style
+  - ratingScale: 3, 5, 7, or 10
+  - ratingStyle: "number" | "star" | "emoji" | "heart" | "thumb"
+  - ratingLabels: { low: "Disagree", high: "Agree" }
+- "nps": Net Promoter Score (0-10, standard recommendation question)
+- "likert": Pre-configured agreement/frequency/satisfaction scales
+  - likertType: "agreement" | "frequency" | "importance" | "satisfaction" | "quality"
+  - likertPoints: 5 or 7
+- "opinion_scale": Semantic differential (bipolar scale)
+  - leftLabel: "Cold" rightLabel: "Hot"
+- "slider": Continuous numeric slider
+  - min, max, step, unit (e.g., "%", "years")
+
+ADVANCED:
+- "matrix": Grid/table for rating multiple items on same scale
+  - rowLabels: ["Item 1", "Item 2"], colLabels: ["Poor", "Good", "Excellent"]
+- "ranking": Order items by preference (drag-and-drop)
+- "constant_sum": Distribute points across options (total = 100)
+
+STRUCTURAL:
+- "section": Section divider with title
+- "statement": Information display (not a question)
+- "legal": Consent checkbox
 
 **OUTPUT FORMAT (JSON only):**
 {
@@ -733,14 +768,52 @@ export async function generateSurveyFromText(
   "questions": [
     {
       "id": "q1",
-      "type": "text|textarea|multiple_choice|checkbox|rating|nps|email|number",
-      "question": "Question text",
+      "type": "rating",
+      "question": "How satisfied are you with the training?",
       "description": "Optional helper text",
-      "options": ["Option A", "Option B"],
+      "ratingScale": 5,
+      "ratingStyle": "number",
+      "ratingLabels": { "low": "Very Dissatisfied", "high": "Very Satisfied" },
       "required": true
+    },
+    {
+      "id": "q2",
+      "type": "likert",
+      "question": "The content was relevant to my role.",
+      "likertType": "agreement",
+      "likertPoints": 5,
+      "required": true
+    },
+    {
+      "id": "q3",
+      "type": "multiple_choice",
+      "question": "What format works best for you?",
+      "options": ["In-person", "Virtual", "Hybrid", "Self-paced"],
+      "displayStyle": "cards",
+      "required": true
+    },
+    {
+      "id": "q4",
+      "type": "slider",
+      "question": "How confident are you in applying this knowledge?",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "unit": "%",
+      "showValue": true,
+      "required": false
     }
   ]
 }
+
+**BEST PRACTICES:**
+- Use "rating" or "likert" for measuring satisfaction/agreement
+- Use "nps" specifically for recommendation questions
+- Use "slider" for continuous measurements (confidence %, time estimates)
+- Use "matrix" when rating multiple items on the same criteria
+- Use "yes_no" for simple binary choices
+- Include "ratingLabels" to clarify what endpoints mean
+- Mix question types for engagement (avoid all same type)
 
 **VALIDATION CHECKLIST:**
 ✓ All questions from document included
@@ -988,6 +1061,11 @@ export async function generateSurveyText(
   let systemPrompt = "";
   let userPrompt = "";
 
+  // Calculate survey metrics for tailored messaging
+  const questionCount = questions.length;
+  const estimatedMinutes = Math.max(2, Math.ceil(questionCount / 3));
+  const surveySize = questionCount <= 5 ? "quick" : questionCount <= 10 ? "brief" : questionCount <= 20 ? "comprehensive" : "detailed";
+
   switch (fieldType) {
     case "description":
       systemPrompt = `You are an expert survey copywriter. Write a brief, benefit-focused introduction (25-35 words max). Conversational, warm, direct. NO quotation marks, NO line breaks. Plain text only.`;
@@ -995,13 +1073,26 @@ export async function generateSurveyText(
       break;
     
     case "welcomeMessage":
-      systemPrompt = `Generate EXACTLY 3 bullet points explaining the PURPOSE and VALUE of this survey. 8-12 words per point. NO bullet symbols, NO numbers, NO dashes. Just text, one purpose per line.`;
-      userPrompt = `Survey Title: ${surveyTitle}\n\nQuestions:\n${questions.slice(0, 5).map((q, i) => `${i + 1}. ${q.question}`).join('\n')}\n\nGenerate EXACTLY 3 points (8-12 words each). Each on its own line.`;
+      systemPrompt = `Generate EXACTLY 3 concise bullet points for a survey welcome message. Each point MUST be 6-10 words maximum. Keep them short and punchy. NO bullet symbols, NO numbers, NO dashes, NO colons. Just plain text, one point per line. The points should convey:
+1. The purpose/goal of the survey
+2. How their input will be used
+3. Time estimate or ease of completion
+
+CRITICAL: Keep each point under 10 words. Shorter is better.`;
+      userPrompt = `Survey: "${surveyTitle}"
+Questions: ${questionCount} (${surveySize} survey, ~${estimatedMinutes} min)
+Topic themes: ${questions.slice(0, 3).map(q => q.question.substring(0, 40)).join("; ")}
+
+Generate 3 SHORT bullet points (6-10 words each). Each on its own line.`;
       break;
     
     case "thankYouMessage":
-      systemPrompt = `Write a warm, genuine thank you message (50-70 words). Sincere, forward-focused, empowering. Reference the survey topic. Plain text only.`;
-      userPrompt = `Survey Title: ${surveyTitle}\n\nWrite a 50-70 word thank you message. Specific, warm, impact-focused.`;
+      // Shorter thank you for quick surveys, slightly longer for comprehensive ones
+      const thankYouLength = questionCount <= 5 ? "25-35" : questionCount <= 10 ? "35-50" : "50-70";
+      systemPrompt = `Write a warm, genuine thank you message (${thankYouLength} words). Sincere, forward-focused. Reference the survey topic. Plain text only, no formatting. Match the brevity to the survey length.`;
+      userPrompt = `Survey: "${surveyTitle}" (${questionCount} questions, ${surveySize} survey)
+
+Write a ${thankYouLength} word thank you message. Be warm and specific to the topic.`;
       break;
 
     case "resultsSummary":
@@ -1077,6 +1168,281 @@ export async function processAIChatMessage(
     throw new AIServiceError(
       `Chat processing failed: ${error.message}`,
       TASK_TYPES.AI_CHAT,
+      true,
+      error
+    );
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// PROMPT ENHANCEMENT
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/**
+ * Enhance a user's survey prompt using AI to make it more detailed and effective.
+ * Takes a rough idea and transforms it into a comprehensive, well-structured prompt
+ * that will generate better survey questions.
+ */
+export async function enhancePrompt(
+  originalPrompt: string,
+  surveyType?: string,
+  additionalContext?: string
+): Promise<{
+  enhancedPrompt: string;
+  suggestions: string[];
+  explanation: string;
+}> {
+  if (!originalPrompt || originalPrompt.trim().length < 5) {
+    throw new AIServiceError(
+      "Please provide at least a brief description of what you want to measure",
+      TASK_TYPES.PROMPT_ENHANCEMENT,
+      false
+    );
+  }
+
+  const systemPrompt = `You are an expert survey design consultant. Your job is to take a user's rough idea for a survey and transform it into a comprehensive, detailed prompt that will generate excellent survey questions.
+
+CONTEXT:
+- This is for the Evalia survey platform, which specializes in training feedback and assessment surveys
+- The enhanced prompt will be used by AI to generate survey questions
+${surveyType ? `- Survey type: ${surveyType}` : ""}
+${additionalContext ? `- Additional context: ${additionalContext}` : ""}
+
+YOUR TASK:
+1. Analyze the user's rough prompt
+2. Identify what they want to measure/assess
+3. Expand it with:
+   - Specific aspects to evaluate
+   - Target audience considerations
+   - Desired outcomes or insights
+   - Question types that would work well
+   - Any domain-specific considerations
+
+OUTPUT FORMAT (JSON):
+{
+  "enhancedPrompt": "A detailed, well-structured prompt (2-4 paragraphs) that will generate excellent survey questions. Include specific topics, question types, and audience considerations.",
+  "suggestions": ["3-5 specific topic areas or dimensions to cover"],
+  "explanation": "A brief (1-2 sentences) explanation of what you improved and why"
+}
+
+IMPORTANT:
+- Keep the user's original intent but make it much more comprehensive
+- Add specific, actionable details
+- Consider best practices in survey design
+- Make the enhanced prompt clear and actionable for AI survey generation`;
+
+  const messages: ChatMessage[] = [
+    { role: "system", content: systemPrompt },
+    { role: "user", content: `Please enhance this survey prompt:\n\n"${originalPrompt}"` },
+  ];
+
+  try {
+    const response = await callMistral(messages, {
+      quality: "balanced",
+      responseFormat: { type: "json_object" },
+      taskType: TASK_TYPES.PROMPT_ENHANCEMENT,
+      promptVersion: PROMPT_VERSIONS.promptEnhancement,
+      temperature: 0.7,
+      maxTokens: 1024,
+    });
+
+    const result = safeParseJSON(response);
+
+    if (!result || !result.enhancedPrompt) {
+      // Fallback: use the response as the enhanced prompt
+      return {
+        enhancedPrompt: response || originalPrompt,
+        suggestions: [],
+        explanation: "AI enhanced your prompt with additional detail.",
+      };
+    }
+
+    return {
+      enhancedPrompt: result.enhancedPrompt,
+      suggestions: Array.isArray(result.suggestions) ? result.suggestions : [],
+      explanation: result.explanation || "Your prompt has been enhanced with more specific details.",
+    };
+  } catch (error: any) {
+    console.error("[AI Service] Prompt enhancement error:", error);
+    throw new AIServiceError(
+      `Failed to enhance prompt: ${error.message}`,
+      TASK_TYPES.PROMPT_ENHANCEMENT,
+      true,
+      error
+    );
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// TONE ADJUSTMENT
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/**
+ * Adjust the tone of survey questions while preserving their meaning.
+ * Returns the adjusted questions or the original if adjustment fails.
+ */
+export async function adjustQuestionsTone(
+  questions: Question[],
+  targetTone: "formal" | "casual" | "encouraging" | "technical"
+): Promise<Question[]> {
+  const toneDescriptions: Record<string, string> = {
+    formal: "professional, structured, and polished language suitable for corporate or business contexts. Use clear, precise wording.",
+    casual: "friendly, conversational, and approachable language that feels natural and relaxed. Use everyday words.",
+    encouraging: "warm, supportive, and motivational language that builds confidence and makes respondents feel valued.",
+    technical: "precise, industry-specific, and expert-level language appropriate for knowledgeable professionals.",
+  };
+
+  const systemPrompt = `You are an expert survey editor. Your task is to rewrite survey questions to match a specific tone while preserving their exact meaning and intent.
+
+TARGET TONE: ${targetTone}
+TONE DESCRIPTION: ${toneDescriptions[targetTone]}
+
+RULES:
+1. Preserve the EXACT meaning and intent of each question
+2. Keep all answer options unchanged (only modify the question text and optional description)
+3. Do NOT add any notes, annotations, brackets, or explanations
+4. Do NOT change question IDs, types, or structure
+5. Do NOT add "(adjusted to X tone)" or similar notes
+6. Return ONLY valid JSON - no explanations or commentary
+
+OUTPUT FORMAT:
+Return a JSON array of questions with the same structure as input. Only the "question" and "description" fields should be modified.`;
+
+  const userPrompt = `Rewrite these questions in a ${targetTone} tone. Return ONLY valid JSON, no explanations:
+
+${JSON.stringify(questions, null, 2)}`;
+
+  const messages: ChatMessage[] = [
+    { role: "system", content: systemPrompt },
+    { role: "user", content: userPrompt },
+  ];
+
+  try {
+    const response = await callMistral(messages, {
+      quality: "balanced",
+      responseFormat: { type: "json_object" },
+      taskType: TASK_TYPES.TONE_ADJUSTMENT,
+      promptVersion: PROMPT_VERSIONS.toneAdjustment,
+      temperature: 0.5, // Lower temperature for more consistent rewrites
+      maxTokens: 4096,
+    });
+
+    // Try to parse as JSON
+    const parsed = safeParseJSON(response);
+    
+    if (Array.isArray(parsed)) {
+      // Validate each question has required fields
+      return parsed.map((q: any, i: number) => ({
+        ...questions[i], // Keep original structure
+        question: q.question || questions[i].question,
+        description: q.description !== undefined ? q.description : questions[i].description,
+      }));
+    }
+    
+    // If response has a questions array
+    if (parsed && Array.isArray(parsed.questions)) {
+      return parsed.questions.map((q: any, i: number) => ({
+        ...questions[i],
+        question: q.question || questions[i].question,
+        description: q.description !== undefined ? q.description : questions[i].description,
+      }));
+    }
+
+    // Fallback: return original questions unchanged
+    console.warn("[AI Service] Tone adjustment returned unexpected format, returning original");
+    return questions;
+  } catch (error: any) {
+    console.error("[AI Service] Tone adjustment error:", error);
+    // Return original questions on error - don't add bracket notes
+    return questions;
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// POWERPOINT PARSING
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/**
+ * Extract text content from PowerPoint (.pptx) files
+ * Uses the Office Open XML format structure
+ */
+export async function parsePowerPoint(buffer: Buffer): Promise<string> {
+  try {
+    // PowerPoint files are ZIP archives containing XML
+    const JSZip = (await import("jszip")).default;
+    const zip = await JSZip.loadAsync(buffer);
+    
+    let extractedText = "";
+    const slideFiles: string[] = [];
+    
+    // Find all slide XML files
+    zip.forEach((relativePath) => {
+      if (relativePath.match(/ppt\/slides\/slide\d+\.xml$/)) {
+        slideFiles.push(relativePath);
+      }
+    });
+    
+    // Sort slides numerically
+    slideFiles.sort((a, b) => {
+      const numA = parseInt(a.match(/slide(\d+)\.xml$/)?.[1] || "0");
+      const numB = parseInt(b.match(/slide(\d+)\.xml$/)?.[1] || "0");
+      return numA - numB;
+    });
+    
+    // Extract text from each slide
+    for (let i = 0; i < slideFiles.length; i++) {
+      const slideFile = slideFiles[i];
+      const content = await zip.file(slideFile)?.async("text");
+      
+      if (content) {
+        // Extract text from XML (look for <a:t> text elements)
+        const textMatches = content.match(/<a:t>([^<]*)<\/a:t>/g);
+        if (textMatches) {
+          const slideText = textMatches
+            .map((match) => match.replace(/<\/?a:t>/g, "").trim())
+            .filter((text) => text.length > 0)
+            .join(" ");
+          
+          if (slideText.trim()) {
+            extractedText += `\n\n--- Slide ${i + 1} ---\n${slideText}`;
+          }
+        }
+      }
+    }
+    
+    // Also try to get speaker notes
+    const notesFiles: string[] = [];
+    zip.forEach((relativePath) => {
+      if (relativePath.match(/ppt\/notesSlides\/notesSlide\d+\.xml$/)) {
+        notesFiles.push(relativePath);
+      }
+    });
+    
+    if (notesFiles.length > 0) {
+      extractedText += "\n\n--- Speaker Notes ---";
+      for (const noteFile of notesFiles) {
+        const content = await zip.file(noteFile)?.async("text");
+        if (content) {
+          const textMatches = content.match(/<a:t>([^<]*)<\/a:t>/g);
+          if (textMatches) {
+            const noteText = textMatches
+              .map((match) => match.replace(/<\/?a:t>/g, "").trim())
+              .filter((text) => text.length > 0)
+              .join(" ");
+            if (noteText.trim()) {
+              extractedText += `\n${noteText}`;
+            }
+          }
+        }
+      }
+    }
+    
+    return extractedText.trim();
+  } catch (error: any) {
+    console.error("[AI Service] PowerPoint parsing error:", error);
+    throw new AIServiceError(
+      `Failed to parse PowerPoint file: ${error.message}`,
+      TASK_TYPES.DOCUMENT_OCR,
       true,
       error
     );

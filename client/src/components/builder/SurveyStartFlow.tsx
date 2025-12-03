@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Layers, FileUp, Upload, X, Wand2, ChevronDown, Loader2 } from "lucide-react";
+import { Sparkles, Layers, FileUp, Upload, X, Wand2, ChevronDown, Loader2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,6 +10,7 @@ import TemplateCard from "@/components/TemplateCard";
 import TemplatePreviewModal from "@/components/TemplatePreviewModal";
 import FileUploadZone from "@/components/FileUploadZone";
 import { surveyTemplates } from "@shared/templates";
+import { useToast } from "@/hooks/use-toast";
 import type { SurveyTemplate } from "@shared/templates";
 import type { Question } from "@shared/schema";
 
@@ -80,13 +81,15 @@ export default function SurveyStartFlow({
   onPasteText,
   isProcessing,
 }: SurveyStartFlowProps) {
+  const { toast } = useToast();
   const [hasSelectedType, setHasSelectedType] = useState(false);
   const [expandedOption, setExpandedOption] = useState<string | null>(null);
   const [prompt, setPrompt] = useState("");
   const [selectedFileForAI, setSelectedFileForAI] = useState<{ name: string; type: string; base64: string } | null>(null);
   const [previewTemplate, setPreviewTemplate] = useState<SurveyTemplate | null>(null);
   const [includeScoringToggle, setIncludeScoringToggle] = useState(false);
-  const [showPromptSuggestions, setShowPromptSuggestions] = useState(false);
+  const [isEnhancing, setIsEnhancing] = useState(false);
+  const [enhancedSuggestions, setEnhancedSuggestions] = useState<string[]>([]);
   const [parsedText, setParsedText] = useState("");
   const aiFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -108,6 +111,57 @@ export default function SurveyStartFlow({
   const handlePasteClick = () => {
     onPasteText(parsedText);
     setParsedText("");
+  };
+
+  const handleEnhancePrompt = async () => {
+    if (!prompt.trim() || prompt.trim().length < 5) {
+      toast({
+        title: "Need more detail",
+        description: "Please write at least a brief description of your survey idea first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsEnhancing(true);
+    setEnhancedSuggestions([]);
+
+    try {
+      const response = await fetch("/api/enhance-prompt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          prompt: prompt.trim(),
+          surveyType: surveyType,
+        }),
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to enhance prompt");
+      }
+
+      const data = await response.json();
+      
+      // Update the prompt with the enhanced version
+      setPrompt(data.enhancedPrompt);
+      setEnhancedSuggestions(data.suggestions || []);
+      
+      toast({
+        title: "Prompt enhanced!",
+        description: data.explanation || "Your prompt has been improved with more detail.",
+      });
+    } catch (error: any) {
+      console.error("Enhance prompt error:", error);
+      toast({
+        title: "Enhancement failed",
+        description: error.message || "Could not enhance prompt. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsEnhancing(false);
+    }
   };
 
   const getCardStyles = (isExpanded: boolean) => ({
@@ -245,18 +299,51 @@ export default function SurveyStartFlow({
                               <div>
                                 <div className="flex items-center justify-between mb-3">
                                   <label className="text-sm font-medium">Describe your survey</label>
-                                  <Button variant="ghost" size="sm" onClick={() => setShowPromptSuggestions(true)} className="text-xs h-7" data-testid="button-enhance-prompt">
-                                    <Wand2 className="w-3 h-3 mr-1" />
-                                    Enhance
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    onClick={handleEnhancePrompt} 
+                                    disabled={isEnhancing || !prompt.trim() || prompt.trim().length < 5}
+                                    className="text-xs h-7" 
+                                    data-testid="button-enhance-prompt"
+                                  >
+                                    {isEnhancing ? (
+                                      <>
+                                        <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                                        Enhancing...
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Wand2 className="w-3 h-3 mr-1" />
+                                        Enhance with AI
+                                      </>
+                                    )}
                                   </Button>
                                 </div>
                                 <Textarea
                                   value={prompt}
-                                  onChange={(e) => setPrompt(e.target.value)}
-                                  placeholder="Example: I need a survey to assess employee mental health..."
+                                  onChange={(e) => {
+                                    setPrompt(e.target.value);
+                                    setEnhancedSuggestions([]); // Clear suggestions when user types
+                                  }}
+                                  placeholder="Example: I need a survey to assess employee mental health and workplace wellbeing..."
                                   className="min-h-[120px] text-base"
                                   data-testid="input-survey-prompt"
                                 />
+                                {/* Show AI suggestions if available */}
+                                {enhancedSuggestions.length > 0 && (
+                                  <div className="mt-3 p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                                    <p className="text-xs font-medium text-primary mb-2">AI-suggested topics to cover:</p>
+                                    <div className="flex flex-wrap gap-2">
+                                      {enhancedSuggestions.map((suggestion, idx) => (
+                                        <span key={idx} className="inline-flex items-center px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                                          <Check className="w-3 h-3 mr-1" />
+                                          {suggestion}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
 
                               <div className="flex items-center justify-between p-4 bg-background rounded-lg border border-border">
@@ -288,10 +375,13 @@ export default function SurveyStartFlow({
                                   Generate
                                 </Button>
                               </div>
+                              <p className="text-xs text-muted-foreground text-center">
+                                Supports PDF, Word, PowerPoint, images, and text files
+                              </p>
                               <input
                                 ref={aiFileInputRef}
                                 type="file"
-                                accept="image/*,.pdf,.txt,.docx"
+                                accept="image/*,.pdf,.txt,.docx,.pptx"
                                 onChange={(e) => {
                                   const file = e.target.files?.[0];
                                   if (file) {
@@ -315,6 +405,9 @@ export default function SurveyStartFlow({
                         <div className="space-y-4 sm:space-y-6">
                           <div>
                             <label className="text-sm font-medium mb-2 block">Choose a document</label>
+                            <p className="text-xs text-muted-foreground mb-2">
+                              Upload training materials, presentations, or existing surveys (PDF, Word, PowerPoint, text)
+                            </p>
                             <FileUploadZone onFileSelect={onFileSelect} isProcessing={isProcessing} />
                           </div>
 

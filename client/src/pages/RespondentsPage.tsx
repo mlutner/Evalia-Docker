@@ -230,7 +230,7 @@ export default function RespondentsPage() {
             <h1 className="text-3xl font-bold" data-testid="heading-respondents">Respondent Tracking</h1>
             <p className="text-muted-foreground mt-2">Manage survey invitations and track who's submitted responses</p>
           </div>
-          <Button onClick={() => setLocation(`/builder/${surveyId}`)} variant="outline" data-testid="button-back">
+          <Button onClick={() => setLocation(`/builder-v2/${surveyId}`)} variant="outline" data-testid="button-back">
             Back to Survey
           </Button>
         </div>

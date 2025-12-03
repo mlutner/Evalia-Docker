@@ -11,7 +11,7 @@ interface FileUploadZoneProps {
 export default function FileUploadZone({ 
   onFileSelect, 
   isProcessing = false,
-  acceptedTypes = ".pdf,.docx,.txt"
+  acceptedTypes = ".pdf,.docx,.pptx,.txt"
 }: FileUploadZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -119,7 +119,7 @@ export default function FileUploadZone({
               Drop your file here, or browse
             </p>
             <p className="text-sm" style={{ color: '#6A7789' }}>
-              Supports PDF, DOCX, and TXT files
+              Supports PDF, Word, PowerPoint, and text files
             </p>
           </div>
           <Button

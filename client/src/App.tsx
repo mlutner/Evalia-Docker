@@ -12,15 +12,18 @@ import { AppLayout } from "@/layouts/AppLayout";
 import Home from "@/pages/Home";
 import DashboardPage from "@/pages/DashboardPage";
 import SurveysPage from "@/pages/SurveysPage";
-import RespondentsListPage from "@/pages/RespondentsListPage";
 import TemplatesPage from "@/pages/TemplatesPage";
-import ScoringPage from "@/pages/ScoringPage";
 import AiAssistPage from "@/pages/AiAssistPage";
+import AiSurveyGenerator from "@/pages/AiSurveyGenerator";
 import SettingsPage from "@/pages/SettingsPage";
-import Builder from "@/pages/Builder";
+// Legacy builder archived - now using SurveyBuilderV2 (3-panel layout) for all builder routes
+// import Builder from "@/pages/Builder";
+import SurveyBuilderV2 from "@/pages/SurveyBuilderV2";
+import DesignV2 from "@/pages/DesignV2";
+import PreviewV2 from "@/pages/PreviewV2";
 import SurveyView from "@/pages/SurveyView";
 import AnalyticsPage from "@/pages/AnalyticsPage";
-import RespondentsPage from "@/pages/RespondentsPage";
+import AnalyticsListPage from "@/pages/AnalyticsListPage";
 import HelpPage from "@/pages/HelpPage";
 import Account from "@/pages/Account";
 import Login from "@/pages/Login";
@@ -66,37 +69,51 @@ function Router() {
       <Route path="/help">
         {() => <ProtectedRoute component={HelpPage} />}
       </Route>
+      {/* 3-Panel Builder (V2) - Primary builder */}
       <Route path="/builder/:id">
-        {() => <ProtectedRoute component={Builder} />}
+        {() => <ProtectedRoute component={SurveyBuilderV2} />}
       </Route>
       <Route path="/builder">
-        {() => <ProtectedRoute component={Builder} />}
+        {() => <ProtectedRoute component={SurveyBuilderV2} />}
       </Route>
+      
+      {/* Legacy builder routes - redirect to V2 */}
+      <Route path="/builder-v2/:id">
+        {() => <ProtectedRoute component={SurveyBuilderV2} />}
+      </Route>
+      <Route path="/builder-v2">
+        {() => <ProtectedRoute component={SurveyBuilderV2} />}
+      </Route>
+      <Route path="/design-v2/:id">
+        {() => <ProtectedRoute component={DesignV2} />}
+      </Route>
+      <Route path="/preview-v2/:id">
+        {() => <ProtectedRoute component={PreviewV2} />}
+      </Route>
+      
       <Route path="/analytics/:id">
         {() => <ProtectedRoute component={AnalyticsPage} />}
       </Route>
-      <Route path="/respondents/:surveyId">
-        {() => <ProtectedRoute component={RespondentsPage} />}
+      <Route path="/analytics">
+        {() => <ProtectedRoute component={AnalyticsListPage} />}
       </Route>
 
       {/* Main app routes with sidebar */}
+      {/* Dashboard redirects to Surveys (unified home) */}
       <Route path="/dashboard">
-        {() => <ProtectedRoute component={DashboardPage} />}
+        {() => <ProtectedRoute component={SurveysPage} />}
       </Route>
       <Route path="/surveys">
         {() => <ProtectedRoute component={SurveysPage} />}
       </Route>
-      <Route path="/respondents">
-        {() => <ProtectedRoute component={RespondentsListPage} />}
-      </Route>
       <Route path="/templates">
         {() => <ProtectedRoute component={TemplatesPage} />}
       </Route>
-      <Route path="/scoring">
-        {() => <ProtectedRoute component={ScoringPage} />}
-      </Route>
       <Route path="/ai-assist">
         {() => <ProtectedRoute component={AiAssistPage} />}
+      </Route>
+      <Route path="/ai-generate">
+        {() => <ProtectedRoute component={AiSurveyGenerator} />}
       </Route>
       <Route path="/settings">
         {() => <ProtectedRoute component={SettingsPage} />}

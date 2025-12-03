@@ -11,12 +11,15 @@ import { storage } from "../storage";
 import { isAuthenticated } from "../replitAuth";
 import {
   parsePDFWithVision,
+  parsePowerPoint,
   generateSurveyFromText,
   refineSurvey,
   generateSurveyText,
   suggestScoringConfig,
   analyzeQuestionQuality,
   processAIChatMessage,
+  enhancePrompt,
+  adjustQuestionsTone,
 } from "../aiService";
 
 const router = Router();
@@ -102,10 +105,24 @@ router.post("/parse-document", isAuthenticated, upload.single("file"), async (re
       }
     } else if (fileType === "text/plain") {
       extractedText = req.file.buffer.toString("utf-8");
+    } else if (
+      fileType === "application/vnd.openxmlformats-officedocument.presentationml.presentation" ||
+      fileName.toLowerCase().endsWith(".pptx")
+    ) {
+      try {
+        extractedText = await parsePowerPoint(req.file.buffer);
+        console.log(`[AI Routes] PowerPoint extracted ${extractedText.length} characters`);
+      } catch (pptxError: any) {
+        console.error("[AI Routes] PowerPoint parsing error:", pptxError);
+        return res.status(400).json({
+          error: "Unable to read this PowerPoint file",
+          tip: "The file might be corrupted or password-protected. Try saving it as a new .pptx file.",
+        });
+      }
     } else {
       return res.status(400).json({
         error: `Unsupported file type: ${fileType}`,
-        tip: "Please upload a PDF (.pdf), Word (.docx), or text (.txt) file.",
+        tip: "Please upload a PDF (.pdf), Word (.docx), PowerPoint (.pptx), or text (.txt) file.",
       });
     }
 
@@ -159,6 +176,65 @@ router.post("/parse-document", isAuthenticated, upload.single("file"), async (re
 });
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// PROMPT ENHANCEMENT
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/**
+ * @swagger
+ * /api/enhance-prompt:
+ *   post:
+ *     summary: Enhance a rough survey prompt using AI
+ *     tags: [AI]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               prompt:
+ *                 type: string
+ *                 description: The user's rough prompt to enhance
+ *               surveyType:
+ *                 type: string
+ *                 description: Optional survey type context
+ *               additionalContext:
+ *                 type: string
+ *                 description: Any additional context to consider
+ *     responses:
+ *       200:
+ *         description: Enhanced prompt with suggestions
+ */
+router.post("/enhance-prompt", isAuthenticated, async (req, res) => {
+  try {
+    const { prompt, surveyType, additionalContext } = req.body;
+
+    if (!prompt || typeof prompt !== "string" || prompt.trim().length < 5) {
+      return res.status(400).json({
+        error: "Please provide at least a brief description of what you want to measure",
+        tip: "Try describing the topic, audience, or goals of your survey.",
+      });
+    }
+
+    const result = await enhancePrompt(prompt, surveyType, additionalContext);
+
+    res.json({
+      enhancedPrompt: result.enhancedPrompt,
+      suggestions: result.suggestions,
+      explanation: result.explanation,
+      originalPrompt: prompt,
+    });
+  } catch (error: any) {
+    console.error("[AI Routes] Prompt enhancement error:", error);
+    res.status(500).json({
+      error: error.message || "Failed to enhance prompt",
+      tip: "Please try again or provide more detail in your original prompt.",
+    });
+  }
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // SURVEY GENERATION
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -197,12 +273,18 @@ router.post("/generate-survey", isAuthenticated, async (req, res) => {
           contentToProcess = result.value;
         } else if (fileType === "text/plain") {
           contentToProcess = buffer.toString("utf-8");
+        } else if (
+          fileType === "application/vnd.openxmlformats-officedocument.presentationml.presentation" ||
+          fileData.name.toLowerCase().endsWith(".pptx")
+        ) {
+          contentToProcess = await parsePowerPoint(buffer);
+          console.log(`[AI Routes] PowerPoint extracted ${contentToProcess.length} characters for survey generation`);
         } else if (fileType.startsWith("image/")) {
           contentToProcess = prompt
             ? `${prompt}\n\n[Image file: ${fileData.name}]`
             : `Analyze the content in the image "${fileData.name}" and generate survey questions based on what it contains.`;
         } else {
-          return res.status(400).json({ error: "Unsupported file type for survey generation" });
+          return res.status(400).json({ error: "Unsupported file type for survey generation. Supported: PDF, DOCX, PPTX, TXT, images" });
         }
 
         // If user also provided a prompt, combine them
@@ -333,35 +415,10 @@ router.post("/adjust-tone", isAuthenticated, async (req, res) => {
       return res.status(400).json({ error: "Survey questions are required" });
     }
 
-    // Call AI to rewrite questions with the selected tone
-    const toneDescriptions: Record<string, string> = {
-      formal: "professional, structured, and formal language suitable for business contexts",
-      casual: "friendly, conversational, and approachable tone that feels natural",
-      encouraging: "motivational, supportive, and positive tone that builds confidence",
-      technical: "precise, industry-specific, and technical language for expert audiences",
-    };
+    // Use the dedicated tone adjustment function
+    const adjustedQuestions = await adjustQuestionsTone(questions, tone);
 
-    const prompt = `Rewrite the following survey questions using a ${tone} tone (${toneDescriptions[tone]}). 
-Keep the meaning and intent the same, but adjust the language and phrasing to match the tone.
-Return the adjusted questions as a JSON array with the same structure as the input.
-Only change the "question" and "description" fields, keep everything else identical.
-
-Questions to rewrite:
-${JSON.stringify(questions, null, 2)}`;
-
-    const adjustedText = await generateSurveyText("description", prompt, questions);
-
-    try {
-      const adjustedQuestions = JSON.parse(adjustedText);
-      res.json({ adjustedQuestions });
-    } catch {
-      // If parsing fails, apply tone to each question individually
-      const adjusted = questions.map((q: any) => ({
-        ...q,
-        question: `${q.question} (adjusted to ${tone} tone)`,
-      }));
-      res.json({ adjustedQuestions: adjusted });
-    }
+    res.json({ adjustedQuestions });
   } catch (error: any) {
     console.error("[AI Routes] Tone adjustment error:", error);
     res.status(500).json({ error: error.message || "Failed to adjust tone" });

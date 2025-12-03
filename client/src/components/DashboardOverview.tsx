@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { KpiCard } from "./KpiCard";
 import { InsightCard } from "./InsightCard";
 import { CommandCenter } from "./CommandCenterWidgets";
+import { CreateSurveyModal } from "./builder-v2/CreateSurveyModal";
 
 interface DashboardMetrics {
   totalSurveys: number;
@@ -29,6 +31,7 @@ interface DashboardMetrics {
 
 export function DashboardOverview() {
   const [, setLocation] = useLocation();
+  const [showCreateModal, setShowCreateModal] = useState(false);
   
   const { data: metrics, isLoading, error } = useQuery<DashboardMetrics>({
     queryKey: ["/api/dashboard/metrics"],
@@ -75,7 +78,7 @@ export function DashboardOverview() {
             </svg>
           </button>
           <Button 
-            onClick={() => setLocation("/builder")}
+            onClick={() => setShowCreateModal(true)}
             className="font-semibold text-sm"
             style={{ backgroundColor: '#2F8FA5', color: '#FFFFFF' }}
             data-testid="button-start-survey-dashboard"
@@ -282,6 +285,12 @@ export function DashboardOverview() {
       <div className="px-4 md:px-0">
         <CommandCenter showRecommendations={true} />
       </div>
+
+      {/* Create Survey Modal */}
+      <CreateSurveyModal 
+        isOpen={showCreateModal} 
+        onClose={() => setShowCreateModal(false)} 
+      />
     </div>
   );
 }

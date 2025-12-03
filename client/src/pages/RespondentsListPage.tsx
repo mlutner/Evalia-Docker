@@ -45,7 +45,7 @@ export default function RespondentsListPage() {
               <p className="text-sm text-muted-foreground mb-4 text-center max-w-md">
                 Create a survey first to start managing respondents and tracking responses.
               </p>
-              <Button onClick={() => setLocation("/builder")}>Build Feedback Tool</Button>
+              <Button onClick={() => setLocation("/builder-v2/new")}>Build Feedback Tool</Button>
             </CardContent>
           </Card>
         ) : (

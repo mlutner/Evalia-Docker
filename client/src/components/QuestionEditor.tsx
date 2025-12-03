@@ -69,16 +69,46 @@ export default function QuestionEditor({
     onUpdate({ ...question, options: newOptions });
   };
 
-  const questionTypes: { value: QuestionType; label: string }[] = [
-    { value: "text", label: "Short Answer" },
-    { value: "textarea", label: "Long Answer" },
-    { value: "email", label: "Email" },
-    { value: "number", label: "Number" },
-    { value: "multiple_choice", label: "Multiple Choice" },
-    { value: "checkbox", label: "Checkboxes" },
+  const questionTypes: { value: QuestionType; label: string; category: string }[] = [
+    // Text inputs
+    { value: "text", label: "Short Answer", category: "Text" },
+    { value: "textarea", label: "Long Answer", category: "Text" },
+    { value: "email", label: "Email", category: "Text" },
+    { value: "phone", label: "Phone Number", category: "Text" },
+    { value: "url", label: "Website URL", category: "Text" },
+    { value: "number", label: "Number", category: "Text" },
+    // Selection
+    { value: "multiple_choice", label: "Multiple Choice", category: "Selection" },
+    { value: "checkbox", label: "Checkboxes", category: "Selection" },
+    { value: "dropdown", label: "Dropdown", category: "Selection" },
+    { value: "yes_no", label: "Yes / No", category: "Selection" },
+    // Rating & Scales
+    { value: "rating", label: "Rating Scale", category: "Rating" },
+    { value: "nps", label: "Net Promoter Score (0-10)", category: "Rating" },
+    { value: "likert", label: "Likert Scale", category: "Rating" },
+    { value: "opinion_scale", label: "Opinion Scale", category: "Rating" },
+    { value: "slider", label: "Slider", category: "Rating" },
+    // Advanced
+    { value: "matrix", label: "Matrix / Grid", category: "Advanced" },
+    { value: "ranking", label: "Ranking", category: "Advanced" },
+    { value: "constant_sum", label: "Point Distribution", category: "Advanced" },
+    // Date & Time
+    { value: "date", label: "Date Picker", category: "Date & Time" },
+    { value: "time", label: "Time Picker", category: "Date & Time" },
+    // Structural
+    { value: "section", label: "Section Divider", category: "Structural" },
+    { value: "statement", label: "Information Text", category: "Structural" },
+    { value: "legal", label: "Consent / Legal", category: "Structural" },
   ];
 
-  const needsOptions = question.type === "multiple_choice" || question.type === "checkbox";
+  const needsOptions = ["multiple_choice", "checkbox", "dropdown", "ranking", "constant_sum"].includes(question.type);
+  const isRatingType = question.type === "rating";
+  const isLikertType = question.type === "likert";
+  const isSliderType = question.type === "slider";
+  const isOpinionScale = question.type === "opinion_scale";
+  const isMatrixType = question.type === "matrix";
+  const isYesNoType = question.type === "yes_no";
+  const isConstantSum = question.type === "constant_sum";
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -231,6 +261,373 @@ export default function QuestionEditor({
             <Plus className="w-4 h-4 mr-2" />
             Add Option
           </Button>
+        </CardContent>
+      )}
+
+      {/* Rating Type Options */}
+      {isRatingType && (
+        <CardContent className="pl-12 pr-4 pt-0 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor={`rating-style-${question.id}`}>Display Style</Label>
+              <Select
+                value={question.ratingStyle || "number"}
+                onValueChange={(value) => updateField("ratingStyle", value)}
+              >
+                <SelectTrigger className="mt-1" data-testid="select-rating-style">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="number">Number Scale</SelectItem>
+                  <SelectItem value="star">Stars ★</SelectItem>
+                  <SelectItem value="emoji">Emoji 😐</SelectItem>
+                  <SelectItem value="heart">Hearts ♥</SelectItem>
+                  <SelectItem value="thumb">Thumbs 👍</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor={`rating-scale-${question.id}`}>Scale (1 to...)</Label>
+              <Select
+                value={String(question.ratingScale || 5)}
+                onValueChange={(value) => updateField("ratingScale", parseInt(value, 10))}
+              >
+                <SelectTrigger className="mt-1" data-testid="select-rating-scale">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="3">3 (1-3)</SelectItem>
+                  <SelectItem value="5">5 (1-5)</SelectItem>
+                  <SelectItem value="7">7 (1-7)</SelectItem>
+                  <SelectItem value="10">10 (1-10)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor={`rating-label-low-${question.id}`}>Low Label</Label>
+              <Input
+                id={`rating-label-low-${question.id}`}
+                value={question.ratingLabels?.low || ""}
+                onChange={(e) => updateField("ratingLabels", { 
+                  ...question.ratingLabels, 
+                  low: e.target.value || undefined 
+                })}
+                placeholder="Strongly Disagree"
+                className="mt-1"
+                data-testid="input-rating-label-low"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor={`rating-label-high-${question.id}`}>High Label</Label>
+              <Input
+                id={`rating-label-high-${question.id}`}
+                value={question.ratingLabels?.high || ""}
+                onChange={(e) => updateField("ratingLabels", { 
+                  ...question.ratingLabels, 
+                  high: e.target.value || undefined 
+                })}
+                placeholder="Strongly Agree"
+                className="mt-1"
+                data-testid="input-rating-label-high"
+              />
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Customize how the rating scale appears to respondents
+          </p>
+        </CardContent>
+      )}
+
+      {/* Likert Scale Options */}
+      {isLikertType && (
+        <CardContent className="pl-12 pr-4 pt-0 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor={`likert-type-${question.id}`}>Scale Type</Label>
+              <Select
+                value={question.likertType || "agreement"}
+                onValueChange={(value) => updateField("likertType", value)}
+              >
+                <SelectTrigger className="mt-1" data-testid="select-likert-type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="agreement">Agreement (Strongly Disagree → Strongly Agree)</SelectItem>
+                  <SelectItem value="frequency">Frequency (Never → Always)</SelectItem>
+                  <SelectItem value="importance">Importance (Not Important → Extremely Important)</SelectItem>
+                  <SelectItem value="satisfaction">Satisfaction (Very Dissatisfied → Very Satisfied)</SelectItem>
+                  <SelectItem value="quality">Quality (Very Poor → Excellent)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor={`likert-points-${question.id}`}>Number of Points</Label>
+              <Select
+                value={String(question.likertPoints || 5)}
+                onValueChange={(value) => updateField("likertPoints", parseInt(value, 10))}
+              >
+                <SelectTrigger className="mt-1" data-testid="select-likert-points">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5-point scale</SelectItem>
+                  <SelectItem value="7">7-point scale</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Pre-configured scales with standard labels for consistent responses
+          </p>
+        </CardContent>
+      )}
+
+      {/* Slider Options */}
+      {isSliderType && (
+        <CardContent className="pl-12 pr-4 pt-0 space-y-4">
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <Label htmlFor={`slider-min-${question.id}`}>Minimum</Label>
+              <Input
+                id={`slider-min-${question.id}`}
+                type="number"
+                value={question.min || 0}
+                onChange={(e) => updateField("min", parseInt(e.target.value, 10) || 0)}
+                className="mt-1"
+                data-testid="input-slider-min"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor={`slider-max-${question.id}`}>Maximum</Label>
+              <Input
+                id={`slider-max-${question.id}`}
+                type="number"
+                value={question.max || 100}
+                onChange={(e) => updateField("max", parseInt(e.target.value, 10) || 100)}
+                className="mt-1"
+                data-testid="input-slider-max"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor={`slider-step-${question.id}`}>Step</Label>
+              <Input
+                id={`slider-step-${question.id}`}
+                type="number"
+                value={question.step || 1}
+                onChange={(e) => updateField("step", parseInt(e.target.value, 10) || 1)}
+                className="mt-1"
+                data-testid="input-slider-step"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor={`slider-unit-${question.id}`}>Unit (optional)</Label>
+              <Input
+                id={`slider-unit-${question.id}`}
+                value={question.unit || ""}
+                onChange={(e) => updateField("unit", e.target.value || undefined)}
+                placeholder="%, $, years, etc."
+                className="mt-1"
+                data-testid="input-slider-unit"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 pt-6">
+              <Switch
+                id={`slider-show-value-${question.id}`}
+                checked={question.showValue !== false}
+                onCheckedChange={(checked) => updateField("showValue", checked)}
+                data-testid="switch-slider-show-value"
+              />
+              <Label htmlFor={`slider-show-value-${question.id}`} className="cursor-pointer">
+                Show current value
+              </Label>
+            </div>
+          </div>
+        </CardContent>
+      )}
+
+      {/* Opinion Scale Options */}
+      {isOpinionScale && (
+        <CardContent className="pl-12 pr-4 pt-0 space-y-4">
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <Label htmlFor={`opinion-scale-${question.id}`}>Scale Size</Label>
+              <Select
+                value={String(question.ratingScale || 5)}
+                onValueChange={(value) => updateField("ratingScale", parseInt(value, 10))}
+              >
+                <SelectTrigger className="mt-1" data-testid="select-opinion-scale">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5 points</SelectItem>
+                  <SelectItem value="7">7 points</SelectItem>
+                  <SelectItem value="10">10 points</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor={`opinion-left-${question.id}`}>Left Label</Label>
+              <Input
+                id={`opinion-left-${question.id}`}
+                value={question.leftLabel || ""}
+                onChange={(e) => updateField("leftLabel", e.target.value || undefined)}
+                placeholder="Low / Cold / Bad"
+                className="mt-1"
+                data-testid="input-opinion-left"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor={`opinion-right-${question.id}`}>Right Label</Label>
+              <Input
+                id={`opinion-right-${question.id}`}
+                value={question.rightLabel || ""}
+                onChange={(e) => updateField("rightLabel", e.target.value || undefined)}
+                placeholder="High / Hot / Good"
+                className="mt-1"
+                data-testid="input-opinion-right"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Switch
+              id={`opinion-numbers-${question.id}`}
+              checked={question.showNumbers !== false}
+              onCheckedChange={(checked) => updateField("showNumbers", checked)}
+              data-testid="switch-opinion-numbers"
+            />
+            <Label htmlFor={`opinion-numbers-${question.id}`} className="cursor-pointer">
+              Show numbers on scale
+            </Label>
+          </div>
+        </CardContent>
+      )}
+
+      {/* Yes/No Options */}
+      {isYesNoType && (
+        <CardContent className="pl-12 pr-4 pt-0 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor={`yes-label-${question.id}`}>Yes Label</Label>
+              <Input
+                id={`yes-label-${question.id}`}
+                value={question.yesLabel || ""}
+                onChange={(e) => updateField("yesLabel", e.target.value || undefined)}
+                placeholder="Yes"
+                className="mt-1"
+                data-testid="input-yes-label"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor={`no-label-${question.id}`}>No Label</Label>
+              <Input
+                id={`no-label-${question.id}`}
+                value={question.noLabel || ""}
+                onChange={(e) => updateField("noLabel", e.target.value || undefined)}
+                placeholder="No"
+                className="mt-1"
+                data-testid="input-no-label"
+              />
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Customize button labels (e.g., "Agree/Disagree", "True/False")
+          </p>
+        </CardContent>
+      )}
+
+      {/* Matrix Options */}
+      {isMatrixType && (
+        <CardContent className="pl-12 pr-4 pt-0 space-y-4">
+          <div>
+            <Label>Row Labels (one per line)</Label>
+            <Textarea
+              value={(question.rowLabels || []).join("\n")}
+              onChange={(e) => updateField("rowLabels", e.target.value.split("\n").filter(r => r.trim()))}
+              placeholder="Row 1&#10;Row 2&#10;Row 3"
+              className="mt-1"
+              rows={4}
+              data-testid="textarea-row-labels"
+            />
+          </div>
+
+          <div>
+            <Label>Column Labels (one per line)</Label>
+            <Textarea
+              value={(question.colLabels || []).join("\n")}
+              onChange={(e) => updateField("colLabels", e.target.value.split("\n").filter(c => c.trim()))}
+              placeholder="Column 1&#10;Column 2&#10;Column 3"
+              className="mt-1"
+              rows={4}
+              data-testid="textarea-col-labels"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor={`matrix-type-${question.id}`}>Response Type</Label>
+            <Select
+              value={question.matrixType || "radio"}
+              onValueChange={(value) => updateField("matrixType", value)}
+            >
+              <SelectTrigger className="mt-1" data-testid="select-matrix-type">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="radio">Single choice per row</SelectItem>
+                <SelectItem value="checkbox">Multiple per row</SelectItem>
+                <SelectItem value="text">Text input per cell</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      )}
+
+      {/* Constant Sum Options */}
+      {isConstantSum && (
+        <CardContent className="pl-12 pr-4 pt-0 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor={`total-points-${question.id}`}>Total Points</Label>
+              <Input
+                id={`total-points-${question.id}`}
+                type="number"
+                value={question.totalPoints || 100}
+                onChange={(e) => updateField("totalPoints", parseInt(e.target.value, 10) || 100)}
+                className="mt-1"
+                data-testid="input-total-points"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 pt-6">
+              <Switch
+                id={`show-percentage-${question.id}`}
+                checked={question.showPercentage === true}
+                onCheckedChange={(checked) => updateField("showPercentage", checked)}
+                data-testid="switch-show-percentage"
+              />
+              <Label htmlFor={`show-percentage-${question.id}`} className="cursor-pointer">
+                Show percentages
+              </Label>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Respondents will distribute points across options (must equal total)
+          </p>
         </CardContent>
       )}
       

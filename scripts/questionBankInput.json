@@ -1,0 +1,2785 @@
+[
+  {
+    "id": 1,
+    "text": "Overall, how satisfied are you with your job?",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "general_satisfaction",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "core",
+      "engagement",
+      "quantitative"
+    ],
+    "description": "Direct measure of overall job satisfaction",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 2,
+    "text": "To what extent do you feel valued and appreciated at work?",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "recognition",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "engagement",
+      "morale",
+      "quantitative"
+    ],
+    "description": "Measures recognition and valuation",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 3,
+    "text": "How likely are you to recommend this company as a great place to work?",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "advocacy",
+    "options": null,
+    "scale_type": "nps",
+    "difficulty": "easy",
+    "tags": [
+      "core",
+      "engagement",
+      "nps",
+      "quick"
+    ],
+    "description": "NPS-style question for employee advocacy",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 4,
+    "text": "Do you feel connected to the company mission?",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "purpose",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "engagement",
+      "culture"
+    ],
+    "description": "Measures alignment with company values",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 5,
+    "text": "How would you rate the work environment and team dynamics?",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "team",
+    "options": null,
+    "scale_type": "emoji",
+    "difficulty": "easy",
+    "tags": [
+      "engagement",
+      "team",
+      "visual"
+    ],
+    "description": "Team and environment satisfaction",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 6,
+    "text": "My manager provides me with regular, constructive feedback",
+    "question_type": "rating",
+    "category": "management",
+    "subcategory": "feedback",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "manager",
+      "feedback",
+      "core"
+    ],
+    "description": "Direct manager feedback effectiveness",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 7,
+    "text": "My manager supports my professional development",
+    "question_type": "rating",
+    "category": "management",
+    "subcategory": "development",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "manager",
+      "career",
+      "development"
+    ],
+    "description": "Career growth support",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 8,
+    "text": "I feel my manager listens to my concerns",
+    "question_type": "rating",
+    "category": "management",
+    "subcategory": "communication",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "manager",
+      "communication"
+    ],
+    "description": "Manager approachability",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 9,
+    "text": "The training I received was relevant and useful",
+    "question_type": "rating",
+    "category": "training",
+    "subcategory": "relevance",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "training",
+      "learning",
+      "core"
+    ],
+    "description": "Training relevance",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 10,
+    "text": "I have clear opportunities for career growth",
+    "question_type": "rating",
+    "category": "training",
+    "subcategory": "career_path",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "training",
+      "career",
+      "development"
+    ],
+    "description": "Career advancement clarity",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 11,
+    "text": "The training content was well-organized and delivered",
+    "question_type": "rating",
+    "category": "training",
+    "subcategory": "delivery",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "training",
+      "delivery",
+      "quality"
+    ],
+    "description": "Training quality",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 12,
+    "text": "I feel I have a healthy work-life balance",
+    "question_type": "rating",
+    "category": "workload",
+    "subcategory": "balance",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "wellness",
+      "balance",
+      "core"
+    ],
+    "description": "Work-life balance perception",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 13,
+    "text": "My current workload is manageable",
+    "question_type": "rating",
+    "category": "workload",
+    "subcategory": "capacity",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "workload",
+      "stress"
+    ],
+    "description": "Workload management",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 14,
+    "text": "I feel stressed or overwhelmed at work",
+    "question_type": "rating",
+    "category": "workload",
+    "subcategory": "stress",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "wellness",
+      "stress",
+      "sensitive"
+    ],
+    "description": "Burnout indicator - sensitive",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 15,
+    "text": "I see our company values reflected in daily work",
+    "question_type": "rating",
+    "category": "culture",
+    "subcategory": "values_alignment",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "culture",
+      "values"
+    ],
+    "description": "Values lived in practice",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 16,
+    "text": "There is a strong sense of community here",
+    "question_type": "rating",
+    "category": "culture",
+    "subcategory": "belonging",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "culture",
+      "community"
+    ],
+    "description": "Sense of belonging",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 17,
+    "text": "Diversity and inclusion are prioritized",
+    "question_type": "rating",
+    "category": "culture",
+    "subcategory": "diversity",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "hard",
+    "tags": [
+      "culture",
+      "diversity",
+      "sensitive"
+    ],
+    "description": "Diversity perception - sensitive topic",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 18,
+    "text": "My onboarding experience was well-organized",
+    "question_type": "rating",
+    "category": "onboarding",
+    "subcategory": "process",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "onboarding",
+      "first-impression"
+    ],
+    "description": "Onboarding quality",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 19,
+    "text": "I felt welcomed and supported in my first week",
+    "question_type": "rating",
+    "category": "onboarding",
+    "subcategory": "welcome",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "onboarding",
+      "belonging"
+    ],
+    "description": "First week experience",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 20,
+    "text": "How is your morale today?",
+    "question_type": "rating",
+    "category": "pulse",
+    "subcategory": "mood",
+    "options": null,
+    "scale_type": "emoji",
+    "difficulty": "easy",
+    "tags": [
+      "pulse",
+      "quick",
+      "daily"
+    ],
+    "description": "Daily mood check",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 21,
+    "text": "What is your energy level?",
+    "question_type": "rating",
+    "category": "pulse",
+    "subcategory": "energy",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "pulse",
+      "quick"
+    ],
+    "description": "Quick energy assessment",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 22,
+    "text": "What could we improve most about working here?",
+    "question_type": "open_ended",
+    "category": "engagement",
+    "subcategory": "feedback",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "easy",
+    "tags": [
+      "feedback",
+      "improvement",
+      "qualitative"
+    ],
+    "description": "Open-ended improvement ideas",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 23,
+    "text": "What is working well in your current role?",
+    "question_type": "open_ended",
+    "category": "engagement",
+    "subcategory": "positive",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "easy",
+    "tags": [
+      "feedback",
+      "positive",
+      "qualitative"
+    ],
+    "description": "Celebrate strengths",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 24,
+    "text": "What support would help you succeed?",
+    "question_type": "open_ended",
+    "category": "training",
+    "subcategory": "support",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "development",
+      "qualitative",
+      "support"
+    ],
+    "description": "Identify success factors",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 25,
+    "text": "I understand how my day-to-day work contributes to our team's priorities",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "alignment",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "engagement",
+      "alignment",
+      "team",
+      "clarity"
+    ],
+    "description": "Checks link between daily work and team goals.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 26,
+    "text": "I have enough autonomy to decide how I approach my work",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "autonomy",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "engagement",
+      "autonomy",
+      "ownership"
+    ],
+    "description": "Measures perceived autonomy in work execution.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 27,
+    "text": "I feel my contributions are recognized in a timely way",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "recognition",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "engagement",
+      "recognition",
+      "appreciation"
+    ],
+    "description": "Assesses timeliness of recognition.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 28,
+    "text": "I have opportunities to use my strengths in my current role",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "strengths",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "engagement",
+      "strengths",
+      "role_fit"
+    ],
+    "description": "Evaluates use of key strengths at work.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 29,
+    "text": "Communication within my team keeps me informed about what I need to know",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "communication",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "engagement",
+      "communication",
+      "team",
+      "information"
+    ],
+    "description": "Checks team communication effectiveness.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 30,
+    "text": "I feel comfortable sharing my ideas to improve how we work",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "voice",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "engagement",
+      "voice",
+      "ideas",
+      "innovation"
+    ],
+    "description": "Measures psychological safety for ideas.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 31,
+    "text": "I see clear progress in my work from week to week",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "progress",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "engagement",
+      "progress",
+      "motivation"
+    ],
+    "description": "Assesses sense of momentum and advancement.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 32,
+    "text": "How well do you feel your role matches your skills and interests?",
+    "question_type": "open_ended",
+    "category": "engagement",
+    "subcategory": "role_fit",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "engagement",
+      "role_fit",
+      "skills",
+      "interests"
+    ],
+    "description": "Role alignment with strengths.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 33,
+    "text": "What, if anything, most increases your motivation at work right now?",
+    "question_type": "open_ended",
+    "category": "engagement",
+    "subcategory": "motivation",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "easy",
+    "tags": [
+      "engagement",
+      "motivation",
+      "drivers"
+    ],
+    "description": "Identify motivation factors.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 34,
+    "text": "Have you considered looking for a role outside the organization in the last six months? If so, why?",
+    "question_type": "open_ended",
+    "category": "engagement",
+    "subcategory": "retention_risk",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "hard",
+    "tags": [
+      "engagement",
+      "retention",
+      "turnover",
+      "risk"
+    ],
+    "description": "Early signals of turnover risk.",
+    "sensitivity_level": "high"
+  },
+  {
+    "id": 35,
+    "text": "My manager clearly communicates expectations for my work",
+    "question_type": "rating",
+    "category": "management",
+    "subcategory": "expectations",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "management",
+      "expectations",
+      "clarity"
+    ],
+    "description": "Manager clarity on expectations.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 36,
+    "text": "I trust my manager to make fair decisions that affect our team",
+    "question_type": "rating",
+    "category": "management",
+    "subcategory": "trust",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "management",
+      "trust",
+      "fairness",
+      "decisions"
+    ],
+    "description": "Trust in fair managerial decisions.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 37,
+    "text": "My manager follows through on commitments",
+    "question_type": "rating",
+    "category": "management",
+    "subcategory": "reliability",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "management",
+      "reliability",
+      "accountability"
+    ],
+    "description": "Manager accountability.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 38,
+    "text": "My manager communicates the reasons behind important decisions",
+    "question_type": "rating",
+    "category": "management",
+    "subcategory": "transparency",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "management",
+      "transparency",
+      "communication"
+    ],
+    "description": "Manager transparency on decisions.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 39,
+    "text": "How could your manager better support you in your current role?",
+    "question_type": "open_ended",
+    "category": "management",
+    "subcategory": "support",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "management",
+      "support",
+      "feedback"
+    ],
+    "description": "Manager support suggestions.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 40,
+    "text": "Have you ever hesitated to raise an issue with your manager? If yes, what made you hesitate?",
+    "question_type": "open_ended",
+    "category": "management",
+    "subcategory": "psychological_safety",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "hard",
+    "tags": [
+      "management",
+      "psychological_safety",
+      "trust"
+    ],
+    "description": "Barriers to speaking up.",
+    "sensitivity_level": "high"
+  },
+  {
+    "id": 41,
+    "text": "I have sufficient time at work to focus on learning new skills",
+    "question_type": "rating",
+    "category": "training",
+    "subcategory": "time_for_learning",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "training",
+      "time",
+      "learning",
+      "development"
+    ],
+    "description": "Time for skill development.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 42,
+    "text": "I can easily access the learning resources I need when I need them",
+    "question_type": "rating",
+    "category": "training",
+    "subcategory": "access",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "training",
+      "resources",
+      "access"
+    ],
+    "description": "Learning resource accessibility.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 43,
+    "text": "Recent training has helped me apply new skills in my day-to-day work",
+    "question_type": "rating",
+    "category": "training",
+    "subcategory": "application",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "training",
+      "application",
+      "skills",
+      "impact"
+    ],
+    "description": "Training application effectiveness.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 44,
+    "text": "Which type of learning format is most effective for you?",
+    "question_type": "multiple_choice",
+    "category": "training",
+    "subcategory": "format_preference",
+    "options": [
+      "Live workshops",
+      "Self-paced online",
+      "On-the-job coaching",
+      "Reading and self-study",
+      "Blended"
+    ],
+    "scale_type": null,
+    "difficulty": "easy",
+    "tags": [
+      "training",
+      "format",
+      "preference"
+    ],
+    "description": "Preferred learning formats.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 45,
+    "text": "What skills do you feel are most important to develop in the next 12 months?",
+    "question_type": "open_ended",
+    "category": "training",
+    "subcategory": "future_skills",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "easy",
+    "tags": [
+      "training",
+      "skills",
+      "future",
+      "development"
+    ],
+    "description": "Priority skills for development.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 46,
+    "text": "How well does the organization support you in applying what you learn from training?",
+    "question_type": "open_ended",
+    "category": "training",
+    "subcategory": "organizational_support",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "training",
+      "support",
+      "application"
+    ],
+    "description": "Org support for skill application.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 47,
+    "text": "Have you ever chosen not to attend a training opportunity? If so, what influenced that decision?",
+    "question_type": "open_ended",
+    "category": "training",
+    "subcategory": "barriers",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "hard",
+    "tags": [
+      "training",
+      "participation",
+      "barriers"
+    ],
+    "description": "Training participation barriers.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 48,
+    "text": "I can usually complete my work without needing to regularly work beyond my normal hours",
+    "question_type": "rating",
+    "category": "workload",
+    "subcategory": "overtime",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "workload",
+      "overtime",
+      "hours"
+    ],
+    "description": "Overtime pressure.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 49,
+    "text": "The pace of change in my work feels sustainable",
+    "question_type": "rating",
+    "category": "workload",
+    "subcategory": "pace",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "workload",
+      "pace",
+      "change"
+    ],
+    "description": "Pace of work change.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 50,
+    "text": "I can take short breaks during the day when I need them",
+    "question_type": "rating",
+    "category": "workload",
+    "subcategory": "recovery",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "workload",
+      "breaks",
+      "recovery",
+      "wellbeing"
+    ],
+    "description": "Ability to take breaks.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 51,
+    "text": "I have the people and resources I need to do my job effectively",
+    "question_type": "rating",
+    "category": "workload",
+    "subcategory": "resources",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "workload",
+      "resources",
+      "capacity"
+    ],
+    "description": "Resource adequacy.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 52,
+    "text": "How often do interruptions or context switching make it hard to focus?",
+    "question_type": "open_ended",
+    "category": "workload",
+    "subcategory": "focus",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "workload",
+      "interruptions",
+      "focus"
+    ],
+    "description": "Impact of interruptions.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 53,
+    "text": "Have you ever felt you had to choose between quality and speed in your work? Please explain.",
+    "question_type": "open_ended",
+    "category": "workload",
+    "subcategory": "tradeoffs",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "hard",
+    "tags": [
+      "workload",
+      "quality",
+      "speed",
+      "tradeoffs"
+    ],
+    "description": "Quality vs speed tradeoffs.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 54,
+    "text": "I feel safe speaking up about mistakes without fear of blame",
+    "question_type": "rating",
+    "category": "culture",
+    "subcategory": "psychological_safety",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "culture",
+      "psychological_safety",
+      "mistakes",
+      "learning"
+    ],
+    "description": "Safety to admit mistakes.",
+    "sensitivity_level": "high"
+  },
+  {
+    "id": 55,
+    "text": "People in this organization are treated with respect, regardless of their role",
+    "question_type": "rating",
+    "category": "culture",
+    "subcategory": "respect",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "culture",
+      "respect",
+      "fairness"
+    ],
+    "description": "Respect across levels.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 56,
+    "text": "New ideas are genuinely considered, even if they challenge how we usually do things",
+    "question_type": "rating",
+    "category": "culture",
+    "subcategory": "innovation",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "culture",
+      "innovation",
+      "ideas",
+      "openness"
+    ],
+    "description": "Openness to new ideas.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 57,
+    "text": "I feel I belong on my immediate team",
+    "question_type": "rating",
+    "category": "culture",
+    "subcategory": "belonging",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "culture",
+      "belonging",
+      "team",
+      "inclusion"
+    ],
+    "description": "Sense of belonging.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 58,
+    "text": "How openly are difficult topics discussed in your team or department?",
+    "question_type": "open_ended",
+    "category": "culture",
+    "subcategory": "openness",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "culture",
+      "openness",
+      "communication"
+    ],
+    "description": "Team openness on difficult topics.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 59,
+    "text": "In your experience, when someone behaves in a way that conflicts with our values, what usually happens?",
+    "question_type": "open_ended",
+    "category": "culture",
+    "subcategory": "accountability",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "hard",
+    "tags": [
+      "culture",
+      "values",
+      "accountability"
+    ],
+    "description": "Values enforcement.",
+    "sensitivity_level": "high"
+  },
+  {
+    "id": 60,
+    "text": "What one change would most improve our culture for you personally?",
+    "question_type": "open_ended",
+    "category": "culture",
+    "subcategory": "improvement",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "easy",
+    "tags": [
+      "culture",
+      "improvement",
+      "feedback"
+    ],
+    "description": "Culture improvement ideas.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 61,
+    "text": "My first weeks here gave me a clear picture of what success looks like in my role",
+    "question_type": "rating",
+    "category": "onboarding",
+    "subcategory": "role_clarity",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "onboarding",
+      "role_clarity",
+      "expectations"
+    ],
+    "description": "Onboarding role clarity.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 62,
+    "text": "My access to tools, systems, and accounts was set up in a reasonable time",
+    "question_type": "rating",
+    "category": "onboarding",
+    "subcategory": "tools_and_access",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "onboarding",
+      "tools",
+      "access",
+      "systems"
+    ],
+    "description": "Onboarding tech setup speed.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 63,
+    "text": "I knew who to go to with questions during my first month",
+    "question_type": "rating",
+    "category": "onboarding",
+    "subcategory": "support_network",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "onboarding",
+      "support",
+      "mentorship"
+    ],
+    "description": "Support network clarity.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 64,
+    "text": "How could we have made your first month here smoother?",
+    "question_type": "open_ended",
+    "category": "onboarding",
+    "subcategory": "improvement",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "onboarding",
+      "experience",
+      "improvement"
+    ],
+    "description": "Onboarding improvement ideas.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 65,
+    "text": "Were there any surprises (positive or negative) in your first three months that you wish you had known earlier?",
+    "question_type": "open_ended",
+    "category": "onboarding",
+    "subcategory": "expectations_vs_reality",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "hard",
+    "tags": [
+      "onboarding",
+      "expectations",
+      "surprises"
+    ],
+    "description": "Expectation gaps in onboarding.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 66,
+    "text": "How would you rate your stress level today?",
+    "question_type": "rating",
+    "category": "pulse",
+    "subcategory": "stress",
+    "options": null,
+    "scale_type": "emoji",
+    "difficulty": "easy",
+    "tags": [
+      "pulse",
+      "stress",
+      "emoji",
+      "quick"
+    ],
+    "description": "Pulse stress check.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 67,
+    "text": "How motivated are you feeling to tackle your priorities today?",
+    "question_type": "rating",
+    "category": "pulse",
+    "subcategory": "motivation",
+    "options": null,
+    "scale_type": "emoji",
+    "difficulty": "easy",
+    "tags": [
+      "pulse",
+      "motivation",
+      "emoji",
+      "quick"
+    ],
+    "description": "Pulse motivation check.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 68,
+    "text": "Would you rather be doing something else right now?",
+    "question_type": "rating",
+    "category": "pulse",
+    "subcategory": "engagement_pulse",
+    "options": null,
+    "scale_type": "thumbs",
+    "difficulty": "easy",
+    "tags": [
+      "pulse",
+      "engagement",
+      "thumbs",
+      "quick"
+    ],
+    "description": "Pulse engagement check.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 69,
+    "text": "I have the resources I need to do my work effectively",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "enablement",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "resources",
+      "enablement",
+      "productivity",
+      "engagement"
+    ],
+    "description": "Assesses whether employees feel supported with tools and resources required for success.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 70,
+    "text": "How consistently does your team communicate important updates?",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "communication",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "communication",
+      "teamwork",
+      "clarity"
+    ],
+    "description": "Evaluates team communication effectiveness and information flow.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 71,
+    "text": "I feel empowered to make decisions within my role",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "autonomy",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "autonomy",
+      "ownership",
+      "empowerment",
+      "engagement"
+    ],
+    "description": "Measures employee autonomy and decision-making comfort.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 72,
+    "text": "How effectively does your team collaborate across departments?",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "cross_functional",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "collaboration",
+      "communication",
+      "cross-team"
+    ],
+    "description": "Assesses cross-functional collaboration and alignment.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 73,
+    "text": "Do you feel recognized for your contributions?",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "recognition",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "recognition",
+      "motivation",
+      "engagement"
+    ],
+    "description": "Evaluates whether employees feel acknowledged for their efforts.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 74,
+    "text": "How well do you understand the expectations of your role?",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "role_clarity",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "role clarity",
+      "expectations"
+    ],
+    "description": "Measures clarity of job responsibilities and performance expectations.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 75,
+    "text": "What would help you feel more engaged in your work?",
+    "question_type": "open_ended",
+    "category": "engagement",
+    "subcategory": "engagement_drivers",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "engagement",
+      "motivation",
+      "feedback"
+    ],
+    "description": "Explores factors that influence employee engagement.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 76,
+    "text": "How fairly are workloads distributed within your team?",
+    "question_type": "rating",
+    "category": "workload",
+    "subcategory": "fairness",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "workload",
+      "fairness",
+      "team dynamics"
+    ],
+    "description": "Assesses perceptions of workload fairness across the team.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 77,
+    "text": "How manageable is the pace of work in your current role?",
+    "question_type": "rating",
+    "category": "workload",
+    "subcategory": "pace",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "pace",
+      "stress",
+      "workload"
+    ],
+    "description": "Evaluates whether employees feel pressured by work pace.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 78,
+    "text": "How often do you need to switch tasks throughout the day?",
+    "question_type": "multiple_choice",
+    "category": "workload",
+    "subcategory": "context_switching",
+    "options": [
+      "Rarely",
+      "Occasionally",
+      "Frequently",
+      "Almost constantly"
+    ],
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "workload",
+      "focus",
+      "context switching"
+    ],
+    "description": "Measures task-switching frequency, which affects productivity and workload stress.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 79,
+    "text": "Do you feel you have enough time for focused work?",
+    "question_type": "rating",
+    "category": "workload",
+    "subcategory": "focus_time",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "focus",
+      "productivity",
+      "workload"
+    ],
+    "description": "Assesses whether employees have protected time for deep work.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 80,
+    "text": "How approachable is your manager when you need support?",
+    "question_type": "rating",
+    "category": "management",
+    "subcategory": "approachability",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "management",
+      "support",
+      "approachability"
+    ],
+    "description": "Evaluates how comfortable employees feel seeking help from their manager.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 81,
+    "text": "My manager sets clear priorities for our team",
+    "question_type": "rating",
+    "category": "management",
+    "subcategory": "prioritization",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "management",
+      "priorities",
+      "clarity"
+    ],
+    "description": "Measures clarity around team priorities and direction.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 82,
+    "text": "How transparent is your manager when sharing decisions?",
+    "question_type": "rating",
+    "category": "management",
+    "subcategory": "transparency",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "management",
+      "transparency",
+      "communication"
+    ],
+    "description": "Assesses how openly managers communicate information and decisions.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 83,
+    "text": "How confident are you in your manager's leadership?",
+    "question_type": "rating",
+    "category": "management",
+    "subcategory": "leadership",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "leadership",
+      "management",
+      "trust"
+    ],
+    "description": "Evaluates trust and confidence in direct manager leadership.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 84,
+    "text": "When you need guidance, how timely is your manager's support?",
+    "question_type": "rating",
+    "category": "management",
+    "subcategory": "support",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "management",
+      "support",
+      "timeliness"
+    ],
+    "description": "Measures responsiveness of managerial support.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 85,
+    "text": "What could your manager do to better support your success?",
+    "question_type": "open_ended",
+    "category": "management",
+    "subcategory": "development_support",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "management",
+      "feedback",
+      "support"
+    ],
+    "description": "Collects feedback on how managers can support individual growth.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 86,
+    "text": "The training I receive helps me apply new skills on the job",
+    "question_type": "rating",
+    "category": "training",
+    "subcategory": "on_the_job",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "training",
+      "skills",
+      "application"
+    ],
+    "description": "Evaluates transfer of training into real work tasks.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 87,
+    "text": "How effective are the training materials provided to you?",
+    "question_type": "rating",
+    "category": "training",
+    "subcategory": "materials",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "training",
+      "materials",
+      "learning"
+    ],
+    "description": "Assesses quality and clarity of training resources.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 88,
+    "text": "Do you receive enough opportunities to practice new skills?",
+    "question_type": "rating",
+    "category": "training",
+    "subcategory": "practice",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "training",
+      "skill development",
+      "practice"
+    ],
+    "description": "Measures whether employees have time and opportunity to apply new training.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 89,
+    "text": "How confident do you feel after completing recent training programs?",
+    "question_type": "rating",
+    "category": "training",
+    "subcategory": "confidence",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "training",
+      "confidence",
+      "learning outcomes"
+    ],
+    "description": "Evaluates perceived learner confidence after training.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 90,
+    "text": "Which skills would you most like additional training in?",
+    "question_type": "open_ended",
+    "category": "training",
+    "subcategory": "skill_gaps",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "training",
+      "growth",
+      "skills"
+    ],
+    "description": "Identifies specific areas where employees want more training.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 91,
+    "text": "I feel comfortable sharing my ideas with my team",
+    "question_type": "rating",
+    "category": "culture",
+    "subcategory": "psychological_safety",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "culture",
+      "psychological safety",
+      "team",
+      "trust"
+    ],
+    "description": "Measures psychological safety and openness within team culture.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 92,
+    "text": "How well does your team embrace new ideas?",
+    "question_type": "rating",
+    "category": "culture",
+    "subcategory": "innovation",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "culture",
+      "innovation",
+      "openness"
+    ],
+    "description": "Assesses team openness to innovation and creative thinking.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 93,
+    "text": "My organization values my personal growth and development",
+    "question_type": "rating",
+    "category": "culture",
+    "subcategory": "growth",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "culture",
+      "growth",
+      "development",
+      "learning"
+    ],
+    "description": "Measures organizational commitment to employee development and career growth.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 94,
+    "text": "How would you describe the collaboration culture on your team?",
+    "question_type": "multiple_choice",
+    "category": "culture",
+    "subcategory": "collaboration",
+    "options": [
+      "Very collaborative",
+      "Somewhat collaborative",
+      "Neutral",
+      "Somewhat siloed",
+      "Very siloed"
+    ],
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "culture",
+      "collaboration",
+      "teamwork"
+    ],
+    "description": "Assesses team collaboration culture and dynamics.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 95,
+    "text": "I feel a sense of belonging at this organization",
+    "question_type": "rating",
+    "category": "belonging",
+    "subcategory": "inclusion",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "belonging",
+      "inclusion",
+      "culture",
+      "engagement"
+    ],
+    "description": "Measures feelings of inclusion and belonging within the organization.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 96,
+    "text": "How would your describe your work-life balance?",
+    "question_type": "rating",
+    "category": "wellbeing",
+    "subcategory": "balance",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "wellbeing",
+      "balance",
+      "stress",
+      "quality-of-life"
+    ],
+    "description": "Evaluates employee perception of work-life balance.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 97,
+    "text": "How often do you feel stressed about work?",
+    "question_type": "rating",
+    "category": "wellbeing",
+    "subcategory": "stress",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "wellbeing",
+      "stress",
+      "mental-health"
+    ],
+    "description": "Measures work-related stress levels.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 98,
+    "text": "Do you have access to mental health support resources?",
+    "question_type": "rating",
+    "category": "wellbeing",
+    "subcategory": "mental_health",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "wellbeing",
+      "mental-health",
+      "support"
+    ],
+    "description": "Assesses availability and awareness of mental health resources.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 99,
+    "text": "How often do you take time off?",
+    "question_type": "multiple_choice",
+    "category": "wellbeing",
+    "subcategory": "time_off",
+    "options": [
+      "Never",
+      "Rarely",
+      "Occasionally",
+      "Regularly",
+      "Frequently"
+    ],
+    "scale_type": null,
+    "difficulty": "easy",
+    "tags": [
+      "wellbeing",
+      "time-off",
+      "balance"
+    ],
+    "description": "Measures frequency of time off and leave usage.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 100,
+    "text": "I believe the compensation for my role is fair",
+    "question_type": "rating",
+    "category": "compensation",
+    "subcategory": "fairness",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "compensation",
+      "fairness",
+      "pay"
+    ],
+    "description": "Evaluates perceptions of compensation fairness.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 101,
+    "text": "How transparent is your organization about compensation?",
+    "question_type": "rating",
+    "category": "compensation",
+    "subcategory": "transparency",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "compensation",
+      "transparency",
+      "communication"
+    ],
+    "description": "Measures transparency around compensation practices.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 102,
+    "text": "Do you have clear career development opportunities?",
+    "question_type": "rating",
+    "category": "career",
+    "subcategory": "opportunities",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "career",
+      "development",
+      "opportunities"
+    ],
+    "description": "Assesses availability of career growth paths.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 103,
+    "text": "How often do you receive performance feedback?",
+    "question_type": "rating",
+    "category": "feedback",
+    "subcategory": "frequency",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "feedback",
+      "performance",
+      "communication"
+    ],
+    "description": "Measures frequency of performance feedback.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 104,
+    "text": "Is the feedback you receive actionable and specific?",
+    "question_type": "rating",
+    "category": "feedback",
+    "subcategory": "quality",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "feedback",
+      "performance",
+      "quality"
+    ],
+    "description": "Evaluates quality and specificity of feedback received.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 105,
+    "text": "How well do you understand your organization's mission?",
+    "question_type": "rating",
+    "category": "mission",
+    "subcategory": "alignment",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "mission",
+      "alignment",
+      "purpose"
+    ],
+    "description": "Measures understanding of organizational mission and purpose.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 106,
+    "text": "I can see how my work contributes to organizational goals",
+    "question_type": "rating",
+    "category": "mission",
+    "subcategory": "impact",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "mission",
+      "purpose",
+      "impact",
+      "meaning"
+    ],
+    "description": "Evaluates alignment between individual work and organizational goals.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 107,
+    "text": "How would you describe your organization's innovation culture?",
+    "question_type": "rating",
+    "category": "innovation",
+    "subcategory": "culture",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "innovation",
+      "culture",
+      "change"
+    ],
+    "description": "Assesses organizational commitment to innovation.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 108,
+    "text": "Do you feel empowered to suggest improvements to processes?",
+    "question_type": "rating",
+    "category": "innovation",
+    "subcategory": "empowerment",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "innovation",
+      "empowerment",
+      "voice"
+    ],
+    "description": "Measures employee empowerment to suggest process improvements.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 109,
+    "text": "How quickly does your organization adapt to change?",
+    "question_type": "rating",
+    "category": "agility",
+    "subcategory": "speed",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "agility",
+      "change",
+      "responsiveness"
+    ],
+    "description": "Evaluates organizational agility and responsiveness to change.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 110,
+    "text": "I feel informed about organizational changes",
+    "question_type": "rating",
+    "category": "communication",
+    "subcategory": "change",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "communication",
+      "change",
+      "transparency"
+    ],
+    "description": "Measures communication about organizational changes.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 111,
+    "text": "How effective is communication from leadership?",
+    "question_type": "rating",
+    "category": "leadership",
+    "subcategory": "communication",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "leadership",
+      "communication",
+      "transparency"
+    ],
+    "description": "Evaluates leadership communication effectiveness.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 112,
+    "text": "What is the most significant challenge in your current role?",
+    "question_type": "open_ended",
+    "category": "challenges",
+    "subcategory": "barriers",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "challenges",
+      "barriers",
+      "obstacles"
+    ],
+    "description": "Collects feedback on key challenges employees face.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 113,
+    "text": "How satisfied are you with your current role overall?",
+    "question_type": "rating",
+    "category": "satisfaction",
+    "subcategory": "overall",
+    "options": null,
+    "scale_type": "nps",
+    "difficulty": "easy",
+    "tags": [
+      "satisfaction",
+      "engagement",
+      "job satisfaction"
+    ],
+    "description": "Overall job satisfaction measurement.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 114,
+    "text": "Would you recommend this organization as a place to work?",
+    "question_type": "rating",
+    "category": "advocacy",
+    "subcategory": "recommendation",
+    "options": null,
+    "scale_type": "nps",
+    "difficulty": "easy",
+    "tags": [
+      "advocacy",
+      "recommendation",
+      "engagement"
+    ],
+    "description": "Measures net promoter score and employee advocacy.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 115,
+    "text": "What could we do to improve employee engagement?",
+    "question_type": "open_ended",
+    "category": "improvement",
+    "subcategory": "engagement",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "improvement",
+      "feedback",
+      "engagement"
+    ],
+    "description": "Collects suggestions for improving engagement.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 116,
+    "text": "How supported do you feel by your peer group?",
+    "question_type": "rating",
+    "category": "relationships",
+    "subcategory": "peers",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "relationships",
+      "peers",
+      "support",
+      "teamwork"
+    ],
+    "description": "Measures support and relationships with peers.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 117,
+    "text": "How inclusive is your team culture?",
+    "question_type": "rating",
+    "category": "diversity",
+    "subcategory": "inclusion",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "diversity",
+      "inclusion",
+      "culture"
+    ],
+    "description": "Evaluates inclusivity of team culture.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 118,
+    "text": "I feel that my work contributes meaningfully to our organization's goals.",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "purpose",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "purpose",
+      "meaning",
+      "alignment",
+      "goal clarity"
+    ],
+    "description": "Measures how connected employees feel to organizational goals.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 119,
+    "text": "How confident are you in the long-term direction of the company?",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "strategic_direction",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "strategy",
+      "executive trust",
+      "leadership"
+    ],
+    "description": "Evaluates confidence in company leadership and strategic direction.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 120,
+    "text": "I understand how decisions made by leadership affect my team.",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "communication",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "communication",
+      "leadership",
+      "clarity"
+    ],
+    "description": "Assesses clarity of leadership communication and decision-making transparency.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 121,
+    "text": "How likely are you to stay with this organization for the next 12 months?",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "retention",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "retention",
+      "intent to stay",
+      "commitment"
+    ],
+    "description": "Predicts turnover risk and loyalty to the organization.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 122,
+    "text": "I have opportunities to work on projects that challenge me.",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "growth",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "development",
+      "stretch assignments",
+      "career"
+    ],
+    "description": "Measures access to challenging and meaningful work.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 123,
+    "text": "I feel supported when unexpected challenges arise in my work.",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "support",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "support",
+      "team",
+      "management"
+    ],
+    "description": "Assesses support systems and responsiveness to challenges.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 124,
+    "text": "What changes would make your work experience more meaningful?",
+    "question_type": "open_ended",
+    "category": "engagement",
+    "subcategory": "meaning",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "meaning",
+      "improvement",
+      "engagement"
+    ],
+    "description": "Identifies deeper drivers of meaningful work.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 125,
+    "text": "I have clarity on how my performance is evaluated.",
+    "question_type": "rating",
+    "category": "management",
+    "subcategory": "performance_management",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "performance",
+      "expectations",
+      "management"
+    ],
+    "description": "Measures awareness of performance evaluation criteria.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 126,
+    "text": "My manager provides helpful feedback that improves my performance.",
+    "question_type": "rating",
+    "category": "management",
+    "subcategory": "feedback_quality",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "feedback",
+      "development",
+      "manager effectiveness"
+    ],
+    "description": "Evaluates feedback quality and actionability.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 127,
+    "text": "How well does your manager help you prioritize tasks when workloads increase?",
+    "question_type": "rating",
+    "category": "management",
+    "subcategory": "workload_support",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "management",
+      "workload",
+      "support"
+    ],
+    "description": "Assesses managerial ability to provide workload clarity.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 128,
+    "text": "Do you feel your manager genuinely cares about your wellbeing?",
+    "question_type": "rating",
+    "category": "management",
+    "subcategory": "support",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "management",
+      "care",
+      "wellbeing"
+    ],
+    "description": "Assesses relational trust and managerial empathy.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 129,
+    "text": "I feel comfortable providing upward feedback to my manager.",
+    "question_type": "rating",
+    "category": "management",
+    "subcategory": "psychological_safety",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "hard",
+    "tags": [
+      "psychological safety",
+      "management",
+      "feedback"
+    ],
+    "description": "Measures trust and openness in the employee-manager relationship.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 130,
+    "text": "How confident are you in the decisions your manager makes?",
+    "question_type": "rating",
+    "category": "management",
+    "subcategory": "decision_quality",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "management",
+      "leadership",
+      "confidence"
+    ],
+    "description": "Evaluates leadership decision-making credibility.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 131,
+    "text": "What is one thing your manager could do to help you thrive?",
+    "question_type": "open_ended",
+    "category": "management",
+    "subcategory": "support",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "management",
+      "improvement",
+      "support"
+    ],
+    "description": "Collects targeted feedback on managerial improvement.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 132,
+    "text": "I feel that my workload is sustainable over the long term.",
+    "question_type": "rating",
+    "category": "workload",
+    "subcategory": "sustainability",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "burnout",
+      "workload",
+      "sustainability"
+    ],
+    "description": "Measures burnout risk by evaluating long-term workload sustainability.",
+    "sensitivity_level": "high"
+  },
+  {
+    "id": 133,
+    "text": "How frequently do you work outside of regular work hours?",
+    "question_type": "multiple_choice",
+    "category": "workload",
+    "subcategory": "overtime",
+    "options": [
+      "Never",
+      "Rarely",
+      "Sometimes",
+      "Often",
+      "Always"
+    ],
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "overtime",
+      "workload",
+      "stress"
+    ],
+    "description": "Assesses work-life overflow and overtime frequency.",
+    "sensitivity_level": "high"
+  },
+  {
+    "id": 134,
+    "text": "I can disconnect from work during my personal time.",
+    "question_type": "rating",
+    "category": "workload",
+    "subcategory": "work_life_balance",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "work-life balance",
+      "stress",
+      "burnout"
+    ],
+    "description": "Evaluates boundaries between work and personal life.",
+    "sensitivity_level": "medium"
+  },
+  {
+    "id": 135,
+    "text": "How consistently can you focus without interruptions?",
+    "question_type": "rating",
+    "category": "workload",
+    "subcategory": "focus_time",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "focus",
+      "productivity",
+      "interruption"
+    ],
+    "description": "Assesses quality of focus time and workplace interruptions.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 136,
+    "text": "What barriers prevent you from managing your workload effectively?",
+    "question_type": "open_ended",
+    "category": "workload",
+    "subcategory": "barriers",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "workload",
+      "barriers",
+      "productivity"
+    ],
+    "description": "Identifies obstacles to workload management.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 137,
+    "text": "I feel included and respected by my teammates.",
+    "question_type": "rating",
+    "category": "culture",
+    "subcategory": "inclusion",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "culture",
+      "inclusion",
+      "belonging"
+    ],
+    "description": "Measures inclusion and respect within team interactions.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 138,
+    "text": "How comfortable are you bringing up differing viewpoints?",
+    "question_type": "rating",
+    "category": "culture",
+    "subcategory": "diversity_of_thought",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "culture",
+      "inclusion",
+      "safety"
+    ],
+    "description": "Evaluates openness to diverse perspectives.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 139,
+    "text": "The organization demonstrates a commitment to diversity and fairness.",
+    "question_type": "rating",
+    "category": "culture",
+    "subcategory": "DEI",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "culture",
+      "DEI",
+      "fairness"
+    ],
+    "description": "Assesses perceived fairness and inclusion efforts.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 140,
+    "text": "Conflicts on our team are resolved constructively.",
+    "question_type": "rating",
+    "category": "culture",
+    "subcategory": "conflict_resolution",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "culture",
+      "conflict resolution",
+      "team"
+    ],
+    "description": "Evaluates health of conflict management practices.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 141,
+    "text": "What aspect of the culture helps you do your best work?",
+    "question_type": "open_ended",
+    "category": "culture",
+    "subcategory": "culture_strengths",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "easy",
+    "tags": [
+      "culture",
+      "strengths",
+      "engagement"
+    ],
+    "description": "Explores cultural strengths that support high performance.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 142,
+    "text": "I had a clear understanding of my responsibilities during my first week.",
+    "question_type": "rating",
+    "category": "onboarding",
+    "subcategory": "clarity",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "onboarding",
+      "clarity",
+      "expectations"
+    ],
+    "description": "Measures role clarity early in onboarding.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 143,
+    "text": "How well did your onboarding prepare you for your daily tasks?",
+    "question_type": "rating",
+    "category": "onboarding",
+    "subcategory": "preparedness",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "onboarding",
+      "preparation",
+      "training"
+    ],
+    "description": "Evaluates the effectiveness of onboarding content and training.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 144,
+    "text": "How helpful were your colleagues during your first month?",
+    "question_type": "rating",
+    "category": "onboarding",
+    "subcategory": "team_support",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "onboarding",
+      "team",
+      "support"
+    ],
+    "description": "Assesses team helpfulness and integration experience.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 145,
+    "text": "The onboarding process made me feel welcome at the organization.",
+    "question_type": "rating",
+    "category": "onboarding",
+    "subcategory": "belonging",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "onboarding",
+      "culture",
+      "belonging"
+    ],
+    "description": "Measures emotional onboarding experience.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 146,
+    "text": "What improvements would you suggest for the onboarding process?",
+    "question_type": "open_ended",
+    "category": "onboarding",
+    "subcategory": "improvement",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "onboarding",
+      "feedback"
+    ],
+    "description": "Gathers actionable suggestions for onboarding enhancements.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 147,
+    "text": "The training content was relevant to my job responsibilities.",
+    "question_type": "rating",
+    "category": "training",
+    "subcategory": "relevance",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "easy",
+    "tags": [
+      "training",
+      "relevance",
+      "alignment"
+    ],
+    "description": "Assesses relevance of training topics to actual work.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 148,
+    "text": "The training format (virtual, in-person, blended) supported effective learning.",
+    "question_type": "rating",
+    "category": "training",
+    "subcategory": "format_effectiveness",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "training",
+      "format",
+      "learning experience"
+    ],
+    "description": "Evaluates whether the format enhanced training outcomes.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 149,
+    "text": "How engaging were the activities and exercises in your recent training?",
+    "question_type": "rating",
+    "category": "training",
+    "subcategory": "learning_engagement",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "training",
+      "engagement",
+      "activities"
+    ],
+    "description": "Evaluates learner engagement during sessions.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 150,
+    "text": "I felt comfortable asking questions during the training session.",
+    "question_type": "rating",
+    "category": "training",
+    "subcategory": "psychological_safety",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "training",
+      "safety",
+      "participation"
+    ],
+    "description": "Measures learner comfort and psychological safety.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 151,
+    "text": "What topic would you like more training on?",
+    "question_type": "open_ended",
+    "category": "training",
+    "subcategory": "needs_analysis",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "medium",
+    "tags": [
+      "training",
+      "needs assessment"
+    ],
+    "description": "Identifies skill gaps and training priorities.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 152,
+    "text": "How energized do you feel today?",
+    "question_type": "rating",
+    "category": "pulse",
+    "subcategory": "energy",
+    "options": null,
+    "scale_type": "emoji",
+    "difficulty": "easy",
+    "tags": [
+      "pulse",
+      "energy",
+      "wellbeing"
+    ],
+    "description": "Quick energy-level pulse check.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 153,
+    "text": "How supported do you feel by your team this week?",
+    "question_type": "rating",
+    "category": "pulse",
+    "subcategory": "team_support",
+    "options": null,
+    "scale_type": "thumbs",
+    "difficulty": "easy",
+    "tags": [
+      "pulse",
+      "support",
+      "team"
+    ],
+    "description": "Short weekly check on team support.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 154,
+    "text": "How manageable has your workload been over the past few days?",
+    "question_type": "rating",
+    "category": "pulse",
+    "subcategory": "workload",
+    "options": null,
+    "scale_type": "emoji",
+    "difficulty": "easy",
+    "tags": [
+      "pulse",
+      "workload",
+      "stress"
+    ],
+    "description": "Near-real-time workload check.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 155,
+    "text": "What is one thing that would improve your experience this week?",
+    "question_type": "open_ended",
+    "category": "pulse",
+    "subcategory": "improvements",
+    "options": null,
+    "scale_type": null,
+    "difficulty": "easy",
+    "tags": [
+      "pulse",
+      "improvements",
+      "feedback"
+    ],
+    "description": "Simple pulse feedback prompt.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 156,
+    "text": "I feel proud of the work I accomplished this week.",
+    "question_type": "rating",
+    "category": "pulse",
+    "subcategory": "achievement",
+    "options": null,
+    "scale_type": "thumbs",
+    "difficulty": "easy",
+    "tags": [
+      "pulse",
+      "achievement",
+      "engagement"
+    ],
+    "description": "Light weekly check-in on accomplishment and morale.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 157,
+    "text": "How confident are you that your team can meet its upcoming goals?",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "team_confidence",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "team",
+      "confidence",
+      "performance"
+    ],
+    "description": "Assesses team capability perception.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 158,
+    "text": "I have a clear growth path within the organization.",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "career_growth",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "growth",
+      "development",
+      "career"
+    ],
+    "description": "Measures career progression clarity.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 159,
+    "text": "I feel confident speaking up in team meetings.",
+    "question_type": "rating",
+    "category": "culture",
+    "subcategory": "psychological_safety",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "culture",
+      "safety",
+      "communication"
+    ],
+    "description": "Evaluates confidence in contributing to discussions.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 160,
+    "text": "The expectations for my role are consistently communicated.",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "role_clarity",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "clarity",
+      "role",
+      "communication"
+    ],
+    "description": "Assesses consistency of expectation-setting.",
+    "sensitivity_level": "low"
+  },
+  {
+    "id": 161,
+    "text": "How aligned is your daily work with your strengths?",
+    "question_type": "rating",
+    "category": "engagement",
+    "subcategory": "strengths",
+    "options": null,
+    "scale_type": "likert_5",
+    "difficulty": "medium",
+    "tags": [
+      "strengths",
+      "engagement",
+      "alignment"
+    ],
+    "description": "Measures strengths-based work alignment.",
+    "sensitivity_level": "low"
+  }
+]
