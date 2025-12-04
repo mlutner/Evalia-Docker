@@ -1,9 +1,15 @@
-import React, { useState, useEffect, createContext, useContext, useCallback, ReactNode } from 'react';
+import React, { useState, useEffect, createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import type { Question as EvaliaQuestion, SurveyScoreConfig } from '@shared/schema';
+import type { Question as EvaliaQuestion, SurveyScoreConfig, LogicRule } from '@shared/schema';
+import { normalizeQuestion } from '@shared/questionNormalization';
 import { QUESTION_TYPES, getDisplayNameForType, getLikertLabels } from '@/data/questionTypeConfig';
+import { validateBuilderQuestion } from '@/utils/validateBuilderQuestion';
+import { validateLogicRules } from '@/utils/validateLogicRules';
+import { clampScoreWeight, normalizeScoringConfig, sanitizeOptionScores } from '@/utils/normalizeScoringConfig';
+import { logBuilderMutation } from '@/utils/builderAuditLog';
+import { checkSurveyIntegrity } from '@/utils/checkSurveyIntegrity';
 
 // ============================================
 // TYPE DEFINITIONS
@@ -151,6 +157,11 @@ export interface BuilderQuestion {
   allowedTypes?: string[];
   maxFileSize?: number;
   maxFiles?: number;
+  // === VIDEO / AUDIO OPTIONS ===
+  videoUrl?: string;
+  posterImageUrl?: string;
+  autoplay?: boolean;
+  maxDuration?: number;
   
   // === YES/NO OPTIONS ===
   yesLabel?: string;
@@ -175,12 +186,7 @@ export interface BuilderQuestion {
   scoreValues?: number[];
 }
 
-export interface LogicRule {
-  id: string;
-  condition: string;
-  action: 'skip' | 'show' | 'end';
-  targetQuestionId?: string; // Fixed: was 'target', now matches usage in QuestionConfigPanel
-}
+// LogicRule now lives in @shared/schema
 
 interface DesignSettings {
   layout: 'vertical' | 'horizontal' | 'grid';
@@ -201,6 +207,7 @@ export interface WelcomeScreen {
   title: string;
   description: string;
   buttonText: string;
+  layout?: 'centered' | 'left-aligned' | 'split-view';
   imageUrl?: string; // logo/primary image
   headerImage?: string; // header banner image
   backgroundImage?: BackgroundSettings; // full background with overlay
@@ -235,6 +242,16 @@ interface ScoringSettings {
   showCorrectAnswers: boolean;
 }
 
+type QuestionLayout = 'single' | 'scroll';
+
+interface SurveyBodySettings {
+  headerImage?: string;
+  backgroundImage?: BackgroundSettings;
+  showProgressBar?: boolean;
+  showQuestionNumbers?: boolean;
+  questionLayout?: QuestionLayout;
+}
+
 export interface BuilderSurvey {
   id: string;
   title: string;
@@ -248,6 +265,7 @@ export interface BuilderSurvey {
   privacyStatement?: string;
   dataUsageStatement?: string;
   scoreConfig?: SurveyScoreConfig;
+  surveyBody?: SurveyBodySettings;
   createdAt: string;
   updatedAt: string;
 }
@@ -269,14 +287,20 @@ interface SurveyBuilderContextType {
   // Selection state
   selectedQuestionId: string | null;
   setSelectedQuestionId: (id: string | null) => void;
-  selectedSection: 'welcome' | 'questions' | 'thankYou' | 'scoring' | null;
-  setSelectedSection: (section: 'welcome' | 'questions' | 'thankYou' | 'scoring' | null) => void;
+  selectedSection: 'welcome' | 'questions' | 'thankYou' | 'scoring' | 'results' | null;
+  setSelectedSection: (section: 'welcome' | 'questions' | 'thankYou' | 'scoring' | 'results' | null) => void;
   
   // Screen updates
   updateWelcomeScreen: (updates: Partial<WelcomeScreen>) => void;
   updateThankYouScreen: (updates: Partial<ThankYouScreen>) => void;
   updateScoringSettings: (updates: Partial<ScoringSettings>) => void;
+  updateScoreConfig: (updates: Partial<SurveyScoreConfig>) => void;
   updateSurveyMetadata: (updates: { title?: string; description?: string }) => void;
+  updateSurveyBody: (updates: Partial<SurveyBodySettings>) => void;
+  undo: () => void;
+  redo: () => void;
+  canUndo?: boolean;
+  canRedo?: boolean;
   
   // Panel state
   leftPanelOpen: boolean;
@@ -298,6 +322,11 @@ function generateId(): string {
   return `q-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
+// Simple undo/redo stacks
+type HistoryState = {
+  undo: BuilderSurvey[];
+  redo: BuilderSurvey[];
+};
 // Validate and normalize question type
 function normalizeQuestionType(typeInput: string): ValidQuestionType {
   // Check if it's already a valid schema type
@@ -311,8 +340,9 @@ function normalizeQuestionType(typeInput: string): ValidQuestionType {
 }
 
 // Convert Evalia question to Builder question
-function evaliaToBuilder(q: EvaliaQuestion, index: number): BuilderQuestion {
-  const type = normalizeQuestionType(q.type);
+export function evaliaToBuilder(q: EvaliaQuestion, index: number): BuilderQuestion {
+  const normalized = normalizeQuestion(q);
+  const type = normalizeQuestionType(normalized.type);
   const displayType = getDisplayNameForType(type);
   
   // Get defaults for this question type
@@ -325,86 +355,95 @@ function evaliaToBuilder(q: EvaliaQuestion, index: number): BuilderQuestion {
     ratingStyle: 'number' as const,
   } : {};
   
-  return {
+  const questionIds: Set<string> | undefined = undefined; // placeholder; callers can revalidate with full set
+
+  return validateBuilderQuestion({
     // Type defaults first (lowest priority)
     ...typeDefaults,
     ...ratingDefaults,
     // Then question-specific values (override defaults)
-    id: q.id,
+    id: normalized.id,
     type,
     displayType,
-    text: q.question,
-    description: q.description,
-    required: q.required || false,
-    hasLogic: !!q.skipCondition,
+    text: normalized.question,
+    description: normalized.description,
+    required: normalized.required || false,
+    hasLogic: !!(normalized.skipCondition || (normalized as any).logicRules?.length),
     order: index,
     // Copy all schema parameters (explicit values override defaults)
-    placeholder: q.placeholder,
-    minLength: q.minLength,
-    maxLength: q.maxLength,
-    validationPattern: q.validationPattern,
-    rows: q.rows,
-    options: q.options,
-    displayStyle: q.displayStyle,
-    allowOther: q.allowOther,
-    randomizeOptions: q.randomizeOptions,
-    optionImages: q.optionImages,
-    minSelections: q.minSelections,
-    maxSelections: q.maxSelections,
-    imageOptions: q.imageOptions,
-    selectionType: q.selectionType,
-    imageSize: q.imageSize,
-    showLabels: q.showLabels,
-    columns: q.columns,
-    ratingScale: q.ratingScale ?? ratingDefaults.ratingScale,
-    ratingStyle: q.ratingStyle ?? ratingDefaults.ratingStyle,
-    ratingLabels: q.ratingLabels,
-    showLabelsOnly: q.showLabelsOnly,
-    likertType: q.likertType,
-    likertPoints: q.likertPoints,
-    showNeutral: q.showNeutral,
-    customLabels: q.customLabels,
-    min: q.min,
-    max: q.max,
-    step: q.step,
-    defaultValue: q.defaultValue,
-    showValue: q.showValue,
-    unit: q.unit,
-    leftLabel: q.leftLabel,
-    rightLabel: q.rightLabel,
-    showNumbers: q.showNumbers,
-    rowLabels: q.rowLabels,
-    colLabels: q.colLabels,
-    matrixType: q.matrixType,
-    randomizeRows: q.randomizeRows,
-    maxRankItems: q.maxRankItems,
-    totalPoints: q.totalPoints,
-    showPercentage: q.showPercentage,
-    dateFormat: q.dateFormat,
-    minDate: q.minDate,
-    maxDate: q.maxDate,
-    disablePastDates: q.disablePastDates,
-    disableFutureDates: q.disableFutureDates,
-    timeFormat: q.timeFormat,
-    minuteStep: q.minuteStep,
-    allowedTypes: q.allowedTypes,
-    maxFileSize: q.maxFileSize,
-    maxFiles: q.maxFiles,
-    yesLabel: q.yesLabel,
-    noLabel: q.noLabel,
-    linkUrl: q.linkUrl,
-    linkText: q.linkText,
-    skipCondition: q.skipCondition,
-    scoringCategory: q.scoringCategory,
-    sectionId: q.sectionId,
-    scoreWeight: q.scoreWeight,
-    optionScores: q.optionScores,
-  };
+    placeholder: normalized.placeholder,
+    minLength: normalized.minLength,
+    maxLength: normalized.maxLength,
+    validationPattern: normalized.validationPattern,
+    rows: normalized.rows,
+    options: normalized.options,
+    displayStyle: normalized.displayStyle,
+    allowOther: normalized.allowOther,
+    randomizeOptions: normalized.randomizeOptions,
+    optionImages: normalized.optionImages,
+    minSelections: normalized.minSelections,
+    maxSelections: normalized.maxSelections,
+    imageOptions: normalized.imageOptions,
+    selectionType: normalized.selectionType,
+    imageSize: normalized.imageSize,
+    showLabels: normalized.showLabels,
+    columns: normalized.columns,
+    ratingScale: normalized.ratingScale ?? ratingDefaults.ratingScale,
+    ratingStyle: normalized.ratingStyle ?? ratingDefaults.ratingStyle,
+    ratingLabels: normalized.ratingLabels,
+    showLabelsOnly: normalized.showLabelsOnly,
+    npsLabels: normalized.npsLabels,
+    likertType: normalized.likertType,
+    likertPoints: normalized.likertPoints,
+    showNeutral: normalized.showNeutral,
+    customLabels: normalized.customLabels,
+    min: normalized.min,
+    max: normalized.max,
+    step: normalized.step,
+    defaultValue: normalized.defaultValue,
+    showValue: normalized.showValue,
+    unit: normalized.unit,
+    leftLabel: normalized.leftLabel,
+    rightLabel: normalized.rightLabel,
+    showNumbers: normalized.showNumbers,
+    rowLabels: normalized.rowLabels,
+    colLabels: normalized.colLabels,
+    matrixType: normalized.matrixType,
+    randomizeRows: normalized.randomizeRows,
+    maxRankItems: normalized.maxRankItems,
+    totalPoints: normalized.totalPoints,
+    showPercentage: normalized.showPercentage,
+    dateFormat: normalized.dateFormat,
+    minDate: normalized.minDate,
+    maxDate: normalized.maxDate,
+    disablePastDates: normalized.disablePastDates,
+    disableFutureDates: normalized.disableFutureDates,
+    timeFormat: normalized.timeFormat,
+    minuteStep: normalized.minuteStep,
+    allowedTypes: normalized.allowedTypes,
+    maxFileSize: normalized.maxFileSize,
+    maxFiles: normalized.maxFiles,
+    videoUrl: (normalized as any).videoUrl,
+    posterImageUrl: (normalized as any).posterImageUrl,
+    autoplay: (normalized as any).autoplay,
+    maxDuration: (normalized as any).maxDuration,
+    yesLabel: normalized.yesLabel,
+    noLabel: normalized.noLabel,
+    linkUrl: normalized.linkUrl,
+    linkText: normalized.linkText,
+    skipCondition: normalized.skipCondition,
+    logicRules: validateLogicRules((normalized as any).logicRules, normalized.id, questionIds),
+    scoringCategory: normalized.scoringCategory,
+    sectionId: normalized.sectionId,
+    scoreWeight: normalized.scoreWeight,
+    optionScores: normalized.optionScores,
+    scorable: (normalized as any).scorable,
+  } as BuilderQuestion);
 }
 
 // Convert Builder question to Evalia question
-function builderToEvalia(q: BuilderQuestion): EvaliaQuestion {
-  return {
+export function builderToEvalia(q: BuilderQuestion): EvaliaQuestion {
+  const rawQuestion = {
     id: q.id,
     type: q.type as any,
     question: q.text,
@@ -432,6 +471,7 @@ function builderToEvalia(q: BuilderQuestion): EvaliaQuestion {
     ratingStyle: q.ratingStyle,
     ratingLabels: q.ratingLabels,
     showLabelsOnly: q.showLabelsOnly,
+    npsLabels: q.npsLabels,
     likertType: q.likertType,
     likertPoints: q.likertPoints,
     showNeutral: q.showNeutral,
@@ -462,16 +502,24 @@ function builderToEvalia(q: BuilderQuestion): EvaliaQuestion {
     allowedTypes: q.allowedTypes,
     maxFileSize: q.maxFileSize,
     maxFiles: q.maxFiles,
+    videoUrl: q.videoUrl,
+    posterImageUrl: q.posterImageUrl,
+    autoplay: q.autoplay,
+    maxDuration: q.maxDuration,
     yesLabel: q.yesLabel,
     noLabel: q.noLabel,
     linkUrl: q.linkUrl,
     linkText: q.linkText,
     skipCondition: q.skipCondition,
+    logicRules: q.logicRules,
     scoringCategory: q.scoringCategory,
     sectionId: q.sectionId,
     scoreWeight: q.scoreWeight,
     optionScores: q.optionScores,
+    scorable: q.scorable,
   };
+
+  return normalizeQuestion(rawQuestion) as EvaliaQuestion;
 }
 
 // Get default options for a question type
@@ -505,13 +553,117 @@ function getDefaultParamsForType(type: ValidQuestionType): Partial<BuilderQuesti
   return params;
 }
 
+// Build API payload from builder survey state (pure for reuse/testing)
+export function exportSurveyToEvalia(survey: BuilderSurvey) {
+  const evaliaQuestions = survey.questions.map(builderToEvalia);
+
+  const designSettings = {
+    themeColors: survey.welcomeScreen.themeColors,
+    welcomeScreen: {
+      enabled: survey.welcomeScreen.enabled,
+      title: survey.welcomeScreen.title,
+      description: survey.welcomeScreen.description,
+      buttonText: survey.welcomeScreen.buttonText,
+      layout: survey.welcomeScreen.layout,
+      logoUrl: survey.welcomeScreen.imageUrl,
+      headerImage: survey.welcomeScreen.headerImage,
+      backgroundImage: survey.welcomeScreen.backgroundImage,
+      showTimeEstimate: survey.welcomeScreen.showTimeEstimate,
+      showQuestionCount: survey.welcomeScreen.showQuestionCount,
+      privacyText: survey.welcomeScreen.privacyText,
+      privacyLinkUrl: survey.welcomeScreen.privacyLinkUrl,
+    },
+    thankYouScreen: {
+      enabled: survey.thankYouScreen.enabled,
+      title: survey.thankYouScreen.title,
+      message: survey.thankYouScreen.message,
+      redirectUrl: survey.thankYouScreen.redirectUrl,
+      showSocialShare: survey.thankYouScreen.showSocialShare,
+      headerImage: survey.thankYouScreen.headerImage,
+      backgroundImage: survey.thankYouScreen.backgroundImage,
+    },
+    surveyBody: survey.surveyBody,
+  };
+
+  return {
+    title: survey.title,
+    description: survey.description,
+    questions: evaliaQuestions,
+    welcomeMessage: survey.welcomeScreen.enabled ? survey.welcomeScreen.description : undefined,
+    thankYouMessage: survey.thankYouScreen.message,
+    illustrationUrl: survey.illustrationUrl || survey.welcomeScreen.imageUrl,
+    estimatedMinutes: survey.estimatedMinutes || Math.ceil(survey.questions.length * 0.5),
+    privacyStatement: survey.privacyStatement || survey.welcomeScreen.privacyText,
+    dataUsageStatement: survey.dataUsageStatement,
+    scoreConfig: survey.scoreConfig,
+    designSettings,
+  };
+}
+
 // ============================================
 // CONTEXT
 // ============================================
 
 const SurveyBuilderContext = createContext<SurveyBuilderContextType | undefined>(undefined);
 
-const createInitialSurvey = (): BuilderSurvey => ({
+type HistoryState = {
+  undo: BuilderSurvey[];
+  redo: BuilderSurvey[];
+};
+
+let inRenderPhase = false;
+
+function markRenderStart() {
+  if (!import.meta.env.DEV) return;
+  inRenderPhase = true;
+}
+
+function markRenderEnd() {
+  if (!import.meta.env.DEV) return;
+  inRenderPhase = false;
+}
+
+function assertNotInRender(methodName: string) {
+  if (!import.meta.env.DEV) return;
+  if (inRenderPhase) {
+    console.warn(`[SurveyBuilder] ${methodName} called during render. Move side-effects to event handlers/effects.`);
+  }
+}
+
+function assertSurveyInvariants(survey: BuilderSurvey) {
+  if (!import.meta.env.DEV) return;
+
+  const ids = survey.questions.map((q) => q.id);
+  const uniqueIds = new Set(ids);
+  if (ids.length !== uniqueIds.size) {
+    console.warn('[SurveyBuilder] Duplicate question IDs detected', ids);
+  }
+
+  const orders = survey.questions.map((q) => q.order);
+  const sortedOrders = [...orders].sort((a, b) => a - b);
+  const expected = Array.from({ length: survey.questions.length }, (_, i) => i);
+  if (JSON.stringify(sortedOrders) !== JSON.stringify(expected)) {
+    console.warn('[SurveyBuilder] Question order is not contiguous 0..n-1', orders);
+  }
+
+  for (const q of survey.questions) {
+    if (!VALID_QUESTION_TYPES.includes(q.type)) {
+      console.warn('[SurveyBuilder] Invalid question type', q.id, q.type);
+    }
+  }
+}
+
+function pushHistory(
+  prev: BuilderSurvey,
+  setHistoryState: React.Dispatch<React.SetStateAction<HistoryState>>
+) {
+  setHistoryState((state) => {
+    const nextUndo = [...state.undo, prev].slice(-50); // cap size
+    return { undo: nextUndo, redo: [] };
+  });
+}
+
+export const createInitialSurvey = (): BuilderSurvey => ({
   id: `survey-${Date.now()}`,
   title: 'Untitled Survey',
   description: '',
@@ -520,6 +672,7 @@ const createInitialSurvey = (): BuilderSurvey => ({
     title: 'Welcome to our survey',
     description: 'Your feedback helps us improve',
     buttonText: 'Start Survey',
+    layout: 'centered',
     showTimeEstimate: true,
     showQuestionCount: true,
     backgroundImage: {
@@ -551,6 +704,11 @@ const createInitialSurvey = (): BuilderSurvey => ({
     showCorrectAnswers: false,
   },
   questions: [],
+  surveyBody: {
+    showProgressBar: true,
+    showQuestionNumbers: true,
+    questionLayout: 'scroll',
+  },
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 });
@@ -566,34 +724,48 @@ export function SurveyBuilderProvider({
   const queryClient = useQueryClient();
   
   const [survey, setSurvey] = useState<BuilderSurvey>(createInitialSurvey());
+  const [history, setHistory] = useState<HistoryState>({ undo: [], redo: [] });
   const [isDirty, setIsDirty] = useState(false);
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
-  const [selectedSection, setSelectedSection] = useState<'welcome' | 'questions' | 'thankYou' | 'scoring' | null>(null);
+  const [selectedSection, setSelectedSection] = useState<'welcome' | 'questions' | 'thankYou' | 'scoring' | 'results' | null>(null);
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
+  const applySurveyUpdate = useCallback(
+    (updater: (prev: BuilderSurvey) => BuilderSurvey, recordHistory = true) => {
+      setSurvey((prev) => {
+        const next = updater(prev);
+        if (recordHistory) {
+          pushHistory(prev, setHistory);
+        }
+        assertSurveyInvariants(next);
+        return next;
+      });
+    },
+    []
+  );
 
   // Check for AI-generated or template survey data on mount
   useEffect(() => {
     if (surveyId === 'new' || !surveyId) {
-      // Check for AI-generated survey
       const aiSurveyData = sessionStorage.getItem('aiGeneratedSurvey');
       if (aiSurveyData) {
         try {
           const parsed = JSON.parse(aiSurveyData);
-          const builderQuestions = (parsed.questions || []).map((q: any, idx: number) => ({
-            id: q.id || `q-${Date.now()}-${idx}`,
-            type: EVALIA_TO_DISPLAY_TYPE[q.type] || q.type,
-            evaliaType: q.type,
-            text: q.question || q.text,
-            description: q.description,
-            options: q.options,
-            required: q.required || false,
-            hasLogic: false,
-            order: idx,
-          }));
-          
+          const builderQuestions = (parsed.questions || []).map((q: any, idx: number) =>
+            validateBuilderQuestion(
+              evaliaToBuilder(
+                {
+                  ...q,
+                  question: q.question || q.text,
+                  logicRules: q.logicRules,
+                } as any,
+                idx
+              )
+            )
+          );
+
           const surveyTitle = parsed.title || 'AI Generated Survey';
-          setSurvey({
+          const nextSurvey = {
             ...createInitialSurvey(),
             title: surveyTitle,
             description: parsed.description || '',
@@ -604,7 +776,12 @@ export function SurveyBuilderProvider({
               title: surveyTitle, // Use survey title as welcome screen title
               description: parsed.description || 'Your feedback helps us improve',
             },
-          });
+          };
+          applySurveyUpdate(() => nextSurvey, false);
+          const report = checkSurveyIntegrity(nextSurvey);
+          if (!report.isHealthy) {
+            console.warn('[SurveyBuilder] Integrity warnings after AI import', report.issues);
+          }
           setIsDirty(true);
           sessionStorage.removeItem('aiGeneratedSurvey');
           toast({
@@ -617,21 +794,24 @@ export function SurveyBuilderProvider({
         return;
       }
 
-      // Check for template survey
       const templateData = sessionStorage.getItem('templateSurvey');
       if (templateData) {
         try {
           const parsed = JSON.parse(templateData);
-          // Use evaliaToBuilder to properly convert all question parameters
-          const builderQuestions = (parsed.questions || []).map((q: any, idx: number) => 
-            evaliaToBuilder({
-              ...q,
-              question: q.question || q.text, // Ensure question text is properly mapped
-            }, idx)
+          const builderQuestions = (parsed.questions || []).map((q: any, idx: number) =>
+            validateBuilderQuestion(
+              evaliaToBuilder(
+                {
+                  ...q,
+                  question: q.question || q.text, // Ensure question text is properly mapped
+                },
+                idx
+              )
+            )
           );
           
           const surveyTitle = parsed.title || 'Template Survey';
-          setSurvey({
+          const nextSurvey = {
             ...createInitialSurvey(),
             title: surveyTitle,
             description: parsed.description || '',
@@ -642,7 +822,12 @@ export function SurveyBuilderProvider({
               title: surveyTitle, // Use survey title as welcome screen title
               description: parsed.description || 'Your feedback helps us improve',
             },
-          });
+          };
+          applySurveyUpdate(() => nextSurvey, false);
+          const report = checkSurveyIntegrity(nextSurvey);
+          if (!report.isHealthy) {
+            console.warn('[SurveyBuilder] Integrity warnings after template import', report.issues);
+          }
           setIsDirty(true);
           sessionStorage.removeItem('templateSurvey');
           toast({
@@ -654,7 +839,7 @@ export function SurveyBuilderProvider({
         }
       }
     }
-  }, [surveyId, toast]);
+  }, [surveyId, toast, applySurveyUpdate]);
 
   // Load existing survey
   const { data: existingSurveyData, isLoading } = useQuery({
@@ -674,64 +859,79 @@ export function SurveyBuilderProvider({
       setPersistedId(existingSurveyData.id);
       
       // Convert Evalia survey to Builder survey
-      const builderQuestions = (existingSurveyData.questions || []).map(evaliaToBuilder);
+      const builderQuestions = (existingSurveyData.questions || []).map(evaliaToBuilder).map((q, idx) =>
+        validateBuilderQuestion({
+          ...q,
+          logicRules: validateLogicRules((q as any).logicRules, q.id, new Set((existingSurveyData.questions || []).map((qq: any) => qq.id))),
+          order: idx,
+        } as BuilderQuestion)
+      );
       
       // Extract design settings if available
       const ds = existingSurveyData.designSettings;
       const welcomeDs = ds?.welcomeScreen;
       const thankYouDs = ds?.thankYouScreen;
       
-      setSurvey({
-        id: existingSurveyData.id,
-        title: existingSurveyData.title || 'Untitled Survey',
-        description: existingSurveyData.description || '',
-        welcomeScreen: {
-          enabled: welcomeDs?.enabled ?? !!existingSurveyData.welcomeMessage,
-          title: welcomeDs?.title || 'Welcome to our survey',
-          description: welcomeDs?.description || existingSurveyData.welcomeMessage || 'Your feedback helps us improve',
-          buttonText: welcomeDs?.buttonText || 'Start Survey',
-          imageUrl: welcomeDs?.logoUrl || existingSurveyData.illustrationUrl,
-          headerImage: welcomeDs?.headerImage,
-          backgroundImage: welcomeDs?.backgroundImage,
-          showTimeEstimate: welcomeDs?.showTimeEstimate ?? true,
-          showQuestionCount: welcomeDs?.showQuestionCount ?? true,
-          privacyText: welcomeDs?.privacyText || existingSurveyData.privacyStatement,
-          privacyLinkUrl: welcomeDs?.privacyLinkUrl,
-          themeColors: ds?.themeColors || {
-            primary: '#2F8FA5',
-            secondary: '#2F8FA5', // Header bar color
-            background: '#FFFFFF',
-            text: '#1e293b',
-            buttonText: '#FFFFFF',
+      applySurveyUpdate(
+        () => ({
+          id: existingSurveyData.id,
+          title: existingSurveyData.title || 'Untitled Survey',
+          description: existingSurveyData.description || '',
+          welcomeScreen: {
+            enabled: welcomeDs?.enabled ?? !!existingSurveyData.welcomeMessage,
+            title: welcomeDs?.title || 'Welcome to our survey',
+            description: welcomeDs?.description || existingSurveyData.welcomeMessage || 'Your feedback helps us improve',
+            buttonText: welcomeDs?.buttonText || 'Start Survey',
+            layout: welcomeDs?.layout || 'centered',
+            imageUrl: welcomeDs?.logoUrl || existingSurveyData.illustrationUrl,
+            headerImage: welcomeDs?.headerImage,
+            backgroundImage: welcomeDs?.backgroundImage,
+            showTimeEstimate: welcomeDs?.showTimeEstimate ?? true,
+            showQuestionCount: welcomeDs?.showQuestionCount ?? true,
+            privacyText: welcomeDs?.privacyText || existingSurveyData.privacyStatement,
+            privacyLinkUrl: welcomeDs?.privacyLinkUrl,
+            themeColors: ds?.themeColors || {
+              primary: '#2F8FA5',
+              secondary: '#2F8FA5', // Header bar color
+              background: '#FFFFFF',
+              text: '#1e293b',
+              buttonText: '#FFFFFF',
+            },
           },
-        },
-        thankYouScreen: {
-          enabled: thankYouDs?.enabled ?? true,
-          title: thankYouDs?.title || 'Thank you!',
-          message: thankYouDs?.message || existingSurveyData.thankYouMessage || 'Your response has been recorded.',
-          redirectUrl: thankYouDs?.redirectUrl,
-          showSocialShare: thankYouDs?.showSocialShare ?? false,
-          headerImage: thankYouDs?.headerImage,
-          backgroundImage: thankYouDs?.backgroundImage,
-        },
-        scoringSettings: {
-          enabled: !!existingSurveyData.scoreConfig?.enabled,
-          type: 'points',
-          showScore: existingSurveyData.scoreConfig?.enabled || false,
-          showCorrectAnswers: false,
-        },
-        questions: builderQuestions,
-        illustrationUrl: existingSurveyData.illustrationUrl,
-        estimatedMinutes: existingSurveyData.estimatedMinutes,
-        privacyStatement: existingSurveyData.privacyStatement,
-        dataUsageStatement: existingSurveyData.dataUsageStatement,
-        scoreConfig: existingSurveyData.scoreConfig,
-        createdAt: existingSurveyData.createdAt,
-        updatedAt: existingSurveyData.updatedAt,
-      });
+          thankYouScreen: {
+            enabled: thankYouDs?.enabled ?? true,
+            title: thankYouDs?.title || 'Thank you!',
+            message: thankYouDs?.message || existingSurveyData.thankYouMessage || 'Your response has been recorded.',
+            redirectUrl: thankYouDs?.redirectUrl,
+            showSocialShare: thankYouDs?.showSocialShare ?? false,
+            headerImage: thankYouDs?.headerImage,
+            backgroundImage: thankYouDs?.backgroundImage,
+          },
+          surveyBody: ds?.surveyBody || {
+            showProgressBar: true,
+            showQuestionNumbers: true,
+            questionLayout: 'scroll',
+          },
+          scoringSettings: {
+            enabled: !!existingSurveyData.scoreConfig?.enabled,
+            type: 'points',
+            showScore: existingSurveyData.scoreConfig?.enabled || false,
+            showCorrectAnswers: false,
+          },
+          questions: builderQuestions,
+          illustrationUrl: existingSurveyData.illustrationUrl,
+          estimatedMinutes: existingSurveyData.estimatedMinutes,
+          privacyStatement: existingSurveyData.privacyStatement,
+          dataUsageStatement: existingSurveyData.dataUsageStatement,
+          scoreConfig: existingSurveyData.scoreConfig,
+          createdAt: existingSurveyData.createdAt,
+          updatedAt: existingSurveyData.updatedAt,
+        }),
+        false
+      );
       setIsDirty(false);
     }
-  }, [existingSurveyData]);
+  }, [existingSurveyData, applySurveyUpdate]);
 
   // Track the persisted survey ID (once saved, this holds the real DB ID)
   const [persistedId, setPersistedId] = useState<string | null>(
@@ -752,8 +952,8 @@ export function SurveyBuilderProvider({
       // Store the returned ID so subsequent saves use PUT
       if (data.id && data.id !== persistedId) {
         setPersistedId(data.id);
-        // Also update the survey state with the real ID
-        setSurvey(prev => ({ ...prev, id: data.id }));
+        // Also update the survey state with the real ID without pushing history
+        applySurveyUpdate(() => ({ ...survey, id: data.id }), false);
       }
       setIsDirty(false);
       queryClient.invalidateQueries({ queryKey: ['/api/surveys'] });
@@ -776,122 +976,180 @@ export function SurveyBuilderProvider({
   // ============================================
 
   const addQuestion = useCallback((typeInput: string, overrides?: { text?: string; options?: string[]; description?: string }) => {
-    if (survey.questions.length >= 200) {
-      toast({
-        title: 'Maximum questions reached',
-        description: 'Maximum 200 questions allowed per survey',
-        variant: 'destructive',
-      });
-      return;
-    }
-
+    assertNotInRender('addQuestion');
     const type = normalizeQuestionType(typeInput);
     const typeConfig = QUESTION_TYPES[type];
     const displayType = typeConfig?.displayName || type;
     const defaultParams = getDefaultParamsForType(type);
     const defaultOptions = getDefaultOptionsForType(type);
     
-    const newQuestion: BuilderQuestion = {
-      id: generateId(),
-      type,
-      displayType,
-      text: overrides?.text || typeConfig?.defaultQuestion || `New ${displayType} question`,
-      description: overrides?.description,
-      options: overrides?.options || defaultOptions,
-      required: false,
-      hasLogic: false,
-      order: survey.questions.length,
-      ...defaultParams,
-    };
+    let addedQuestion: BuilderQuestion | null = null;
 
-    setSurvey(prev => ({
-      ...prev,
-      questions: [...prev.questions, newQuestion],
-      updatedAt: new Date().toISOString(),
-    }));
-    setSelectedQuestionId(newQuestion.id);
-    setSelectedSection('questions');
-    setIsDirty(true);
-  }, [survey.questions.length, toast]);
+    applySurveyUpdate(prev => {
+      if (prev.questions.length >= 200) {
+        toast({
+          title: 'Maximum questions reached',
+          description: 'Maximum 200 questions allowed per survey',
+          variant: 'destructive',
+        });
+        return prev;
+      }
+
+      addedQuestion = validateBuilderQuestion({
+        id: generateId(),
+        type,
+        displayType,
+        text: overrides?.text || typeConfig?.defaultQuestion || `New ${displayType} question`,
+        description: overrides?.description,
+        options: overrides?.options || defaultOptions,
+        required: false,
+        hasLogic: false,
+        order: prev.questions.length,
+        ...defaultParams,
+      } as BuilderQuestion);
+
+      const next = {
+        ...prev,
+        questions: [...prev.questions, addedQuestion],
+        updatedAt: new Date().toISOString(),
+      };
+      setSelectedQuestionId(addedQuestion.id);
+      setSelectedSection('questions');
+      setIsDirty(true);
+      logBuilderMutation('addQuestion', addedQuestion);
+      return next;
+    });
+  }, [applySurveyUpdate, toast]);
 
   const removeQuestion = useCallback((id: string) => {
-    setSurvey(prev => ({
+    assertNotInRender('removeQuestion');
+    applySurveyUpdate(prev => ({
       ...prev,
       questions: prev.questions
         .filter(q => q.id !== id)
-        .map((q, idx) => ({ ...q, order: idx })),
+        .map((q, idx) => validateBuilderQuestion({ ...q, order: idx } as BuilderQuestion)),
       updatedAt: new Date().toISOString(),
     }));
-    if (selectedQuestionId === id) {
-      setSelectedQuestionId(null);
-    }
+    setSelectedQuestionId((prev) => (prev === id ? null : prev));
     setIsDirty(true);
-  }, [selectedQuestionId]);
+    logBuilderMutation('removeQuestion', { id });
+  }, [applySurveyUpdate]);
 
   const reorderQuestions = useCallback((fromIndex: number, toIndex: number) => {
-    setSurvey(prev => {
+    assertNotInRender('reorderQuestions');
+    applySurveyUpdate(prev => {
       const newQuestions = [...prev.questions];
       const [movedQuestion] = newQuestions.splice(fromIndex, 1);
       newQuestions.splice(toIndex, 0, movedQuestion);
       return {
         ...prev,
-        questions: newQuestions.map((q, idx) => ({ ...q, order: idx })),
+        questions: newQuestions.map((q, idx) => validateBuilderQuestion({ ...q, order: idx } as BuilderQuestion)),
         updatedAt: new Date().toISOString(),
       };
     });
     setIsDirty(true);
-  }, []);
+    logBuilderMutation('reorderQuestions', { fromIndex, toIndex });
+  }, [applySurveyUpdate]);
 
   const updateQuestion = useCallback((id: string, updates: Partial<BuilderQuestion>) => {
-    setSurvey(prev => ({
-      ...prev,
-      questions: prev.questions.map(q =>
-        q.id === id ? { ...q, ...updates } : q
-      ),
-      updatedAt: new Date().toISOString(),
-    }));
+    assertNotInRender('updateQuestion');
+    applySurveyUpdate(prev => {
+      const questionIds = new Set(prev.questions.map((q) => q.id));
+      const nextQuestions = prev.questions.map(q => {
+        if (q.id !== id) return q;
+        const merged = { ...q, ...updates } as BuilderQuestion;
+        if (updates.logicRules) {
+          merged.logicRules = validateLogicRules(updates.logicRules, id, questionIds);
+          merged.hasLogic = !!merged.logicRules?.length;
+        }
+        if (updates.scoreWeight !== undefined) {
+          merged.scoreWeight = clampScoreWeight(updates.scoreWeight);
+        }
+        if (updates.optionScores) {
+          merged.optionScores = sanitizeOptionScores(updates.optionScores);
+        }
+        return validateBuilderQuestion(merged);
+      });
+
+      logBuilderMutation('updateQuestion', { id, updates });
+      return {
+        ...prev,
+        questions: nextQuestions,
+        updatedAt: new Date().toISOString(),
+      };
+    });
     setIsDirty(true);
-  }, []);
+  }, [applySurveyUpdate]);
 
   // ============================================
   // SCREEN UPDATES
   // ============================================
 
   const updateWelcomeScreen = useCallback((updates: Partial<WelcomeScreen>) => {
-    setSurvey(prev => ({
+    assertNotInRender('updateWelcomeScreen');
+    applySurveyUpdate(prev => ({
       ...prev,
       welcomeScreen: { ...prev.welcomeScreen, ...updates },
       updatedAt: new Date().toISOString(),
     }));
     setIsDirty(true);
-  }, []);
+    logBuilderMutation('updateWelcomeScreen', updates);
+  }, [applySurveyUpdate]);
 
   const updateThankYouScreen = useCallback((updates: Partial<ThankYouScreen>) => {
-    setSurvey(prev => ({
+    assertNotInRender('updateThankYouScreen');
+    applySurveyUpdate(prev => ({
       ...prev,
       thankYouScreen: { ...prev.thankYouScreen, ...updates },
       updatedAt: new Date().toISOString(),
     }));
     setIsDirty(true);
-  }, []);
+    logBuilderMutation('updateThankYouScreen', updates);
+  }, [applySurveyUpdate]);
 
   const updateScoringSettings = useCallback((updates: Partial<ScoringSettings>) => {
-    setSurvey(prev => ({
+    assertNotInRender('updateScoringSettings');
+    applySurveyUpdate(prev => ({
       ...prev,
       scoringSettings: { ...prev.scoringSettings, ...updates },
       updatedAt: new Date().toISOString(),
     }));
     setIsDirty(true);
-  }, []);
+    logBuilderMutation('updateScoringSettings', updates);
+  }, [applySurveyUpdate]);
+
+  const updateScoreConfig = useCallback((updates: Partial<SurveyScoreConfig>) => {
+    assertNotInRender('updateScoreConfig');
+    applySurveyUpdate(prev => ({
+      ...prev,
+      scoreConfig: normalizeScoringConfig({ ...prev.scoreConfig, ...updates }),
+      updatedAt: new Date().toISOString(),
+    }));
+    setIsDirty(true);
+    logBuilderMutation('updateScoreConfig', updates);
+  }, [applySurveyUpdate]);
 
   const updateSurveyMetadata = useCallback((updates: { title?: string; description?: string }) => {
-    setSurvey(prev => ({
+    assertNotInRender('updateSurveyMetadata');
+    applySurveyUpdate(prev => ({
       ...prev,
       ...updates,
       updatedAt: new Date().toISOString(),
     }));
     setIsDirty(true);
-  }, []);
+    logBuilderMutation('updateSurveyMetadata', updates);
+  }, [applySurveyUpdate]);
+
+  const updateSurveyBody = useCallback((updates: Partial<SurveyBodySettings>) => {
+    assertNotInRender('updateSurveyBody');
+    applySurveyUpdate(prev => ({
+      ...prev,
+      surveyBody: { ...prev.surveyBody, ...updates },
+      updatedAt: new Date().toISOString(),
+    }));
+    setIsDirty(true);
+    logBuilderMutation('updateSurveyBody', updates);
+  }, [applySurveyUpdate]);
 
   // ============================================
   // PANEL TOGGLES
@@ -904,52 +1162,14 @@ export function SurveyBuilderProvider({
   // API OPERATIONS
   // ============================================
 
-  const exportToEvalia = useCallback(() => {
-    const evaliaQuestions = survey.questions.map(builderToEvalia);
-    
-    // Build design settings object for database storage
-    const designSettings = {
-      themeColors: survey.welcomeScreen.themeColors,
-      welcomeScreen: {
-        enabled: survey.welcomeScreen.enabled,
-        title: survey.welcomeScreen.title,
-        description: survey.welcomeScreen.description,
-        buttonText: survey.welcomeScreen.buttonText,
-        logoUrl: survey.welcomeScreen.imageUrl,
-        headerImage: survey.welcomeScreen.headerImage,
-        backgroundImage: survey.welcomeScreen.backgroundImage,
-        showTimeEstimate: survey.welcomeScreen.showTimeEstimate,
-        showQuestionCount: survey.welcomeScreen.showQuestionCount,
-        privacyText: survey.welcomeScreen.privacyText,
-        privacyLinkUrl: survey.welcomeScreen.privacyLinkUrl,
-      },
-      thankYouScreen: {
-        enabled: survey.thankYouScreen.enabled,
-        title: survey.thankYouScreen.title,
-        message: survey.thankYouScreen.message,
-        redirectUrl: survey.thankYouScreen.redirectUrl,
-        showSocialShare: survey.thankYouScreen.showSocialShare,
-        headerImage: survey.thankYouScreen.headerImage,
-        backgroundImage: survey.thankYouScreen.backgroundImage,
-      },
-    };
-
-    return {
-      title: survey.title,
-      description: survey.description,
-      questions: evaliaQuestions,
-      welcomeMessage: survey.welcomeScreen.enabled ? survey.welcomeScreen.description : undefined,
-      thankYouMessage: survey.thankYouScreen.message,
-      illustrationUrl: survey.illustrationUrl || survey.welcomeScreen.imageUrl,
-      estimatedMinutes: survey.estimatedMinutes || Math.ceil(survey.questions.length * 0.5),
-      privacyStatement: survey.privacyStatement || survey.welcomeScreen.privacyText,
-      dataUsageStatement: survey.dataUsageStatement,
-      scoreConfig: survey.scoreConfig,
-      designSettings, // Include full design settings
-    };
-  }, [survey]);
+  const exportToEvalia = useCallback(() => exportSurveyToEvalia(survey), [survey]);
 
   const saveSurvey = useCallback(async (): Promise<string | null> => {
+    assertNotInRender('saveSurvey');
+    const report = checkSurveyIntegrity(survey);
+    if (!report.isHealthy) {
+      console.warn('[SurveyBuilder] Integrity warnings before save', report.issues);
+    }
     const evaliaData = exportToEvalia();
     try {
       const result = await saveMutation.mutateAsync(evaliaData);
@@ -957,48 +1177,107 @@ export function SurveyBuilderProvider({
     } catch {
       return null;
     }
-  }, [exportToEvalia, saveMutation]);
+  }, [exportToEvalia, saveMutation, survey]);
 
   const loadSurvey = useCallback((id: string) => {
     // Trigger refetch by invalidating query
     queryClient.invalidateQueries({ queryKey: ['/api/surveys', id] });
   }, [queryClient]);
 
+  const undo = useCallback(() => {
+    setHistory((state) => {
+      const prev = state.undo[state.undo.length - 1];
+      if (!prev) return state;
+      applySurveyUpdate(() => prev, false);
+      return { undo: state.undo.slice(0, -1), redo: [survey, ...state.redo] };
+    });
+  }, [applySurveyUpdate, survey]);
+
+  const redo = useCallback(() => {
+    setHistory((state) => {
+      const next = state.redo[0];
+      if (!next) return state;
+      applySurveyUpdate(() => next, false);
+      return { undo: [...state.undo, survey], redo: state.redo.slice(1) };
+    });
+  }, [applySurveyUpdate, survey]);
+
   // ============================================
   // CONTEXT VALUE
   // ============================================
 
-  const value: SurveyBuilderContextType = {
+  const value = useMemo<SurveyBuilderContextType>(() => {
+    markRenderStart();
+    try {
+      return {
+        survey,
+        questions: survey.questions,
+        isDirty,
+        isLoading,
+        isSaving: saveMutation.isPending,
+        
+        addQuestion,
+        removeQuestion,
+        reorderQuestions,
+        updateQuestion,
+        
+        selectedQuestionId,
+        setSelectedQuestionId,
+        selectedSection,
+        setSelectedSection,
+        
+        updateWelcomeScreen,
+        updateThankYouScreen,
+        updateScoringSettings,
+        updateScoreConfig,
+        updateSurveyMetadata,
+        updateSurveyBody,
+        undo,
+        redo,
+        canUndo: history.undo.length > 0,
+        canRedo: history.redo.length > 0,
+        
+        leftPanelOpen,
+        rightPanelOpen,
+        toggleLeftPanel,
+        toggleRightPanel,
+        
+        saveSurvey,
+        loadSurvey,
+        exportToEvalia,
+      };
+    } finally {
+      markRenderEnd();
+    }
+  }, [
     survey,
-    questions: survey.questions,
     isDirty,
     isLoading,
-    isSaving: saveMutation.isPending,
-    
+    saveMutation.isPending,
     addQuestion,
     removeQuestion,
     reorderQuestions,
     updateQuestion,
-    
     selectedQuestionId,
-    setSelectedQuestionId,
     selectedSection,
-    setSelectedSection,
-    
+    leftPanelOpen,
+    rightPanelOpen,
     updateWelcomeScreen,
     updateThankYouScreen,
     updateScoringSettings,
+    updateScoreConfig,
     updateSurveyMetadata,
-    
-    leftPanelOpen,
-    rightPanelOpen,
+    updateSurveyBody,
+    undo,
+    redo,
+    history.undo.length,
+    history.redo.length,
     toggleLeftPanel,
     toggleRightPanel,
-    
     saveSurvey,
     loadSurvey,
     exportToEvalia,
-  };
+  ]);
 
   return (
     <SurveyBuilderContext.Provider value={value}>
@@ -1014,4 +1293,3 @@ export function useSurveyBuilder() {
   }
   return context;
 }
-
