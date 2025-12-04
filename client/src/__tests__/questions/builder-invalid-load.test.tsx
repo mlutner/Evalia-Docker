@@ -18,7 +18,9 @@ vi.mock("@tanstack/react-query", () => ({
   useQuery: vi.fn(() => ({
     data: invalidSurvey,
     isLoading: false,
+    isError: false,
     error: null,
+    refetch: vi.fn(),
   })),
   useMutation: () => ({
     mutateAsync: vi.fn(),
