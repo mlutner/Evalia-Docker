@@ -2,6 +2,16 @@
 
 Short, dated notes for significant architecture or builder/runtime changes.
 
+- 2025-12-09: **Evalia Build Log – Major Update Summary**
+  - Core architecture: unified rendering pipeline (Builder → Runtime → QuestionRenderer) plus refactored adapters with validation/normalization.
+  - Logic V2: logicRules schema, structured QuestionLogicEditor UI, deterministic evaluator, and AI suggestion hooks scaffolded.
+  - Scoring V1: pure scoring engine (weights, optionScores, categories, synthetic max previews) and new ScoringPanel wiring.
+  - Results: ResultsScreen + ResultsConfigPanel with bands/narratives/category configs and Preview flow switching to Results → Thank You.
+  - Builder robustness: undo/redo stack, validation/normalization guards, integrity checks, safe defaults, audit logging flag, infinite-loop protection.
+  - Testing: scoring, adapter round-trip, and results integration coverage.
+  - Templates: flagship 31-item Canada Engagement Survey and Pulse variant seeded.
+  - Backend prep: designed scoring controller/response schema/band resolver for server integration.
+
 - 2025-12-08: **Evalia – Recent Updates (Build Log Summary)**
   - Scoring engine: versioned `engagement_v1` with category weights, optionScores, bands, and deterministic pipeline; scores/bands stored on submit.
   - Results framework: layouts (simple/bands/dashboard), category breakdowns, band narratives, CTA config, and runtime branch to ResultsScreen.

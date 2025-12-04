@@ -4,7 +4,7 @@ A quick reference to architecture notes and implementation logs for Evalia.
 
 - **Survey builder & runtime**
   - `docs/BUILD_LOG.md` – ongoing dated log of meaningful changes to survey editing, logic, scoring, and theming.
-    - Latest entry (2025-12-08): "Evalia – Recent Updates" summarizing scoring pipeline, results framework, builder scoring panel, template refresh, and environment fixes.
+    - Latest entry (2025-12-09): "Evalia Build Log – Major Update Summary" covering unified rendering, logic V2, scoring V1, results, robustness, testing, templates, and backend prep.
   - `/dev/inspector` (dev builds) – internal dashboard for engines/endpoints/catalog stats.
 - **Architecture snapshots**
   - `docs/ARCHITECTURE_SNAPSHOT.md` – condensed summary of AI guardrails, logic v2/v3, scoring, results, builder wiring, and outstanding cleanup items.
