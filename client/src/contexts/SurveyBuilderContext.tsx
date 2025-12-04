@@ -277,6 +277,7 @@ interface SurveyBuilderContextType {
   isDirty: boolean;
   isLoading: boolean;
   isSaving: boolean;
+  loadError?: string | null;
   
   // Question operations
   addQuestion: (type: string, overrides?: { text?: string; options?: string[]; description?: string }) => void;
@@ -726,6 +727,7 @@ export function SurveyBuilderProvider({
   const [survey, setSurvey] = useState<BuilderSurvey>(createInitialSurvey());
   const [history, setHistory] = useState<HistoryState>({ undo: [], redo: [] });
   const [isDirty, setIsDirty] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
   const [selectedSection, setSelectedSection] = useState<'welcome' | 'questions' | 'thankYou' | 'scoring' | 'results' | null>(null);
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
@@ -858,78 +860,89 @@ export function SurveyBuilderProvider({
       // Store the persisted ID for subsequent saves
       setPersistedId(existingSurveyData.id);
       
-      // Convert Evalia survey to Builder survey
-      const builderQuestions = (existingSurveyData.questions || []).map(evaliaToBuilder).map((q, idx) =>
-        validateBuilderQuestion({
-          ...q,
-          logicRules: validateLogicRules((q as any).logicRules, q.id, new Set((existingSurveyData.questions || []).map((qq: any) => qq.id))),
-          order: idx,
-        } as BuilderQuestion)
-      );
+      try {
+        // Convert Evalia survey to Builder survey
+        const builderQuestions = (existingSurveyData.questions || []).map(evaliaToBuilder).map((q, idx) =>
+          validateBuilderQuestion({
+            ...q,
+            logicRules: validateLogicRules((q as any).logicRules, q.id, new Set((existingSurveyData.questions || []).map((qq: any) => qq.id))),
+            order: idx,
+          } as BuilderQuestion)
+        );
       
-      // Extract design settings if available
-      const ds = existingSurveyData.designSettings;
-      const welcomeDs = ds?.welcomeScreen;
-      const thankYouDs = ds?.thankYouScreen;
+        // Extract design settings if available
+        const ds = existingSurveyData.designSettings;
+        const welcomeDs = ds?.welcomeScreen;
+        const thankYouDs = ds?.thankYouScreen;
       
-      applySurveyUpdate(
-        () => ({
-          id: existingSurveyData.id,
-          title: existingSurveyData.title || 'Untitled Survey',
-          description: existingSurveyData.description || '',
-          welcomeScreen: {
-            enabled: welcomeDs?.enabled ?? !!existingSurveyData.welcomeMessage,
-            title: welcomeDs?.title || 'Welcome to our survey',
-            description: welcomeDs?.description || existingSurveyData.welcomeMessage || 'Your feedback helps us improve',
-            buttonText: welcomeDs?.buttonText || 'Start Survey',
-            layout: welcomeDs?.layout || 'centered',
-            imageUrl: welcomeDs?.logoUrl || existingSurveyData.illustrationUrl,
-            headerImage: welcomeDs?.headerImage,
-            backgroundImage: welcomeDs?.backgroundImage,
-            showTimeEstimate: welcomeDs?.showTimeEstimate ?? true,
-            showQuestionCount: welcomeDs?.showQuestionCount ?? true,
-            privacyText: welcomeDs?.privacyText || existingSurveyData.privacyStatement,
-            privacyLinkUrl: welcomeDs?.privacyLinkUrl,
-            themeColors: ds?.themeColors || {
-              primary: '#2F8FA5',
-              secondary: '#2F8FA5', // Header bar color
-              background: '#FFFFFF',
-              text: '#1e293b',
-              buttonText: '#FFFFFF',
+        applySurveyUpdate(
+          () => ({
+            id: existingSurveyData.id,
+            title: existingSurveyData.title || 'Untitled Survey',
+            description: existingSurveyData.description || '',
+            welcomeScreen: {
+              enabled: welcomeDs?.enabled ?? !!existingSurveyData.welcomeMessage,
+              title: welcomeDs?.title || 'Welcome to our survey',
+              description: welcomeDs?.description || existingSurveyData.welcomeMessage || 'Your feedback helps us improve',
+              buttonText: welcomeDs?.buttonText || 'Start Survey',
+              layout: welcomeDs?.layout || 'centered',
+              imageUrl: welcomeDs?.logoUrl || existingSurveyData.illustrationUrl,
+              headerImage: welcomeDs?.headerImage,
+              backgroundImage: welcomeDs?.backgroundImage,
+              showTimeEstimate: welcomeDs?.showTimeEstimate ?? true,
+              showQuestionCount: welcomeDs?.showQuestionCount ?? true,
+              privacyText: welcomeDs?.privacyText || existingSurveyData.privacyStatement,
+              privacyLinkUrl: welcomeDs?.privacyLinkUrl,
+              themeColors: ds?.themeColors || {
+                primary: '#2F8FA5',
+                secondary: '#2F8FA5', // Header bar color
+                background: '#FFFFFF',
+                text: '#1e293b',
+                buttonText: '#FFFFFF',
+              },
             },
-          },
-          thankYouScreen: {
-            enabled: thankYouDs?.enabled ?? true,
-            title: thankYouDs?.title || 'Thank you!',
-            message: thankYouDs?.message || existingSurveyData.thankYouMessage || 'Your response has been recorded.',
-            redirectUrl: thankYouDs?.redirectUrl,
-            showSocialShare: thankYouDs?.showSocialShare ?? false,
-            headerImage: thankYouDs?.headerImage,
-            backgroundImage: thankYouDs?.backgroundImage,
-          },
-          surveyBody: ds?.surveyBody || {
-            showProgressBar: true,
-            showQuestionNumbers: true,
-            questionLayout: 'scroll',
-          },
-          scoringSettings: {
-            enabled: !!existingSurveyData.scoreConfig?.enabled,
-            type: 'points',
-            showScore: existingSurveyData.scoreConfig?.enabled || false,
-            showCorrectAnswers: false,
-          },
-          questions: builderQuestions,
-          illustrationUrl: existingSurveyData.illustrationUrl,
-          estimatedMinutes: existingSurveyData.estimatedMinutes,
-          privacyStatement: existingSurveyData.privacyStatement,
-          dataUsageStatement: existingSurveyData.dataUsageStatement,
-          scoreConfig: existingSurveyData.scoreConfig,
-          createdAt: existingSurveyData.createdAt,
-          updatedAt: existingSurveyData.updatedAt,
-        }),
-        false
-      );
-      setIsDirty(false);
+            thankYouScreen: {
+              enabled: thankYouDs?.enabled ?? true,
+              title: thankYouDs?.title || 'Thank you!',
+              message: thankYouDs?.message || existingSurveyData.thankYouMessage || 'Your response has been recorded.',
+              redirectUrl: thankYouDs?.redirectUrl,
+              showSocialShare: thankYouDs?.showSocialShare ?? false,
+              headerImage: thankYouDs?.headerImage,
+              backgroundImage: thankYouDs?.backgroundImage,
+            },
+            surveyBody: ds?.surveyBody || {
+              showProgressBar: true,
+              showQuestionNumbers: true,
+              questionLayout: 'scroll',
+            },
+            scoringSettings: {
+              enabled: !!existingSurveyData.scoreConfig?.enabled,
+              type: 'points',
+              showScore: existingSurveyData.scoreConfig?.enabled || false,
+              showCorrectAnswers: false,
+            },
+            questions: builderQuestions,
+            illustrationUrl: existingSurveyData.illustrationUrl,
+            estimatedMinutes: existingSurveyData.estimatedMinutes,
+            privacyStatement: existingSurveyData.privacyStatement,
+            dataUsageStatement: existingSurveyData.dataUsageStatement,
+            scoreConfig: existingSurveyData.scoreConfig,
+            createdAt: existingSurveyData.createdAt,
+            updatedAt: existingSurveyData.updatedAt,
+          }),
+          false
+        );
+        setLoadError(null);
+        setIsDirty(false);
+      } catch (err) {
+        console.error(`[SurveyBuilder] Failed to normalize questions for survey ${existingSurveyData.id}:`, err);
+        setLoadError('This survey has invalid questions and could not be loaded. See logs.');
+        toast({
+          title: 'Invalid survey data',
+          description: 'This survey has invalid questions and could not be loaded. See logs for details.',
+          variant: 'destructive',
+        });
+      }
     }
   }, [existingSurveyData, applySurveyUpdate]);
 
@@ -1215,6 +1228,7 @@ export function SurveyBuilderProvider({
         isDirty,
         isLoading,
         isSaving: saveMutation.isPending,
+        loadError,
         
         addQuestion,
         removeQuestion,
@@ -1277,6 +1291,7 @@ export function SurveyBuilderProvider({
     saveSurvey,
     loadSurvey,
     exportToEvalia,
+    loadError,
   ]);
 
   return (
