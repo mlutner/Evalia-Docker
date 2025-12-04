@@ -30,6 +30,7 @@ import {
   Trash2, Shield, Clock, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Send, X, Grid, Layers
 } from 'lucide-react';
 import { SurveyBuilderProvider, useSurveyBuilder } from '@/contexts/SurveyBuilderContext';
+import { normalizeThemeImages } from '@shared/theme';
 import { ProgressFlowStepper } from '@/components/builder-v2/ProgressFlowStepper';
 import { 
   WelcomePagePreview,
@@ -127,7 +128,7 @@ const LOGO_SIZES = [
  * @see PreviewV2 for how these settings are rendered
  */
 function DesignContent({ surveyId }: { surveyId?: string }) {
-  const { survey, questions, updateWelcomeScreen, updateThankYouScreen, saveSurvey, isDirty } = useSurveyBuilder();
+  const { survey, questions, updateWelcomeScreen, updateThankYouScreen, updateSurveyBody, saveSurvey, isDirty } = useSurveyBuilder();
   const [deviceView, setDeviceView] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [activeScreen, setActiveScreen] = useState<'welcome' | 'survey' | 'thankyou'>('welcome');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -147,6 +148,7 @@ function DesignContent({ surveyId }: { surveyId?: string }) {
   // ─────────────────────────────────────────────────────────────────────────────
   // WELCOME PAGE SETTINGS - Content & branding (syncs to context)
   // ─────────────────────────────────────────────────────────────────────────────
+  const normalizedTheme = normalizeThemeImages(survey.theme || {});
   const [welcomeSettings, setWelcomeSettings] = useState<WelcomePageSettings>(() => ({
     ...DEFAULT_WELCOME_SETTINGS,
     title: survey.welcomeScreen.title || DEFAULT_WELCOME_SETTINGS.title,
@@ -160,7 +162,7 @@ function DesignContent({ surveyId }: { surveyId?: string }) {
       : DEFAULT_WELCOME_SETTINGS.colors,
     logo: {
       ...DEFAULT_WELCOME_SETTINGS.logo,
-      url: survey.welcomeScreen.imageUrl || null,
+      url: survey.welcomeScreen.imageUrl || normalizedTheme.headerImageUrl || null,
     },
     privacy: {
       ...DEFAULT_WELCOME_SETTINGS.privacy,
@@ -252,10 +254,21 @@ function DesignContent({ surveyId }: { surveyId?: string }) {
             },
           });
         }
+        // Sync survey body to context
+        if (currentState.syncAllScreens || key.startsWith('survey')) {
+          updateSurveyBody({
+            headerImage: currentState.surveyHeaderImage || undefined,
+            backgroundImage: {
+              url: currentState.surveyBackground || undefined,
+              overlayColor: currentState.surveyOverlayColor,
+              overlayOpacity: currentState.surveyOverlayOpacity,
+            },
+          });
+        }
         return currentState; // Read-only, don't change state
       });
     }, 0);
-  }, [updateWelcomeScreen, updateThankYouScreen]);
+  }, [updateWelcomeScreen, updateThankYouScreen, updateSurveyBody]);
   
   // Get current screen's overlay settings
   const getCurrentOverlay = () => {
@@ -1842,8 +1855,8 @@ function DesignQuestionPreview({ question, themeColor }: { question: any; themeC
 interface SurveyBodyPreviewProps {
   questions: any[];
   settings: WelcomePageSettings;
-  backgroundImage: string | null;
-  headerImage: string | null;
+  backgroundImage: string | { url?: string | null } | null;
+  headerImage: string | { url?: string | null } | null;
   overlayColor?: string;
   overlayOpacity?: number;
 }
@@ -1856,9 +1869,14 @@ function SurveyBodyPreview({
   overlayColor = '#000000',
   overlayOpacity = 40,
 }: SurveyBodyPreviewProps) {
+  const { headerImageUrl, backgroundImageUrl } = normalizeThemeImages({
+    headerImageUrl: typeof headerImage === 'string' ? headerImage : headerImage?.url,
+    backgroundImageUrl: typeof backgroundImage === 'string' ? backgroundImage : backgroundImage?.url,
+  });
+  const resolvedBackground = backgroundImageUrl || null;
   const firstQuestion = questions[0];
-  const isImageBackground = backgroundImage && !backgroundImage.startsWith('#');
-  const isSolidBackground = backgroundImage && backgroundImage.startsWith('#');
+  const isImageBackground = !!resolvedBackground && !resolvedBackground.startsWith('#');
+  const isSolidBackground = !!resolvedBackground && resolvedBackground.startsWith('#');
   const OPTION_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 
   return (
@@ -1868,7 +1886,7 @@ function SurveyBodyPreview({
         <>
           <div 
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${backgroundImage})` }}
+            style={{ backgroundImage: `url(${resolvedBackground})` }}
           />
           <div 
             className="absolute inset-0"
@@ -1883,17 +1901,17 @@ function SurveyBodyPreview({
       <div 
         className="relative z-10 flex flex-col h-full"
         style={{ 
-          backgroundColor: isSolidBackground ? backgroundImage : (isImageBackground ? 'transparent' : '#FFFFFF')
+          backgroundColor: isSolidBackground ? resolvedBackground : (isImageBackground ? 'transparent' : '#FFFFFF')
         }}
       >
         {/* Header Bar - Configurable color strip */}
         <div className="h-3" style={{ backgroundColor: settings.colors.headerBar || settings.colors.primary }} />
 
         {/* Header Image */}
-        {headerImage && (
+        {headerImageUrl && (
           <div className="relative h-24 overflow-hidden">
             <img 
-              src={headerImage} 
+              src={headerImageUrl} 
               alt="Survey header" 
               className="w-full h-full object-cover"
             />
@@ -1966,8 +1984,8 @@ function SurveyBodyPreview({
 interface ThankYouPreviewProps {
   survey: any;
   settings: WelcomePageSettings;
-  headerImage?: string | null;
-  backgroundImage?: string | null;
+  headerImage?: string | { url?: string | null } | null;
+  backgroundImage?: string | { url?: string | null } | null;
   overlayColor?: string;
   overlayOpacity?: number;
 }
@@ -1980,8 +1998,13 @@ function ThankYouPreview({
   overlayColor = '#000000',
   overlayOpacity = 40,
 }: ThankYouPreviewProps) {
-  const isImageBackground = backgroundImage && !backgroundImage.startsWith('#');
-  const isSolidBackground = backgroundImage && backgroundImage.startsWith('#');
+  const { headerImageUrl, backgroundImageUrl } = normalizeThemeImages({
+    headerImageUrl: typeof headerImage === 'string' ? headerImage : headerImage?.url,
+    backgroundImageUrl: typeof backgroundImage === 'string' ? backgroundImage : backgroundImage?.url,
+  });
+  const resolvedBackground = backgroundImageUrl || null;
+  const isImageBackground = !!resolvedBackground && !resolvedBackground.startsWith('#');
+  const isSolidBackground = !!resolvedBackground && resolvedBackground.startsWith('#');
 
   return (
     <div className="shadow-2xl overflow-hidden rounded-2xl relative h-[500px]">
@@ -1990,7 +2013,7 @@ function ThankYouPreview({
         <>
           <div 
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${backgroundImage})` }}
+            style={{ backgroundImage: `url(${resolvedBackground})` }}
           />
           <div 
             className="absolute inset-0"
@@ -2005,17 +2028,17 @@ function ThankYouPreview({
       <div
         className="relative z-10 h-full flex flex-col"
         style={{ 
-          backgroundColor: isSolidBackground ? backgroundImage : (isImageBackground ? 'transparent' : settings.colors.background)
+          backgroundColor: isSolidBackground ? resolvedBackground : (isImageBackground ? 'transparent' : settings.colors.background)
         }}
       >
         {/* Header Bar - Configurable color strip */}
         <div className="h-3" style={{ backgroundColor: settings.colors.headerBar || settings.colors.primary }} />
 
         {/* Header Image */}
-        {headerImage && (
+        {headerImageUrl && (
           <div className="relative h-24 overflow-hidden flex-shrink-0">
             <img 
-              src={headerImage} 
+              src={headerImageUrl} 
               alt="Thank you header" 
               className="w-full h-full object-cover"
             />
@@ -2062,8 +2085,8 @@ function ThankYouPreview({
 interface WelcomePagePreviewEnhancedProps {
   settings: WelcomePageSettings;
   questionCount: number;
-  headerImage?: string | null;
-  backgroundImage?: string | null;
+  headerImage?: string | { url?: string | null } | null;
+  backgroundImage?: string | { url?: string | null } | null;
   overlayColor?: string;
   overlayOpacity?: number;
 }
@@ -2076,8 +2099,13 @@ function WelcomePagePreviewEnhanced({
   overlayColor = '#000000',
   overlayOpacity = 40,
 }: WelcomePagePreviewEnhancedProps) {
-  const isImageBackground = backgroundImage && !backgroundImage.startsWith('#');
-  const isSolidBackground = backgroundImage && backgroundImage.startsWith('#');
+  const { headerImageUrl, backgroundImageUrl } = normalizeThemeImages({
+    headerImageUrl: typeof headerImage === 'string' ? headerImage : headerImage?.url,
+    backgroundImageUrl: typeof backgroundImage === 'string' ? backgroundImage : backgroundImage?.url,
+  });
+  const resolvedBackground = backgroundImageUrl || null;
+  const isImageBackground = !!resolvedBackground && !resolvedBackground.startsWith('#');
+  const isSolidBackground = !!resolvedBackground && resolvedBackground.startsWith('#');
   const estimatedTime = Math.max(1, Math.ceil(questionCount * 0.5));
 
   return (
@@ -2087,7 +2115,7 @@ function WelcomePagePreviewEnhanced({
         <>
           <div 
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${backgroundImage})` }}
+            style={{ backgroundImage: `url(${resolvedBackground})` }}
           />
           <div 
             className="absolute inset-0"
@@ -2102,17 +2130,17 @@ function WelcomePagePreviewEnhanced({
       <div
         className="relative z-10 h-full flex flex-col"
         style={{ 
-          backgroundColor: isSolidBackground ? backgroundImage : (isImageBackground ? 'transparent' : settings.colors.background)
+          backgroundColor: isSolidBackground ? resolvedBackground : (isImageBackground ? 'transparent' : settings.colors.background)
         }}
       >
         {/* Header Bar - Configurable color strip */}
         <div className="h-3" style={{ backgroundColor: settings.colors.headerBar || settings.colors.primary }} />
 
         {/* Header Image */}
-        {headerImage && (
+        {headerImageUrl && (
           <div className="relative h-24 overflow-hidden flex-shrink-0">
             <img 
-              src={headerImage} 
+              src={headerImageUrl} 
               alt="Welcome header" 
               className="w-full h-full object-cover"
             />
@@ -2257,3 +2285,6 @@ function ImagePickerModal({ mode, selectedCategory, onCategoryChange, onSelect, 
     </div>
   );
 }
+
+// Export selected preview components for isolated testing
+export { SurveyBodyPreview, ThankYouPreview, WelcomePagePreviewEnhanced };
