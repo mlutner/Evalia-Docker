@@ -5,6 +5,7 @@ import { QuestionLibrary } from '@/components/builder-v2/QuestionLibrary';
 import { BuilderCanvas } from '@/components/builder-v2/BuilderCanvas';
 import { QuestionConfigPanel } from '@/components/builder-v2/QuestionConfigPanel';
 import { BuilderActionBar } from '@/components/builder-v2/BuilderActionBar';
+import { SurveyDebugPanel } from '@/components/builder-v2/SurveyDebugPanel';
 
 export default function SurveyBuilderV2() {
   // Support both /builder/:id and /builder-v2/:id routes
@@ -51,6 +52,9 @@ function SurveyBuilderContent({ surveyId }: { surveyId?: string }) {
 
       {/* Bottom Action Bar */}
       <BuilderActionBar onPreview={handlePreview} />
+
+      {/* Dev-only debug surface */}
+      <SurveyDebugPanel />
     </div>
   );
 }
