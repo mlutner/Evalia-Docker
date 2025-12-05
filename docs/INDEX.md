@@ -9,6 +9,15 @@ A quick reference to architecture notes and implementation logs for Evalia.
   - Technical roadmap (Validation, Versioning, Hosting, Performance)
   - Differentiators (AI Insights, Benchmarking, Multi-language, Integrations)
 
+## 🎫 Ticketing System
+- **`docs/TICKETING_GUIDE.md`** – Standardized ticket format for AI-assisted development
+  - Ticket template with scope boundaries
+  - Protected zones (files AI must never touch)
+  - Example tickets
+  - Cursor workflow best practices
+- **`docs/tickets/`** – Active ticket files
+- **`docs/tickets/completed/`** – Completed ticket archive
+
 ---
 
 - **Survey builder & runtime**
