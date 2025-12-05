@@ -20,9 +20,9 @@
 | Validation UX badges | ✅ Done | Issue counts in mode toggle |
 | Validation issues modal | ✅ Done | Publish failure with jump-to links |
 | Audit logging | ✅ Done | Scoring events, feature-flagged |
-| **Wire validation into save/publish** | 🔲 TODO | Call validators before persisting |
-| **Surface issues in Logic tab left panel** | 🔲 TODO | Dots on rules with issues |
-| **Surface issues in Scoring tab** | 🔲 TODO | Icons on categories/bands |
+| **Wire validation into save/publish** | ✅ Done | LOGIC-001 complete |
+| **Surface issues in Logic tab left panel** | 🔲 Low Priority | UX-VALIDATION-001 (deferred) |
+| **Surface issues in Scoring tab** | 🔲 Low Priority | UX-VALIDATION-001 (deferred) |
 
 ---
 
@@ -61,16 +61,23 @@
 
 > **"The builder is no longer the bottleneck. The bottleneck is analytics, distribution, reporting, admin control."**
 
+#### Analytics Foundation (Must Do First)
+| Task | Priority | Status | Ticket |
+|------|----------|--------|--------|
+| **Analytics API Foundation** | High | 🔲 TODO | ANAL-000 |
+| **Analytics Query Helpers** | High | 🔲 TODO | BUILD-010 |
+| **Analytics Component Library** | High | 🔲 TODO | BUILD-020 |
+
 #### 1. Survey Analytics Dashboard (Per Survey)
-| Section | Priority | Status | Notes |
-|---------|----------|--------|-------|
-| **Participation Metrics** | High | 🔲 TODO | Response rate, drop-off, completion time |
-| **Category Score Visualization** | High | 🔲 TODO | Bar charts, heatmap by category |
-| **Band Distribution Chart** | High | 🔲 TODO | Pie/donut showing % in each band |
-| **Question-Level Summary Table** | High | 🔲 TODO | Score per question, response distribution |
-| **Open-Text Preview** | Medium | 🔲 TODO | Keywords, sentiment (optional AI) |
-| **Filter Sidebar** | High | 🔲 TODO | Department, date range, role, custom fields |
-| **Tab Navigation** | High | 🔲 TODO | Overview, Participation, Categories, Questions, Comments, Export |
+| Section | Priority | Status | Ticket | Notes |
+|---------|----------|--------|--------|-------|
+| **Participation Metrics** | High | 🔲 TODO | ANAL-001 | Response rate, drop-off, completion time |
+| **Category Score Visualization** | High | 🔲 TODO | ANAL-004 | Bar charts, heatmap by category |
+| **Band Distribution Chart** | High | 🔲 TODO | ANAL-005 | Pie/donut showing % in each band |
+| **Question-Level Summary Table** | High | 🔲 TODO | ANAL-006 | Score per question, response distribution |
+| **Open-Text Preview** | Medium | 🔲 TODO | - | Keywords, sentiment (optional AI) |
+| **Filter Sidebar** | High | 🔲 TODO | - | Department, date range, role, custom fields |
+| **Tab Navigation** | High | 🔲 TODO | - | Overview, Participation, Categories, Questions, Comments, Export |
 
 **UI Requirements:**
 - Match builder layout spacing + typography
