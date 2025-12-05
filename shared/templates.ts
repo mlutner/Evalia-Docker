@@ -1957,6 +1957,32 @@ const baseTemplates: SurveyTemplate[] = [
       { id: "p7", type: "textarea", question: "In a sentence or two, how are you feeling about work right now?", required: false, scorable: false },
     ],
   },
+  {
+    id: "three_image_comparison",
+    title: "Three Image Comparison",
+    description: "Compare three visuals side by side and choose the strongest option.",
+    timing: "Any time",
+    audience: "All",
+    topic: "feedback",
+    questionCount: 1,
+    questions: [
+      {
+        id: "img_compare_1",
+        type: "image_choice",
+        question: "Which image best represents the direction you prefer?",
+        selectionType: "single",
+        columns: 3,
+        imageSize: "medium",
+        showLabels: true,
+        required: true,
+        imageOptions: [
+          { imageUrl: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=800&q=80", label: "Option A", value: "a" },
+          { imageUrl: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80", label: "Option B", value: "b" },
+          { imageUrl: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=800&q=80", label: "Option C", value: "c" },
+        ],
+      },
+    ],
+  },
 ];
 
 // Scoring helpers for assessment-style templates

@@ -3,6 +3,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import type { Question as EvaliaQuestion, SurveyScoreConfig, LogicRule } from '@shared/schema';
+import type {
+  QuestionScoringConfig,
+  ScoringCategory,
+  CoreScoreBand,
+} from '@/components/builder-extensions/INTEGRATION_GUIDE';
 import { normalizeQuestion } from '@shared/questionNormalization';
 import { QUESTION_TYPES, getDisplayNameForType, getLikertLabels } from '@/data/questionTypeConfig';
 import { validateBuilderQuestion } from '@/utils/validateBuilderQuestion';
@@ -280,6 +285,11 @@ interface SurveyBuilderContextType {
   isSaving: boolean;
   loadError?: string | null;
   
+  // Scoring state (derived from questions and scoreConfig)
+  scoringByQuestionId: Record<string, QuestionScoringConfig>;
+  scoringCategories: ScoringCategory[];
+  scoringBands: CoreScoreBand[];
+  
   // Question operations
   addQuestion: (type: string, overrides?: { text?: string; options?: string[]; description?: string }) => void;
   removeQuestion: (id: string) => void;
@@ -288,6 +298,12 @@ interface SurveyBuilderContextType {
   addLogicRule: (rule: Partial<LogicRule> & { questionId?: string }) => LogicRule | null;
   updateLogicRule: (id: string, patch: Partial<LogicRule>) => void;
   deleteLogicRule: (id: string) => void;
+  
+  // Scoring operations
+  setQuestionScoring: (questionId: string, scoring: QuestionScoringConfig) => void;
+  updateScoringCategory: (category: ScoringCategory) => void;
+  updateScoringBand: (band: CoreScoreBand) => void;
+  deleteScoringBand: (bandId: string) => void;
   
   // Selection state
   selectedQuestionId: string | null;
@@ -558,6 +574,35 @@ function getDefaultParamsForType(type: ValidQuestionType): Partial<BuilderQuesti
   return params;
 }
 
+// Question types that can be scored (rating-type and choice-type questions)
+const SCORABLE_QUESTION_TYPES = new Set([
+  'rating', 'nps', 'likert', 'opinion_scale', 'slider', 'emoji_rating',
+  'multiple_choice', 'checkbox', 'dropdown', 'yes_no', 'ranking',
+]);
+
+// Build scoring map from scoreConfig and questions
+// This provides the UI with per-question scoring configuration
+function buildScoringMapFromScoreConfig(
+  questions: BuilderQuestion[],
+): Record<string, QuestionScoringConfig> {
+  const map: Record<string, QuestionScoringConfig> = {};
+
+  for (const q of questions) {
+    // Mark certain question types as potentially scorable
+    const scorable = SCORABLE_QUESTION_TYPES.has(q.type) && (q.scorable ?? false);
+
+    map[q.id] = {
+      scorable,
+      scoreWeight: q.scoreWeight ?? 1,
+      scoringCategory: q.scoringCategory,
+      scoreValues: q.scoreValues,
+      reverse: false,
+    };
+  }
+
+  return map;
+}
+
 // Build API payload from builder survey state (pure for reuse/testing)
 export function exportSurveyToEvalia(survey: BuilderSurvey) {
   const evaliaQuestions = survey.questions.map(builderToEvalia);
@@ -752,16 +797,19 @@ export function SurveyBuilderProvider({
       setSurvey((prev) => {
         const next = updater(prev);
         
-        // [SCORING-PIPELINE] Log state transition for scoreConfig
-        console.log('[SCORING-PIPELINE] applySurveyUpdate state transition', {
-          prevSurveyId: prev.id,
-          nextSurveyId: next.id,
-          prevScoreConfigCats: prev.scoreConfig?.categories?.length ?? 0,
-          prevScoreConfigBands: prev.scoreConfig?.scoreRanges?.length ?? 0,
-          nextScoreConfigCats: next.scoreConfig?.categories?.length ?? 0,
-          nextScoreConfigBands: next.scoreConfig?.scoreRanges?.length ?? 0,
-          recordHistory,
-        });
+        // [SCORING-PIPELINE] Dev-only: Log state transition for scoreConfig
+        if (import.meta.env.DEV) {
+          // eslint-disable-next-line no-console
+          console.log('[SCORING-PIPELINE] applySurveyUpdate state transition', {
+            prevSurveyId: prev.id,
+            nextSurveyId: next.id,
+            prevScoreConfigCats: prev.scoreConfig?.categories?.length ?? 0,
+            prevScoreConfigBands: prev.scoreConfig?.scoreRanges?.length ?? 0,
+            nextScoreConfigCats: next.scoreConfig?.categories?.length ?? 0,
+            nextScoreConfigBands: next.scoreConfig?.scoreRanges?.length ?? 0,
+            recordHistory,
+          });
+        }
         
         if (recordHistory) {
           pushHistory(prev, setHistory);
@@ -833,7 +881,8 @@ export function SurveyBuilderProvider({
                 {
                   ...q,
                   question: q.question || q.text, // Ensure question text is properly mapped
-                },
+                  logicRules: q.logicRules, // Preserve logic rules from template
+                } as any,
                 idx
               )
             )
@@ -999,25 +1048,15 @@ export function SurveyBuilderProvider({
         false
       );
       
-      // [SCORING-PIPELINE] GUARD: Verify scoreConfig was correctly applied after state update
-      const appliedScoreConfig = (existingSurveyData as any).scoreConfig ?? EMPTY_SCORE_CONFIG;
-      const appliedCats = appliedScoreConfig.categories?.length ?? 0;
-      const appliedBands = appliedScoreConfig.scoreRanges?.length ?? 0;
-      
-      // eslint-disable-next-line no-console
-      console.log('[SCORING-PIPELINE] State updated with scoreConfig', {
-        surveyId: existingSurveyData.id,
-        appliedCategoriesCount: appliedCats,
-        appliedBandsCount: appliedBands,
-        usedFallback: !(existingSurveyData as any).scoreConfig,
-      });
-      
-      // [SCORING-PIPELINE] Critical guard: if API had data but state has none, something is wrong
-      if (apiCategoriesCount > 0 && appliedCats === 0) {
-        console.error('[SCORING-PIPELINE] CRITICAL: Categories were lost during state merge!', {
+      // [SCORING-PIPELINE] Dev-only: Log what we're applying to state
+      if (import.meta.env.DEV) {
+        const appliedScoreConfig = (existingSurveyData as any).scoreConfig ?? EMPTY_SCORE_CONFIG;
+        // eslint-disable-next-line no-console
+        console.log('[SCORING-PIPELINE] Applying scoreConfig to state', {
           surveyId: existingSurveyData.id,
-          apiCategoriesCount,
-          appliedCategoriesCount: appliedCats,
+          categoriesCount: appliedScoreConfig.categories?.length ?? 0,
+          bandsCount: appliedScoreConfig.scoreRanges?.length ?? 0,
+          usedFallback: !(existingSurveyData as any).scoreConfig,
         });
       }
       
@@ -1343,6 +1382,120 @@ export function SurveyBuilderProvider({
   }, [applySurveyUpdate]);
 
   // ============================================
+  // SCORING OPERATIONS
+  // ============================================
+
+  // Derived scoring state from questions
+  const scoringByQuestionId = useMemo(
+    () => buildScoringMapFromScoreConfig(survey.questions),
+    [survey.questions]
+  );
+
+  // Derived categories from scoreConfig
+  const scoringCategories = useMemo<ScoringCategory[]>(
+    () => (survey.scoreConfig?.categories ?? []) as ScoringCategory[],
+    [survey.scoreConfig?.categories]
+  );
+
+  // Derived bands from scoreConfig
+  const scoringBands = useMemo<CoreScoreBand[]>(
+    () => survey.scoreConfig?.scoreRanges ?? [],
+    [survey.scoreConfig?.scoreRanges]
+  );
+
+  // Update scoring config for a specific question
+  const setQuestionScoring = useCallback((questionId: string, scoring: QuestionScoringConfig) => {
+    assertNotInRender('setQuestionScoring');
+    applySurveyUpdate(prev => {
+      const nextQuestions = prev.questions.map(q => {
+        if (q.id !== questionId) return q;
+        return validateBuilderQuestion({
+          ...q,
+          scorable: scoring.scorable,
+          scoreWeight: clampScoreWeight(scoring.scoreWeight),
+          scoringCategory: scoring.scoringCategory,
+          scoreValues: scoring.scoreValues,
+        } as BuilderQuestion);
+      });
+      return {
+        ...prev,
+        questions: nextQuestions,
+        updatedAt: new Date().toISOString(),
+      };
+    });
+    setIsDirty(true);
+    logBuilderMutation('setQuestionScoring', { questionId, scoring });
+  }, [applySurveyUpdate]);
+
+  // Update a scoring category in scoreConfig
+  const updateScoringCategory = useCallback((category: ScoringCategory) => {
+    assertNotInRender('updateScoringCategory');
+    applySurveyUpdate(prev => {
+      const existingCategories = prev.scoreConfig?.categories || [];
+      const idx = existingCategories.findIndex((c: any) => c.id === category.id);
+      const nextCategories = idx >= 0
+        ? existingCategories.map((c: any, i: number) => i === idx ? category : c)
+        : [...existingCategories, category];
+      return {
+        ...prev,
+        scoreConfig: normalizeScoringConfig({
+          enabled: prev.scoreConfig?.enabled ?? false,
+          categories: nextCategories,
+          scoreRanges: prev.scoreConfig?.scoreRanges || [],
+          resultsScreen: prev.scoreConfig?.resultsScreen,
+        }),
+        updatedAt: new Date().toISOString(),
+      };
+    });
+    setIsDirty(true);
+    logBuilderMutation('updateScoringCategory', category);
+  }, [applySurveyUpdate]);
+
+  // Update a scoring band in scoreConfig
+  const updateScoringBand = useCallback((band: CoreScoreBand) => {
+    assertNotInRender('updateScoringBand');
+    applySurveyUpdate(prev => {
+      const existingBands = prev.scoreConfig?.scoreRanges || [];
+      const idx = existingBands.findIndex((b) => b.id === band.id);
+      const nextBands = idx >= 0
+        ? existingBands.map((b, i) => i === idx ? band : b)
+        : [...existingBands, band];
+      return {
+        ...prev,
+        scoreConfig: normalizeScoringConfig({
+          enabled: prev.scoreConfig?.enabled ?? false,
+          categories: prev.scoreConfig?.categories || [],
+          scoreRanges: nextBands,
+          resultsScreen: prev.scoreConfig?.resultsScreen,
+        }),
+        updatedAt: new Date().toISOString(),
+      };
+    });
+    setIsDirty(true);
+    logBuilderMutation('updateScoringBand', band);
+  }, [applySurveyUpdate]);
+
+  // Delete a scoring band from scoreConfig
+  const deleteScoringBand = useCallback((bandId: string) => {
+    assertNotInRender('deleteScoringBand');
+    applySurveyUpdate(prev => {
+      const existingBands = prev.scoreConfig?.scoreRanges || [];
+      return {
+        ...prev,
+        scoreConfig: normalizeScoringConfig({
+          enabled: prev.scoreConfig?.enabled ?? false,
+          categories: prev.scoreConfig?.categories || [],
+          scoreRanges: existingBands.filter((b) => b.id !== bandId),
+          resultsScreen: prev.scoreConfig?.resultsScreen,
+        }),
+        updatedAt: new Date().toISOString(),
+      };
+    });
+    setIsDirty(true);
+    logBuilderMutation('deleteScoringBand', { bandId });
+  }, [applySurveyUpdate]);
+
+  // ============================================
   // PANEL TOGGLES
   // ============================================
 
@@ -1402,9 +1555,10 @@ export function SurveyBuilderProvider({
     markRenderStart();
     try {
       // [SCORING-PIPELINE] Derive scoreConfig for context consumers
-      const scoreConfig = survey.scoreConfig ?? EMPTY_SCORE_CONFIG;
-      const exposedCats = scoreConfig.categories?.length ?? 0;
-      const exposedBands = scoreConfig.scoreRanges?.length ?? 0;
+      // Note: Using non-null assertion because EMPTY_SCORE_CONFIG is always defined
+      const scoreConfig = (survey.scoreConfig || EMPTY_SCORE_CONFIG)!;
+      const exposedCats = (scoreConfig.categories || []).length;
+      const exposedBands = (scoreConfig.scoreRanges || []).length;
       
       // [SCORING-PIPELINE] Debug logging for context value
       // eslint-disable-next-line no-console
@@ -1432,10 +1586,21 @@ export function SurveyBuilderProvider({
         isSaving: saveMutation.isPending,
         loadError,
         
+        // Scoring state (derived)
+        scoringByQuestionId,
+        scoringCategories,
+        scoringBands,
+        
         addQuestion,
         removeQuestion,
         reorderQuestions,
         updateQuestion,
+        
+        // Scoring operations
+        setQuestionScoring,
+        updateScoringCategory,
+        updateScoringBand,
+        deleteScoringBand,
         
         selectedQuestionId,
         setSelectedQuestionId,
@@ -1473,10 +1638,17 @@ export function SurveyBuilderProvider({
     isDirty,
     isLoading,
     saveMutation.isPending,
+    scoringByQuestionId,
+    scoringCategories,
+    scoringBands,
     addQuestion,
     removeQuestion,
     reorderQuestions,
     updateQuestion,
+    setQuestionScoring,
+    updateScoringCategory,
+    updateScoringBand,
+    deleteScoringBand,
     selectedQuestionId,
     selectedSection,
     leftPanelOpen,

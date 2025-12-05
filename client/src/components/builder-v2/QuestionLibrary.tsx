@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronRight, ChevronLeft, Search, Database, Sparkles, LayoutGrid, List, Wand2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, ChevronLeft, Search, Database, Sparkles, LayoutGrid, List, Wand2, Calculator, GitBranch } from 'lucide-react';
 import { useSurveyBuilder } from '@/contexts/SurveyBuilderContext';
 import { 
   QUESTION_TYPES, 
@@ -34,17 +34,17 @@ export function QuestionLibrary() {
   }
 
   return (
-    <aside className="w-[280px] lg:w-[340px] flex-shrink-0 bg-white border-r border-gray-200 overflow-hidden flex flex-col">
+    <aside className="w-[280px] lg:w-[320px] flex-shrink-0 bg-white border-r border-gray-200 overflow-hidden flex flex-col">
       {/* Header with Collapse Button */}
       <div className="p-4 border-b border-gray-200 flex-shrink-0">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-bold text-gray-900">Question Library</h2>
+          <h2 className="text-[13px] font-medium text-gray-700">Library</h2>
           <button
             onClick={toggleLeftPanel}
             className="p-1 hover:bg-gray-100 rounded transition-colors"
             title="Collapse Panel"
           >
-            <ChevronLeft size={18} className="text-gray-500" />
+            <ChevronLeft size={16} className="text-gray-400" />
           </button>
         </div>
 
@@ -187,49 +187,57 @@ export function QuestionLibrary() {
 // ============================================
 function AIQuickActionsTab({ onAddQuestion }: { onAddQuestion: (type: string) => void }) {
   const quickActions = [
-    { label: '📝 Text Question', type: 'text', description: 'Open-ended response' },
-    { label: '✅ Multiple Choice', type: 'multiple_choice', description: 'Select one option' },
-    { label: '☑️ Checkboxes', type: 'checkbox', description: 'Select multiple options' },
-    { label: '⭐ Rating Scale', type: 'rating', description: '1-5 star rating' },
-    { label: '📊 NPS Score', type: 'nps', description: 'Net Promoter Score (0-10)' },
-    { label: '📏 Likert Scale', type: 'likert', description: 'Agreement scale' },
-    { label: '👍 Yes/No', type: 'yes_no', description: 'Binary choice' },
-    { label: '📅 Date Picker', type: 'date', description: 'Select a date' },
+    { label: 'Text Question', type: 'text', description: 'Open-ended response', icon: '✎' },
+    { label: 'Multiple Choice', type: 'multiple_choice', description: 'Select one option', icon: '○' },
+    { label: 'Checkboxes', type: 'checkbox', description: 'Select multiple', icon: '☐' },
+    { label: 'Rating Scale', type: 'rating', description: '1-5 star rating', icon: '★' },
+    { label: 'NPS Score', type: 'nps', description: '0-10 scale', icon: '№' },
+    { label: 'Likert Scale', type: 'likert', description: 'Agreement scale', icon: '≡' },
+    { label: 'Yes/No', type: 'yes_no', description: 'Binary choice', icon: '◐' },
+    { label: 'Date Picker', type: 'date', description: 'Select a date', icon: '📅' },
   ];
 
   return (
     <div className="space-y-4">
-      <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-4 border border-purple-100">
-        <div className="flex items-center gap-2 mb-2">
-          <Wand2 size={16} className="text-purple-600" />
-          <span className="text-sm font-bold text-gray-900">Quick Add with AI</span>
+      <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-7 h-7 rounded-md bg-gray-900 flex items-center justify-center">
+            <Wand2 size={14} className="text-white" />
+          </div>
+          <div>
+            <span className="text-sm font-bold text-gray-900">Quick Add</span>
+            <p className="text-[11px] text-gray-400">Click to add common types</p>
+          </div>
         </div>
-        <p className="text-xs text-gray-600 mb-3">
-          Click to instantly add common question types. AI will help configure them.
-        </p>
         
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-1.5">
           {quickActions.map((action) => (
             <button
               key={action.type}
               onClick={() => onAddQuestion(action.type)}
-              className="p-3 bg-white rounded-lg border border-gray-200 hover:border-purple-300 
-                       hover:bg-purple-50/50 transition-all text-left group"
+              className="p-2.5 bg-gray-50 rounded-lg border border-gray-100 
+                       hover:bg-gray-100 hover:border-gray-200
+                       transition-all text-left group"
             >
-              <div className="text-sm font-medium text-gray-900 group-hover:text-purple-600">
-                {action.label}
-              </div>
-              <div className="text-xs text-gray-500 mt-0.5">
-                {action.description}
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-400 w-5 text-center">{action.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[12px] font-semibold text-gray-700 group-hover:text-gray-900 truncate">
+                    {action.label}
+                  </div>
+                  <div className="text-[10px] text-gray-400 truncate">
+                    {action.description}
+                  </div>
+                </div>
               </div>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="text-center py-4">
-        <button className="text-xs text-purple-600 hover:text-purple-700 font-medium">
-          🎯 Suggest questions based on survey goal
+      <div className="text-center">
+        <button className="text-[11px] text-gray-500 hover:text-gray-700 font-medium transition-colors">
+          Suggest questions based on goal →
         </button>
       </div>
     </div>
@@ -291,21 +299,21 @@ function QuestionCategory({ category, searchQuery, layout }: QuestionCategoryPro
     return null;
   }
 
-  const colorClasses: Record<string, { bg: string; border: string; text: string; hover: string }> = {
-    blue: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-600', hover: 'hover:bg-blue-100 hover:border-blue-300' },
-    purple: { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-600', hover: 'hover:bg-purple-100 hover:border-purple-300' },
-    green: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-600', hover: 'hover:bg-green-100 hover:border-green-300' },
-    orange: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-600', hover: 'hover:bg-orange-100 hover:border-orange-300' },
-    cyan: { bg: 'bg-cyan-50', border: 'border-cyan-200', text: 'text-cyan-600', hover: 'hover:bg-cyan-100 hover:border-cyan-300' },
-    pink: { bg: 'bg-pink-50', border: 'border-pink-200', text: 'text-pink-600', hover: 'hover:bg-pink-100 hover:border-pink-300' },
-    gray: { bg: 'bg-gray-50', border: 'border-gray-200', text: 'text-gray-600', hover: 'hover:bg-gray-100 hover:border-gray-300' },
-    red: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-600', hover: 'hover:bg-red-100 hover:border-red-300' },
+  // Accent colors for the left border indicator
+  const accentColors: Record<string, string> = {
+    blue: 'border-l-blue-500',
+    purple: 'border-l-purple-500',
+    green: 'border-l-emerald-500',
+    orange: 'border-l-orange-500',
+    cyan: 'border-l-cyan-500',
+    pink: 'border-l-pink-500',
+    gray: 'border-l-gray-400',
+    red: 'border-l-rose-500',
   };
 
-  const colors = colorClasses[categoryMeta.color] || colorClasses.gray;
+  const accentColor = accentColors[categoryMeta.color] || accentColors.gray;
 
   const handleAddQuestion = (type: QuestionTypeConfig) => {
-    // Pass the schema type directly - context will handle conversion
     addQuestion(type.type);
   };
 
@@ -316,20 +324,22 @@ function QuestionCategory({ category, searchQuery, layout }: QuestionCategoryPro
   };
 
   return (
-    <div className="mb-2">
+    <div className="mb-3">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-2 py-1.5 text-xs font-medium 
-                 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded transition-colors"
+        className="w-full flex items-center justify-between px-2 py-1.5 text-[11px] font-semibold 
+                 text-gray-400 uppercase tracking-wider hover:text-gray-600 hover:bg-gray-50 rounded transition-colors"
       >
         <span>{categoryMeta.name}</span>
         {isOpen ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
       </button>
 
       {isOpen && (
-        <div className={`mt-2 ${layout === 'grid' ? 'grid grid-cols-2 gap-2' : 'space-y-2'}`}>
+        <div className={`mt-1.5 ${layout === 'grid' ? 'grid grid-cols-2 gap-1.5' : 'space-y-1'}`}>
           {filteredTypes.map((type) => {
             const Icon = type.icon;
+            const hasCapabilities = type.isScoreable || type.supportsLogic;
+            
             return (
               <div
                 key={type.type}
@@ -337,38 +347,53 @@ function QuestionCategory({ category, searchQuery, layout }: QuestionCategoryPro
                 onDragStart={(e) => handleDragStart(e, type)}
                 onClick={() => handleAddQuestion(type)}
                 className={`
-                  ${layout === 'grid' ? 'p-2' : 'p-3'} rounded-lg cursor-grab active:cursor-grabbing transition-all
-                  border ${colors.bg} ${colors.border} ${colors.hover} group
+                  ${layout === 'grid' ? 'p-2.5' : 'p-3'} 
+                  bg-white border border-gray-200 border-l-2 ${accentColor}
+                  rounded-lg cursor-grab active:cursor-grabbing 
+                  transition-all duration-150 
+                  hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5
+                  group
                 `}
               >
-                <div className={`flex items-center gap-2 ${layout === 'grid' ? 'flex-col text-center' : ''}`}>
-                  <div className={`${colors.text} transition-colors ${layout === 'grid' ? 'mb-1' : ''}`}>
-                    <Icon size={layout === 'grid' ? 18 : 14} />
+                <div className={`flex ${layout === 'grid' ? 'flex-col items-center text-center gap-1.5' : 'items-start gap-3'}`}>
+                  {/* Icon */}
+                  <div className={`
+                    ${layout === 'grid' ? 'w-8 h-8' : 'w-7 h-7'} 
+                    rounded-md bg-gray-50 border border-gray-100
+                    flex items-center justify-center shrink-0
+                    group-hover:bg-gray-100 transition-colors
+                  `}>
+                    <Icon size={layout === 'grid' ? 16 : 14} className="text-gray-600" />
                   </div>
+                  
+                  {/* Content */}
                   <div className="flex-1 min-w-0">
-                    <div className={`text-xs font-semibold ${colors.text} transition-colors ${layout === 'grid' ? 'truncate' : ''}`}>
+                    <div className={`text-[13px] font-semibold text-gray-800 ${layout === 'grid' ? 'truncate' : ''}`}>
                       {type.displayName}
                     </div>
                     {layout === 'list' && (
-                      <div className="text-xs text-gray-500 truncate">{type.description}</div>
+                      <div className="text-[11px] text-gray-400 truncate mt-0.5">{type.description}</div>
+                    )}
+                    
+                    {/* Capability indicators - inline with description in list view */}
+                    {hasCapabilities && (
+                      <div className={`flex items-center gap-1.5 ${layout === 'grid' ? 'justify-center mt-1.5' : 'mt-1.5'}`}>
+                        {type.supportsLogic && (
+                          <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-gray-500" title="Supports conditional logic">
+                            <GitBranch size={10} className="text-gray-400" />
+                            <span>Logic</span>
+                          </span>
+                        )}
+                        {type.isScoreable && (
+                          <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-gray-500" title="Can be scored">
+                            <Calculator size={10} className="text-gray-400" />
+                            <span>Score</span>
+                          </span>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
-                {/* Capability badges - only in list view */}
-                {layout === 'list' && (
-                  <div className="flex gap-1 mt-2">
-                    {type.isScoreable && (
-                      <span className="text-[10px] px-1.5 py-0.5 bg-yellow-100 text-yellow-700 rounded">
-                        Scoreable
-                      </span>
-                    )}
-                    {type.supportsLogic && (
-                      <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded">
-                        Logic
-                      </span>
-                    )}
-                  </div>
-                )}
               </div>
             );
           })}
@@ -385,7 +410,6 @@ function QuestionBankTab({ searchQuery, layout }: { searchQuery: string; layout:
   const { addQuestion } = useSurveyBuilder();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  // Get filtered questions
   const getFilteredQuestions = () => {
     if (searchQuery) {
       return searchQuestions(searchQuery);
@@ -398,9 +422,7 @@ function QuestionBankTab({ searchQuery, layout }: { searchQuery: string; layout:
 
   const filteredQuestions = getFilteredQuestions();
 
-  // Handle adding a bank question to the survey
   const handleAddBankQuestion = (bankQ: any) => {
-    // Use the schema type and pass the bank question text/options as overrides
     addQuestion(bankQ.questionType, {
       text: bankQ.text,
       options: bankQ.options,
@@ -419,15 +441,15 @@ function QuestionBankTab({ searchQuery, layout }: { searchQuery: string; layout:
     <div className="space-y-4">
       {/* Category Filter */}
       <div>
-        <label className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2 block">
+        <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2 block">
           Filter by Category
         </label>
         <div className="flex flex-wrap gap-1">
           <button
             onClick={() => setSelectedCategory(null)}
-            className={`px-2 py-1 text-xs font-medium rounded-full transition-colors ${
+            className={`px-2.5 py-1 text-[11px] font-semibold rounded-md transition-colors ${
               !selectedCategory
-                ? 'bg-purple-100 text-purple-700 border border-purple-200'
+                ? 'bg-gray-900 text-white'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -437,31 +459,31 @@ function QuestionBankTab({ searchQuery, layout }: { searchQuery: string; layout:
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`px-2 py-1 text-xs font-medium rounded-full transition-colors ${
+              className={`px-2.5 py-1 text-[11px] font-semibold rounded-md transition-colors ${
                 selectedCategory === cat.id
-                  ? 'bg-purple-100 text-purple-700 border border-purple-200'
+                  ? 'bg-gray-900 text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              {cat.icon} {cat.name}
+              {cat.name}
             </button>
           ))}
         </div>
       </div>
 
       {/* Results Header */}
-      <div className="flex items-center justify-between px-2">
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-          {searchQuery ? 'Search Results' : selectedCategory ? QUESTION_CATEGORIES.find((c: any) => c.id === selectedCategory)?.name : 'Popular Questions'}
+      <div className="flex items-center justify-between">
+        <h3 className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+          {searchQuery ? 'Search Results' : selectedCategory ? QUESTION_CATEGORIES.find((c: any) => c.id === selectedCategory)?.name : 'Popular'}
         </h3>
-        <span className="text-xs text-gray-500">{filteredQuestions.length} questions</span>
+        <span className="text-[11px] text-gray-400">{filteredQuestions.length}</span>
       </div>
 
       {/* Question List */}
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {filteredQuestions.length === 0 ? (
-          <div className="text-center py-6 text-gray-500 text-sm">
-            No questions found. Try a different search or category.
+          <div className="text-center py-8 text-gray-400 text-sm">
+            No questions found
           </div>
         ) : (
           filteredQuestions.map((q: any) => (
@@ -470,38 +492,30 @@ function QuestionBankTab({ searchQuery, layout }: { searchQuery: string; layout:
               draggable
               onDragStart={(e) => handleDragStart(e, q)}
               onClick={() => handleAddBankQuestion(q)}
-              className="p-3 bg-white border border-gray-200 rounded-lg hover:border-purple-400 
-                       hover:bg-purple-50/30 cursor-grab active:cursor-grabbing transition-all group"
+              className="p-3 bg-white border border-gray-200 rounded-lg 
+                       hover:border-gray-300 hover:shadow-md hover:-translate-y-0.5
+                       cursor-grab active:cursor-grabbing transition-all duration-150 group"
             >
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <span className="text-xs font-mono text-purple-600 bg-purple-50 px-2 py-0.5 rounded">
+              <div className="flex items-start justify-between gap-2 mb-1.5">
+                <span className="text-[10px] font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
                   {QUESTION_TYPES[q.questionType]?.displayName || q.questionType}
                 </span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   {q.effectivenessScore >= 0.9 && (
-                    <span className="text-xs text-green-600 bg-green-50 px-1.5 py-0.5 rounded" title="High effectiveness">
-                      ⭐ {Math.round(q.effectivenessScore * 100)}%
+                    <span className="text-[10px] text-emerald-600 font-semibold" title="High effectiveness">
+                      ↑{Math.round(q.effectivenessScore * 100)}%
                     </span>
                   )}
-                  <span className="text-xs text-gray-500">{q.useCount.toLocaleString()} uses</span>
+                  <span className="text-[10px] text-gray-400">{q.useCount.toLocaleString()}</span>
                 </div>
               </div>
-              <p className="text-sm text-gray-900 font-medium mb-1 leading-snug">{q.text}</p>
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-gray-500 capitalize">{q.category.replace('_', ' ')} • {q.subcategory.replace('_', ' ')}</p>
+              <p className="text-[13px] text-gray-800 font-medium leading-snug line-clamp-2">{q.text}</p>
+              <div className="flex items-center gap-2 mt-1.5">
+                <p className="text-[10px] text-gray-400 capitalize">{q.category.replace('_', ' ')}</p>
                 {q.sensitivityLevel === 'high' && (
-                  <span className="text-xs text-orange-600" title="Sensitive question">🔒</span>
+                  <span className="text-[10px] text-amber-600" title="Sensitive">●</span>
                 )}
               </div>
-              {q.tags && q.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {q.tags.slice(0, 3).map((tag: string, idx: number) => (
-                    <span key={idx} className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              )}
             </div>
           ))
         )}

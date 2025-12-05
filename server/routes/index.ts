@@ -40,9 +40,9 @@ const SURVEY_ILLUSTRATIONS = [
 export async function registerRoutes(app: Express): Promise<Server> {
   // CORS configuration
   const corsOrigins = [
+    "http://localhost:4000",
     "http://localhost:5000",
     "http://localhost:3000",
-    "http://localhost:4000",
     "https://evaliasurvey.ca",
     "https://www.evaliasurvey.ca",
     "https://evalia-survey-mike913.replit.app",
@@ -279,7 +279,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       for (const respondent of respondents) {
         const r = await storage.createRespondent(id, respondent);
-        const surveyUrl = `${process.env.APP_URL || "http://localhost:5000"}/survey/${id}?respondent=${r.respondentToken}`;
+        const surveyUrl = `${process.env.APP_URL || "http://localhost:4000"}/survey/${id}?respondent=${r.respondentToken}`;
 
         const emailSent = await emailService.sendSurveyInvitation(
           respondent.email!,
@@ -389,4 +389,3 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
   return httpServer;
 }
-

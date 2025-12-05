@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { QUESTION_TYPES, getIconForType } from '@/data/questionTypeConfig';
 import { QuestionRenderer } from '@/components/surveys/QuestionRenderer';
 import { toRuntimeQuestion } from '@/lib/questionAdapter';
+import { FEATURES } from '@/config/features';
+import { QuestionHeader } from '@/components/builder/shared/QuestionHeader';
 
 // ============================================
 // ZOOM & PAN CONTROLS
@@ -187,7 +189,7 @@ export function BuilderCanvas() {
   };
 
   return (
-    <main className="flex-1 bg-gray-50 relative overflow-hidden flex flex-col">
+    <div className="flex-1 bg-gray-50 relative overflow-hidden flex flex-col h-full">
       {/* Zoom Controls - Fixed position */}
       <div className="absolute top-4 right-4 z-20 flex items-center gap-2 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl p-1.5 shadow-lg">
         <button
@@ -271,6 +273,18 @@ export function BuilderCanvas() {
           }}
         >
           <div className="max-w-3xl mx-auto space-y-6">
+        {/* Section Header */}
+        <div className="mb-2">
+          <div className="flex items-baseline gap-3">
+            <h2 className="text-[15px] font-medium text-gray-900 tracking-tight">
+              Build
+            </h2>
+            <span className="text-[13px] text-gray-400 tabular-nums">
+              {questions.length} question{questions.length !== 1 ? 's' : ''}
+            </span>
+          </div>
+        </div>
+
         {/* Welcome Screen Section */}
         {survey.welcomeScreen.enabled && (
           <SectionCard
@@ -324,12 +338,6 @@ export function BuilderCanvas() {
           </div>
         ) : (
           <>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider">
-                Questions ({questions.length}/200)
-              </h3>
-            </div>
-
             {questions.map((question, index) => (
               <Fragment key={question.id}>
                 {dragOverIndex === index && (
@@ -405,6 +413,20 @@ export function BuilderCanvas() {
                 </div>
               </SectionCard>
             )}
+            {survey.scoreConfig && FEATURES.resultsV1 && (
+              <SectionCard
+                title="Results Screen"
+                description="Customize what respondents see after submit"
+                isSelected={selectedSection === 'results'}
+                onClick={() => setSelectedSection('results')}
+              >
+                <div className="p-6 bg-blue-50 border border-blue-200 rounded-xl">
+                  <p className="text-sm text-gray-500">
+                    {survey.scoreConfig.resultsScreen?.enabled ? 'Enabled' : 'Disabled'}
+                  </p>
+                </div>
+              </SectionCard>
+            )}
           </div>
         </div>
       </div>
@@ -414,7 +436,7 @@ export function BuilderCanvas() {
         <span className="font-medium">Tips:</span> Hold <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 mx-0.5">Space</kbd> + drag to pan • 
         <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 mx-0.5">⌘/Ctrl</kbd> + scroll to zoom
       </div>
-    </main>
+    </div>
   );
 }
 
@@ -435,16 +457,17 @@ function SectionCard({
     <div
       onClick={onClick}
       className={`
-        bg-white rounded-xl shadow-sm p-6 cursor-pointer transition-all border-2
-        ${isSelected ? 'border-purple-400 ring-4 ring-purple-100' : 'border-transparent hover:border-gray-200'}
+        bg-white rounded-xl p-5 cursor-pointer transition-all duration-150 border
+        ${isSelected 
+          ? 'border-gray-300 shadow-md' 
+          : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'}
       `}
     >
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider">{title}</h3>
-          <p className="text-xs text-gray-500 mt-1">{description}</p>
+          <h3 className="text-[13px] font-medium text-gray-700">{title}</h3>
+          <p className="text-[11px] text-gray-400 mt-0.5">{description}</p>
         </div>
-        <Sparkles size={20} className="text-purple-500" />
       </div>
       {children}
     </div>
@@ -478,9 +501,6 @@ function QuestionCard({
   onDelete,
   onUpdate,
 }: QuestionCardProps) {
-  const Icon = getIconForType(question.type);
-  const typeConfig = QUESTION_TYPES[question.type];
-  
   return (
     <div
       draggable
@@ -497,23 +517,7 @@ function QuestionCard({
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <GripVertical size={20} className="text-gray-400 cursor-grab active:cursor-grabbing" />
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-purple-100 border border-purple-200 flex items-center justify-center">
-              <span className="text-sm font-bold text-purple-600">{index + 1}</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-100 px-3 py-1.5 rounded-full">
-              <Icon size={12} />
-              <span>{question.displayType || typeConfig?.displayName || question.type}</span>
-            </div>
-            {question.required && (
-              <span className="text-xs font-bold text-red-500 bg-red-50 px-2 py-1 rounded border border-red-200">
-                Required
-              </span>
-            )}
-          </div>
-        </div>
+        <QuestionHeader question={question} questionNumber={index + 1} />
         <div className="flex items-center gap-2">
           <button
             onClick={(e) => {

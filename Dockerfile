@@ -53,17 +53,15 @@ RUN addgroup --system --gid 1001 nodejs && \
 # Copy package files for production dependencies
 COPY package.json package-lock.json ./
 
-# Install production dependencies only
-RUN npm ci --omit=dev && npm cache clean --force
+# Install all dependencies (include dev deps needed for tooling referenced in bundle)
+RUN npm ci && npm cache clean --force
 
-# Copy built assets from builder
+# Copy built assets from builder (includes server bundle and frontend in dist/public)
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/client/dist ./client/dist
 
 # Copy static assets and other required files
 COPY --from=builder /app/attached_assets ./attached_assets
 COPY --from=builder /app/shared ./shared
-COPY --from=builder /app/server/prompts ./server/prompts
 
 # Set ownership to non-root user
 RUN chown -R evalia:nodejs /app
@@ -87,4 +85,3 @@ ENTRYPOINT ["dumb-init", "--"]
 
 # Start the application with source maps for better error traces
 CMD ["node", "--enable-source-maps", "dist/index.js"]
-

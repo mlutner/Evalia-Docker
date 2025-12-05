@@ -369,7 +369,7 @@ function DesignContent({ surveyId }: { surveyId?: string }) {
         {/* ═══════════════════════════════════════════════════════════════════ */}
         {/* LEFT PANEL: Configuration */}
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        <aside className="w-[380px] flex-shrink-0 bg-white border-r border-gray-200 h-[calc(100vh-140px)] flex flex-col">
+        <aside className="w-[280px] lg:w-[320px] flex-shrink-0 bg-white border-r border-gray-200 h-[calc(100vh-140px)] flex flex-col">
           
           {/* Screen Selector - Same as Builder */}
           <div className="flex-shrink-0 border-b border-gray-200 p-3">
@@ -532,7 +532,7 @@ function DesignContent({ surveyId }: { surveyId?: string }) {
         {/* ═══════════════════════════════════════════════════════════════════ */}
         {/* RIGHT PANEL: AI Guidance */}
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        <aside className="w-[300px] flex-shrink-0 bg-white border-l border-gray-200 h-[calc(100vh-140px)] flex flex-col">
+        <aside className="w-[280px] lg:w-[320px] flex-shrink-0 bg-white border-l border-gray-200 h-[calc(100vh-140px)] flex flex-col">
           {/* AI Header */}
           <div className="flex-shrink-0 border-b border-gray-200 px-4 py-3 bg-gradient-to-r from-purple-50 to-blue-50">
             <div className="flex items-center gap-2">

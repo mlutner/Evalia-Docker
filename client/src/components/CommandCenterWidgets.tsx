@@ -177,7 +177,7 @@ export function CommandCenter({ showRecommendations = true }: CommandCenterProps
             title="Question Drop-offs"
             description="Where respondents exit"
             items={[
-              { label: "Q5 - Training Engagement", value: "34%", status: "critical" },
+              { label: "Q5 - Training Engagement", value: "34%", status: "high" },
               { label: "Q8 - Future Topics", value: "22%", status: "medium" },
             ]}
           />

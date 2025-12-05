@@ -32,6 +32,17 @@
 - AI assists with configuration and narratives only; deterministic scoring/logic live in `@core` (ScoringStrategies + LogicV2/V3).
 - Valid tags for AI template selection/filtering are canonical and must not be invented.
 - AI endpoints must never emit per-respondent numeric scores, bands, or `scoringEngineId`. Suggestions are validated and rejected if forbidden fields appear.
+- Client shows ResultsScreen only when `resultsScreen.enabled === true` and a scoring payload is present; otherwise it shows the Thank You screen.
+
+## Theme/Design invariants
+- PreviewV2 and SurveyView both use the same theme normalization (`useNormalizedTheme` / `normalizeThemeImages`), so header and background images are normalized to safe URL fields before rendering.
+
+## Flow diagrams (Mermaid)
+- Survey creation/publishing: `docs/flows/survey-creation-and-publishing.md`
+- Builder lifecycle/runtime: `docs/flows/survey-lifecycle-runtime.md`
+- Scoring & results: `docs/flows/scoring-and-results.md`
+- AI assistants: `docs/flows/ai-assistants.md`
+- Theme/design: `docs/flows/theme-and-design.md`
 
 ## Active AI endpoints (summary)
 - /api/parse-document, /api/generate-survey, /api/enhance-prompt, /api/chat, /api/generate-text, /api/adjust-tone, /api/questions/analyze, /api/generate-scoring-config, /api/ai-chat, plus /api/ai/test/*.
@@ -48,7 +59,8 @@
 - **Testing strategy**:
   - Golden scoring tests keep engines frozen.
   - AI route tests ensure forbidden fields are rejected and valid configs parse.
-  - Builder/runtime regression tests (e.g., theme/image handling, results screen) protect UI paths that render AI-assisted configs.
+  - Builder/runtime regression tests (e.g., theme/image handling, runtime results screen) protect UI paths that render AI-assisted configs.
+  - Recent additions: theme preview regression tests, runtime results path test (unskipped with stubbed ResultsScreen), AI route guardrail test.
 - **Next steps**:
   - Expand AI route coverage with schema/forbidden-key tests for every endpoint.
   - Keep prompts centralized (tag/guardrail fragments) to avoid drift.

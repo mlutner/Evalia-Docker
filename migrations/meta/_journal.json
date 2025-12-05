@@ -8,6 +8,13 @@
       "when": 1763757020918,
       "tag": "0000_add_illustration_url",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1763761750000,
+      "tag": "0001_add_scoring_engine_id",
+      "breakpoints": true
     }
   ]
 }

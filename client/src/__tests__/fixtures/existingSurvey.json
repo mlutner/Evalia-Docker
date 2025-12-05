@@ -1,0 +1,46 @@
+{
+  "id": "persisted-123",
+  "title": "Existing Survey",
+  "description": "Persisted desc",
+  "welcomeMessage": "Welcome back",
+  "thankYouMessage": "Thanks",
+  "illustrationUrl": "/attached_assets/logo.png",
+  "estimatedMinutes": 5,
+  "privacyStatement": "We respect privacy",
+  "scoreConfig": { "enabled": true },
+  "designSettings": {
+    "themeColors": { "primary": "#123456" },
+    "welcomeScreen": {
+      "enabled": true,
+      "title": "Welcome Title",
+      "description": "Welcome Desc",
+      "buttonText": "Start",
+      "layout": "left-aligned",
+      "logoUrl": "/logo.png",
+      "headerImage": "/header.png",
+      "backgroundImage": { "url": "/bg.png", "overlayColor": "#000000", "overlayOpacity": 40 },
+      "showTimeEstimate": true,
+      "showQuestionCount": true,
+      "privacyText": "Privacy",
+      "privacyLinkUrl": "https://example.com/privacy"
+    },
+    "thankYouScreen": {
+      "enabled": true,
+      "title": "TY",
+      "message": "Done",
+      "redirectUrl": "https://example.com",
+      "showSocialShare": false,
+      "headerImage": "/ty-header.png",
+      "backgroundImage": { "url": "/ty.png", "overlayColor": "#111111", "overlayOpacity": 30 }
+    },
+    "surveyBody": {
+      "questionLayout": "single",
+      "showProgressBar": false,
+      "showQuestionNumbers": false
+    }
+  },
+  "questions": [
+    { "id": "e1", "type": "multiple_choice", "question": "Pick", "options": ["A","B"], "required": true },
+    { "id": "e2", "type": "nps", "question": "NPS?", "npsLabels": { "detractor": "Low", "promoter": "High" } }
+  ]
+}

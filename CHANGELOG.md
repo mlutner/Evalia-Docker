@@ -134,7 +134,7 @@ export SESSION_SECRET="local-development-session-secret-min-32-characters"
 npm run dev
 ```
 
-Server runs at: http://127.0.0.1:5000
+Server runs at: http://127.0.0.1:4000
 
 ---
 

@@ -6,8 +6,11 @@
 
 import { Router } from "express";
 import { storage } from "../storage";
+import type { ScoringEngineId } from "@core/scoring/strategies";
 import { isAuthenticated } from "../replitAuth";
 import { analyzeResponses } from "../responseAnalysis";
+import { computeSurveyScore } from "../utils/scoring";
+import { resolveBand as resolveBandCore } from "@core/scoring/resolveBand";
 
 const router = Router();
 
@@ -59,9 +62,23 @@ router.post("/:id/responses", async (req, res) => {
       return res.status(400).json({ error: "Answers are required" });
     }
 
-    const response = await storage.createResponse(id, answers);
+    const engineId: ScoringEngineId = (survey as any).scoringEngineId ?? "engagement_v1";
+
+    const scoring =
+      survey.scoreConfig?.enabled
+        ? computeSurveyScore({ survey, responses: answers })
+        : null;
+    const scoreRanges = survey.scoreConfig?.resultsScreen?.scoreRanges ?? [];
+    const band = scoring ? resolveBandCore(scoring.percentage, scoreRanges) : null;
+
+    const response = await storage.createResponse(id, answers, engineId);
     console.log(`[Response Routes] Response created for survey ${id}:`, response.id);
-    res.status(201).json(response);
+    const responseBody: any = { ...response };
+    if (scoring) {
+      responseBody.scoring = scoring;
+      responseBody.band = band ?? null;
+    }
+    res.status(201).json(responseBody);
   } catch (error: any) {
     console.error("[Response Routes] Create response error:", error);
     res.status(500).json({ error: "Failed to submit response" });
@@ -297,4 +314,3 @@ router.post("/:id/responses/analyze", isAuthenticated, async (req: any, res) => 
 });
 
 export default router;
-

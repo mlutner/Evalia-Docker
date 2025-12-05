@@ -28,6 +28,7 @@ import HelpPage from "@/pages/HelpPage";
 import Account from "@/pages/Account";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/not-found";
+import DevInspector from "@/pages/DevInspector";
 
 function ProtectedRoute({ component: Component }: { component: () => JSX.Element }) {
   const [location, setLocation] = useLocation();
@@ -55,6 +56,7 @@ function ProtectedRoute({ component: Component }: { component: () => JSX.Element
 }
 
 function Router() {
+  const isDev = import.meta.env.DEV;
   return (
     <Switch>
       {/* Public routes */}
@@ -118,6 +120,12 @@ function Router() {
       <Route path="/settings">
         {() => <ProtectedRoute component={SettingsPage} />}
       </Route>
+
+      {isDev && (
+        <Route path="/dev/inspector">
+          {() => <ProtectedRoute component={DevInspector} />}
+        </Route>
+      )}
 
       <Route component={NotFound} />
     </Switch>

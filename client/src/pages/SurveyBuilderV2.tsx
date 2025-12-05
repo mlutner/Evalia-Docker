@@ -12,13 +12,14 @@ import { LogicView } from "@/components/builder-extensions/LogicView";
 import { ScoringView } from "@/components/builder-extensions/ScoringView";
 import type { BuilderMode } from "@/types/builderModes";
 import { FEATURES } from "@/config/features";
-import type { LogicRule, ScoreBandConfig } from "@shared/schema";
+import type { ScoreBandConfig } from "@shared/schema";
 import { useSurveyBuilder } from "@/contexts/SurveyBuilderContext";
 import type {
   QuestionScoringConfig,
   ScoringCategory,
+  BuilderScoreBand,
+  BuilderLogicRule,
 } from "@/components/builder-extensions/INTEGRATION_GUIDE";
-import type { BuilderScoreBand } from "@/components/builder-extensions/scoring/BandEditor";
 
 export default function SurveyBuilderV2() {
   // Support both /builder/:id and /builder-v2/:id routes
@@ -50,6 +51,10 @@ function SurveyBuilderContent({ surveyId }: { surveyId?: string }) {
     updateLogicRule,
     deleteLogicRule,
     scoreConfig,
+    setQuestionScoring,
+    updateScoringCategory,
+    updateScoringBand,
+    deleteScoringBand,
   } = useSurveyBuilder();
   
   // [SCORING-PIPELINE] Build question-to-scoring mapping
@@ -74,7 +79,7 @@ function SurveyBuilderContent({ surveyId }: { surveyId?: string }) {
     () =>
       (scoreConfig?.categories || []).map((cat) => ({
         ...cat,
-        label: (cat as any).name ?? cat.label ?? cat.id,
+        label: (cat as any).name ?? (cat as any).label ?? cat.id,
         description: (cat as any).description ?? "",
       })),
     [scoreConfig?.categories]
@@ -92,43 +97,50 @@ function SurveyBuilderContent({ surveyId }: { surveyId?: string }) {
     [scoreConfig?.scoreRanges]
   );
   
-  // [SCORING-PIPELINE] Log scoring data transformation
-  // eslint-disable-next-line no-console
-  console.log("[SCORING-PIPELINE] SurveyBuilderV2 scoring data", {
-    surveyId: survey.id,
-    contextEnabled: scoreConfig?.enabled,
-    contextCategoriesCount: scoreConfig?.categories?.length ?? 0,
-    contextBandsCount: scoreConfig?.scoreRanges?.length ?? 0,
-    mappedCategoriesCount: categories.length,
-    mappedBandsCount: bands.length,
-  });
-  
-  // [SCORING-PIPELINE] GUARD: Detect data loss during transformation
-  const rawCats = scoreConfig?.categories?.length ?? 0;
-  const rawBands = scoreConfig?.scoreRanges?.length ?? 0;
-  if (rawCats !== categories.length) {
-    console.error("[SCORING-PIPELINE] Categories lost during mapping!", {
+  // [SCORING-PIPELINE] Dev-only logging and guards
+  if (import.meta.env.DEV) {
+    const rawCats = scoreConfig?.categories?.length ?? 0;
+    const rawBands = scoreConfig?.scoreRanges?.length ?? 0;
+    
+    // Log scoring data transformation
+    // eslint-disable-next-line no-console
+    console.log("[SCORING-PIPELINE] SurveyBuilderV2 scoring data", {
       surveyId: survey.id,
-      rawCount: rawCats,
-      mappedCount: categories.length,
+      contextEnabled: scoreConfig?.enabled,
+      contextCategoriesCount: rawCats,
+      contextBandsCount: rawBands,
+      mappedCategoriesCount: categories.length,
+      mappedBandsCount: bands.length,
     });
-  }
-  if (rawBands !== bands.length) {
-    console.error("[SCORING-PIPELINE] Bands lost during mapping!", {
-      surveyId: survey.id,
-      rawCount: rawBands,
-      mappedCount: bands.length,
-    });
-  }
-  
-  // [SCORING-PIPELINE] GUARD: Warn if UI will display zeros for enabled scoring
-  if (scoreConfig?.enabled && (categories.length === 0 || bands.length === 0)) {
-    console.error("[SCORING-PIPELINE] UI will display zeros for enabled scoring!", {
-      surveyId: survey.id,
-      enabled: scoreConfig.enabled,
-      categoriesCount: categories.length,
-      bandsCount: bands.length,
-    });
+    
+    // GUARD: Detect data loss during transformation
+    if (rawCats !== categories.length) {
+      // eslint-disable-next-line no-console
+      console.error("[SCORING-PIPELINE] Categories lost during mapping!", {
+        surveyId: survey.id,
+        rawCount: rawCats,
+        mappedCount: categories.length,
+      });
+    }
+    if (rawBands !== bands.length) {
+      // eslint-disable-next-line no-console
+      console.error("[SCORING-PIPELINE] Bands lost during mapping!", {
+        surveyId: survey.id,
+        rawCount: rawBands,
+        mappedCount: bands.length,
+      });
+    }
+    
+    // GUARD: Warn if UI will display zeros for enabled scoring
+    if (scoreConfig?.enabled && (categories.length === 0 || bands.length === 0)) {
+      // eslint-disable-next-line no-console
+      console.error("[SCORING-PIPELINE] UI will display zeros for enabled scoring!", {
+        surveyId: survey.id,
+        enabled: scoreConfig.enabled,
+        categoriesCount: categories.length,
+        bandsCount: bands.length,
+      });
+    }
   }
 
   const handlePreview = () => {
@@ -144,8 +156,24 @@ function SurveyBuilderContent({ surveyId }: { surveyId?: string }) {
   const centerPanel = useMemo(() => {
     if (!modesEnabled) return <BuilderCanvas />;
     if (builderMode === "logic") {
-      const allRules: LogicRule[] = questions.flatMap((q) => q.logicRules || []);
-      const handleUpdateRule = (rule: LogicRule) => updateLogicRule(rule.id, rule);
+      // Flatten rules from questions and add questionId for MP-style components
+      const allRules: BuilderLogicRule[] = questions.flatMap((q) =>
+        (q.logicRules || []).map((rule) => ({
+          ...rule,
+          questionId: q.id,
+          conditionLabel: rule.condition,
+          actionLabel: rule.action,
+        }))
+      );
+      const handleUpdateRule = (rule: BuilderLogicRule) => {
+        // Map back to core LogicRule when updating
+        updateLogicRule(rule.id, {
+          id: rule.id,
+          condition: rule.conditionLabel || rule.condition,
+          action: rule.action as 'skip' | 'show' | 'end',
+          targetQuestionId: rule.targetQuestionId,
+        });
+      };
       const handleDeleteRule = (id: string) => {
         deleteLogicRule(id);
         if (selectedLogicRuleId === id) setSelectedLogicRuleId(undefined);
@@ -174,6 +202,22 @@ function SurveyBuilderContent({ surveyId }: { surveyId?: string }) {
       );
     }
     if (builderMode === "scoring") {
+      // Adapter: ScoringView expects (id, update) but context setQuestionScoring expects (id, fullConfig)
+      const handleChangeQuestionScoring = (id: string, update: Partial<QuestionScoringConfig>) => {
+        const existing = scoringByQuestionId[id] ?? { scorable: false, scoreWeight: 1 };
+        setQuestionScoring(id, { ...existing, ...update });
+      };
+
+      // Adapter: ScoringView passes full category, context expects full category
+      const handleChangeCategory = (category: ScoringCategory) => {
+        updateScoringCategory(category);
+      };
+
+      // Adapter: ScoringView passes BuilderScoreBand, context expects CoreScoreBand
+      const handleChangeBand = (band: BuilderScoreBand) => {
+        updateScoringBand(band);
+      };
+
       return (
         <ScoringView
           questions={questions}
@@ -186,6 +230,10 @@ function SurveyBuilderContent({ surveyId }: { surveyId?: string }) {
           onSelectQuestion={setSelectedQuestionId}
           onSelectCategory={setSelectedCategoryId}
           onSelectBand={setSelectedBandId}
+          onChangeQuestionScoring={handleChangeQuestionScoring}
+          onChangeCategory={handleChangeCategory}
+          onChangeBand={handleChangeBand}
+          onDeleteBand={deleteScoringBand}
           onClosePanel={() => setBuilderMode("build")}
         />
       );
@@ -205,6 +253,10 @@ function SurveyBuilderContent({ surveyId }: { surveyId?: string }) {
     addLogicRule,
     updateLogicRule,
     deleteLogicRule,
+    setQuestionScoring,
+    updateScoringCategory,
+    updateScoringBand,
+    deleteScoringBand,
   ]);
 
   const rightPanel = useMemo(() => {
@@ -214,28 +266,28 @@ function SurveyBuilderContent({ surveyId }: { surveyId?: string }) {
   }, [builderMode, modesEnabled]);
 
   return (
-    <div className="absolute inset-0 bg-gray-50 font-sans flex flex-col overflow-hidden" data-builder-mode={builderMode}>
+    <div className="absolute inset-0 bg-gray-50 font-sans flex flex-col" data-builder-mode={builderMode}>
       {/* Top Bar: Progress Flow Stepper */}
       <ProgressFlowStepper surveyId={surveyId} />
 
       {modesEnabled && (
-        <div className="border-b border-gray-200 bg-white">
+        <div className="border-b border-gray-200 bg-white shrink-0">
           <div className="px-4 py-2">
             <BuilderModeToggle mode={builderMode} onChange={setBuilderMode} />
           </div>
         </div>
       )}
 
-      {/* 3-Panel Layout - takes remaining height */}
+      {/* 3-Panel Layout - Unified structure across all modes */}
       <div className="flex flex-1 min-h-0 overflow-hidden">
-        {/* Left Panel: Question Library */}
-        <QuestionLibrary />
+        {/* Left Panel: Mode-specific (QuestionLibrary for Build, embedded in centerPanel for Logic/Scoring) */}
+        {builderMode === "build" && <QuestionLibrary />}
 
-        {/* Center + Right Panel */}
-        <div className="flex flex-1 min-h-0 overflow-hidden">
-          <div className="flex-1 min-h-0">{centerPanel}</div>
-          {rightPanel}
-        </div>
+        {/* Center Panel - primary content area */}
+        <main className="flex-1 min-h-0 overflow-hidden">{centerPanel}</main>
+
+        {/* Right Panel: Mode-specific (QuestionConfigPanel for Build, embedded in centerPanel for Logic/Scoring) */}
+        {rightPanel}
       </div>
 
       {/* Bottom Action Bar */}

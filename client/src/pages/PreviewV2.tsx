@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRoute, useLocation } from 'wouter';
 import {
   Monitor, Smartphone, Tablet, CheckCircle2, Copy,
@@ -17,6 +17,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { QuestionRenderer } from '@/components/surveys/QuestionRenderer';
 import { toRuntimeQuestion } from '@/lib/questionAdapter';
+import { builderToEvalia } from '@/contexts/SurveyBuilderContext';
+import { ResultsScreen } from '@/components/surveys/ResultsScreen';
+import { useNormalizedTheme } from '@/hooks/useNormalizedTheme';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -171,7 +174,7 @@ function PreviewContent({ surveyId }: { surveyId?: string }) {
       {/* 3-Panel Layout */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Panel: Share Options */}
-        <aside className="w-[320px] flex-shrink-0 bg-white border-r border-gray-200 h-[calc(100vh-140px)] overflow-y-auto">
+        <aside className="w-[280px] lg:w-[320px] flex-shrink-0 bg-white border-r border-gray-200 h-[calc(100vh-140px)] overflow-y-auto">
           <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 z-10">
             <h2 className="text-sm font-bold text-gray-900">Share & Distribute</h2>
             <p className="text-xs text-gray-500 mt-0.5">Get your survey in front of respondents</p>
@@ -325,7 +328,7 @@ function PreviewContent({ surveyId }: { surveyId?: string }) {
         </main>
 
         {/* Right Panel: Checklist */}
-        <aside className="w-[320px] flex-shrink-0 bg-white border-l border-gray-200 h-[calc(100vh-140px)] overflow-y-auto">
+        <aside className="w-[280px] lg:w-[320px] flex-shrink-0 bg-white border-l border-gray-200 h-[calc(100vh-140px)] overflow-y-auto">
           <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 z-10">
             <h2 className="text-sm font-bold text-gray-900">Pre-Publish Checklist</h2>
             <p className="text-xs text-gray-500 mt-0.5">Review before publishing</p>
@@ -449,7 +452,9 @@ function InteractiveSurveyPreview({
 }: InteractiveSurveyPreviewProps) {
   const [showWelcome, setShowWelcome] = useState(true);
   const [showThankYou, setShowThankYou] = useState(false);
+  const [showResults, setShowResults] = useState(false);
   const [previewAnswers, setPreviewAnswers] = useState<Record<string, unknown>>({});
+  const normalizedTheme = useNormalizedTheme(survey?.theme);
 
   // Guard: if survey is missing, show fallback
   if (!survey) {
@@ -475,7 +480,9 @@ function InteractiveSurveyPreview({
     if (currentIndex < questions.length - 1) {
       onIndexChange(currentIndex + 1);
     } else {
-      setShowThankYou(true);
+      const hasResults = !!survey.scoreConfig?.resultsScreen?.enabled;
+      setShowThankYou(!hasResults);
+      setShowResults(hasResults);
     }
   };
 
@@ -490,6 +497,7 @@ function InteractiveSurveyPreview({
   const handleRestart = () => {
     setShowWelcome(true);
     setShowThankYou(false);
+    setShowResults(false);
     setPreviewAnswers({});
     onIndexChange(0);
   };
@@ -500,6 +508,9 @@ function InteractiveSurveyPreview({
 
   // Sanitize theme colors
   const themeColors = sanitizeTheme(survey?.welcomeScreen?.themeColors);
+  const welcomeHeaderImage = survey?.welcomeScreen?.headerImage || normalizedTheme.headerImageUrl || undefined;
+  const thankYouHeaderImage = survey?.thankYouScreen?.headerImage || normalizedTheme.headerImageUrl || undefined;
+  const evaliaQuestions = useMemo(() => survey.questions.map(builderToEvalia), [survey.questions]);
 
   // Welcome Screen - clean, consistent design
   if (showWelcome && survey?.welcomeScreen?.enabled) {
@@ -509,10 +520,10 @@ function InteractiveSurveyPreview({
         <div className="h-3" style={{ backgroundColor: themeColors.headerBar || themeColors.primary }} />
 
         {/* Header Image */}
-        {survey?.welcomeScreen?.headerImage && (
+        {welcomeHeaderImage && (
           <div className="relative h-24 overflow-hidden flex-shrink-0">
             <img 
-              src={survey.welcomeScreen.headerImage} 
+              src={welcomeHeaderImage} 
               alt="Welcome header" 
               className="w-full h-full object-cover"
             />
@@ -561,6 +572,29 @@ function InteractiveSurveyPreview({
     );
   }
 
+  if (showResults) {
+    const resultsConfig = survey.scoreConfig?.resultsScreen;
+    return (
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden h-[500px] flex flex-col space-y-4 p-4">
+        <ResultsScreen
+          questions={evaliaQuestions}
+          responses={previewAnswers}
+          scoreConfig={survey.scoreConfig}
+          resultsConfig={resultsConfig}
+        />
+        {survey.thankYouScreen.enabled && (
+          <div className="border-t border-gray-100 pt-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-gray-800">Thank you message</h3>
+              <Button variant="outline" size="sm" onClick={handleRestart}>Restart Preview</Button>
+            </div>
+            <p className="text-sm text-gray-600 mt-2">{survey.thankYouScreen.message}</p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   // Thank You Screen - clean, consistent design
   if (showThankYou) {
     return (
@@ -569,10 +603,10 @@ function InteractiveSurveyPreview({
         <div className="h-3" style={{ backgroundColor: themeColors.headerBar || themeColors.primary }} />
 
         {/* Header Image */}
-        {survey?.thankYouScreen?.headerImage && (
+        {thankYouHeaderImage && (
           <div className="relative h-24 overflow-hidden flex-shrink-0">
             <img 
-              src={survey.thankYouScreen.headerImage} 
+              src={thankYouHeaderImage} 
               alt="Thank you header" 
               className="w-full h-full object-cover"
             />
@@ -693,4 +727,3 @@ function InteractiveSurveyPreview({
     </div>
   );
 }
-
