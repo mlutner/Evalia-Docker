@@ -96,6 +96,7 @@ router.get("/", isAuthenticated, async (req: any, res) => {
  *       404:
  *         description: Survey not found
  */
+// [SCORING-PIPELINE] GET /api/surveys/:id - Returns survey with scoreConfig
 router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -103,6 +104,28 @@ router.get("/:id", async (req, res) => {
     
     if (!survey) {
       return res.status(404).json({ error: "Survey not found" });
+    }
+
+    // [SCORING-PIPELINE] Log scoreConfig being returned to client
+    const scoreConfig = survey.scoreConfig;
+    const categoriesCount = scoreConfig?.categories?.length ?? 0;
+    const bandsCount = scoreConfig?.scoreRanges?.length ?? 0;
+    
+    console.log("[SCORING-PIPELINE] GET /api/surveys/:id returning scoreConfig", {
+      surveyId: id,
+      hasScoreConfig: !!scoreConfig,
+      enabled: scoreConfig?.enabled,
+      categoriesCount,
+      bandsCount,
+    });
+    
+    // [SCORING-PIPELINE] GUARD: Warn if enabled scoring has empty data
+    if (scoreConfig?.enabled && (categoriesCount === 0 || bandsCount === 0)) {
+      console.warn("[SCORING-PIPELINE] Returning enabled scoring with empty categories/bands!", {
+        surveyId: id,
+        categoriesCount,
+        bandsCount,
+      });
     }
 
     // Calculate response and question counts

@@ -264,7 +264,7 @@ export interface BuilderSurvey {
   estimatedMinutes?: number;
   privacyStatement?: string;
   dataUsageStatement?: string;
-  scoreConfig?: SurveyScoreConfig;
+  scoreConfig: SurveyScoreConfig | null;
   surveyBody?: SurveyBodySettings;
   createdAt: string;
   updatedAt: string;
@@ -274,6 +274,7 @@ interface SurveyBuilderContextType {
   // Survey data
   survey: BuilderSurvey;
   questions: BuilderQuestion[];
+  scoreConfig: SurveyScoreConfig | null;
   isDirty: boolean;
   isLoading: boolean;
   isSaving: boolean;
@@ -284,6 +285,9 @@ interface SurveyBuilderContextType {
   removeQuestion: (id: string) => void;
   reorderQuestions: (fromIndex: number, toIndex: number) => void;
   updateQuestion: (id: string, updates: Partial<BuilderQuestion>) => void;
+  addLogicRule: (rule: Partial<LogicRule> & { questionId?: string }) => LogicRule | null;
+  updateLogicRule: (id: string, patch: Partial<LogicRule>) => void;
+  deleteLogicRule: (id: string) => void;
   
   // Selection state
   selectedQuestionId: string | null;
@@ -612,6 +616,15 @@ type HistoryState = {
   redo: BuilderSurvey[];
 };
 
+// [SCORING-PIPELINE] Default empty scoring configuration
+// Used as fallback when no scoreConfig is present. NEVER modify this structure.
+const EMPTY_SCORE_CONFIG: SurveyScoreConfig = {
+  enabled: false,
+  categories: [],
+  scoreRanges: [],
+  resultsScreen: undefined,
+};
+
 let inRenderPhase = false;
 
 function markRenderStart() {
@@ -710,6 +723,7 @@ export const createInitialSurvey = (): BuilderSurvey => ({
     showQuestionNumbers: true,
     questionLayout: 'scroll',
   },
+  scoreConfig: EMPTY_SCORE_CONFIG,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 });
@@ -772,7 +786,7 @@ export function SurveyBuilderProvider({
             title: surveyTitle,
             description: parsed.description || '',
             questions: builderQuestions,
-            scoreConfig: parsed.scoreConfig,
+            scoreConfig: parsed.scoreConfig ?? EMPTY_SCORE_CONFIG,
             welcomeScreen: {
               ...createInitialSurvey().welcomeScreen,
               title: surveyTitle, // Use survey title as welcome screen title
@@ -818,7 +832,7 @@ export function SurveyBuilderProvider({
             title: surveyTitle,
             description: parsed.description || '',
             questions: builderQuestions,
-            scoreConfig: parsed.scoreConfig,
+            scoreConfig: parsed.scoreConfig ?? EMPTY_SCORE_CONFIG,
             welcomeScreen: {
               ...createInitialSurvey().welcomeScreen,
               title: surveyTitle, // Use survey title as welcome screen title
@@ -854,95 +868,145 @@ export function SurveyBuilderProvider({
     enabled: !!surveyId && surveyId !== 'new',
   });
 
-  // Handle loading existing survey data
+  // [SCORING-PIPELINE] Handle loading existing survey data
+  // This effect transforms API response into BuilderSurvey state
   React.useEffect(() => {
-    if (existingSurveyData) {
-      // Store the persisted ID for subsequent saves
-      setPersistedId(existingSurveyData.id);
+    if (!existingSurveyData) return;
+
+    // [SCORING-PIPELINE] Log incoming scoreConfig from API
+    const apiScoreConfig = (existingSurveyData as any).scoreConfig;
+    const apiCategoriesCount = apiScoreConfig?.categories?.length ?? 0;
+    const apiBandsCount = apiScoreConfig?.scoreRanges?.length ?? 0;
+    
+    // eslint-disable-next-line no-console
+    console.log('[SCORING-PIPELINE] API response scoreConfig', {
+      surveyId: existingSurveyData.id,
+      hasScoreConfig: !!apiScoreConfig,
+      enabled: apiScoreConfig?.enabled,
+      categoriesCount: apiCategoriesCount,
+      bandsCount: apiBandsCount,
+      categoryIds: apiScoreConfig?.categories?.map((c: any) => c.id) ?? [],
+    });
+
+    // [SCORING-PIPELINE] GUARD: Warn if scoring is enabled but data is empty
+    if (apiScoreConfig?.enabled && (apiCategoriesCount === 0 || apiBandsCount === 0)) {
+      console.error('[SCORING-PIPELINE] API returned enabled scoring with empty categories or ranges!', {
+        surveyId: existingSurveyData.id,
+        enabled: apiScoreConfig.enabled,
+        categoriesCount: apiCategoriesCount,
+        bandsCount: apiBandsCount,
+      });
+    }
+
+    // Store the persisted ID for subsequent saves
+    setPersistedId(existingSurveyData.id);
+    
+    try {
+      // Convert Evalia survey to Builder survey
+      const builderQuestions = (existingSurveyData.questions || []).map(evaliaToBuilder).map((q, idx) =>
+        validateBuilderQuestion({
+          ...q,
+          logicRules: validateLogicRules((q as any).logicRules, q.id, new Set((existingSurveyData.questions || []).map((qq: any) => qq.id))),
+          order: idx,
+        } as BuilderQuestion)
+      );
+    
+      // Extract design settings if available
+      const ds = existingSurveyData.designSettings;
+      const welcomeDs = ds?.welcomeScreen;
+      const thankYouDs = ds?.thankYouScreen;
+    
+      applySurveyUpdate(
+        () => ({
+          id: existingSurveyData.id,
+          title: existingSurveyData.title || 'Untitled Survey',
+          description: existingSurveyData.description || '',
+          welcomeScreen: {
+            enabled: welcomeDs?.enabled ?? !!existingSurveyData.welcomeMessage,
+            title: welcomeDs?.title || 'Welcome to our survey',
+            description: welcomeDs?.description || existingSurveyData.welcomeMessage || 'Your feedback helps us improve',
+            buttonText: welcomeDs?.buttonText || 'Start Survey',
+            layout: welcomeDs?.layout || 'centered',
+            imageUrl: welcomeDs?.logoUrl || existingSurveyData.illustrationUrl,
+            headerImage: welcomeDs?.headerImage,
+            backgroundImage: welcomeDs?.backgroundImage,
+            showTimeEstimate: welcomeDs?.showTimeEstimate ?? true,
+            showQuestionCount: welcomeDs?.showQuestionCount ?? true,
+            privacyText: welcomeDs?.privacyText || existingSurveyData.privacyStatement,
+            privacyLinkUrl: welcomeDs?.privacyLinkUrl,
+            themeColors: ds?.themeColors || {
+              primary: '#2F8FA5',
+              secondary: '#2F8FA5', // Header bar color
+              background: '#FFFFFF',
+              text: '#1e293b',
+              buttonText: '#FFFFFF',
+            },
+          },
+          thankYouScreen: {
+            enabled: thankYouDs?.enabled ?? true,
+            title: thankYouDs?.title || 'Thank you!',
+            message: thankYouDs?.message || existingSurveyData.thankYouMessage || 'Your response has been recorded.',
+            redirectUrl: thankYouDs?.redirectUrl,
+            showSocialShare: thankYouDs?.showSocialShare ?? false,
+            headerImage: thankYouDs?.headerImage,
+            backgroundImage: thankYouDs?.backgroundImage,
+          },
+          surveyBody: ds?.surveyBody || {
+            showProgressBar: true,
+            showQuestionNumbers: true,
+            questionLayout: 'scroll',
+          },
+          scoringSettings: {
+            enabled: !!existingSurveyData.scoreConfig?.enabled,
+            type: 'points',
+            showScore: existingSurveyData.scoreConfig?.enabled || false,
+            showCorrectAnswers: false,
+          },
+          questions: builderQuestions,
+          illustrationUrl: existingSurveyData.illustrationUrl,
+          estimatedMinutes: existingSurveyData.estimatedMinutes,
+          privacyStatement: existingSurveyData.privacyStatement,
+          dataUsageStatement: existingSurveyData.dataUsageStatement,
+          // [SCORING-PIPELINE] Merge scoreConfig from API, fallback to EMPTY_SCORE_CONFIG
+          scoreConfig: (existingSurveyData as any).scoreConfig ?? EMPTY_SCORE_CONFIG,
+          createdAt: existingSurveyData.createdAt,
+          updatedAt: existingSurveyData.updatedAt,
+        }),
+        false
+      );
       
-      try {
-        // Convert Evalia survey to Builder survey
-        const builderQuestions = (existingSurveyData.questions || []).map(evaliaToBuilder).map((q, idx) =>
-          validateBuilderQuestion({
-            ...q,
-            logicRules: validateLogicRules((q as any).logicRules, q.id, new Set((existingSurveyData.questions || []).map((qq: any) => qq.id))),
-            order: idx,
-          } as BuilderQuestion)
-        );
+      // [SCORING-PIPELINE] GUARD: Verify scoreConfig was correctly applied after state update
+      const appliedScoreConfig = (existingSurveyData as any).scoreConfig ?? EMPTY_SCORE_CONFIG;
+      const appliedCats = appliedScoreConfig.categories?.length ?? 0;
+      const appliedBands = appliedScoreConfig.scoreRanges?.length ?? 0;
       
-        // Extract design settings if available
-        const ds = existingSurveyData.designSettings;
-        const welcomeDs = ds?.welcomeScreen;
-        const thankYouDs = ds?.thankYouScreen;
+      // eslint-disable-next-line no-console
+      console.log('[SCORING-PIPELINE] State updated with scoreConfig', {
+        surveyId: existingSurveyData.id,
+        appliedCategoriesCount: appliedCats,
+        appliedBandsCount: appliedBands,
+        usedFallback: !(existingSurveyData as any).scoreConfig,
+      });
       
-        applySurveyUpdate(
-          () => ({
-            id: existingSurveyData.id,
-            title: existingSurveyData.title || 'Untitled Survey',
-            description: existingSurveyData.description || '',
-            welcomeScreen: {
-              enabled: welcomeDs?.enabled ?? !!existingSurveyData.welcomeMessage,
-              title: welcomeDs?.title || 'Welcome to our survey',
-              description: welcomeDs?.description || existingSurveyData.welcomeMessage || 'Your feedback helps us improve',
-              buttonText: welcomeDs?.buttonText || 'Start Survey',
-              layout: welcomeDs?.layout || 'centered',
-              imageUrl: welcomeDs?.logoUrl || existingSurveyData.illustrationUrl,
-              headerImage: welcomeDs?.headerImage,
-              backgroundImage: welcomeDs?.backgroundImage,
-              showTimeEstimate: welcomeDs?.showTimeEstimate ?? true,
-              showQuestionCount: welcomeDs?.showQuestionCount ?? true,
-              privacyText: welcomeDs?.privacyText || existingSurveyData.privacyStatement,
-              privacyLinkUrl: welcomeDs?.privacyLinkUrl,
-              themeColors: ds?.themeColors || {
-                primary: '#2F8FA5',
-                secondary: '#2F8FA5', // Header bar color
-                background: '#FFFFFF',
-                text: '#1e293b',
-                buttonText: '#FFFFFF',
-              },
-            },
-            thankYouScreen: {
-              enabled: thankYouDs?.enabled ?? true,
-              title: thankYouDs?.title || 'Thank you!',
-              message: thankYouDs?.message || existingSurveyData.thankYouMessage || 'Your response has been recorded.',
-              redirectUrl: thankYouDs?.redirectUrl,
-              showSocialShare: thankYouDs?.showSocialShare ?? false,
-              headerImage: thankYouDs?.headerImage,
-              backgroundImage: thankYouDs?.backgroundImage,
-            },
-            surveyBody: ds?.surveyBody || {
-              showProgressBar: true,
-              showQuestionNumbers: true,
-              questionLayout: 'scroll',
-            },
-            scoringSettings: {
-              enabled: !!existingSurveyData.scoreConfig?.enabled,
-              type: 'points',
-              showScore: existingSurveyData.scoreConfig?.enabled || false,
-              showCorrectAnswers: false,
-            },
-            questions: builderQuestions,
-            illustrationUrl: existingSurveyData.illustrationUrl,
-            estimatedMinutes: existingSurveyData.estimatedMinutes,
-            privacyStatement: existingSurveyData.privacyStatement,
-            dataUsageStatement: existingSurveyData.dataUsageStatement,
-            scoreConfig: existingSurveyData.scoreConfig,
-            createdAt: existingSurveyData.createdAt,
-            updatedAt: existingSurveyData.updatedAt,
-          }),
-          false
-        );
-        setLoadError(null);
-        setIsDirty(false);
-      } catch (err) {
-        console.error(`[SurveyBuilder] Failed to normalize questions for survey ${existingSurveyData.id}:`, err);
-        setLoadError('This survey has invalid questions and could not be loaded. See logs.');
-        toast({
-          title: 'Invalid survey data',
-          description: 'This survey has invalid questions and could not be loaded. See logs for details.',
-          variant: 'destructive',
+      // [SCORING-PIPELINE] Critical guard: if API had data but state has none, something is wrong
+      if (apiCategoriesCount > 0 && appliedCats === 0) {
+        console.error('[SCORING-PIPELINE] CRITICAL: Categories were lost during state merge!', {
+          surveyId: existingSurveyData.id,
+          apiCategoriesCount,
+          appliedCategoriesCount: appliedCats,
         });
       }
+      
+      setLoadError(null);
+      setIsDirty(false);
+    } catch (err) {
+      console.error(`[SurveyBuilder] Failed to normalize questions for survey ${existingSurveyData.id}:`, err);
+      setLoadError('This survey has invalid questions and could not be loaded. See logs.');
+      toast({
+        title: 'Invalid survey data',
+        description: 'This survey has invalid questions and could not be loaded. See logs for details.',
+        variant: 'destructive',
+      });
     }
   }, [existingSurveyData, applySurveyUpdate]);
 
@@ -1094,6 +1158,96 @@ export function SurveyBuilderProvider({
     setIsDirty(true);
   }, [applySurveyUpdate]);
 
+  const addLogicRule = useCallback((rule: Partial<LogicRule> & { questionId?: string }) => {
+    assertNotInRender('addLogicRule');
+    let createdRule: LogicRule | null = null;
+    applySurveyUpdate(prev => {
+      const targetId = rule.questionId || selectedQuestionId || prev.questions[0]?.id;
+      if (!targetId) return prev;
+      const questionIds = new Set(prev.questions.map((q) => q.id));
+      const idx = prev.questions.findIndex((q) => q.id === targetId);
+      if (idx === -1) return prev;
+      const newRule: LogicRule = {
+        id: rule.id || `logic-${Date.now()}`,
+        condition: rule.condition || '',
+        action: (rule.action as LogicRule['action']) || 'skip',
+        targetQuestionId: rule.targetQuestionId ?? null,
+      };
+      const nextRules = validateLogicRules([...(prev.questions[idx].logicRules || []), newRule], targetId, questionIds);
+      const updatedQuestion = validateBuilderQuestion({
+        ...prev.questions[idx],
+        logicRules: nextRules,
+        hasLogic: !!nextRules.length,
+      } as BuilderQuestion);
+      const nextQuestions = [...prev.questions];
+      nextQuestions[idx] = updatedQuestion;
+      createdRule = newRule;
+      return {
+        ...prev,
+        questions: nextQuestions,
+        updatedAt: new Date().toISOString(),
+      };
+    });
+    setIsDirty(true);
+    return createdRule;
+  }, [applySurveyUpdate, selectedQuestionId]);
+
+  const updateLogicRule = useCallback((id: string, patch: Partial<LogicRule>) => {
+    assertNotInRender('updateLogicRule');
+    applySurveyUpdate(prev => {
+      const questionIds = new Set(prev.questions.map((q) => q.id));
+      const idx = prev.questions.findIndex((q) => q.logicRules?.some((r) => r.id === id));
+      if (idx === -1) return prev;
+      const target = prev.questions[idx];
+      const nextRules = validateLogicRules(
+        (target.logicRules || []).map((r) => (r.id === id ? { ...r, ...patch } : r)),
+        target.id,
+        questionIds
+      );
+      const updatedQuestion = validateBuilderQuestion({
+        ...target,
+        logicRules: nextRules,
+        hasLogic: !!nextRules.length,
+      } as BuilderQuestion);
+      const nextQuestions = [...prev.questions];
+      nextQuestions[idx] = updatedQuestion;
+      return {
+        ...prev,
+        questions: nextQuestions,
+        updatedAt: new Date().toISOString(),
+      };
+    });
+    setIsDirty(true);
+  }, [applySurveyUpdate]);
+
+  const deleteLogicRule = useCallback((id: string) => {
+    assertNotInRender('deleteLogicRule');
+    applySurveyUpdate(prev => {
+      const questionIds = new Set(prev.questions.map((q) => q.id));
+      const idx = prev.questions.findIndex((q) => q.logicRules?.some((r) => r.id === id));
+      if (idx === -1) return prev;
+      const target = prev.questions[idx];
+      const nextRules = validateLogicRules(
+        (target.logicRules || []).filter((r) => r.id !== id),
+        target.id,
+        questionIds
+      );
+      const updatedQuestion = validateBuilderQuestion({
+        ...target,
+        logicRules: nextRules,
+        hasLogic: !!nextRules.length,
+      } as BuilderQuestion);
+      const nextQuestions = [...prev.questions];
+      nextQuestions[idx] = updatedQuestion;
+      return {
+        ...prev,
+        questions: nextQuestions,
+        updatedAt: new Date().toISOString(),
+      };
+    });
+    setIsDirty(true);
+  }, [applySurveyUpdate]);
+
   // ============================================
   // SCREEN UPDATES
   // ============================================
@@ -1135,7 +1289,7 @@ export function SurveyBuilderProvider({
     assertNotInRender('updateScoreConfig');
     applySurveyUpdate(prev => ({
       ...prev,
-      scoreConfig: normalizeScoringConfig({ ...prev.scoreConfig, ...updates }),
+      scoreConfig: normalizeScoringConfig({ ...(prev.scoreConfig ?? EMPTY_SCORE_CONFIG), ...updates }),
       updatedAt: new Date().toISOString(),
     }));
     setIsDirty(true);
@@ -1219,12 +1373,36 @@ export function SurveyBuilderProvider({
   // CONTEXT VALUE
   // ============================================
 
+  // [SCORING-PIPELINE] Context value memoization - exposes scoreConfig to consumers
   const value = useMemo<SurveyBuilderContextType>(() => {
     markRenderStart();
     try {
+      // [SCORING-PIPELINE] Derive scoreConfig for context consumers
+      const scoreConfig = survey.scoreConfig ?? EMPTY_SCORE_CONFIG;
+      const exposedCats = scoreConfig.categories?.length ?? 0;
+      const exposedBands = scoreConfig.scoreRanges?.length ?? 0;
+      
+      // [SCORING-PIPELINE] Debug logging for context value
+      // eslint-disable-next-line no-console
+      console.log('[SCORING-PIPELINE] Context exposing scoreConfig', {
+        surveyId: survey.id,
+        enabled: scoreConfig.enabled,
+        categoriesCount: exposedCats,
+        bandsCount: exposedBands,
+      });
+      
+      // [SCORING-PIPELINE] GUARD: Detect if enabled scoring has empty data
+      if (scoreConfig.enabled && (exposedCats === 0 || exposedBands === 0)) {
+        console.warn('[SCORING-PIPELINE] Context exposing enabled scoring with empty data!', {
+          surveyId: survey.id,
+          categoriesCount: exposedCats,
+          bandsCount: exposedBands,
+        });
+      }
       return {
         survey,
         questions: survey.questions,
+        scoreConfig,
         isDirty,
         isLoading,
         isSaving: saveMutation.isPending,
@@ -1259,6 +1437,9 @@ export function SurveyBuilderProvider({
         saveSurvey,
         loadSurvey,
         exportToEvalia,
+        addLogicRule,
+        updateLogicRule,
+        deleteLogicRule,
       };
     } finally {
       markRenderEnd();
@@ -1291,6 +1472,9 @@ export function SurveyBuilderProvider({
     saveSurvey,
     loadSurvey,
     exportToEvalia,
+    addLogicRule,
+    updateLogicRule,
+    deleteLogicRule,
     loadError,
   ]);
 

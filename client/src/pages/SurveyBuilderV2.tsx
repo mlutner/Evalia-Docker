@@ -1,15 +1,29 @@
-import { useRoute, useLocation } from 'wouter';
-import { SurveyBuilderProvider } from '@/contexts/SurveyBuilderContext';
-import { ProgressFlowStepper } from '@/components/builder-v2/ProgressFlowStepper';
-import { QuestionLibrary } from '@/components/builder-v2/QuestionLibrary';
-import { BuilderCanvas } from '@/components/builder-v2/BuilderCanvas';
-import { QuestionConfigPanel } from '@/components/builder-v2/QuestionConfigPanel';
-import { BuilderActionBar } from '@/components/builder-v2/BuilderActionBar';
+import { useMemo, useState } from "react";
+import { useRoute, useLocation } from "wouter";
+import { SurveyBuilderProvider } from "@/contexts/SurveyBuilderContext";
+import { ProgressFlowStepper } from "@/components/builder-v2/ProgressFlowStepper";
+import { QuestionLibrary } from "@/components/builder-v2/QuestionLibrary";
+import { BuilderCanvas } from "@/components/builder-v2/BuilderCanvas";
+import { QuestionConfigPanel } from "@/components/builder-v2/QuestionConfigPanel";
+import { BuilderActionBar } from "@/components/builder-v2/BuilderActionBar";
+import { SurveyDebugPanel } from "@/components/builder-v2/SurveyDebugPanel";
+import { BuilderModeToggle } from "@/components/builder-v2/BuilderModeToggle";
+import { LogicView } from "@/components/builder-extensions/LogicView";
+import { ScoringView } from "@/components/builder-extensions/ScoringView";
+import type { BuilderMode } from "@/types/builderModes";
+import { FEATURES } from "@/config/features";
+import type { LogicRule, ScoreBandConfig } from "@shared/schema";
+import { useSurveyBuilder } from "@/contexts/SurveyBuilderContext";
+import type {
+  QuestionScoringConfig,
+  ScoringCategory,
+} from "@/components/builder-extensions/INTEGRATION_GUIDE";
+import type { BuilderScoreBand } from "@/components/builder-extensions/scoring/BandEditor";
 
 export default function SurveyBuilderV2() {
   // Support both /builder/:id and /builder-v2/:id routes
-  const [, paramsV2] = useRoute('/builder-v2/:id');
-  const [, paramsBuilder] = useRoute('/builder/:id');
+  const [, paramsV2] = useRoute("/builder-v2/:id");
+  const [, paramsBuilder] = useRoute("/builder/:id");
   const surveyId = paramsV2?.id || paramsBuilder?.id;
 
   return (
@@ -21,37 +35,214 @@ export default function SurveyBuilderV2() {
 
 function SurveyBuilderContent({ surveyId }: { surveyId?: string }) {
   const [, setLocation] = useLocation();
+  // Future: switch between build | logic | scoring modes without altering current layout.
+  const [builderMode, setBuilderMode] = useState<BuilderMode>("build");
+  const [selectedQuestionId, setSelectedQuestionId] = useState<string | undefined>(undefined);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(undefined);
+  const [selectedBandId, setSelectedBandId] = useState<string | undefined>(undefined);
+  const [selectedLogicRuleId, setSelectedLogicRuleId] = useState<string | undefined>(undefined);
+  const modesEnabled = FEATURES.builderModesV2;
+  // [SCORING-PIPELINE] Get scoring data from BuilderContext
+  const {
+    survey,
+    questions,
+    addLogicRule,
+    updateLogicRule,
+    deleteLogicRule,
+    scoreConfig,
+  } = useSurveyBuilder();
+  
+  // [SCORING-PIPELINE] Build question-to-scoring mapping
+  const scoringByQuestionId = useMemo<Record<string, QuestionScoringConfig>>(
+    () =>
+      Object.fromEntries(
+        questions.map((q) => [
+          q.id,
+          {
+            scorable: !!q.scorable,
+            scoreWeight: q.scoreWeight ?? 1,
+            scoringCategory: q.scoringCategory,
+            scoreValues: q.scoreValues,
+          } satisfies QuestionScoringConfig,
+        ])
+      ),
+    [questions]
+  );
+  
+  // [SCORING-PIPELINE] Transform categories from scoreConfig for UI
+  const categories: ScoringCategory[] = useMemo(
+    () =>
+      (scoreConfig?.categories || []).map((cat) => ({
+        ...cat,
+        label: (cat as any).name ?? cat.label ?? cat.id,
+        description: (cat as any).description ?? "",
+      })),
+    [scoreConfig?.categories]
+  );
+  
+  // [SCORING-PIPELINE] Transform score bands from scoreConfig for UI
+  const bands: BuilderScoreBand[] = useMemo(
+    () =>
+      (scoreConfig?.scoreRanges || []).map((band: ScoreBandConfig) => ({
+        ...band,
+        description:
+          (band as any).longDescription ?? (band as any).shortDescription ?? (band as any).description ?? "",
+        color: (band as any).color ?? "",
+      })),
+    [scoreConfig?.scoreRanges]
+  );
+  
+  // [SCORING-PIPELINE] Log scoring data transformation
+  // eslint-disable-next-line no-console
+  console.log("[SCORING-PIPELINE] SurveyBuilderV2 scoring data", {
+    surveyId: survey.id,
+    contextEnabled: scoreConfig?.enabled,
+    contextCategoriesCount: scoreConfig?.categories?.length ?? 0,
+    contextBandsCount: scoreConfig?.scoreRanges?.length ?? 0,
+    mappedCategoriesCount: categories.length,
+    mappedBandsCount: bands.length,
+  });
+  
+  // [SCORING-PIPELINE] GUARD: Detect data loss during transformation
+  const rawCats = scoreConfig?.categories?.length ?? 0;
+  const rawBands = scoreConfig?.scoreRanges?.length ?? 0;
+  if (rawCats !== categories.length) {
+    console.error("[SCORING-PIPELINE] Categories lost during mapping!", {
+      surveyId: survey.id,
+      rawCount: rawCats,
+      mappedCount: categories.length,
+    });
+  }
+  if (rawBands !== bands.length) {
+    console.error("[SCORING-PIPELINE] Bands lost during mapping!", {
+      surveyId: survey.id,
+      rawCount: rawBands,
+      mappedCount: bands.length,
+    });
+  }
+  
+  // [SCORING-PIPELINE] GUARD: Warn if UI will display zeros for enabled scoring
+  if (scoreConfig?.enabled && (categories.length === 0 || bands.length === 0)) {
+    console.error("[SCORING-PIPELINE] UI will display zeros for enabled scoring!", {
+      surveyId: survey.id,
+      enabled: scoreConfig.enabled,
+      categoriesCount: categories.length,
+      bandsCount: bands.length,
+    });
+  }
 
   const handlePreview = () => {
     // Navigate to the Preview & Share page instead of opening a dialog
-    if (surveyId && surveyId !== 'new') {
+    if (surveyId && surveyId !== "new") {
       setLocation(`/preview-v2/${surveyId}`);
     } else {
       // For new surveys, we'd need to save first - the action bar should handle this
-      setLocation('/preview-v2/new');
+      setLocation("/preview-v2/new");
     }
   };
 
+  const centerPanel = useMemo(() => {
+    if (!modesEnabled) return <BuilderCanvas />;
+    if (builderMode === "logic") {
+      const allRules: LogicRule[] = questions.flatMap((q) => q.logicRules || []);
+      const handleUpdateRule = (rule: LogicRule) => updateLogicRule(rule.id, rule);
+      const handleDeleteRule = (id: string) => {
+        deleteLogicRule(id);
+        if (selectedLogicRuleId === id) setSelectedLogicRuleId(undefined);
+      };
+      const handleCreateRule = () => {
+        const created = addLogicRule({
+          questionId: questions[0]?.id,
+          condition: "",
+          action: "skip",
+          targetQuestionId: null,
+        });
+        if (created) setSelectedLogicRuleId(created.id);
+      };
+
+      return (
+        <LogicView
+          rules={allRules}
+          questions={questions}
+          selectedRuleId={selectedLogicRuleId}
+          onSelectRule={setSelectedLogicRuleId}
+          onUpdateRule={handleUpdateRule}
+          onDeleteRule={handleDeleteRule}
+          onCreateRule={handleCreateRule}
+          onClosePanel={() => setBuilderMode("build")}
+        />
+      );
+    }
+    if (builderMode === "scoring") {
+      return (
+        <ScoringView
+          questions={questions}
+          scoringByQuestionId={scoringByQuestionId}
+          categories={categories}
+          bands={bands}
+          selectedQuestionId={selectedQuestionId}
+          selectedCategoryId={selectedCategoryId}
+          selectedBandId={selectedBandId}
+          onSelectQuestion={setSelectedQuestionId}
+          onSelectCategory={setSelectedCategoryId}
+          onSelectBand={setSelectedBandId}
+          onClosePanel={() => setBuilderMode("build")}
+        />
+      );
+    }
+    return <BuilderCanvas />;
+  }, [
+    builderMode,
+    modesEnabled,
+    questions,
+    scoringByQuestionId,
+    categories,
+    bands,
+    selectedQuestionId,
+    selectedCategoryId,
+    selectedBandId,
+    selectedLogicRuleId,
+    addLogicRule,
+    updateLogicRule,
+    deleteLogicRule,
+  ]);
+
+  const rightPanel = useMemo(() => {
+    if (!modesEnabled) return <QuestionConfigPanel />;
+    if (builderMode === 'build') return <QuestionConfigPanel />;
+    return null;
+  }, [builderMode, modesEnabled]);
+
   return (
-    <div className="absolute inset-0 bg-gray-50 font-sans flex flex-col overflow-hidden">
+    <div className="absolute inset-0 bg-gray-50 font-sans flex flex-col overflow-hidden" data-builder-mode={builderMode}>
       {/* Top Bar: Progress Flow Stepper */}
       <ProgressFlowStepper surveyId={surveyId} />
+
+      {modesEnabled && (
+        <div className="border-b border-gray-200 bg-white">
+          <div className="px-4 py-2">
+            <BuilderModeToggle mode={builderMode} onChange={setBuilderMode} />
+          </div>
+        </div>
+      )}
 
       {/* 3-Panel Layout - takes remaining height */}
       <div className="flex flex-1 min-h-0 overflow-hidden">
         {/* Left Panel: Question Library */}
         <QuestionLibrary />
 
-        {/* Center Panel: Canvas */}
-        <BuilderCanvas />
-
-        {/* Right Panel: Question Configuration */}
-        <QuestionConfigPanel />
+        {/* Center + Right Panel */}
+        <div className="flex flex-1 min-h-0 overflow-hidden">
+          <div className="flex-1 min-h-0">{centerPanel}</div>
+          {rightPanel}
+        </div>
       </div>
 
       {/* Bottom Action Bar */}
       <BuilderActionBar onPreview={handlePreview} />
+
+      {/* Dev-only debug surface */}
+      <SurveyDebugPanel />
     </div>
   );
 }
-

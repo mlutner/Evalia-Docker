@@ -27,7 +27,11 @@ export interface IStorage {
   deleteRespondent(id: string): Promise<boolean>;
 
   // Response operations
-  createResponse(surveyId: string, answers: Record<string, string | string[]>): Promise<SurveyResponse>;
+  createResponse(
+    surveyId: string,
+    answers: Record<string, string | string[]>,
+    scoringEngineId?: string
+  ): Promise<SurveyResponse>;
   getResponses(surveyId: string): Promise<SurveyResponse[]>;
   getResponseCount(surveyId: string): Promise<number>;
   getResponseCountsByIds(surveyIds: string[]): Promise<Record<string, number>>;
@@ -379,7 +383,11 @@ export class MemStorage implements IStorage {
     return newSurvey;
   }
 
-  async createResponse(surveyId: string, answers: Record<string, string | string[]>): Promise<SurveyResponse> {
+  async createResponse(
+    surveyId: string,
+    answers: Record<string, string | string[]>,
+    scoringEngineId: string = "engagement_v1"
+  ): Promise<SurveyResponse> {
     const now = new Date();
     const response: SurveyResponse = {
       id: randomUUID(),
@@ -387,6 +395,7 @@ export class MemStorage implements IStorage {
       answers,
       startedAt: now,
       completedAt: now,
+      scoringEngineId,
     };
     this.responses.set(response.id, response);
     return response;
@@ -530,9 +539,24 @@ export class DbStorage implements IStorage {
     return result[0];
   }
 
+  // [SCORING-PIPELINE] Retrieve survey by ID with scoreConfig
   async getSurvey(id: string): Promise<Survey | undefined> {
     const result = await db.select().from(surveys).where(eq(surveys.id, id)).limit(1);
-    return result[0];
+    const survey = result[0];
+    
+    // [SCORING-PIPELINE] Log scoreConfig from DB
+    if (survey) {
+      const scoreConfig = survey.scoreConfig;
+      console.log("[SCORING-PIPELINE] Storage.getSurvey returning", {
+        surveyId: id,
+        hasScoreConfig: !!scoreConfig,
+        enabled: scoreConfig?.enabled,
+        categoriesCount: scoreConfig?.categories?.length ?? 0,
+        bandsCount: scoreConfig?.scoreRanges?.length ?? 0,
+      });
+    }
+    
+    return survey;
   }
 
   async getAllSurveys(userId: string): Promise<Survey[]> {
@@ -542,7 +566,19 @@ export class DbStorage implements IStorage {
       .orderBy(sql`${surveys.createdAt} DESC`);
   }
 
+  // [SCORING-PIPELINE] Create survey with scoreConfig
   async createSurvey(insertSurvey: InsertSurvey, userId: string): Promise<Survey> {
+    // [SCORING-PIPELINE] Log scoreConfig being created
+    if (insertSurvey.scoreConfig !== undefined) {
+      const scoreConfig = insertSurvey.scoreConfig;
+      console.log("[SCORING-PIPELINE] Storage.createSurvey with scoreConfig", {
+        hasScoreConfig: !!scoreConfig,
+        enabled: scoreConfig?.enabled,
+        categoriesCount: scoreConfig?.categories?.length ?? 0,
+        bandsCount: scoreConfig?.scoreRanges?.length ?? 0,
+      });
+    }
+    
     const result = await db.insert(surveys).values({
       ...insertSurvey,
       userId,
@@ -558,7 +594,31 @@ export class DbStorage implements IStorage {
     return result[0]?.userId === userId;
   }
 
+  // [SCORING-PIPELINE] Update survey with scoreConfig
   async updateSurvey(id: string, updates: Partial<InsertSurvey>): Promise<Survey | undefined> {
+    // [SCORING-PIPELINE] Log scoreConfig being saved
+    if (updates.scoreConfig !== undefined) {
+      const scoreConfig = updates.scoreConfig;
+      console.log("[SCORING-PIPELINE] Storage.updateSurvey saving scoreConfig", {
+        surveyId: id,
+        hasScoreConfig: !!scoreConfig,
+        enabled: scoreConfig?.enabled,
+        categoriesCount: scoreConfig?.categories?.length ?? 0,
+        bandsCount: scoreConfig?.scoreRanges?.length ?? 0,
+      });
+      
+      // [SCORING-PIPELINE] GUARD: Warn if saving enabled scoring with empty data
+      if (scoreConfig?.enabled && 
+          ((!scoreConfig.categories || scoreConfig.categories.length === 0) || 
+           (!scoreConfig.scoreRanges || scoreConfig.scoreRanges.length === 0))) {
+        console.warn("[SCORING-PIPELINE] Saving enabled scoring with empty categories/bands!", {
+          surveyId: id,
+          categoriesCount: scoreConfig.categories?.length ?? 0,
+          bandsCount: scoreConfig.scoreRanges?.length ?? 0,
+        });
+      }
+    }
+    
     const result = await db.update(surveys)
       .set({ ...updates, updatedAt: new Date() })
       .where(eq(surveys.id, id))
@@ -602,10 +662,15 @@ export class DbStorage implements IStorage {
     return newSurvey;
   }
 
-  async createResponse(surveyId: string, answers: Record<string, string | string[]>): Promise<SurveyResponse> {
+  async createResponse(
+    surveyId: string,
+    answers: Record<string, string | string[]>,
+    scoringEngineId: string = "engagement_v1"
+  ): Promise<SurveyResponse> {
     const result = await db.insert(surveyResponses).values({
       surveyId,
       answers,
+      scoringEngineId,
     }).returning();
     return result[0];
   }
