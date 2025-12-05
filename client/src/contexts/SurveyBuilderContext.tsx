@@ -746,10 +746,23 @@ export function SurveyBuilderProvider({
   const [selectedSection, setSelectedSection] = useState<'welcome' | 'questions' | 'thankYou' | 'scoring' | 'results' | null>(null);
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
+  // [SCORING-PIPELINE] Central state update function
   const applySurveyUpdate = useCallback(
     (updater: (prev: BuilderSurvey) => BuilderSurvey, recordHistory = true) => {
       setSurvey((prev) => {
         const next = updater(prev);
+        
+        // [SCORING-PIPELINE] Log state transition for scoreConfig
+        console.log('[SCORING-PIPELINE] applySurveyUpdate state transition', {
+          prevSurveyId: prev.id,
+          nextSurveyId: next.id,
+          prevScoreConfigCats: prev.scoreConfig?.categories?.length ?? 0,
+          prevScoreConfigBands: prev.scoreConfig?.scoreRanges?.length ?? 0,
+          nextScoreConfigCats: next.scoreConfig?.categories?.length ?? 0,
+          nextScoreConfigBands: next.scoreConfig?.scoreRanges?.length ?? 0,
+          recordHistory,
+        });
+        
         if (recordHistory) {
           pushHistory(prev, setHistory);
         }
@@ -863,7 +876,18 @@ export function SurveyBuilderProvider({
     queryFn: async () => {
       if (!surveyId || surveyId === 'new') return null;
       const res = await apiRequest('GET', `/api/surveys/${surveyId}`);
-      return res.json();
+      const data = await res.json();
+      
+      // [SCORING-PIPELINE] Log raw API payload IMMEDIATELY after fetch, before any processing
+      console.log('[SCORING-PIPELINE] Raw API survey payload', {
+        surveyId: data.id,
+        hasScoreConfig: !!data.scoreConfig,
+        enabled: data.scoreConfig?.enabled,
+        categoriesCount: data.scoreConfig?.categories?.length ?? 0,
+        bandsCount: data.scoreConfig?.scoreRanges?.length ?? 0,
+      });
+      
+      return data;
     },
     enabled: !!surveyId && surveyId !== 'new',
   });
