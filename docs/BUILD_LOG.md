@@ -2,6 +2,20 @@
 
 Short, dated notes for significant architecture or builder/runtime changes.
 
+- 2025-12-05: **Validation UX + Audit Logging**
+  - **Phase 4: Better UX for validation issues**
+    - `ValidationIssueBadge`: Shows error/warning counts with icons
+    - `ValidationIssuesModal`: Publish failure modal with grouped issues and jump-to links
+    - `useValidation` hook: Memoized validation with helpers for filtering by question/rule/category
+    - Updated `BuilderModeToggle` to show issue badges per mode (Logic/Scoring)
+    - Updated `LogicRuleCard` to show inline issue messages and severity indicators
+  - **Phase 5: Audit logging for analytics**
+    - `server/auditLog.ts`: Structured logging for scoring/logic events
+    - Logs only IDs and numeric values (NO PII or free-text)
+    - Feature-flagged via `AUDIT_LOG_ENABLED` env var
+    - Wired into response submission to log scoring completions
+    - Log format: `[AUDIT] {"type":"scoring_complete",...}`
+
 - 2025-12-05: **Logic & Scoring Validation Layer**
   - Created comprehensive architecture audit (`docs/LOGIC_SCORING_ARCHITECTURE.md`)
   - **Logic Validator** (`client/src/utils/logicValidator.ts`):

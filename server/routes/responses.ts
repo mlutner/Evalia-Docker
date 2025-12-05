@@ -11,6 +11,7 @@ import { isAuthenticated } from "../replitAuth";
 import { analyzeResponses } from "../responseAnalysis";
 import { computeSurveyScore } from "../utils/scoring";
 import { resolveBand as resolveBandCore } from "@core/scoring/resolveBand";
+import { logScoringComplete } from "../auditLog";
 
 const router = Router();
 
@@ -73,6 +74,23 @@ router.post("/:id/responses", async (req, res) => {
 
     const response = await storage.createResponse(id, answers, engineId);
     console.log(`[Response Routes] Response created for survey ${id}:`, response.id);
+    
+    // Audit log for scoring
+    if (scoring) {
+      logScoringComplete({
+        surveyId: id,
+        responseId: response.id,
+        scoringEngineId: engineId,
+        scoreConfigVersion: survey.scoreConfig?.version,
+        totalScore: scoring.totalScore,
+        maxScore: scoring.maxScore,
+        percentage: scoring.percentage,
+        bandId: band?.id ?? null,
+        bandLabel: band?.label ?? null,
+        categoryCount: Object.keys(scoring.byCategory).length,
+      });
+    }
+    
     const responseBody: any = { ...response };
     if (scoring) {
       responseBody.scoring = scoring;

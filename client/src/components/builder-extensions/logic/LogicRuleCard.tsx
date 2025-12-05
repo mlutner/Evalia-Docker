@@ -3,8 +3,9 @@
  * LogicRuleCard - Compact card for left panel rule list
  */
 import React from 'react';
-import { ArrowRight, Eye, EyeOff, XCircle, AlertCircle } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, XCircle, AlertCircle, AlertTriangle } from 'lucide-react';
 import type { BuilderLogicRule } from '../INTEGRATION_GUIDE';
+import type { ValidationIssue } from '@/utils/surveyValidator';
 
 interface LogicRuleCardProps {
   rule: BuilderLogicRule;
@@ -12,6 +13,7 @@ interface LogicRuleCardProps {
   onClick?: () => void;
   questionText?: string;
   conflictingRules?: string[];
+  issues?: ValidationIssue[];
 }
 
 /**
@@ -52,12 +54,16 @@ export function LogicRuleCard({
   isSelected = false,
   onClick,
   questionText,
-  conflictingRules = []
+  conflictingRules = [],
+  issues = []
 }: LogicRuleCardProps) {
   const rawCondition = (rule as any).conditionLabel || rule.condition || '';
   const conditionLabel = formatCondition(rawCondition);
   const actionLabel = (rule as any).actionLabel || rule.action || '';
   const hasConflict = conflictingRules.length > 0;
+  const firstError = issues.find(i => i.severity === 'error');
+  const firstWarning = issues.find(i => i.severity === 'warning');
+  const firstIssue = firstError || firstWarning;
 
   const getActionIcon = () => {
     const action = actionLabel.toLowerCase();
@@ -125,10 +131,25 @@ export function LogicRuleCard({
               )}
             </span>
             
-            {hasConflict && (
-              <AlertCircle size={12} className="text-amber-500" />
+            {(hasConflict || issues.length > 0) && (
+              firstError ? (
+                <AlertCircle size={12} className="text-red-500" />
+              ) : (
+                <AlertTriangle size={12} className="text-amber-500" />
+              )
             )}
           </div>
+
+          {/* Issue message (inline) */}
+          {firstIssue && (
+            <div className={`mt-1.5 text-[10px] px-1.5 py-1 rounded ${
+              firstIssue.severity === 'error' 
+                ? 'bg-red-50 text-red-600' 
+                : 'bg-amber-50 text-amber-600'
+            }`}>
+              {firstIssue.message}
+            </div>
+          )}
         </div>
       </div>
     </button>
