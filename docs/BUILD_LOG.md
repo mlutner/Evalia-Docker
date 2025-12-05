@@ -2,6 +2,25 @@
 
 Short, dated notes for significant architecture or builder/runtime changes.
 
+- 2025-12-05: **Logic & Scoring Validation Layer**
+  - Created comprehensive architecture audit (`docs/LOGIC_SCORING_ARCHITECTURE.md`)
+  - **Logic Validator** (`client/src/utils/logicValidator.ts`):
+    - Builds question graph from survey (nodes + logic edges)
+    - Detects: missing targets, backwards jumps/cycles, unreachable questions, conflicting rules
+    - Returns structured `LogicValidationResult[]` with severity levels
+  - **Scoring Validator** (`client/src/utils/scoringValidator.ts`):
+    - Validates band coverage (no gaps 0-100), detects overlaps
+    - Checks category usage (no orphans), invalid category references
+    - Warns on weight imbalance and missing option scores
+  - **Combined Validator** (`client/src/utils/surveyValidator.ts`):
+    - `validateSurveyBeforePublish()` runs both logic + scoring checks
+    - Returns unified `SurveyValidationResult` with summary counts
+    - Includes general checks: empty questions, duplicate IDs, question limits
+  - **Test Suite** (`client/src/__tests__/validation/`):
+    - Logic validator tests: linear survey, missing targets, cycles, conflicts
+    - Scoring validator tests: band gaps, overlaps, category usage, weights
+  - Ready to wire into save/publish flow (UI integration pending)
+
 - 2025-12-05: **Builder V2 – Typography & header polish**
   - Created consistent section headers across Build, Logic, and Scoring modes
   - Unified header style: 15px medium text for section titles, 13px gray context/counts
