@@ -64,13 +64,13 @@ Without versioning, if an admin changes band thresholds or category weights, all
 ## Completion Checklist
 
 - [x] Code compiles (`npm run check`) - pre-existing errors only
-- [ ] Migration runs successfully (needs to be tested on actual database)
+- [x] Migration runs successfully
 - [x] No forbidden files changed
 - [x] Versions created on publish
 - [x] Responses link to versions
 - [x] Historical scores unchanged (by design - versions are immutable)
 - [x] BUILD_LOG.md updated
-- [ ] Committed with `[SCORE-001]` prefix
+- [x] Committed with `[SCORE-001]` prefix
 
 ## Implementation Notes (2025-12-06)
 
@@ -81,8 +81,13 @@ Without versioning, if an admin changes band thresholds or category weights, all
 - `server/routes/surveys.ts` - Auto-creates version on publish (status -> "Active")
 - `server/routes/responses.ts` - Links responses to latest version ID
 
-**Status: CODE COMPLETE**
-- All code changes implemented
-- Migration script ready to run
-- Needs testing with real database to verify migration works
+**Status: ✅ COMPLETE & TESTED**
+
+**Test Results (2025-12-05):**
+- Migration ran successfully on local Postgres
+- Version 1 created when survey published (status → "Active")
+- Version 2 created on re-publish
+- Response 1 correctly linked to version 1
+- Response 2 correctly linked to version 2
+- All categories/bands preserved in JSONB snapshot
 
