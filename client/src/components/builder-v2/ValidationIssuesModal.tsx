@@ -7,21 +7,30 @@ import { X, AlertCircle, AlertTriangle, ChevronRight, GitBranch, BarChart3 } fro
 import type { SurveyValidationResult, ValidationIssue } from '@/utils/surveyValidator';
 
 interface ValidationIssuesModalProps {
-  isOpen: boolean;
+  open?: boolean;  // Alias for isOpen
+  isOpen?: boolean;
   onClose: () => void;
-  validationResult: SurveyValidationResult;
+  validation?: SurveyValidationResult;  // Alias for validationResult
+  validationResult?: SurveyValidationResult;
   onJumpToIssue?: (issue: ValidationIssue) => void;
+  onSaveAnyway?: () => void;  // [LOGIC-001] Callback for "Save Anyway" button
 }
 
 export function ValidationIssuesModal({
+  open,
   isOpen,
   onClose,
+  validation,
   validationResult,
   onJumpToIssue,
+  onSaveAnyway,
 }: ValidationIssuesModalProps) {
-  if (!isOpen) return null;
+  const actualIsOpen = open ?? isOpen ?? false;
+  const actualValidationResult = validation ?? validationResult;
+  
+  if (!actualIsOpen || !actualValidationResult) return null;
 
-  const { issues, summary } = validationResult;
+  const { issues, summary } = actualValidationResult;
   const logicIssues = issues.filter(i => i.domain === 'logic');
   const scoringIssues = issues.filter(i => i.domain === 'scoring');
   const generalIssues = issues.filter(i => i.domain === 'general');
@@ -109,14 +118,14 @@ export function ValidationIssuesModal({
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            Close
+            {hasErrors ? 'Fix Issues' : 'Close'}
           </button>
-          {!hasErrors && (
+          {!hasErrors && onSaveAnyway && (
             <button
-              onClick={onClose}
+              onClick={onSaveAnyway}
               className="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
             >
-              Publish Anyway
+              Save Anyway
             </button>
           )}
         </div>

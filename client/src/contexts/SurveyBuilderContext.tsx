@@ -15,6 +15,7 @@ import { validateLogicRules } from '@/utils/validateLogicRules';
 import { clampScoreWeight, normalizeScoringConfig, sanitizeOptionScores } from '@/utils/normalizeScoringConfig';
 import { logBuilderMutation } from '@/utils/builderAuditLog';
 import { checkSurveyIntegrity } from '@/utils/checkSurveyIntegrity';
+import { validateSurveyBeforePublish, type SurveyValidationResult } from '@/utils/surveyValidator';
 
 // ============================================
 // TYPE DEFINITIONS
@@ -330,7 +331,8 @@ interface SurveyBuilderContextType {
   toggleRightPanel: () => void;
   
   // API operations
-  saveSurvey: () => Promise<string | null>;
+  saveSurvey: (options?: { skipValidation?: boolean }) => Promise<{ id: string | null; validation: SurveyValidationResult | null }>;
+  validateSurvey: () => SurveyValidationResult;
   loadSurvey: (id: string) => void;
   exportToEvalia: () => any; // Returns Evalia-compatible survey data
 }
@@ -1508,20 +1510,50 @@ export function SurveyBuilderProvider({
 
   const exportToEvalia = useCallback(() => exportSurveyToEvalia(survey), [survey]);
 
-  const saveSurvey = useCallback(async (): Promise<string | null> => {
+  // [LOGIC-001] Validate survey before save/publish
+  const validateSurvey = useCallback((): SurveyValidationResult => {
+    const questions = survey.questions.map(q => ({
+      ...q,
+      logicRules: q.logicRules || [],
+    }));
+    return validateSurveyBeforePublish(questions as any, survey.scoreConfig ?? undefined);
+  }, [survey]);
+
+  const saveSurvey = useCallback(async (options?: { skipValidation?: boolean }): Promise<{ id: string | null; validation: SurveyValidationResult | null }> => {
     assertNotInRender('saveSurvey');
+    
+    // [LOGIC-001] Run validation before save
+    const validation = validateSurvey();
+    
+    if (import.meta.env.DEV) {
+      console.log('[SurveyBuilder] Validation result:', {
+        errorCount: validation.errors.length,
+        warningCount: validation.warnings.length,
+        logicIssues: validation.logic.length,
+        scoringIssues: validation.scoring.length,
+      });
+    }
+    
+    // Block save if there are errors (unless explicitly skipped)
+    if (!options?.skipValidation && validation.errors.length > 0) {
+      console.warn('[SurveyBuilder] Save blocked due to validation errors', validation.errors);
+      return { id: null, validation };
+    }
+    
+    // Legacy integrity check (in addition to new validators)
     const report = checkSurveyIntegrity(survey);
     if (!report.isHealthy) {
       console.warn('[SurveyBuilder] Integrity warnings before save', report.issues);
     }
+    
     const evaliaData = exportToEvalia();
     try {
       const result = await saveMutation.mutateAsync(evaliaData);
-      return result.id;
+      return { id: result.id, validation };
     } catch {
-      return null;
+      return { id: null, validation };
     }
-  }, [exportToEvalia, saveMutation, survey]);
+  }, [exportToEvalia, saveMutation, survey, validateSurvey]);
 
   const loadSurvey = useCallback((id: string) => {
     // Trigger refetch by invalidating query
@@ -1624,6 +1656,7 @@ export function SurveyBuilderProvider({
         toggleRightPanel,
         
         saveSurvey,
+        validateSurvey,
         loadSurvey,
         exportToEvalia,
         addLogicRule,
@@ -1666,6 +1699,7 @@ export function SurveyBuilderProvider({
     toggleLeftPanel,
     toggleRightPanel,
     saveSurvey,
+    validateSurvey,
     loadSurvey,
     exportToEvalia,
     addLogicRule,

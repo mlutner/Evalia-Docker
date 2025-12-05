@@ -408,6 +408,25 @@ export const surveys = pgTable("surveys", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// SCORE CONFIG VERSIONS TABLE (SCORE-001)
+// ═══════════════════════════════════════════════════════════════════════════════
+// Stores immutable snapshots of scoring config at publish time.
+// Responses reference these versions so historical scores remain stable when config changes.
+
+export const scoreConfigVersions = pgTable("score_config_versions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  surveyId: varchar("survey_id").notNull().references(() => surveys.id),
+  versionNumber: integer("version_number").notNull(),
+  configSnapshot: jsonb("config_snapshot").notNull().$type<SurveyScoreConfig>(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => [
+  index("idx_score_config_versions_survey").on(table.surveyId),
+]);
+
+export type ScoreConfigVersion = typeof scoreConfigVersions.$inferSelect;
+export type InsertScoreConfigVersion = typeof scoreConfigVersions.$inferInsert;
+
 // Survey respondents table (Phase 4)
 export const surveyRespondents = pgTable("survey_respondents", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -484,9 +503,11 @@ export const surveyResponses = pgTable("survey_responses", {
   ipHash: varchar("ip_hash"), // hashed IP for unique visitor tracking (privacy-friendly)
   sessionId: varchar("session_id"), // for tracking return visitors
   scoringEngineId: varchar("scoring_engine_id").notNull().default("engagement_v1"), // engine used to score this response
+  scoreConfigVersionId: varchar("score_config_version_id").references(() => scoreConfigVersions.id), // [SCORE-001] Links to immutable scoring config snapshot
 }, (table) => [
   index("idx_survey_responses_survey_id").on(table.surveyId),
   index("idx_survey_responses_completed_at").on(table.completedAt),
+  index("idx_survey_responses_score_config_version").on(table.scoreConfigVersionId),
 ]);
 
 export type SurveyResponse = typeof surveyResponses.$inferSelect;

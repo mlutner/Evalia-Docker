@@ -238,6 +238,21 @@ router.put("/:id", isAuthenticated, async (req, res) => {
     };
 
     const survey = await storage.updateSurvey(id, surveyUpdates);
+    
+    // [SCORE-001] Create score config version when publishing with scoring enabled
+    const isPublishing = updates.status === "Active" && currentSurvey.status !== "Active";
+    const hasScoring = survey?.scoreConfig?.enabled;
+    
+    if (isPublishing && hasScoring && survey?.scoreConfig) {
+      try {
+        const version = await storage.createScoreConfigVersion(id, survey.scoreConfig);
+        console.log(`[Survey Routes] Created score config version ${version.versionNumber} on publish`);
+      } catch (versionError) {
+        console.error("[Survey Routes] Failed to create score config version:", versionError);
+        // Don't fail the publish, just log the error
+      }
+    }
+    
     const responseCount = await storage.getResponseCount(survey?.id || id);
     const questionCount = survey?.questions?.length || 0;
     

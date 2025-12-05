@@ -2,6 +2,32 @@
 
 Short, dated notes for significant architecture or builder/runtime changes.
 
+- 2025-12-06: **[SCORE-001] Score Config Versioning**
+  - **Database Schema**: Added `score_config_versions` table to store immutable scoring config snapshots
+    - Fields: `id`, `survey_id`, `version_number`, `config_snapshot` (JSONB), `created_at`
+    - Auto-incrementing version number per survey
+  - **Response Linking**: Added `score_config_version_id` to `survey_responses` table
+  - **Storage Layer**: Added CRUD operations in `IStorage` interface and both `MemStorage`/`DbStorage` implementations
+    - `createScoreConfigVersion()`: Creates new version, auto-increments version number
+    - `getScoreConfigVersion()`: Fetch by ID
+    - `getLatestScoreConfigVersion()`: Get most recent version for a survey
+    - `getScoreConfigVersions()`: List all versions for a survey
+  - **Publish Hook**: When survey status changes to "Active" with scoring enabled, auto-creates version snapshot
+  - **Response Submission**: Now links each response to the latest score config version
+  - **Migration**: `migrations/0002_add_score_config_versions.sql` with all schema changes
+  - This enables historical score stability - editing scoring config won't retroactively change past scores
+
+- 2025-12-06: **[LOGIC-001] Validation Wired into Save Flow**
+  - **SurveyBuilderContext**: `saveSurvey()` now calls `validateSurveyBeforePublish()` before save
+    - Returns `{ id, validation }` instead of just ID
+    - If errors exist, save is blocked (unless `skipValidation: true`)
+    - `validateSurvey()` function exposed for manual validation
+  - **BuilderActionBar**: Save button now shows `ValidationIssuesModal` on validation failure
+    - If errors: blocks save, shows "Fix Issues" button
+    - If only warnings: allows "Save Anyway" option
+  - **ValidationIssuesModal**: Updated to support `onSaveAnyway` callback and flexible prop names
+  - **surveyValidator.ts**: Added convenience arrays (`errors`, `warnings`, `logic`, `scoring`) for easier access
+
 - 2025-12-05: **Validation UX + Audit Logging**
   - **Phase 4: Better UX for validation issues**
     - `ValidationIssueBadge`: Shows error/warning counts with icons

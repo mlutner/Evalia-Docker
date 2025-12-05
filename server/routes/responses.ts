@@ -65,6 +65,11 @@ router.post("/:id/responses", async (req, res) => {
 
     const engineId: ScoringEngineId = (survey as any).scoringEngineId ?? "engagement_v1";
 
+    // [SCORE-001] Get latest score config version for this survey
+    const scoreConfigVersion = survey.scoreConfig?.enabled 
+      ? await storage.getLatestScoreConfigVersion(id)
+      : null;
+    
     const scoring =
       survey.scoreConfig?.enabled
         ? computeSurveyScore({ survey, responses: answers })
@@ -72,8 +77,10 @@ router.post("/:id/responses", async (req, res) => {
     const scoreRanges = survey.scoreConfig?.resultsScreen?.scoreRanges ?? [];
     const band = scoring ? resolveBandCore(scoring.percentage, scoreRanges) : null;
 
-    const response = await storage.createResponse(id, answers, engineId);
-    console.log(`[Response Routes] Response created for survey ${id}:`, response.id);
+    // [SCORE-001] Pass version ID to response creation
+    const response = await storage.createResponse(id, answers, engineId, scoreConfigVersion?.id);
+    console.log(`[Response Routes] Response created for survey ${id}:`, response.id, 
+      scoreConfigVersion ? `(score config version: ${scoreConfigVersion.versionNumber})` : '(no scoring)');
     
     // Audit log for scoring
     if (scoring) {

@@ -38,6 +38,11 @@ export interface SurveyValidationResult {
   isValid: boolean;
   canPublish: boolean;
   issues: ValidationIssue[];
+  // Convenience arrays for quick access
+  errors: ValidationIssue[];
+  warnings: ValidationIssue[];
+  logic: ValidationIssue[];
+  scoring: ValidationIssue[];
   summary: {
     logic: { errorCount: number; warningCount: number; infoCount: number };
     scoring: { errorCount: number; warningCount: number; infoCount: number };
@@ -97,15 +102,20 @@ export function validateSurveyBeforePublish(
   // Add general validations
   issues.push(...validateGeneral(questions, scoreConfig));
 
-  // Calculate totals
-  const totalErrors = issues.filter(i => i.severity === 'error').length;
-  const totalWarnings = issues.filter(i => i.severity === 'warning').length;
-  const totalInfo = issues.filter(i => i.severity === 'info').length;
+  // Calculate totals and convenience arrays
+  const errors = issues.filter(i => i.severity === 'error');
+  const warnings = issues.filter(i => i.severity === 'warning');
+  const logic = issues.filter(i => i.domain === 'logic');
+  const scoring = issues.filter(i => i.domain === 'scoring');
 
   return {
-    isValid: totalErrors === 0,
-    canPublish: totalErrors === 0, // Could be more strict, e.g., require 0 warnings
+    isValid: errors.length === 0,
+    canPublish: errors.length === 0, // Could be more strict, e.g., require 0 warnings
     issues,
+    errors,
+    warnings,
+    logic,
+    scoring,
     summary: {
       logic: {
         errorCount: logicSummary.errorCount,
@@ -118,9 +128,9 @@ export function validateSurveyBeforePublish(
         infoCount: scoringSummary.infoCount,
       },
       total: {
-        errorCount: totalErrors,
-        warningCount: totalWarnings,
-        infoCount: totalInfo,
+        errorCount: errors.length,
+        warningCount: warnings.length,
+        infoCount: issues.filter(i => i.severity === 'info').length,
       },
     },
   };
