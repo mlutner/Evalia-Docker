@@ -57,7 +57,81 @@
 
 ## 📋 Product Roadmap
 
-### Phase 1: Core Stability (Current Focus)
+### Phase 0: Analytics Ecosystem (Priority Focus)
+
+> **"The builder is no longer the bottleneck. The bottleneck is analytics, distribution, reporting, admin control."**
+
+#### 1. Survey Analytics Dashboard (Per Survey)
+| Section | Priority | Status | Notes |
+|---------|----------|--------|-------|
+| **Participation Metrics** | High | 🔲 TODO | Response rate, drop-off, completion time |
+| **Category Score Visualization** | High | 🔲 TODO | Bar charts, heatmap by category |
+| **Band Distribution Chart** | High | 🔲 TODO | Pie/donut showing % in each band |
+| **Question-Level Summary Table** | High | 🔲 TODO | Score per question, response distribution |
+| **Open-Text Preview** | Medium | 🔲 TODO | Keywords, sentiment (optional AI) |
+| **Filter Sidebar** | High | 🔲 TODO | Department, date range, role, custom fields |
+| **Tab Navigation** | High | 🔲 TODO | Overview, Participation, Categories, Questions, Comments, Export |
+
+**UI Requirements:**
+- Match builder layout spacing + typography
+- Card-based metrics with trend arrows and deltas
+- Responsive tables with sorting/filtering
+
+#### 2. Global Analytics Overview Page
+| Feature | Priority | Status |
+|---------|----------|--------|
+| Total surveys count | High | 🔲 TODO |
+| Active surveys count | High | 🔲 TODO |
+| Total responses (last 30 days) | High | 🔲 TODO |
+| Avg responses per survey | Medium | 🔲 TODO |
+| Trend indicators (↑↓) | Medium | 🔲 TODO |
+| Recent surveys list | High | 🔲 TODO |
+| Mini sparkline charts | Medium | 🔲 TODO |
+| Organization health score | Low | 🔲 Backlog |
+
+#### 3. Response Browser
+| Feature | Priority | Status |
+|---------|----------|--------|
+| Paginated response table | High | 🔲 TODO |
+| Per-response detail panel | High | 🔲 TODO |
+| Link to scoring results | High | 🔲 TODO |
+| CSV export | High | 🔲 TODO |
+| Filters (date, status, band) | High | 🔲 TODO |
+| Bulk actions (delete, export) | Medium | 🔲 TODO |
+| Search by respondent | Medium | 🔲 TODO |
+
+#### 4. Admin Panel
+| Section | Priority | Status |
+|---------|----------|--------|
+| **Organization Settings** | High | 🔲 TODO |
+| - Branding (logo, colors) | Medium | 🔲 TODO |
+| - Default survey settings | Medium | 🔲 TODO |
+| **Survey Settings** | High | 🔲 TODO |
+| - Status management | High | 🔲 TODO |
+| - Response limits | Medium | 🔲 TODO |
+| **Distribution Options** | High | 🔲 TODO |
+| - Email templates | Medium | 🔲 TODO |
+| - Reminder schedules | Medium | 🔲 TODO |
+| **User Management** | High | 🔲 TODO |
+| - Invite users | High | 🔲 TODO |
+| - Role assignment | High | 🔲 TODO |
+| **Data Export Policies** | Medium | 🔲 TODO |
+| - Retention settings | Low | 🔲 Backlog |
+| - GDPR compliance | Medium | 🔲 TODO |
+
+#### 5. Data Layer Requirements
+| Task | Priority | Status | Notes |
+|------|----------|--------|-------|
+| `response_metadata` table | High | 🔲 TODO | Device, location, completion time |
+| `survey_versions` table | High | 🔲 TODO | Track published versions |
+| ScoreConfig versioning | High | 🔲 TODO | Immutable historical scores |
+| Analytics indexes | High | 🔲 TODO | For large-scale queries |
+| Aggregation views/functions | Medium | 🔲 TODO | Pre-computed summaries |
+| Data archival strategy | Low | 🔲 Backlog | |
+
+---
+
+### Phase 1: Core Stability
 
 #### Publishing Workflow
 | Task | Priority | Complexity | Status |
@@ -245,11 +319,23 @@ Files: SurveyBuilderContext.tsx, BuilderActionBar.tsx
 4. Wire validation into save/publish flow
 5. Surface issues in Logic/Scoring tabs
 
-### Next Sprint
-1. ScoreConfig versioning (DB schema + migration)
-2. Publishing workflow refinement
-3. Distribution URLs (custom slugs, tracking)
-4. Begin accessibility audit
+### Next Sprint: Analytics Foundation
+1. **Survey Analytics Dashboard** (core layout + participation metrics)
+2. **Response Browser** (table + detail panel)
+3. ScoreConfig versioning (DB schema + migration)
+4. Data layer: `response_metadata` table
+
+### Sprint +2: Analytics Complete
+1. Category score visualization
+2. Band distribution charts
+3. Question-level summary
+4. Global Analytics Overview page
+5. CSV export
+
+### Sprint +3: Admin & Distribution
+1. Admin Panel (org settings, user management)
+2. Distribution options (email templates, reminders)
+3. Publishing workflow refinement
 
 ---
 
