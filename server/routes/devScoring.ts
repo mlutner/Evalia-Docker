@@ -18,7 +18,7 @@
 import { Router, Request, Response } from "express";
 import { db } from "../db";
 import { surveys, surveyResponses } from "@shared/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import type { Question, SurveyScoreConfig, Survey } from "@shared/schema";
 import { INDEX_BAND_DEFINITIONS, resolveIndexBand } from "@shared/analyticsBands";
 
@@ -369,7 +369,7 @@ router.post("/scoring-trace", async (req: Request, res: Response) => {
           .select()
           .from(surveyResponses)
           .where(eq(surveyResponses.surveyId, surveyId))
-          .orderBy(desc(surveyResponses.createdAt))
+          .orderBy(sql`${surveyResponses.createdAt} DESC`)
           .limit(1);
         
         if (recentResponses.length === 0) {
