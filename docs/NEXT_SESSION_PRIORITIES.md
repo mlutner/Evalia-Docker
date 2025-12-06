@@ -2,111 +2,154 @@
 
 **Last Updated:** December 6, 2025
 
-This document outlines the prioritized ticket order for the next development session.
+---
+
+## 🔴 IMMEDIATE PRIORITY: Hardening Sprint (3 Weeks)
+
+Before ANY new features, complete the hardening sprint to make the platform production-ready.
+
+### Week 1: Scoring Auto-Wiring (5 days)
+
+| # | Ticket | Name | Est. | Status |
+|---|--------|------|------|--------|
+| 1 | HARDEN-001 | Survey Health Check Utility | 1 day | Ready |
+| 2 | HARDEN-002 | Scoring Config Inference | 2 days | Ready |
+| 3 | HARDEN-003 | Template Auto-Wire on Load | 1 day | Ready |
+| 4 | HARDEN-004 | Publish Validation Gate | 1 day | Ready |
+
+**Goal:** Templates automatically get valid scoring. Users can't publish broken surveys.
+
+### Week 2: Error Handling (5 days)
+
+| # | Ticket | Name | Est. | Status |
+|---|--------|------|------|--------|
+| 5 | HARDEN-005 | Global Error Boundaries | 1 day | Ready |
+| 6 | HARDEN-006 | Analytics Graceful Degradation | 2 days | Ready |
+| 7 | HARDEN-007 | User-Friendly Empty States | 1 day | Ready |
+| 8 | HARDEN-008 | Centralized Error Logging | 1 day | Ready |
+
+**Goal:** No white screens. Every error shows helpful recovery UI.
+
+### Week 3: Builder Stability (5 days)
+
+| # | Ticket | Name | Est. | Status |
+|---|--------|------|------|--------|
+| 9 | HARDEN-009 | Builder Null Safety Pass | 2 days | Ready |
+| 10 | HARDEN-010 | Auto-Save & Recovery | 2 days | Ready |
+| 11 | HARDEN-011 | UI Consistency Polish | 1 day | Ready |
+
+**Goal:** Builder doesn't crash. Auto-saves prevent data loss. UI feels polished.
 
 ---
 
-## 🔴 Priority 1: Critical Path (Do First)
+## After Hardening: Feature Priorities
 
-These tickets prevent broken templates from reaching production.
+Only after completing HARDEN-000 epic:
 
-| Ticket | Name | Why Critical |
-|--------|------|--------------|
-| **EW-003** | Scoring Config Validator v2 | Golden tests revealed validation gaps - templates can silently break |
-| **EW-004** | Template Scoring Auto-Heal | Prevents brittle analytics when new templates created |
-| **EW-009** | Template → Analytics Contract Tests | CI guard against broken templates |
+### Priority 1: Scoring Validation (Already Designed)
 
-**Estimated Time:** 1-2 sessions
+| Ticket | Name | Why |
+|--------|------|-----|
+| EW-003 | Scoring Config Validator v2 | Catch config errors before they cause problems |
+| EW-004 | Template Scoring Auto-Heal | Fix templates automatically |
+| EW-009 | Template Analytics Contract Tests | CI prevents broken templates |
 
----
+### Priority 2: Structural Alignment
 
-## 🟠 Priority 2: Structural Alignment (Do Next)
+| Ticket | Name | Why |
+|--------|------|-----|
+| EW-005 | Template Dashboard Mode Classification | Explicit dashboard routing |
+| EW-006 | ResultsScreen Harmonization | Consistent bands everywhere |
+| EW-007 | Analytics Data Completeness Checker | Maintenance utility |
 
-These tickets prevent drift and confusion between components.
+### Priority 3: Polish
 
-| Ticket | Name | Why Important |
-|--------|------|---------------|
-| **EW-005** | Template Dashboard Mode Classification | Prevents wrong dashboards by mistake |
-| **EW-006** | ResultsScreen v2 Harmonization | Ensures consistency between results and analytics |
-| **EW-007** | Analytics Data Completeness Checker | Maintenance utility for complex analytics |
+| Ticket | Name | Why |
+|--------|------|-----|
+| EW-008 | Analytics UX Polish | Professional appearance |
 
-**Estimated Time:** 1 session
+### Backlog (Future)
 
----
-
-## 🟡 Priority 3: Polish & Quality (Do When Stable)
-
-These tickets improve user experience but aren't blocking.
-
-| Ticket | Name | Why Nice |
-|--------|------|----------|
-| **EW-008** | Analytics UX Polish | UI consistency across analytics |
-
-**Estimated Time:** 0.5 session
+| Ticket | Name | When |
+|--------|------|------|
+| INFRA-001 | Scoring Engine Registry | When adding new scoring domains |
+| INFRA-002 | Scoring Model Migrations | When changing global models |
+| INFRA-003 | Analytics Caching | When hitting scale limits |
 
 ---
 
-## 🔵 Priority 4: Future Infrastructure (Backlog)
+## Session Workflow
 
-These are structural gaps to capture, but don't implement yet.
+### Starting a Session
 
-| Ticket | Name | When Needed |
-|--------|------|-------------|
-| **INFRA-001** | Scoring Engine Registry | When adding new scoring domains |
-| **INFRA-002** | Scoring Model Migrations | When changing global model definitions |
-| **INFRA-003** | Analytics Caching/Performance | When hitting scale limits |
+1. Open this file
+2. Find the next "Ready" ticket
+3. Read the ticket's detailed instructions
+4. Implement step-by-step
+5. Test using the ticket's test instructions
+6. Mark complete and commit
 
-**Status:** Documented for future reference. Do NOT implement yet.
+### Ticket Completion
 
----
+```bash
+# After completing a ticket
+git add .
+git commit -m "feat(hardening): [HARDEN-XXX] Brief description"
+git push
+```
 
-## Suggested Session Plan
+### End of Week
 
-### Session 1: Validation Foundation
-1. ✅ Complete EW-003 (Scoring Config Validator v2)
-2. Start EW-004 (Auto-Heal)
-
-### Session 2: Auto-Heal & Testing
-1. Complete EW-004 (Auto-Heal)
-2. Complete EW-009 (Contract Tests)
-
-### Session 3: Alignment
-1. EW-005 (Dashboard Mode)
-2. EW-006 (ResultsScreen Harmonization)
-3. EW-007 (Completeness Checker)
-
-### Session 4: Polish
-1. EW-008 (UX Polish)
-2. Review and close any remaining issues
+- Run full test suite: `npm test`
+- Manual smoke test: Builder, Analytics, Preview
+- Update ticket statuses in this file
 
 ---
 
-## Quick Reference: File Locations
+## Quick Reference
 
+### Ticket Locations
 ```
 docs/tickets/
-├── EW-003-scoring-config-validator-v2.md
-├── EW-004-template-scoring-auto-heal.md
-├── EW-005-template-dashboard-mode-classification.md
-├── EW-006-results-screen-analytics-harmonization.md
-├── EW-007-analytics-data-completeness-checker.md
-├── EW-008-analytics-ux-polish.md
-├── EW-009-template-analytics-contract-tests.md
-├── INFRA-001-scoring-engine-registry.md
-├── INFRA-002-scoring-model-migrations.md
-└── INFRA-003-analytics-caching-performance.md
+├── HARDEN-000-hardening-sprint-epic.md  ← Start here
+├── HARDEN-001-survey-health-check.md
+├── HARDEN-002-scoring-config-inference.md
+├── HARDEN-003-template-auto-wire.md
+├── HARDEN-004-publish-validation-gate.md
+├── HARDEN-005-error-boundaries.md
+├── HARDEN-006-analytics-graceful-degradation.md
+├── HARDEN-007-empty-states.md
+├── HARDEN-008-error-logging.md
+├── HARDEN-009-builder-null-safety.md
+├── HARDEN-010-auto-save-recovery.md
+└── HARDEN-011-ui-consistency.md
+```
+
+### Key Files to Create (Week 1)
+```
+shared/utils/surveyHealthCheck.ts
+shared/utils/inferScoringConfig.ts
+client/src/hooks/useAutoWireScoring.ts
+client/src/hooks/usePublishValidation.ts
+```
+
+### Dependencies
+```
+HARDEN-001 → HARDEN-002 → HARDEN-003
+HARDEN-001 → HARDEN-004
+HARDEN-005 → HARDEN-008
 ```
 
 ---
 
-## Dependencies
+## Success Metrics
 
-```
-EW-003 ─┬─► EW-004 (validator needed for auto-heal)
-        └─► EW-009 (validator logic reused in tests)
+After 3 weeks, Evalia should:
 
-EW-005 ─► ANAL-DASH-001 (mode needed for dashboards)
-
-EW-006 ─► ADMIN-030 (harmonization needs band editor)
-```
-
+- [ ] Auto-wire scoring for 100% of templates
+- [ ] Block publish for invalid configurations
+- [ ] Show 0 white screens on any error
+- [ ] Auto-save builder changes
+- [ ] Recover from crashes with local backup
+- [ ] Pass all existing tests
+- [ ] Feel polished and professional
