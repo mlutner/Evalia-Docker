@@ -40,6 +40,16 @@ Before ANY new features, complete the hardening sprint to make the platform prod
 
 **Goal:** Builder doesn't crash. Auto-saves prevent data loss. UI feels polished.
 
+### Week 4: Critical Flow Fixes (6 days)
+
+| # | Ticket | Name | Est. | Status |
+|---|--------|------|------|--------|
+| 12 | HARDEN-012 | Preview Pipeline Fixes | 2 days | Ready |
+| 13 | HARDEN-013 | Survey Completion Flow | 2 days | Ready |
+| 14 | HARDEN-014 | Builder Design Bugs | 2 days | Ready |
+
+**Goal:** Preview works reliably. Survey completion works end-to-end. Builder bugs fixed.
+
 ---
 
 ## After Hardening: Feature Priorities
@@ -122,7 +132,10 @@ docs/tickets/
 ├── HARDEN-008-error-logging.md
 ├── HARDEN-009-builder-null-safety.md
 ├── HARDEN-010-auto-save-recovery.md
-└── HARDEN-011-ui-consistency.md
+├── HARDEN-011-ui-consistency.md
+├── HARDEN-012-preview-pipeline-fixes.md   ← CRITICAL
+├── HARDEN-013-survey-completion-flow.md   ← CRITICAL
+└── HARDEN-014-builder-design-bugs.md
 ```
 
 ### Key Files to Create (Week 1)
@@ -144,7 +157,7 @@ HARDEN-005 → HARDEN-008
 
 ## Success Metrics
 
-After 3 weeks, Evalia should:
+After 4 weeks, Evalia should:
 
 - [ ] Auto-wire scoring for 100% of templates
 - [ ] Block publish for invalid configurations
@@ -153,3 +166,6 @@ After 3 weeks, Evalia should:
 - [ ] Recover from crashes with local backup
 - [ ] Pass all existing tests
 - [ ] Feel polished and professional
+- [ ] **Preview loads and works reliably**
+- [ ] **Survey completion works end-to-end**
+- [ ] **Builder has no major design bugs**

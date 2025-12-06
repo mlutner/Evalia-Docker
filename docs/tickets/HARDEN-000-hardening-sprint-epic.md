@@ -45,6 +45,14 @@ This epic transforms Evalia from "breaks sometimes" to "production-ready for ear
 | HARDEN-010 | Auto-Save & Recovery | 2 | - |
 | HARDEN-011 | UI Consistency Polish | 1 | - |
 
+### Week 4: Critical Flow Fixes (6 days)
+
+| Ticket | Name | Days | Depends On |
+|--------|------|------|------------|
+| HARDEN-012 | Preview Pipeline Fixes | 2 | HARDEN-005 |
+| HARDEN-013 | Survey Completion Flow | 2 | HARDEN-005 |
+| HARDEN-014 | Builder Design Bugs | 2 | HARDEN-009 |
+
 ---
 
 ## Success Criteria
@@ -57,6 +65,9 @@ After completing this epic:
 - [ ] Analytics show graceful empty states, not crashes
 - [ ] Builder auto-saves and can recover from crashes
 - [ ] UI feels consistent and professional
+- [ ] **Survey preview loads reliably**
+- [ ] **Survey completion flow works end-to-end**
+- [ ] **Builder design bugs are fixed**
 
 ---
 
