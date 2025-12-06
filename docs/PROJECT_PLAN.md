@@ -61,17 +61,21 @@
 
 > **"The builder is no longer the bottleneck. The bottleneck is analytics, distribution, reporting, admin control."**
 
-#### Analytics Foundation (Must Do First)
-| Task | Priority | Status | Ticket |
-|------|----------|--------|--------|
-| **Analytics API Foundation** | High | 🔲 TODO | ANAL-000 |
-| **Analytics Query Helpers** | High | 🔲 TODO | BUILD-010 |
-| **Analytics Component Library** | High | 🔲 TODO | BUILD-020 |
+#### Analytics Foundation (Must Do First - Phase 0)
+| Task | Priority | Status | Ticket | Notes |
+|------|----------|--------|--------|-------|
+| **Analytics Documentation Refactor** | High | ✅ DONE | ANAL-000 | Split into Philosophy/Model/Spec |
+| **Analytics Data Model Registry** | High | 🔲 TODO | ANAL-001 | TypeScript interfaces, backend stubs |
+| **Analytics Routing + Version Selector** | High | 🔲 TODO | ANAL-002 | Page scaffolding, version dropdown |
+| **Analytics Query Helpers** | High | 🔲 TODO | BUILD-010 | Reusable server-side functions |
+| **Analytics Component Library** | High | 🔲 TODO | BUILD-020 | Reusable React components |
 
-#### 1. Survey Analytics Dashboard (Per Survey)
+#### 1. Survey Analytics Dashboard (Per Survey) - Phase 1
 | Section | Priority | Status | Ticket | Notes |
 |---------|----------|--------|--------|-------|
-| **Participation Metrics** | High | 🔲 TODO | ANAL-001 | Response rate, drop-off, completion time |
+| **Participation Metrics Backend** | High | 🔲 TODO | ANAL-010 | Total responses, response rate, completion rate, avg time |
+| **Participation Metrics Card UI** | High | 🔲 TODO | ANAL-011 | MetricStatCard, loading/error states |
+| **Participation Metrics Integration** | High | 🔲 TODO | ANAL-012 | Integrate into Overview tab |
 | **Category Score Visualization** | High | 🔲 TODO | ANAL-004 | Bar charts, heatmap by category |
 | **Band Distribution Chart** | High | 🔲 TODO | ANAL-005 | Pie/donut showing % in each band |
 | **Question-Level Summary Table** | High | 🔲 TODO | ANAL-006 | Score per question, response distribution |

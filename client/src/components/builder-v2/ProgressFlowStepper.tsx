@@ -90,7 +90,10 @@ export function ProgressFlowStepper({ surveyId }: ProgressFlowStepperProps) {
     const needsSave = id === 'new' || isDirty;
     
     if (needsSave) {
-      const savedId = await saveSurvey();
+      // [BUG-FIX] saveSurvey returns { id, validation }, NOT just the ID
+      const result = await saveSurvey({ skipValidation: true });
+      const savedId = result?.id;
+      
       if (savedId) {
         // Navigate with the real ID (either new or existing)
         if (isBuilderPage) {
@@ -115,8 +118,11 @@ export function ProgressFlowStepper({ surveyId }: ProgressFlowStepperProps) {
   };
 
   const handlePublish = async () => {
-    await saveSurvey();
-    setLocation(`/surveys`);
+    // [BUG-FIX] saveSurvey returns { id, validation }, check result
+    const result = await saveSurvey();
+    if (result?.id) {
+      setLocation(`/surveys`);
+    }
   };
 
   return (

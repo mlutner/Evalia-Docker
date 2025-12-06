@@ -47,6 +47,7 @@ function SurveyBuilderContent({ surveyId }: { surveyId?: string }) {
   const {
     survey,
     questions,
+    saveSurvey,
     addLogicRule,
     updateLogicRule,
     deleteLogicRule,
@@ -143,14 +144,38 @@ function SurveyBuilderContent({ surveyId }: { surveyId?: string }) {
     }
   }
 
-  const handlePreview = () => {
-    // Navigate to the Preview & Share page instead of opening a dialog
-    if (surveyId && surveyId !== "new") {
-      setLocation(`/preview-v2/${surveyId}`);
-    } else {
-      // For new surveys, we'd need to save first - the action bar should handle this
-      setLocation("/preview-v2/new");
+  const handlePreview = async () => {
+    // [QUESTION-PIPELINE] Preview must save first, with skipValidation: true
+    // This ensures questions are persisted before navigating to preview
+    console.log("[QUESTION-PIPELINE] ====== handlePreview CALLED ======", {
+      surveyId,
+      questionsCount: questions.length,
+      surveyTitle: survey?.title,
+    });
+    
+    // Always save before preview, skip validation so draft state is saved
+    const result = await saveSurvey({ skipValidation: true });
+    
+    console.log("[QUESTION-PIPELINE] saveSurvey returned:", {
+      result,
+      id: result?.id,
+      idType: typeof result?.id,
+      validation: result?.validation ? 'has validation' : 'no validation',
+    });
+    
+    if (!result?.id) {
+      console.error("[QUESTION-PIPELINE] Preview aborted: saveSurvey returned no id", {
+        result,
+      });
+      return;
     }
+    
+    const targetUrl = `/preview-v2/${result.id}`;
+    console.log("[QUESTION-PIPELINE] ====== NAVIGATING TO PREVIEW ======", { 
+      targetUrl,
+      savedId: result.id,
+    });
+    setLocation(targetUrl);
   };
 
   const centerPanel = useMemo(() => {

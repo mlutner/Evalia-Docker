@@ -26,6 +26,9 @@ export const scoreBandSchema = z.object({
   // Legacy fields kept for backward compatibility with existing templates/UI
   shortDescription: z.string().optional(),
   longDescription: z.string().optional(),
+  // [SCORE-002] Category-specific scoring fields for per-category band matching
+  category: z.string().optional(),
+  interpretation: z.string().optional(),
 });
 
 export const categoryResultConfigSchema = z.object({

@@ -70,12 +70,35 @@ export default function SurveyView() {
       setQuestions([]);
       return;
     }
+    
+    // [QUESTION-PIPELINE] Runtime survey questions length
+    console.log("[QUESTION-PIPELINE] Runtime survey questions length", {
+      surveyId: survey.id,
+      questionsLength: survey?.questions?.length ?? 0,
+      hasQuestions: !!survey?.questions,
+      questionsIsArray: Array.isArray(survey?.questions),
+      questions: survey?.questions?.map((q: any) => ({ id: q.id, type: q.type, question: q.question?.substring(0, 50) })) ?? [],
+    });
+    
+    let runtimeQuestions: any[] = [];
     try {
-      const normalized = normalizeQuestions(survey.questions);
-      setQuestions(normalized);
+      runtimeQuestions = normalizeQuestions(survey?.questions ?? []);
+      
+      // [QUESTION-PIPELINE] Normalized questions length
+      console.log("[QUESTION-PIPELINE] Normalized questions length", {
+        surveyId: survey.id,
+        normalizedLength: runtimeQuestions.length,
+        normalizedQuestions: runtimeQuestions.map(q => ({ id: q.id, type: q.type, question: q.question?.substring(0, 50) })),
+      });
+      
+      setQuestions(runtimeQuestions);
       setNormalizeError(null);
     } catch (err) {
-      console.error(`[SurveyView] Invalid questions for survey ${survey.id}:`, err);
+      console.error("[QUESTION-PIPELINE] normalizeQuestions failed", err, {
+        surveyId: survey.id,
+        rawQuestions: survey?.questions,
+        questionsLength: survey?.questions?.length ?? 0,
+      });
       setNormalizeError("This survey is misconfigured. Please contact the owner.");
       setQuestions([]);
     }

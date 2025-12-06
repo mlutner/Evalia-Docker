@@ -36,8 +36,9 @@ import {
   checkAnalyticsInvariants,
   type AnalyticsStateResult 
 } from "@/utils/analyticsState";
+import { useDashboardMode, type DashboardMode } from "@/hooks/useDashboardMode";
 
-// [BUILD-020/ANAL-004/ANAL-005/ANAL-006/ANAL-007/ANAL-008/ANAL-009/ANAL-DIM-001] Analytics Component Library
+// [BUILD-020/ANAL-004-009/ANAL-DIM-001/ANAL-DASH-010/ANAL-DASH-020] Analytics Component Library
 import { 
   VersionSelector, 
   ParticipationMetricsCard, 
@@ -56,6 +57,10 @@ import {
   BeforeAfterComparisonChart,
   useBeforeAfterComparison,
   DimensionLeaderboardTable,
+  CategoryLeaderboardTable,
+  CategoryScoreCard,
+  NoScoringBanner,
+  TopBottomItemsCard,
   type Version,
 } from "@/components/analytics";
 
@@ -302,14 +307,16 @@ export default function AnalyticsPage() {
   const analyticsState: AnalyticsStateResult = useMemo(() => {
     const scoreConfig = data?.survey?.scoreConfig;
     
-    // Extract dimension scores from trends summary (current snapshot)
-    const dimensionScores = trendsSummaryData?.data?.current 
-      ? Object.fromEntries(
-          Object.entries(trendsSummaryData.data.current).map(([key, val]) => [
-            key,
-            (val as { score: number | null })?.score ?? null
-          ])
-        )
+    // Extract dimension scores from trends summary (latest snapshot from trends array)
+    const latestTrend = trendsSummaryData?.data?.trends?.[trendsSummaryData.data.trends.length - 1];
+    const dimensionScores = latestTrend?.scores 
+      ? {
+          leadershipEffectiveness: latestTrend.scores.leadershipEffectiveness ?? null,
+          teamWellbeing: latestTrend.scores.teamWellbeing ?? null,
+          burnoutRisk: latestTrend.scores.burnoutRisk ?? null,
+          psychologicalSafety: latestTrend.scores.psychologicalSafety ?? null,
+          engagement: latestTrend.scores.engagement ?? null,
+        }
       : undefined;
 
     return deriveAnalyticsScoringState({
@@ -325,13 +332,15 @@ export default function AnalyticsPage() {
   // [ANAL-QA-050] Check invariants in dev mode
   useEffect(() => {
     if (data?.survey?.scoreConfig?.enabled && data?.count > 0) {
-      const dimensionScores = trendsSummaryData?.data?.current 
-        ? Object.fromEntries(
-            Object.entries(trendsSummaryData.data.current).map(([key, val]) => [
-              key,
-              (val as { score: number | null })?.score ?? null
-            ])
-          )
+      const latestTrend = trendsSummaryData?.data?.trends?.[trendsSummaryData.data.trends.length - 1];
+      const dimensionScores = latestTrend?.scores 
+        ? {
+            leadershipEffectiveness: latestTrend.scores.leadershipEffectiveness ?? null,
+            teamWellbeing: latestTrend.scores.teamWellbeing ?? null,
+            burnoutRisk: latestTrend.scores.burnoutRisk ?? null,
+            psychologicalSafety: latestTrend.scores.psychologicalSafety ?? null,
+            engagement: latestTrend.scores.engagement ?? null,
+          }
         : undefined;
 
       checkAnalyticsInvariants({
@@ -343,6 +352,12 @@ export default function AnalyticsPage() {
       });
     }
   }, [data, trendsSummaryData, bandDistributionData, indexDistributionData]);
+
+  // ============================================================================
+  // [ANAL-DASH-010] DASHBOARD MODE DETECTION
+  // ============================================================================
+  
+  const dashboardMode = useDashboardMode(data?.survey);
 
   // ============================================================================
   // LOADING STATE
@@ -442,25 +457,79 @@ export default function AnalyticsPage() {
           </div>
                 </div>
 
-          {/* Tabs - [ANAL-IA-001] 7-Section Information Architecture */}
+          {/* [ANAL-QA-050] State Banner - shows warnings for non-healthy states */}
+          <AnalyticsStateBanner state={analyticsState} />
+
+          {/* [ANAL-DASH-020] Basic Analytics Mode - No Tabs, Simplified View */}
+          {dashboardMode.mode === 'basic' ? (
+            <div className="space-y-6">
+              {/* No Scoring Banner */}
+              <NoScoringBanner />
+
+              {/* Participation Metrics */}
+              <ParticipationMetricsCard
+                metrics={participationMetrics}
+                isLoading={participationLoading}
+                error={participationError}
+                onRetry={refetchParticipation}
+              />
+
+              {/* Top & Bottom Items */}
+              <TopBottomItemsCard
+                questionSummary={questionSummaryData?.questions}
+                isLoading={questionSummaryLoading}
+                error={questionSummaryError}
+                onRetry={refetchQuestionSummary}
+                topN={5}
+              />
+
+              {/* Question Summary Table */}
+              <QuestionSummaryTable
+                data={questionSummaryData}
+                isLoading={questionSummaryLoading}
+                error={questionSummaryError}
+                onRetry={refetchQuestionSummary}
+              />
+            </div>
+          ) : (
+            <>
+              {/* [ANAL-DASH-010] Dashboard Mode Indicator */}
+              <div className="mb-4 flex items-center gap-2">
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Dashboard Mode:
+                </span>
+                <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                  dashboardMode.is5DDashboard 
+                    ? 'bg-blue-100 text-blue-700' 
+                    : 'bg-purple-100 text-purple-700'
+                }`}>
+                  {dashboardMode.is5DDashboard ? 'Insight Dimensions' : 'Category Analytics'}
+                </span>
+              </div>
+
+              {/* Tabs - [ANAL-IA-001] Information Architecture (adapted by dashboard mode) */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="bg-white border border-gray-200 flex-wrap h-auto p-1">
               <TabsTrigger value="insights-home" className="gap-2">
                 <Home className="w-4 h-4" />
-                Insights Home
+                {dashboardMode.is5DDashboard ? 'Insights Home' : 'Overview'}
               </TabsTrigger>
               <TabsTrigger value="dimensions" className="gap-2">
                 <Layers className="w-4 h-4" />
-                Dimensions
+                {dashboardMode.is5DDashboard ? 'Dimensions' : 'Categories'}
               </TabsTrigger>
-              <TabsTrigger value="managers" className="gap-2">
-                <Users className="w-4 h-4" />
-                Managers
-              </TabsTrigger>
-              <TabsTrigger value="trends" className="gap-2">
-                <TrendingUp className="w-4 h-4" />
-                Trends
-              </TabsTrigger>
+              {dashboardMode.is5DDashboard && (
+                <TabsTrigger value="managers" className="gap-2">
+                  <Users className="w-4 h-4" />
+                  Managers
+                </TabsTrigger>
+              )}
+              {dashboardMode.hasScoringEnabled && (
+                <TabsTrigger value="trends" className="gap-2">
+                  <TrendingUp className="w-4 h-4" />
+                  Trends
+                </TabsTrigger>
+              )}
               <TabsTrigger value="questions" className="gap-2">
                 <MessageSquare className="w-4 h-4" />
                 Questions
@@ -469,15 +538,17 @@ export default function AnalyticsPage() {
                 <FileText className="w-4 h-4" />
                 Responses
               </TabsTrigger>
-              <TabsTrigger value="benchmarks" className="gap-2">
-                <Target className="w-4 h-4" />
-                Benchmarks
-              </TabsTrigger>
+              {dashboardMode.is5DDashboard && (
+                <TabsTrigger value="benchmarks" className="gap-2">
+                  <Target className="w-4 h-4" />
+                  Benchmarks
+                </TabsTrigger>
+              )}
             </TabsList>
 
-            {/* INSIGHTS HOME TAB - [ANAL-IA-001] */}
+            {/* INSIGHTS HOME / OVERVIEW TAB - [ANAL-IA-001/ANAL-DASH-010] */}
             <TabsContent value="insights-home" className="space-y-6">
-              {/* [ANAL-011] Participation Metrics Card - fetches from analytics API */}
+              {/* [ANAL-011] Participation Metrics Card - always shown */}
               <ParticipationMetricsCard
                 metrics={participationMetrics}
                 isLoading={participationLoading}
@@ -485,64 +556,141 @@ export default function AnalyticsPage() {
                 onRetry={refetchParticipation}
               />
 
-              {/* [ANAL-004/ANAL-005] Insight Dimensions: Score + Band Distribution */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <IndexDistributionChart
-                  data={indexDistributionData}
-                  isLoading={indexDistributionLoading}
-                  error={indexDistributionError}
-                  onRetry={refetchIndexDistribution}
-                  title="Engagement Score Distribution"
-                  description="How scores are distributed across all respondents"
-                />
-                <BandDistributionChart
-                  data={bandDistributionData}
+              {/* [ANAL-DASH-010] Show CategoryScoreCard for generic-scoring mode */}
+              {analyticsState.showScoring && !dashboardMode.is5DDashboard && (
+                <CategoryScoreCard
+                  overallScore={
+                    // Calculate overall from band distribution or use null
+                    bandDistributionData?.bands?.reduce((sum, band) => 
+                      sum + (band.count * ((band.minScore + band.maxScore) / 2)), 0
+                    ) ?? null
+                  }
+                  categoryCount={dashboardMode.categoryCount}
+                  responseCount={participationMetrics?.totalResponses ?? 0}
+                  scoreRanges={survey.scoreConfig?.scoreRanges?.map(r => ({
+                    id: r.id,
+                    min: r.min,
+                    max: r.max,
+                    label: r.label,
+                    color: r.color,
+                    interpretation: r.interpretation,
+                  }))}
                   isLoading={bandDistributionLoading}
-                  error={bandDistributionError}
-                  onRetry={refetchBandDistribution}
-                  title="Engagement Performance Bands"
-                  description="Respondents grouped by performance level"
+                  title="Overall Score"
                 />
-              </div>
+              )}
+
+              {/* [ANAL-004/ANAL-005] Score + Band Distribution */}
+              {/* [ANAL-QA-050] Only show if scoring is properly configured */}
+              {analyticsState.showScoring ? (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <IndexDistributionChart
+                    data={indexDistributionData}
+                    isLoading={indexDistributionLoading}
+                    error={indexDistributionError}
+                    onRetry={refetchIndexDistribution}
+                    title={dashboardMode.is5DDashboard ? "Engagement Score Distribution" : "Score Distribution"}
+                    description="How scores are distributed across all respondents"
+                  />
+                  <BandDistributionChart
+                    data={bandDistributionData}
+                    isLoading={bandDistributionLoading}
+                    error={bandDistributionError}
+                    onRetry={refetchBandDistribution}
+                    title={dashboardMode.is5DDashboard ? "Engagement Performance Bands" : "Performance Bands"}
+                    description="Respondents grouped by performance level"
+                  />
+                </div>
+              ) : (
+                <ScoringDisabledCard
+                  title="Score Distribution Not Available"
+                  description={analyticsState.state === 'no-scoring' 
+                    ? "Scoring is not enabled for this survey." 
+                    : "Scoring configuration needs to be completed to view score distributions."}
+                />
+              )}
             </TabsContent>
 
-            {/* DIMENSIONS TAB - [ANAL-IA-001/ANAL-DIM-001] */}
+            {/* DIMENSIONS/CATEGORIES TAB - [ANAL-IA-001/ANAL-DIM-001/ANAL-DASH-010] */}
             <TabsContent value="dimensions" className="space-y-6">
-              {/* [ANAL-DIM-001] Dimension Leaderboard - ranked view of all 5 dimensions */}
-              <DimensionLeaderboardTable
-                data={trendsSummaryData?.data}
-                selectedVersionId={selectedVersion}
-                isLoading={trendsSummaryLoading}
-                error={trendsSummaryError}
-                onRetry={refetchTrendsSummary}
-              />
+              {/* [ANAL-QA-050] Only show charts if scoring is configured */}
+              {analyticsState.showScoring ? (
+                <>
+                  {/* [ANAL-DASH-010] Show different leaderboard based on dashboard mode */}
+                  {dashboardMode.is5DDashboard ? (
+                    /* 5D Insight Dimensions Dashboard */
+                    <DimensionLeaderboardTable
+                      data={trendsSummaryData?.data}
+                      selectedVersionId={selectedVersion}
+                      isLoading={trendsSummaryLoading}
+                      error={trendsSummaryError}
+                      onRetry={refetchTrendsSummary}
+                    />
+                  ) : (
+                    /* Generic Category-based Dashboard */
+                    <CategoryLeaderboardTable
+                      categories={
+                        // Transform scoreConfig categories into leaderboard format
+                        // Note: This is a placeholder - real implementation would compute scores per category
+                        survey.scoreConfig?.categories?.map(cat => ({
+                          categoryId: cat.id,
+                          categoryName: cat.name,
+                          score: 0, // Would be computed from responses
+                          normalizedScore: 0, // Would be normalized
+                        })) ?? []
+                      }
+                      scoreRanges={survey.scoreConfig?.scoreRanges?.map(r => ({
+                        id: r.id,
+                        min: r.min,
+                        max: r.max,
+                        label: r.label,
+                        color: r.color,
+                        interpretation: r.interpretation,
+                      }))}
+                      isLoading={false}
+                      error={null}
+                      title="Category Leaderboard"
+                      description="Categories ranked by performance score"
+                    />
+                  )}
 
-              {/* Dimension-level distribution charts */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <IndexDistributionChart
-                  data={indexDistributionData}
-                  isLoading={indexDistributionLoading}
-                  error={indexDistributionError}
-                  onRetry={refetchIndexDistribution}
-                  title="Insight Dimension Score Distribution"
-                  description="How dimension scores are distributed across all respondents"
+                  {/* Distribution charts */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <IndexDistributionChart
+                      data={indexDistributionData}
+                      isLoading={indexDistributionLoading}
+                      error={indexDistributionError}
+                      onRetry={refetchIndexDistribution}
+                      title={dashboardMode.is5DDashboard ? "Insight Dimension Score Distribution" : "Score Distribution"}
+                      description="How scores are distributed across all respondents"
+                    />
+                    <BandDistributionChart
+                      data={bandDistributionData}
+                      isLoading={bandDistributionLoading}
+                      error={bandDistributionError}
+                      onRetry={refetchBandDistribution}
+                      title={dashboardMode.is5DDashboard ? "Dimension Performance Bands" : "Performance Bands"}
+                      description="Respondents grouped by performance level"
+                    />
+                  </div>
+                </>
+              ) : (
+                <ScoringDisabledCard
+                  title={dashboardMode.is5DDashboard ? "Dimension Analytics Not Available" : "Category Analytics Not Available"}
+                  description={analyticsState.state === 'no-scoring' 
+                    ? "Scoring is not enabled for this survey. Enable scoring to view analytics." 
+                    : "Scoring configuration needs to be completed to view analytics."}
                 />
-                <BandDistributionChart
-                  data={bandDistributionData}
-                  isLoading={bandDistributionLoading}
-                  error={bandDistributionError}
-                  onRetry={refetchBandDistribution}
-                  title="Dimension Performance Bands"
-                  description="Respondents grouped by dimension performance level"
-                />
-              </div>
+              )}
               
-              <AnalyticsPlaceholderCard
-                title="Domain Overview"
-                description="Category-level scores showing performance across all measurement domains."
-                icon={Layers}
-                footnote="Coming soon"
-              />
+              {dashboardMode.is5DDashboard && (
+                <AnalyticsPlaceholderCard
+                  title="Domain Overview"
+                  description="Category-level scores showing performance across all measurement domains."
+                  icon={Layers}
+                  footnote="Coming soon"
+                />
+              )}
             </TabsContent>
 
             {/* MANAGERS TAB - [ANAL-IA-001] */}
@@ -565,28 +713,56 @@ export default function AnalyticsPage() {
 
             {/* TRENDS TAB - [ANAL-IA-001] */}
             <TabsContent value="trends" className="space-y-6">
-              {/* [ANAL-008] Dimension Trends Chart */}
-              <DimensionTrendsChart
-                data={trendsSummaryData?.data}
-                isLoading={trendsSummaryLoading}
-                error={trendsSummaryError}
-                onRetry={refetchTrendsSummary}
-              />
-              
-              {/* [ANAL-009] Before/After Index Comparison */}
-              <BeforeAfterComparisonChart
-                data={comparisonData?.data}
-                isLoading={comparisonLoading}
-                error={comparisonError}
-                onRetry={refetchComparison}
-                availableVersions={availableVersions}
-                selectedVersionBefore={versionBefore}
-                selectedVersionAfter={versionAfter}
-                onVersionBeforeChange={setVersionBefore}
-                onVersionAfterChange={setVersionAfter}
-                title="Before/After Comparison"
-                description="Compare Insight Dimension scores between two scoring versions"
-              />
+              {/* [ANAL-QA-050] Handle different analytics states */}
+              {!analyticsState.showScoring ? (
+                <ScoringDisabledCard
+                  title="Trend Analytics Not Available"
+                  description={analyticsState.state === 'no-scoring' 
+                    ? "Scoring is not enabled for this survey. Enable scoring to view trend analytics." 
+                    : "Scoring configuration needs to be completed to view trend analytics."}
+                />
+              ) : !analyticsState.showTrends ? (
+                <>
+                  <SingleVersionIndicator />
+                  {/* [ANAL-008] Still show current snapshot */}
+                  <DimensionTrendsChart
+                    data={trendsSummaryData?.data}
+                    isLoading={trendsSummaryLoading}
+                    error={trendsSummaryError}
+                    onRetry={refetchTrendsSummary}
+                  />
+                  {/* Before/After disabled in single-version mode */}
+                  <ScoringDisabledCard
+                    title="Before/After Comparison"
+                    description="Create additional scoring versions to compare dimension scores over time."
+                  />
+                </>
+              ) : (
+                <>
+                  {/* [ANAL-008] Dimension Trends Chart */}
+                  <DimensionTrendsChart
+                    data={trendsSummaryData?.data}
+                    isLoading={trendsSummaryLoading}
+                    error={trendsSummaryError}
+                    onRetry={refetchTrendsSummary}
+                  />
+                  
+                  {/* [ANAL-009] Before/After Index Comparison */}
+                  <BeforeAfterComparisonChart
+                    data={comparisonData?.data}
+                    isLoading={comparisonLoading}
+                    error={comparisonError}
+                    onRetry={refetchComparison}
+                    availableVersions={availableVersions}
+                    selectedVersionBefore={versionBefore}
+                    selectedVersionAfter={versionAfter}
+                    onVersionBeforeChange={setVersionBefore}
+                    onVersionAfterChange={setVersionAfter}
+                    title="Before/After Comparison"
+                    description="Compare Insight Dimension scores between two scoring versions"
+                  />
+                </>
+              )}
             </TabsContent>
 
             {/* QUESTIONS TAB - [ANAL-IA-001] */}
@@ -623,6 +799,8 @@ export default function AnalyticsPage() {
             </TabsContent>
 
           </Tabs>
+            </>
+          )}
         </div>
       </main>
   );

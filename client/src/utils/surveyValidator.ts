@@ -180,8 +180,10 @@ function validateGeneral(
   }
 
   // Check for questions without text
+  // NOTE: BuilderQuestion uses 'text' field, EvaliaQuestion uses 'question' field
   for (const q of questions) {
-    if (!q.question || q.question.trim() === '') {
+    const questionText = (q as any).text || q.question;
+    if (!questionText || questionText.trim() === '') {
       issues.push({
         domain: 'general',
         code: 'EMPTY_QUESTION_TEXT',

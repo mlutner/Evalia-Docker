@@ -607,7 +607,21 @@ function buildScoringMapFromScoreConfig(
 
 // Build API payload from builder survey state (pure for reuse/testing)
 export function exportSurveyToEvalia(survey: BuilderSurvey) {
+  // [BUG-ANAL-XXX] Log before conversion
+  console.log('[BUG-ANAL-XXX] exportSurveyToEvalia() - Input:', {
+    surveyId: survey.id,
+    builderQuestionsCount: survey.questions.length,
+    builderQuestions: survey.questions.map(q => ({ id: q.id, type: q.type })),
+  });
+  
   const evaliaQuestions = survey.questions.map(builderToEvalia);
+  
+  // [BUG-ANAL-XXX] Log after conversion
+  console.log('[BUG-ANAL-XXX] exportSurveyToEvalia() - Output:', {
+    surveyId: survey.id,
+    evaliaQuestionsCount: evaliaQuestions.length,
+    evaliaQuestions: evaliaQuestions.map(q => ({ id: q.id, type: q.type })),
+  });
 
   const designSettings = {
     themeColors: survey.welcomeScreen.themeColors,
@@ -977,6 +991,13 @@ export function SurveyBuilderProvider({
     setPersistedId(existingSurveyData.id);
     
     try {
+      // [BUG-ANAL-XXX] Log questions from API before conversion
+      console.log('[BUG-ANAL-XXX] Loading survey - API response questions:', {
+        surveyId: existingSurveyData.id,
+        apiQuestionsCount: existingSurveyData.questions?.length ?? 0,
+        apiQuestions: existingSurveyData.questions?.map((q: any) => ({ id: q.id, type: q.type, question: q.question?.substring(0, 50) })) ?? [],
+      });
+      
       // Convert Evalia survey to Builder survey
       const builderQuestions = (existingSurveyData.questions || []).map(evaliaToBuilder).map((q, idx) =>
         validateBuilderQuestion({
@@ -985,6 +1006,13 @@ export function SurveyBuilderProvider({
           order: idx,
         } as BuilderQuestion)
       );
+      
+      // [BUG-ANAL-XXX] Log questions after conversion to Builder format
+      console.log('[BUG-ANAL-XXX] Loading survey - After evaliaToBuilder conversion:', {
+        surveyId: existingSurveyData.id,
+        builderQuestionsCount: builderQuestions.length,
+        builderQuestions: builderQuestions.map(q => ({ id: q.id, type: q.type, text: q.text?.substring(0, 50) })),
+      });
     
       // Extract design settings if available
       const ds = existingSurveyData.designSettings;
@@ -1522,6 +1550,15 @@ export function SurveyBuilderProvider({
   const saveSurvey = useCallback(async (options?: { skipValidation?: boolean }): Promise<{ id: string | null; validation: SurveyValidationResult | null }> => {
     assertNotInRender('saveSurvey');
     
+    // [QUESTION-PIPELINE] Check builder state question counts BEFORE calling builderToEvalia
+    console.log("[QUESTION-PIPELINE] Builder state question counts", {
+      surveyId: survey.id,
+      builderQuestions: survey.questions?.length ?? 0,
+      legacyQuestions: (survey as any).questions?.length ?? 0, // Check if there's a legacy field
+      questionsField: survey.questions?.length ?? 0,
+      questionsArray: survey.questions?.map(q => ({ id: q.id, type: q.type })) ?? [],
+    });
+    
     // [LOGIC-001] Run validation before save
     const validation = validateSurvey();
     
@@ -1537,6 +1574,7 @@ export function SurveyBuilderProvider({
     // Block save if there are errors (unless explicitly skipped)
     if (!options?.skipValidation && validation.errors.length > 0) {
       console.warn('[SurveyBuilder] Save blocked due to validation errors', validation.errors);
+      console.log("[QUESTION-PIPELINE] Save BLOCKED by validation - questions were NOT sent to API");
       return { id: null, validation };
     }
     
@@ -1546,7 +1584,18 @@ export function SurveyBuilderProvider({
       console.warn('[SurveyBuilder] Integrity warnings before save', report.issues);
     }
     
+    // [QUESTION-PIPELINE] Just before calling builderToEvalia
     const evaliaData = exportToEvalia();
+    
+    // [QUESTION-PIPELINE] Check payload questions length AFTER builderToEvalia
+    console.log("[QUESTION-PIPELINE] Payload questions length", {
+      surveyId: survey.id,
+      payloadQuestionsLength: evaliaData.questions?.length ?? 0,
+      payloadQuestions: evaliaData.questions?.map((q: any) => ({ id: q.id, type: q.type, question: q.question?.substring(0, 50) })) ?? [],
+      hasQuestions: !!evaliaData.questions,
+      questionsIsArray: Array.isArray(evaliaData.questions),
+    });
+    
     try {
       const result = await saveMutation.mutateAsync(evaliaData);
       return { id: result.id, validation };

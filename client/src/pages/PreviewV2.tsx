@@ -69,8 +69,17 @@ function sanitizeTheme(
 }
 
 export default function PreviewV2() {
-  const [, params] = useRoute('/preview-v2/:id');
+  const [match, params] = useRoute('/preview-v2/:id');
   const surveyId = params?.id;
+  
+  // [QUESTION-PIPELINE] Debug route params
+  console.log("[QUESTION-PIPELINE] ====== PreviewV2 MOUNTED ======", {
+    match,
+    params,
+    surveyId,
+    surveyIdType: typeof surveyId,
+    windowLocation: typeof window !== 'undefined' ? window.location.pathname : 'N/A',
+  });
 
   return (
     <SurveyBuilderProvider surveyId={surveyId}>
@@ -85,6 +94,15 @@ function PreviewContent({ surveyId }: { surveyId?: string }) {
   const { survey, questions, saveSurvey, isSaving } = useSurveyBuilder();
   const [deviceView, setDeviceView] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  
+  // [BUG-ANAL-XXX] Log questions loaded in PreviewV2
+  useEffect(() => {
+    console.log('[BUG-ANAL-XXX] PreviewV2 - Questions loaded from context:', {
+      surveyId,
+      questionsCount: questions.length,
+      questions: questions.map(q => ({ id: q.id, type: q.type, text: q.text?.substring(0, 50) })),
+    });
+  }, [surveyId, questions]);
 
   // Clamp currentQuestionIndex when questions.length changes
   useEffect(() => {
@@ -455,6 +473,17 @@ function InteractiveSurveyPreview({
   const [showResults, setShowResults] = useState(false);
   const [previewAnswers, setPreviewAnswers] = useState<Record<string, unknown>>({});
   const normalizedTheme = useNormalizedTheme(survey?.theme);
+  
+  // [QUESTION-PIPELINE] Log questions received in preview runtime
+  useEffect(() => {
+    console.log("[QUESTION-PIPELINE] PreviewV2 runtime questions", {
+      surveyId: survey?.id,
+      questionsLength: questions?.length ?? 0,
+      questions: questions?.map(q => ({ id: q.id, type: q.type, text: q.text?.substring(0, 50) })) ?? [],
+      hasQuestions: !!questions,
+      questionsIsArray: Array.isArray(questions),
+    });
+  }, [survey?.id, questions]);
 
   // Guard: if survey is missing, show fallback
   if (!survey) {

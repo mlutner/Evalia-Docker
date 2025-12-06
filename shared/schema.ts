@@ -784,10 +784,11 @@ export function calculateSurveyScores(
     const normalizedScore = maxScore > 0 ? Math.round((categoryScore / maxScore) * normalizedMaxScore) : 0;
     
     // Find matching rule using the original (non-normalized) score for interpretation
+    // [SCORE-002] Use rule.min/rule.max to match scoreBandSchema definition
     const matchingRule = scoreConfig.scoreRanges.find(
       rule => rule.category === cat.id && 
-      categoryScore >= rule.minScore && 
-      categoryScore <= rule.maxScore
+      categoryScore >= rule.min && 
+      categoryScore <= rule.max
     );
 
     results.push({

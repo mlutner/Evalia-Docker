@@ -6,6 +6,9 @@
  * [ANAL-006] Question Summary components added
  * [ANAL-007] Manager Comparison components added
  * [ANAL-008] Trend Line Chart components added
+ * [ANAL-009] Before/After Comparison components added
+ * [ANAL-DIM-001] Dimension Leaderboard Table added
+ * [ANAL-DASH-010] Generic Scoring Dashboard components added
  */
 
 // Core components
@@ -37,6 +40,20 @@ export { ManagerComparisonTable } from "./ManagerComparisonTable";
 // Dimension Trends components [ANAL-008]
 export { DimensionTrendsChart } from "./DimensionTrendsChart";
 
+// Before/After Comparison components [ANAL-009]
+export { BeforeAfterComparisonChart } from "./BeforeAfterComparisonChart";
+
+// Dimension Leaderboard [ANAL-DIM-001]
+export { DimensionLeaderboardTable } from "./DimensionLeaderboardTable";
+
+// Category-based components [ANAL-DASH-010]
+export { CategoryLeaderboardTable } from "./CategoryLeaderboardTable";
+export { CategoryScoreCard } from "./CategoryScoreCard";
+
+// Basic analytics components [ANAL-DASH-020]
+export { NoScoringBanner, NoScoringBannerCompact } from "./NoScoringBanner";
+export { TopBottomItemsCard } from "./TopBottomItemsCard";
+
 // Version selector
 export { VersionSelector } from "./VersionSelector";
 export type { Version } from "./VersionSelector";
@@ -48,3 +65,4 @@ export { useIndexBandDistribution } from "./useIndexBandDistribution";
 export { useQuestionSummary } from "./useQuestionSummary";
 export { useManagerIndexSummary } from "./useManagerIndexSummary";
 export { useIndexTrendsSummary } from "./useIndexTrendsSummary";
+export { useBeforeAfterComparison } from "./useBeforeAfterComparison";

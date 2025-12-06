@@ -1,4 +1,13 @@
-# Ticket ANAL-000: Analytics API Foundation
+# Ticket ANAL-000: Analytics API Foundation (DEPRECATED - See ANAL-001)
+
+> **Note:** This ticket has been superseded by the new ticket structure:
+> - **ANAL-000:** Analytics Documentation Refactor (✅ DONE)
+> - **ANAL-001:** Analytics Data Model Registry (replaces this ticket)
+> - **ANAL-002:** Analytics Routing + Version Selector
+>
+> See `ANAL-001-analytics-data-model-registry.md` for the current approach.
+
+# Ticket ANAL-000: Analytics API Foundation (DEPRECATED)
 
 ## Goal
 
