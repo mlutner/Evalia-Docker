@@ -8,7 +8,7 @@ export default defineConfig({
   ],
   test: {
     environment: 'jsdom',
-    setupFiles: ['./client/src/test/setup.ts'],
+    setupFiles: [path.resolve(__dirname, 'client/src/test/setup.ts')],
     globals: true,
     coverage: {
       provider: 'v8',
@@ -24,6 +24,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, 'client/src'),
       '@shared': path.resolve(__dirname, 'shared'),
+      '@assets': path.resolve(__dirname, 'attached_assets'),
     },
   },
 });

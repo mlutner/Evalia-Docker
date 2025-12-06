@@ -6,8 +6,9 @@ function formatJson(value: unknown) {
 }
 
 export function SurveyDebugPanel() {
-  // Only render in dev to avoid exposing internals in production builds
-  if (!import.meta.env.DEV) {
+  // Render in dev or when explicitly enabled via env var
+  const showDevTools = import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEV_TOOLS === 'true';
+  if (!showDevTools) {
     return null;
   }
 
@@ -26,7 +27,7 @@ export function SurveyDebugPanel() {
       }));
   }, [survey.questions]);
 
-  const resultsScreen = (survey as any).resultsScreen ?? survey.thankYouScreen;
+  const resultsScreen = survey.scoreConfig?.resultsScreen ?? survey.thankYouScreen;
 
   return (
     <div className="fixed bottom-4 right-4 z-40 space-y-2">
@@ -45,7 +46,7 @@ export function SurveyDebugPanel() {
               <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Survey Debug</p>
               <p className="text-sm font-medium text-gray-900">{survey.title || 'Untitled Survey'}</p>
             </div>
-            <span className="rounded-full bg-gray-100 px-2 py-1 text-[11px] font-semibold text-gray-700">{survey.status || 'draft'}</span>
+            <span className="rounded-full bg-gray-100 px-2 py-1 text-[11px] font-semibold text-gray-700">{'draft'}</span>
           </div>
 
           <div className="space-y-3 text-xs text-gray-800">

@@ -70,16 +70,16 @@ vi.mock("@tanstack/react-query", () => {
         opts.onSuccess?.(
           (baseSurvey as any).scoreConfig?.enabled
             ? {
-                scoring: { totalScore: 50, percentage: 50, categoryScores: {} as any },
-                band: { id: "mid", label: "Developing", min: 0, max: 100 } as any,
-              }
+              scoring: { totalScore: 50, percentage: 50, categoryScores: {} as any },
+              band: { id: "mid", label: "Developing", min: 0, max: 100 } as any,
+            }
             : {},
           _vars
         ),
       isLoading: false,
     }),
     QueryClientProvider: ({ children }: any) => children,
-    QueryClient: class {},
+    QueryClient: class { },
   };
 });
 
@@ -119,20 +119,13 @@ vi.mock("@/components/QuestionCard", () => ({
   },
 }));
 
-vi.mock("@/components/surveys/ResultsScreen", () => ({
+vi.mock("@/components/SurveyResults", () => ({
   __esModule: true,
-  ResultsScreen: ({ resultsConfig, scoring }: any) => (
+  default: ({ survey, answers }: any) => (
     <div data-testid="results-screen">
-      <div>{resultsConfig?.title || "Results"}</div>
+      <div>Results Ready</div>
       <div>Total Score</div>
-      <div>{scoring?.percentage != null ? `${scoring.percentage}%` : "50%"}</div>
-    </div>
-  ),
-  default: ({ resultsConfig, scoring }: any) => (
-    <div data-testid="results-screen">
-      <div>{resultsConfig?.title || "Results"}</div>
-      <div>Total Score</div>
-      <div>{scoring?.percentage != null ? `${scoring.percentage}%` : "50%"}</div>
+      <div>50%</div>
     </div>
   ),
 }));

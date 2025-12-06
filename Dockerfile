@@ -32,6 +32,8 @@ COPY . .
 
 # Set production environment for build optimizations
 ENV NODE_ENV=production
+# Enable dev tools in the build (baked into frontend bundle)
+ENV VITE_ENABLE_DEV_TOOLS=true
 
 # Build the application (Vite frontend + esbuild backend)
 RUN npm run build
@@ -74,8 +76,9 @@ USER evalia
 ENV NODE_ENV=production
 ENV PORT=4000
 
-# Dev tools lockdown (disabled by default in production)
-ENV VITE_ENABLE_DEV_TOOLS=false
+# Dev tools lockdown (enabled for this deployment as requested)
+ENV VITE_ENABLE_DEV_TOOLS=true
+ENV ENABLE_DEV_TOOLS=true
 ENV ENABLE_AI_MONITORING=false
 
 # Expose the application port

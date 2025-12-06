@@ -24,7 +24,9 @@ export default function SurveyView() {
   const [showExitWarning, setShowExitWarning] = useState(false);
   const [startTime] = useState(new Date());
   // RESULTS-001: Store scoring results for canonical branching
-  const [scoringPayload, setScoringPayload] = useState<ReturnType<typeof calculateSurveyScores>>(null);
+  const [scoringPayload, setScoringPayload] = useState<ReturnType<
+    typeof calculateSurveyScores
+  > | null>(null);
 
   const { data: survey, isLoading, error } = useQuery<Survey>({
     queryKey: ["/api/surveys", id],
@@ -203,9 +205,9 @@ export default function SurveyView() {
   if (isCompleted) {
     // RESULTS-001: Canonical branching rule
     // Show ResultsScreen only if:
-    // 1. Scoring is enabled (survey.scoreConfig?.enabled)
+    // 1. resultsScreen is enabled (survey.scoreConfig?.resultsScreen?.enabled)
     // 2. Scoring produced valid results (scoringPayload !== null)
-    const showResults = survey.scoreConfig?.enabled && scoringPayload !== null;
+    const showResults = survey.scoreConfig?.resultsScreen?.enabled && scoringPayload !== null;
 
     if (showResults) {
       return (

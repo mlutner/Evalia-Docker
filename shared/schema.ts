@@ -33,7 +33,7 @@ export type User = typeof users.$inferSelect;
 export type SurveyType = "survey" | "assessment";
 
 // Question types - comprehensive list based on survey platform research
-export type QuestionType = 
+export type QuestionType =
   // Text inputs
   | "text" | "textarea" | "email" | "phone" | "url" | "number"
   // Selection
@@ -81,14 +81,14 @@ export const questionSchema = z.object({
   question: z.string(),
   description: z.string().optional(),
   required: z.boolean().optional(),
-  
+
   // === TEXT INPUT OPTIONS ===
   placeholder: z.string().optional(),
   minLength: z.number().optional(),
   maxLength: z.number().optional(),
   validationPattern: z.string().optional(), // regex pattern
   rows: z.number().optional(), // for textarea
-  
+
   // === SELECTION OPTIONS ===
   options: z.array(z.string()).optional(), // for multiple_choice, checkbox, dropdown, ranking
   displayStyle: z.enum([
@@ -103,14 +103,14 @@ export const questionSchema = z.object({
   optionImages: z.array(z.string()).optional(), // image URLs for options
   minSelections: z.number().optional(), // for checkbox
   maxSelections: z.number().optional(), // for checkbox
-  
+
   // === IMAGE CHOICE OPTIONS ===
   imageOptions: z.array(imageOptionSchema).optional(),
   selectionType: z.enum(["single", "multiple"]).optional(),
   imageSize: z.enum(["small", "medium", "large"]).optional(),
   showLabels: z.boolean().optional(),
   columns: z.number().optional(), // 2, 3, or 4
-  
+
   // === RATING OPTIONS ===
   ratingScale: z.number().optional(), // 3, 5, 7, or 10 (default: 5)
   ratingStyle: z.enum(["star", "number", "emoji", "heart", "thumb", "slider"]).optional(),
@@ -120,19 +120,19 @@ export const questionSchema = z.object({
     high: z.string().optional(),
   }).optional(),
   showLabelsOnly: z.boolean().optional(), // hide numbers, show only labels
-  
+
   // === NPS OPTIONS ===
   npsLabels: z.object({
     detractor: z.string().optional(), // Label for 0 end (default: "Not likely")
     promoter: z.string().optional(),  // Label for 10 end (default: "Extremely likely")
   }).optional(),
-  
+
   // === LIKERT OPTIONS ===
   likertType: z.enum(["agreement", "frequency", "importance", "satisfaction", "quality"]).optional(),
   likertPoints: z.number().optional(), // 5 or 7
   showNeutral: z.boolean().optional(),
   customLabels: z.array(z.string()).optional(), // override default labels
-  
+
   // === SLIDER OPTIONS ===
   min: z.number().optional(),
   max: z.number().optional(),
@@ -140,25 +140,25 @@ export const questionSchema = z.object({
   defaultValue: z.number().optional(),
   showValue: z.boolean().optional(),
   unit: z.string().optional(), // e.g., "%", "$", "years"
-  
+
   // === OPINION SCALE (Semantic Differential) ===
   leftLabel: z.string().optional(), // e.g., "Cold"
   rightLabel: z.string().optional(), // e.g., "Hot"
   showNumbers: z.boolean().optional(),
-  
+
   // === MATRIX OPTIONS ===
   rowLabels: z.array(z.string()).optional(),
   colLabels: z.array(z.string()).optional(),
   matrixType: z.enum(["radio", "checkbox", "text"]).optional(),
   randomizeRows: z.boolean().optional(),
-  
+
   // === RANKING OPTIONS ===
   maxRankItems: z.number().optional(), // only rank top N
-  
+
   // === CONSTANT SUM OPTIONS ===
   totalPoints: z.number().optional(), // e.g., 100
   showPercentage: z.boolean().optional(),
-  
+
   // === DATE/TIME OPTIONS ===
   dateFormat: z.enum(["MM/DD/YYYY", "DD/MM/YYYY", "YYYY-MM-DD"]).optional(),
   minDate: z.string().optional(),
@@ -167,25 +167,25 @@ export const questionSchema = z.object({
   disableFutureDates: z.boolean().optional(),
   timeFormat: z.enum(["12h", "24h"]).optional(),
   minuteStep: z.number().optional(), // 1, 5, 10, 15, 30
-  
+
   // === FILE UPLOAD OPTIONS ===
   allowedTypes: z.array(z.string()).optional(), // e.g., ["pdf", "doc", "jpg"]
   maxFileSize: z.number().optional(), // in MB
   maxFiles: z.number().optional(),
-  
+
   // === YES/NO OPTIONS ===
   yesLabel: z.string().optional(), // custom "Yes" label
   noLabel: z.string().optional(), // custom "No" label
-  
+
   // === LEGAL OPTIONS ===
   linkUrl: z.string().optional(),
   linkText: z.string().optional(),
-  
+
   // === SKIP LOGIC & SCORING ===
   skipCondition: skipConditionSchema,
   scoringCategory: z.string().optional(),
   sectionId: z.string().optional(),
-  
+
   // === SCORING WEIGHTS (for advanced scoring) ===
   scoreWeight: z.number().optional(), // multiplier for this question's score
   optionScores: z.record(z.number()).optional(), // custom score per option value
@@ -207,6 +207,18 @@ export const feedbackTemplateSchema = z.object({
   template: z.string(),
 });
 
+export const resultsScreenSchema = z.object({
+  enabled: z.boolean(),
+  layout: z.enum(["simple", "bands", "radar"]).optional(),
+  showTotalScore: z.boolean().optional(),
+  showPercentage: z.boolean().optional(),
+  showOverallBand: z.boolean().optional(),
+  showCategoryBreakdown: z.boolean().optional(),
+  showCategoryBands: z.boolean().optional(),
+  showStrengthsAndRisks: z.boolean().optional(),
+  showCallToAction: z.boolean().optional(),
+});
+
 export const surveyScoreConfigSchema = z.object({
   enabled: z.boolean(),
   categories: z.array(z.object({
@@ -216,6 +228,7 @@ export const surveyScoreConfigSchema = z.object({
   scoreRanges: z.array(scoringRuleSchema),
   resultsSummary: z.string().optional(),
   feedbackTemplates: z.array(feedbackTemplateSchema).optional(), // Customizable feedback for low/mid/high performance
+  resultsScreen: resultsScreenSchema.optional(),
 }).optional();
 
 export type ScoringRule = z.infer<typeof scoringRuleSchema>;
@@ -429,7 +442,7 @@ export function calculateSurveyScores(
   if (!scoreConfig?.enabled) return null;
 
   let scores: Record<string, number> = {};
-  
+
   // Initialize scores for each category
   scoreConfig.categories.forEach(cat => {
     scores[cat.id] = 0;
@@ -444,22 +457,22 @@ export function calculateSurveyScores(
       case "likert": return q.likertPoints || 5;
       case "opinion_scale": return q.ratingScale || 5;
       case "slider": return q.max !== undefined ? (q.max - (q.min || 0)) : 10;
-      
+
       // Selection types
       case "multiple_choice": return q.options?.length || 5;
       case "dropdown": return q.options?.length || 5;
       case "checkbox": return q.maxSelections || 5;
       case "image_choice": return q.imageOptions?.length || q.options?.length || 5;
       case "yes_no": return 1;
-      
+
       // Advanced types
       case "matrix": return (q.rowLabels?.length || 1) * (q.colLabels?.length || 5);
       case "ranking": return q.options?.length || 5;
       case "constant_sum": return q.totalPoints || 100;
-      
+
       // Numeric
       case "number": return 10;
-      
+
       // Non-scorable types
       case "text":
       case "textarea":
@@ -512,14 +525,14 @@ export function calculateSurveyScores(
               pointValue = answerNum;
             }
             break;
-            
+
           case "nps":
             // NPS: 0-10 scale
             if (!isNaN(answerNum)) {
               pointValue = answerNum;
             }
             break;
-            
+
           case "slider":
             // Slider: normalize to 0-max range
             if (!isNaN(answerNum)) {
@@ -527,7 +540,7 @@ export function calculateSurveyScores(
               pointValue = answerNum - minVal;
             }
             break;
-            
+
           // === SELECTION TYPES ===
           case "multiple_choice":
           case "dropdown":
@@ -546,13 +559,13 @@ export function calculateSurveyScores(
               }
             }
             break;
-            
+
           case "checkbox":
             // Checkboxes: 1 point per selection, capped at maxSelections or 5
             const maxSel = q.maxSelections || 5;
             pointValue = Math.min(Array.isArray(answer) ? answer.length : 1, maxSel);
             break;
-            
+
           case "image_choice":
             // Image choice: position-based or custom scores
             if (q.selectionType === "multiple") {
@@ -564,13 +577,13 @@ export function calculateSurveyScores(
               }
             }
             break;
-            
+
           case "yes_no":
             // Yes = 1, No = 0
             const yesLabel = q.yesLabel || "Yes";
             pointValue = answerText.toLowerCase() === yesLabel.toLowerCase() ? 1 : 0;
             break;
-            
+
           // === ADVANCED TYPES ===
           case "ranking":
             // Ranking: higher rank = more points (1st place = max points)
@@ -581,7 +594,7 @@ export function calculateSurveyScores(
               });
             }
             break;
-            
+
           case "matrix":
             // Matrix: sum of column positions (assuming columns are scale)
             // Answer format: "row|col" or array of "row|col"
@@ -596,26 +609,26 @@ export function calculateSurveyScores(
               });
             }
             break;
-            
+
           case "constant_sum":
             // Constant sum: use the total (should equal totalPoints)
             if (Array.isArray(answer)) {
               pointValue = answer.reduce((sum, val) => sum + (parseInt(val, 10) || 0), 0);
             }
             break;
-            
+
           case "number":
             // Number: use value directly, capped at 10
             if (!isNaN(answerNum)) {
               pointValue = Math.min(answerNum, 10);
             }
             break;
-            
+
           // Non-scorable types - no points
           default:
             pointValue = 0;
         }
-        
+
         // Apply score weight if defined
         if (q.scoreWeight && pointValue > 0) {
           pointValue *= q.scoreWeight;
@@ -634,7 +647,7 @@ export function calculateSurveyScores(
       const catId = cat.id;
       const rawScore = rawScores[catId] || 0;
       const theoreticalMaxRaw = theoreticalMax[catId] || 1;
-      
+
       // Get the configured max score for this category
       const maxConfiguredScore = scoreConfig.scoreRanges
         .filter(rule => rule.category === catId)
@@ -667,16 +680,16 @@ export function calculateSurveyScores(
     const maxScore = scoreConfig.scoreRanges
       .filter(rule => rule.category === cat.id)
       .reduce((max, rule) => Math.max(max, rule.maxScore), 0);
-    
+
     // Normalize score and maxScore to 0-100 scale for consistent display
     const normalizedMaxScore = 100;
     const normalizedScore = maxScore > 0 ? Math.round((categoryScore / maxScore) * normalizedMaxScore) : 0;
-    
+
     // Find matching rule using the original (non-normalized) score for interpretation
     const matchingRule = scoreConfig.scoreRanges.find(
-      rule => rule.category === cat.id && 
-      categoryScore >= rule.minScore && 
-      categoryScore <= rule.maxScore
+      rule => rule.category === cat.id &&
+        categoryScore >= rule.minScore &&
+        categoryScore <= rule.maxScore
     );
 
     results.push({
