@@ -95,6 +95,9 @@ See `docs/scoring/SCORING_MODEL_OVERVIEW.md` for architecture details.
   - `docs/ARCHITECTURE-SCORING-RESULTS.md` – scoring/results/logic guardrails and runtime notes.
   - `client/src/utils/logicValidator.ts` – graph-based logic validation (cycles, missing targets, conflicts).
   - `client/src/utils/scoringValidator.ts` – band/category validation (gaps, overlaps, usage).
+  - `client/src/core/logic/engines.ts` – registry of available logic engines (default `logicEngineV2`, optional `LogicV3`).
+  - `client/src/core/scoring/strategies.ts` – registry of scoring engines (active `engagement_v1`).
+  - `docs/ARCHITECTURE-SCORING-RESULTS.md` – scoring/results/logic guardrails and runtime notes.
 - **AI architecture**
   - `AI_INTEGRATION_COMPLETION_ASSESSMENT.md` – completion evidence for prompt upgrades, validation rules, and model routing.
   - `/dev/inspector` (dev builds) – snapshot of AI endpoints exposed to the builder/runtime flows.

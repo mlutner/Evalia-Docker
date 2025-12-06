@@ -20,6 +20,8 @@
 import { useMemo, useState } from 'react';
 import { useSurveyBuilder } from '@/contexts/SurveyBuilderContext';
 import { ScoringDebugSection } from './ScoringDebugSection';
+import { useMemo, useState } from 'react';
+import { useSurveyBuilder } from '@/contexts/SurveyBuilderContext';
 
 function formatJson(value: unknown) {
   return JSON.stringify(value, null, 2);
@@ -34,6 +36,9 @@ const shouldShowDevTools = () => {
 export function SurveyDebugPanel() {
   // Only render in dev or when explicitly enabled via env var
   if (!shouldShowDevTools()) {
+export function SurveyDebugPanel() {
+  // Only render in dev to avoid exposing internals in production builds
+  if (!import.meta.env.DEV) {
     return null;
   }
 
@@ -98,9 +103,6 @@ export function SurveyDebugPanel() {
               </div>
               <pre className="whitespace-pre-wrap rounded bg-gray-50 p-3 text-[11px] leading-snug text-gray-900">{formatJson(logicSummary)}</pre>
             </section>
-
-            {/* Scoring Debug Section - shows calculation trace for most recent response */}
-            <ScoringDebugSection surveyId={surveyId} survey={survey} />
           </div>
         </div>
       )}
