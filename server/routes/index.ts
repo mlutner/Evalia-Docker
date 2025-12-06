@@ -26,6 +26,7 @@ import surveyRoutes from "./surveys";
 import aiRoutes from "./ai";
 import responseRoutes from "./responses";
 import aiTestRouter from "./aiTest";
+import analyticsRoutes from "./analytics";
 
 // Pool of survey illustrations
 const SURVEY_ILLUSTRATIONS = [
@@ -379,6 +380,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // AI Test/Monitoring routes
   app.use("/api/ai/test", aiTestRouter);
+
+  // Analytics routes (5D dashboard)
+  app.use("/api/analytics", analyticsRoutes);
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // ERROR HANDLING (must be last)

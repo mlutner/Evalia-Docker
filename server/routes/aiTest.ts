@@ -1,20 +1,45 @@
 /**
  * AI Features Test Endpoint
  * Exercises monitoring and A/B testing framework
+ * 
+ * SECURITY: These routes are protected by:
+ * 1. Authentication (isAuthenticated middleware)
+ * 2. Production lockdown (disabled unless ENABLE_AI_MONITORING=true)
  */
 
-import { Router } from "express";
+import { Router, RequestHandler } from "express";
 import { callMistral } from "../utils/aiClient";
 import { aiLogger } from "../utils/aiMonitoring";
 import { abTestingManager } from "../utils/abTesting";
+import { isAuthenticated } from "../replitAuth";
 
 const router = Router();
+
+/**
+ * Middleware to gate dev/monitoring routes in production.
+ * Routes are only accessible if:
+ * 1. User is authenticated (handled by isAuthenticated)
+ * 2. Not in production, OR ENABLE_AI_MONITORING=true
+ */
+const devToolsGate: RequestHandler = (req, res, next) => {
+  const isProduction = process.env.NODE_ENV === "production";
+  const monitoringEnabled = process.env.ENABLE_AI_MONITORING === "true";
+
+  if (isProduction && !monitoringEnabled) {
+    return res.status(403).json({
+      error: "Dev tools disabled in production",
+      message: "Set ENABLE_AI_MONITORING=true to enable AI monitoring endpoints",
+    });
+  }
+
+  next();
+};
 
 /**
  * GET /api/ai/test/health
  * Simple health check for AI features
  */
-router.get("/health", async (req, res) => {
+router.get("/health", isAuthenticated, devToolsGate, async (req, res) => {
   try {
     const testMessages = [
       { role: "system" as const, content: "You are helpful." },
@@ -50,7 +75,7 @@ router.get("/health", async (req, res) => {
  * GET /api/ai/test/monitoring
  * Get detailed monitoring statistics
  */
-router.get("/monitoring", (req, res) => {
+router.get("/monitoring", isAuthenticated, devToolsGate, (req, res) => {
   const stats = aiLogger.getStats();
   const recentCalls = aiLogger.getRecentCalls(5);
 
@@ -78,7 +103,7 @@ router.get("/monitoring", (req, res) => {
  * GET /api/ai/test/ab-testing
  * Get A/B testing configuration and results
  */
-router.get("/ab-testing", (req, res) => {
+router.get("/ab-testing", isAuthenticated, devToolsGate, (req, res) => {
   const activeExperiments = abTestingManager.getActiveExperiments();
   const analysis = abTestingManager.analyzeResults("ab-test-task");
 

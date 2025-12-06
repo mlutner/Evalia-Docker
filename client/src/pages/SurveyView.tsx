@@ -13,6 +13,7 @@ import { Check, Loader2, AlertCircle, FileQuestion } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Question } from "@/components/QuestionCard";
 import type { Survey } from "@shared/schema";
+import { calculateSurveyScores } from "@shared/schema";
 
 export default function SurveyView() {
   const { id } = useParams();
@@ -22,6 +23,8 @@ export default function SurveyView() {
   const [showBackWarning, setShowBackWarning] = useState(false);
   const [showExitWarning, setShowExitWarning] = useState(false);
   const [startTime] = useState(new Date());
+  // RESULTS-001: Store scoring results for canonical branching
+  const [scoringPayload, setScoringPayload] = useState<ReturnType<typeof calculateSurveyScores>>(null);
 
   const { data: survey, isLoading, error } = useQuery<Survey>({
     queryKey: ["/api/surveys", id],
@@ -30,7 +33,7 @@ export default function SurveyView() {
 
   const submitMutation = useMutation({
     mutationFn: async (answers: Record<string, string | string[]>) => {
-      return apiRequest("POST", `/api/surveys/${id}/responses`, { 
+      return apiRequest("POST", `/api/surveys/${id}/responses`, {
         answers,
         startedAt: startTime.toISOString(),
         completedAt: new Date().toISOString(),
@@ -38,16 +41,31 @@ export default function SurveyView() {
     },
     onSuccess: () => {
       setIsCompleted(true);
+      // RESULTS-001: Calculate scoring results if scoring is enabled
+      // Canonical rule: show results only if scoring enabled AND produces valid results
+      if (survey?.scoreConfig?.enabled) {
+        try {
+          const results = calculateSurveyScores(
+            survey.questions,
+            answers,
+            survey.scoreConfig
+          );
+          setScoringPayload(results);
+        } catch (error) {
+          console.error('[SurveyView] Scoring calculation failed:', error);
+          // On error, scoringPayload stays null → falls back to ThankYou
+        }
+      }
       // Invalidate surveys cache so dashboard shows updated response count
       queryClient.invalidateQueries({ queryKey: ["/api/surveys"] });
     },
   });
 
   const allQuestions = survey?.questions || [];
-  
+
   // Apply randomization if enabled (for future feature)
   const questions = allQuestions;
-  
+
   const currentQuestion = currentStep >= 0 ? questions[currentStep] : null;
 
   // Filter visible questions based on skip logic
@@ -62,8 +80,8 @@ export default function SurveyView() {
   };
 
   const visibleQuestions = getVisibleQuestions();
-  const visibleCurrentQuestion = currentStep >= 0 && currentStep < visibleQuestions.length 
-    ? visibleQuestions[currentStep] 
+  const visibleCurrentQuestion = currentStep >= 0 && currentStep < visibleQuestions.length
+    ? visibleQuestions[currentStep]
     : null;
 
   // Keyboard navigation - Enter key
@@ -99,9 +117,9 @@ export default function SurveyView() {
   const canGoNext = () => {
     if (currentStep === -1) return true;
     if (!visibleCurrentQuestion) return false;
-    
+
     const answer = answers[visibleCurrentQuestion.id];
-    
+
     if (!visibleCurrentQuestion.required) return true;
     if (Array.isArray(answer)) return answer.length > 0;
     return answer && answer.toString().trim().length > 0;
@@ -183,8 +201,13 @@ export default function SurveyView() {
   }
 
   if (isCompleted) {
-    // Show scoring results if enabled
-    if (survey.scoreConfig?.enabled) {
+    // RESULTS-001: Canonical branching rule
+    // Show ResultsScreen only if:
+    // 1. Scoring is enabled (survey.scoreConfig?.enabled)
+    // 2. Scoring produced valid results (scoringPayload !== null)
+    const showResults = survey.scoreConfig?.enabled && scoringPayload !== null;
+
+    if (showResults) {
       return (
         <SurveyResults
           survey={survey}
@@ -213,9 +236,9 @@ export default function SurveyView() {
           <p className="text-base sm:text-lg text-muted-foreground/80 mb-8 sm:mb-10 px-4" data-testid="text-thank-you-subtitle">
             Thanks for taking the time to share your thoughts.
           </p>
-          <Button 
-            size="lg" 
-            onClick={() => window.location.reload()} 
+          <Button
+            size="lg"
+            onClick={() => window.location.reload()}
             data-testid="button-submit-another"
             className="text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 shadow-lg hover:shadow-xl transition-all w-full sm:w-auto mx-4"
           >
@@ -288,12 +311,12 @@ export default function SurveyView() {
           <div className="w-full max-w-xs mx-auto mb-3">
             <div className="flex justify-between items-center mb-1">
               <p className="survey-progress text-sm" data-testid="text-progress">
-                {currentStep + 1} of {visibleQuestions.length} 
+                {currentStep + 1} of {visibleQuestions.length}
               </p>
               <span className="text-xs font-medium text-muted-foreground">{Math.round(((currentStep + 1) / visibleQuestions.length) * 100)}%</span>
             </div>
             <div className="w-full h-2 bg-muted rounded-full overflow-hidden" data-testid="progress-bar">
-              <div 
+              <div
                 className="h-full bg-primary rounded-full transition-all duration-300 ease-out"
                 style={{ width: `${((currentStep + 1) / visibleQuestions.length) * 100}%` }}
                 data-testid="progress-bar-fill"
@@ -317,7 +340,7 @@ export default function SurveyView() {
         {/* Footer - Show Next/Send button only for multi-answer questions */}
         {visibleCurrentQuestion && ['text', 'email', 'number', 'textarea', 'checkbox', 'ranking'].includes(visibleCurrentQuestion.type) && (
           <footer className="survey-footer">
-            <button 
+            <button
               onClick={handleBack}
               disabled={currentStep <= 0}
               className="survey-back"
@@ -343,7 +366,7 @@ export default function SurveyView() {
         {/* Footer - Show only Back for single-choice questions (auto-advance enabled) */}
         {visibleCurrentQuestion && !['text', 'email', 'number', 'textarea', 'checkbox', 'ranking'].includes(visibleCurrentQuestion.type) && (
           <footer className="survey-footer">
-            <button 
+            <button
               onClick={handleBack}
               disabled={currentStep <= 0}
               className="survey-back"

@@ -2,6 +2,43 @@
 
 Short, dated notes for significant architecture or builder/runtime changes.
 
+- 2025-12-06 (PM): **ANAL-REG-001 – Restore 5D Analytics Dashboard**
+  - **Ticket**: ANAL-REG-001
+  - **Branch**: `feature/5d-analytics-restore` (from `main`, donor: `feature/builder-scoring-logic-modes`)
+  - **Change**: Restored full 5D analytics infrastructure from donor branch.
+  - **Files added** (45+ files):
+    - **Shared types**: `analytics.ts`, `analyticsBands.ts`, `analyticsConfidence.ts`
+    - **Server**: `routes/analytics.ts`, `utils/analytics.ts`
+    - **Client hooks**: `useDashboardMode.ts`, `analyticsState.ts`
+    - **Analytics components** (28 files): `DimensionLeaderboardTable`, `IndexDistributionChart`, `BandDistributionChart`, `DimensionTrendsChart`, `BeforeAfterComparisonChart`, `ManagerComparisonTable`, `QuestionSummaryTable`, `TopBottomItemsCard`, etc.
+    - **AnalyticsPage.tsx**: Replaced with 7-tab IA + 3-mode dashboard
+  - **Routes wired**: `/api/analytics/:surveyId/:metricId`
+  - **Dashboard modes**: `insight-dimensions` (5D), `generic-scoring`, `basic`
+  - **Build status**: ✅ Passed
+  - **Tests**: Pre-existing vitest setup path issue prevents test execution
+
+
+- 2025-12-06 (PM): **RESULTS-001 – ResultsScreen vs ThankYou Branching Fix**
+  - **Ticket**: RESULTS-001
+  - **Change**: Fixed runtime branching to follow canonical rule: show ResultsScreen only when `scoreConfig.enabled` AND scoring calculation succeeds (produces valid results).
+  - **File changed**: `client/src/pages/SurveyView.tsx`
+    - Added `scoringPayload` state to store calculated results
+    - Scoring computed in `onSuccess` callback with error handling
+    - Branching condition: `showResults = scoreConfig?.enabled && scoringPayload !== null`
+  - **Scenarios covered by tests** (in `SurveyView.results.test.tsx`):
+    1. Scoring enabled + valid results → ResultsScreen
+    2. Scoring disabled → ThankYou
+    3. Scoring enabled + null results → ThankYou
+    4. Scoring throws error → ThankYou (graceful fallback)
+  - **TODO**: Fix pre-existing vitest path configuration issue to run tests.
+
+- 2025-12-06 (PM): **Docker Production + Security Hardening**
+  - Fixed Docker production build: separated `vite.ts` from `static.ts` to avoid bundling vite in production; updated Dockerfile paths.
+  - Security: added `isAuthenticated` + `devToolsGate` middleware to all `/api/ai/test/*` routes; routes now require auth and are disabled in production unless `ENABLE_AI_MONITORING=true`.
+  - Environment: added `VITE_ENABLE_DEV_TOOLS=false` and `ENABLE_AI_MONITORING=false` to Dockerfile defaults and `.env`.
+  - Documentation: created `docs/TICKETS.md` with prioritized backlog of 18 upcoming tickets extracted from roadmaps.
+  - Docker running on `localhost:4000` with PostgreSQL.
+
 - 2025-12-09: **Evalia Build Log – Major Update Summary**
   - Core architecture: unified rendering pipeline (Builder → Runtime → QuestionRenderer) plus refactored adapters with validation/normalization.
   - Logic V2: logicRules schema, structured QuestionLogicEditor UI, deterministic evaluator, and AI suggestion hooks scaffolded.

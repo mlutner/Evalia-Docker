@@ -48,7 +48,7 @@ RUN apk add --no-cache dumb-init
 
 # Create non-root user for security
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 evalia
+  adduser --system --uid 1001 evalia
 
 # Copy package files for production dependencies
 COPY package.json package-lock.json ./
@@ -58,12 +58,11 @@ RUN npm ci --omit=dev && npm cache clean --force
 
 # Copy built assets from builder
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/client/dist ./client/dist
 
 # Copy static assets and other required files
 COPY --from=builder /app/attached_assets ./attached_assets
 COPY --from=builder /app/shared ./shared
-COPY --from=builder /app/server/prompts ./server/prompts
+# Note: server/prompts directory removed - prompts are inline in aiService.ts
 
 # Set ownership to non-root user
 RUN chown -R evalia:nodejs /app
@@ -74,6 +73,10 @@ USER evalia
 # Environment configuration
 ENV NODE_ENV=production
 ENV PORT=4000
+
+# Dev tools lockdown (disabled by default in production)
+ENV VITE_ENABLE_DEV_TOOLS=false
+ENV ENABLE_AI_MONITORING=false
 
 # Expose the application port
 EXPOSE 4000
