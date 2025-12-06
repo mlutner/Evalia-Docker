@@ -29,6 +29,8 @@ import Account from "@/pages/Account";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/not-found";
 import DevInspector from "@/pages/DevInspector";
+import AnalyticsInspectorPage from "@/pages/dev/AnalyticsInspectorPage";
+import ScoringDebugPage from "@/pages/dev/ScoringDebugPage";
 
 function ProtectedRoute({ component: Component }: { component: () => JSX.Element }) {
   const [location, setLocation] = useLocation();
@@ -56,7 +58,8 @@ function ProtectedRoute({ component: Component }: { component: () => JSX.Element
 }
 
 function Router() {
-  const isDev = import.meta.env.DEV;
+  // Dev tools available in dev mode OR when explicitly enabled via env var
+  const showDevTools = import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEV_TOOLS === 'true';
   return (
     <Switch>
       {/* Public routes */}
@@ -121,10 +124,21 @@ function Router() {
         {() => <ProtectedRoute component={SettingsPage} />}
       </Route>
 
-      {isDev && (
-        <Route path="/dev/inspector">
-          {() => <ProtectedRoute component={DevInspector} />}
-        </Route>
+      {showDevTools && (
+        <>
+          <Route path="/dev/inspector">
+            {() => <ProtectedRoute component={DevInspector} />}
+          </Route>
+          <Route path="/dev/analytics-inspector">
+            {() => <ProtectedRoute component={AnalyticsInspectorPage} />}
+          </Route>
+          <Route path="/dev/scoring-debug/:surveyId">
+            {() => <ProtectedRoute component={ScoringDebugPage} />}
+          </Route>
+          <Route path="/dev/scoring-debug">
+            {() => <ProtectedRoute component={ScoringDebugPage} />}
+          </Route>
+        </>
       )}
 
       <Route component={NotFound} />

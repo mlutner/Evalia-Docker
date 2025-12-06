@@ -26,6 +26,8 @@ import surveyRoutes from "./surveys";
 import aiRoutes from "./ai";
 import responseRoutes from "./responses";
 import aiTestRouter from "./aiTest";
+import analyticsRoutes from "./analytics";
+import devScoringRoutes from "./devScoring";
 
 // Pool of survey illustrations
 const SURVEY_ILLUSTRATIONS = [
@@ -379,6 +381,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // AI Test/Monitoring routes
   app.use("/api/ai/test", aiTestRouter);
+
+  // Analytics routes (ANAL-001)
+  app.use("/api/analytics", analyticsRoutes);
+
+  // Dev-only routes (scoring debug, etc.)
+  // Available in non-production OR when ENABLE_DEV_TOOLS is set
+  const devToolsEnabled = process.env.NODE_ENV !== "production" || process.env.ENABLE_DEV_TOOLS === "true";
+  if (devToolsEnabled) {
+    app.use("/api/dev", devScoringRoutes);
+  }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // ERROR HANDLING (must be last)

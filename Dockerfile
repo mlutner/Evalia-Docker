@@ -26,6 +26,11 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Build argument for enabling dev tools in production builds
+# Pass --build-arg VITE_ENABLE_DEV_TOOLS=true to enable
+ARG VITE_ENABLE_DEV_TOOLS=false
+ENV VITE_ENABLE_DEV_TOOLS=$VITE_ENABLE_DEV_TOOLS
+
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .

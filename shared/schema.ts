@@ -745,9 +745,10 @@ export function calculateSurveyScores(
       const theoreticalMaxRaw = theoreticalMax[catId] || 1;
       
       // Get the configured max score for this category
+      // [SCORE-002] Use rule.max to match scoreBandSchema definition
       const maxConfiguredScore = scoreConfig.scoreRanges
         .filter(rule => rule.category === catId)
-        .reduce((max, rule) => Math.max(max, rule.maxScore), 20);
+        .reduce((max, rule) => Math.max(max, rule.max), 20);
 
       // Normalize: (rawScore / theoreticalMaxRaw) * maxConfiguredScore
       // This scales the raw score proportionally to the configured max
@@ -773,9 +774,10 @@ export function calculateSurveyScores(
 
   scoreConfig.categories.forEach(cat => {
     const categoryScore = scores[cat.id] || 0;
+    // [SCORE-002] Use rule.max to match scoreBandSchema definition
     const maxScore = scoreConfig.scoreRanges
       .filter(rule => rule.category === cat.id)
-      .reduce((max, rule) => Math.max(max, rule.maxScore), 0);
+      .reduce((max, rule) => Math.max(max, rule.max), 0);
     
     // Normalize score and maxScore to 0-100 scale for consistent display
     const normalizedMaxScore = 100;

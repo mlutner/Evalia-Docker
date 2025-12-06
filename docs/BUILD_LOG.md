@@ -2,6 +2,487 @@
 
 Short, dated notes for significant architecture or builder/runtime changes.
 
+- 2025-12-06: **[SCORING-DEBUG] Scoring Debug Panel for Dev Tools** ✅ IMPLEMENTED
+  - **Goal:** Add scoring calculation trace visualization to dev tools
+  - **Created `server/routes/devScoring.ts`:**
+    - `POST /api/dev/scoring-trace` endpoint
+    - Returns per-question and per-category score breakdowns
+    - Uses same scoring logic as production (calculateSurveyScores)
+    - Guarded by `NODE_ENV !== 'production'`
+  - **Created `client/src/components/builder-v2/ScoringDebugSection.tsx`:**
+    - Collapsible scoring debug panel for Survey Debug Panel
+    - Shows category breakdown table, question contributions table
+    - Final band selection with matched rule
+  - **Created `client/src/pages/dev/ScoringDebugPage.tsx`:**
+    - Standalone full-page scoring debug tool
+    - Survey/response selector with refresh
+    - All score calculation details in one view
+  - **Updated `SurveyDebugPanel.tsx`:** Added ScoringDebugSection
+  - **Updated `App.tsx`:** Added `/dev/scoring-debug` route
+  - **Updated `AppSidebar.tsx`:** Added navigation link
+  - **Updated `server/routes/index.ts`:** Registered dev scoring routes
+  - **Created `docs/DEV_TOOLS.md`:** Comprehensive dev tools documentation
+  - **Tests:** 4 new tests for ScoringDebugSection (all passing)
+  - **Note:** Dev tools only available when running `npm run dev` (not Docker)
+
+- 2025-12-05: **[TMPL-001] Dashboard Routing Verification** ✅ TESTED
+  - **Verified all 3 dashboard modes route correctly:**
+    - 5D Smoke Test (5 canonical) → Insight Dimensions (7 tabs, blue badge)
+    - Turnover Risk (1 canonical) → Category Analytics (5 tabs, purple badge)
+    - Wellbeing Pulse (4 canonical) → Insight Dimensions (7 tabs, blue badge)
+    - Canadian EE Survey (no scoring) → Basic Analytics (no tabs)
+  - **Routing logic confirmed:**
+    - ≥3 canonical 5D category IDs → Insight Dimensions
+    - Scoring enabled + <3 canonical → Category Analytics
+    - No scoring → Basic Analytics
+  - **Next:** Configure templates per TMPL-001 recommendations
+
+- 2025-12-05: **[ADMIN-100] Scoring Admin Control Plane Ticket** 📝 CREATED
+  - **Type:** Epic (Read-Only Phase 1)
+  - **Goal:** Centralized view of scoring model (indices, dimensions, categories, bands)
+  - **Route:** `/admin/scoring`
+  - **Blockers:** MODEL-001 (Scoring Model Registry) must be defined first
+  - **See:** `docs/tickets/ADMIN-100-scoring-admin-control-plane.md`
+
+- 2025-12-05: **[ANAL-DASH-020] Basic Analytics Dashboard** ✅ IMPLEMENTED
+  - **Goal:** Lightweight analytics for surveys without scoring
+  - **Created `client/src/components/analytics/NoScoringBanner.tsx`:**
+    - Informational banner explaining question-level only analytics
+    - Clear messaging about limited view
+  - **Created `client/src/components/analytics/TopBottomItemsCard.tsx`:**
+    - Shows top 5 and bottom 5 questions by average rating
+    - Filters to numeric questions only (rating, likert, nps)
+    - Visual ranking with performance bars
+  - **Updated `client/src/pages/AnalyticsPage.tsx`:**
+    - Added conditional rendering for `dashboardMode.mode === 'basic'`
+    - Basic mode shows: NoScoringBanner, ParticipationMetrics, TopBottomItems, QuestionSummary
+    - NO tabs in basic mode (simplified single-page view)
+  - **Updated `client/src/components/analytics/index.ts`:** Added exports
+  - **Updated test:** `AnalyticsPage.integration.test.tsx` - expects "Question-Level Analytics"
+  - **71 tests passing**
+
+- 2025-12-05: **[TMPL-001] Template Scoring Configuration Ticket** 📝 CREATED
+  - **Goal:** Configure all 37 templates with appropriate scoring for analytics routing
+  - **Audit Results:**
+    - 13 templates have scoring enabled (various categories)
+    - 24 templates have no scoring configured
+  - **Scoring Criteria Defined:**
+    - **5D Insight Dimensions:** Employee engagement, wellbeing, organizational health surveys
+    - **Generic Category Scoring:** Training, skills, program evaluation surveys
+    - **Basic (No Scoring):** Pulse checks, qualitative, logic-based templates
+  - **Logic Template Handling:** Documented 3 options for branching surveys
+  - **See:** `docs/tickets/TMPL-001-template-scoring-configuration.md`
+
+- 2025-12-05: **[ANAL-DASH-010] Generic Scoring Dashboard** ✅ IMPLEMENTED
+  - **Goal:** Provide analytics for non-5D scored surveys (category-based)
+  - **Dev Tools Navigation:**
+    - Added "Dev Tools" section to `AppSidebar.tsx` (dev-only)
+    - Links to `/dev/inspector` and `/dev/analytics-inspector`
+  - **Created `client/src/hooks/useDashboardMode.ts`:**
+    - `DashboardMode` type: `insight-dimensions` | `generic-scoring` | `basic`
+    - `isCanonical5DDashboard()` helper to detect 5D surveys
+    - `useDashboardMode()` hook returns mode, title, flags
+  - **Created `client/src/components/analytics/CategoryLeaderboardTable.tsx`:**
+    - Ranked view of scoring categories (highest = #1)
+    - Uses `scoreConfig.scoreRanges` for bands (not hardcoded 5D bands)
+    - No burnout inversion logic
+    - Trophy/Medal/Award icons for top 3
+  - **Created `client/src/components/analytics/CategoryScoreCard.tsx`:**
+    - Overall score summary card
+    - Shows score, band, response count, category count
+    - Uses `scoreConfig.scoreRanges` for band resolution
+  - **Updated `client/src/pages/AnalyticsPage.tsx`:**
+    - Added dashboard mode detection
+    - Dynamic tab labels: "Insights Home" vs "Overview", "Dimensions" vs "Categories"
+    - Conditionally shows Managers/Benchmarks tabs (5D only)
+    - Conditionally shows Trends tab (scoring enabled only)
+    - CategoryLeaderboardTable for generic-scoring mode
+    - CategoryScoreCard in Overview tab for generic-scoring mode
+  - **Updated `client/src/components/analytics/index.ts`:** Added exports
+
+- 2025-12-05: **[ANAL-QA-040] Analytics Inspector (Dev Only)** ✅ IMPLEMENTED
+  - **Goal:** "Pop the hood" debugging view for analytics
+  - **Route:** `/dev/analytics-inspector` (dev-only, behind `import.meta.env.DEV`)
+  - **Created `client/src/pages/dev/AnalyticsInspectorPage.tsx`:**
+    - Survey selector dropdown
+    - Survey configuration panel (ID, scoring enabled, categories, score ranges)
+    - Derived analyticsState panel (mode, showScoring, showTrends, message)
+    - Raw JSON panels for all metrics:
+      - Participation Metrics
+      - Index Distribution
+      - Band Distribution  
+      - Question Summary
+      - Manager Index Summary
+      - Index Trends Summary
+      - Versions
+      - scoreConfig (raw)
+    - Collapsible sections with status indicators (OK/Loading/Error)
+    - Copy JSON button per panel
+    - Refresh All button
+  - **Updated `client/src/App.tsx`:** Added dev-only route
+
+- 2025-12-05: **[ANAL-QA-020] AnalyticsPage Integration Tests** ✅ IMPLEMENTED
+  - **Goal:** UI-level guarantees that the right analytics appear for the right kind of survey
+  - **Created `client/src/__tests__/analytics/AnalyticsPage.integration.test.tsx`:**
+    - 18 integration tests covering key scenarios
+    - Tests state detection for: 5D scored, non-scored, misconfigured, single-version, no-responses
+    - Verifies correct messages appear for each state
+    - Tests empty state handling
+  - **Test Coverage:**
+    - Scoring disabled → shows "Scoring Not Enabled", participation + questions only
+    - Misconfigured scoring → shows "Scoring Misconfigured" error with guidance
+    - Single version → classifies as "Single Snapshot Mode", shows scoring but not trends
+    - No responses → shows "Waiting for Responses" state
+    - All null dimension scores → detects misconfigured state
+  - **Tests:** 71 total analytics tests passing (18 integration + 21 state + 32 backend)
+
+- 2025-12-05: **[ANAL-QA-050] Confidence / Empty-State Rules** ✅ IMPLEMENTED
+  - **Goal:** Make analytics failures obvious and safe
+  - **Created `client/src/utils/analyticsState.ts`:**
+    - `deriveAnalyticsScoringState()` - classifies survey into states:
+      - `no-responses` - show waiting state
+      - `no-scoring` - show participation + questions only
+      - `misconfigured-scoring` - show error with guidance
+      - `single-version` - show scoring but not trends
+      - `healthy` - show all analytics
+    - `checkAnalyticsInvariants()` - dev-mode logging for broken states
+    - `isDistributionEmpty()` - helper for empty checks
+  - **Updated `client/src/pages/AnalyticsPage.tsx`:**
+    - Added `AnalyticsStateBanner` component for state warnings
+    - Added `SingleVersionIndicator` for trend limitations
+    - Added `ScoringDisabledCard` for unavailable charts
+    - Conditional rendering based on analytics state
+    - Dev-mode invariant checking via useEffect
+  - **Tests:** 21 new tests covering all states
+  - **No changes to scoring calculations or APIs**
+
+- 2025-12-05: **[ANAL-QA-030] Shared Helpers Refactor** ✅ IMPLEMENTED
+  - **Goal:** Eliminate drift between scoring logic, analytics helpers, and UI
+  - **Enhanced `shared/analyticsBands.ts`:**
+    - `INDEX_BAND_DEFINITIONS` - canonical source with thresholds
+    - `resolveBandIndex()` - for bucket counting
+    - `getColorForScore()` - direct score-to-color lookup
+    - `createEmptyBandStats()` - for distribution chart initialization
+    - `DISTRIBUTION_BUCKET_COLORS` - for index distribution charts
+    - `TREND_COLORS` - for trend direction indicators
+    - Strong TypeScript types: `BandId`, `TrendDirection`, `IndexBandInfo`
+  - **Refactored `server/utils/analytics.ts`:**
+    - `DEFAULT_INDEX_BANDS` now derives from shared definitions
+    - `computeIndexBandDistribution` uses `resolveBandIndex()`
+    - `calculateBandDistribution` uses shared helpers
+    - `createEmptyBandDistribution` uses `createEmptyBandStats()`
+  - **Refactored Client Components:**
+    - `DimensionLeaderboardTable` - uses `getColorForScore()`, updated types
+    - `IndexDistributionChart` - uses `DISTRIBUTION_BUCKET_COLORS`
+    - `BeforeAfterComparisonChart` - uses `TREND_COLORS`
+  - **Tests:** 53 tests pass (all shared + analytics tests)
+
+- 2025-12-05: **[ANAL-QA-010] Golden Fixtures & Analytics Unit Tests** ✅ IMPLEMENTED
+  - **Golden Fixture File:** `server/__tests__/fixtures/analyticsFixtures.ts`
+    - 10 test responses (5 per manager) with hand-calculated expected values
+    - 8 questions (6 scorable, 2 non-scorable) across 4 categories
+    - Edge case fixtures: empty responses, single response, unscored survey
+  - **Unit Tests:** `server/__tests__/utils/analytics.test.ts` (32 tests)
+    - Participation metrics validation
+    - Question-level statistics (avg, min, max, completion rate)
+    - Manager summary grouping and counts
+    - Index distribution bucket validation
+    - Score config structure validation
+    - SCORE-002 regression test (min/max not minScore/maxScore)
+    - calculateSurveyScores integration tests
+  - **Bug Discovered:** Reverse scoring via `optionScores` not applied for rating questions
+    - Documented as known limitation with TODO for future fix
+    - Rating questions use raw answer value, not optionScores mapping
+  - **Files Created:**
+    - `server/__tests__/fixtures/analyticsFixtures.ts`
+    - `server/__tests__/utils/analytics.test.ts`
+
+- 2025-12-05: **[ANAL-DASH-001] Multi-Mode Analytics Dashboards – Epic Created** 📋 ROADMAP
+  - **Intent:** Introduce runtime dashboard routing so each survey gets appropriate analytics
+  - **Three Dashboard Modes:**
+    - **Insight Dimensions** – Full 5D Evalia view (existing AnalyticsPage)
+    - **Generic Scoring** – Category-based view for non-5D scored surveys
+    - **Basic Analytics** – Participation + question-level only for non-scored surveys
+  - **Sub-tickets Created:**
+    - ANAL-DASH-010: Generic Scoring Dashboard (Category-Based)
+    - ANAL-DASH-020: Basic Analytics Dashboard (Non-Scored)
+  - **Routing Logic:** Based on `scoreConfig.enabled`, `categories.length`, and category ID matching
+  - **Status:** Design phase, tickets documented
+
+- 2025-12-05: **[SCORE-002] Score Band Property Alignment – Bugfix** ✅ FIXED
+  - **Root Cause:** Property name mismatch between schema and scoring code
+    - `scoreBandSchema` defines `min` / `max` properties
+    - `calculateSurveyScores` was reading `minScore` / `maxScore` (undefined)
+    - This caused all normalized scores to be `0` and band matching to fail
+  - **Fix Applied:**
+    - Updated 4 lines in `shared/schema.ts` to use `rule.min` / `rule.max`
+    - Added `category` and `interpretation` optional fields to `scoreBandSchema`
+  - **Golden Test Added:**
+    - `shared/__tests__/calculateSurveyScores.test.ts` with 7 test cases
+    - Validates min/max property usage, band matching, multi-category scoring
+    - Prevents regression of minScore/maxScore misuse
+  - **Files Changed:**
+    - `shared/schema.ts` (lines 749-751, 777-779, 788-790)
+    - `src/core/results/resultsSchemas.ts` (added category, interpretation)
+    - `shared/__tests__/calculateSurveyScores.test.ts` (new)
+  - **Verified:** Analytics endpoints now return correct dimension scores
+
+- 2025-12-06: **[ANAL-QA-001] Analytics Hardening Epic – Created**
+  - **Intent:** Pause "new shiny" features for one cycle; focus on stability, correctness, and guardrails
+  - **Subtickets Created:**
+    - ANAL-QA-010: Golden Fixtures & Analytics Unit Tests
+    - ANAL-QA-020: AnalyticsPage Integration Tests
+    - ANAL-QA-030: Shared Bands & Dimension Helpers Refactor
+    - ANAL-QA-040: Analytics Inspector (Dev Only)
+    - ANAL-QA-050: Confidence/Empty-State Rules
+  - **Key Goals:**
+    - Prove analytics numbers are mathematically correct with golden fixtures
+    - Test UI wiring (tabs → components, version selector propagation)
+    - Centralize band/dimension logic (remove drift)
+    - Add dev tooling for debugging
+    - Clear empty-state messaging
+  - **Status:** Ready to implement
+
+- 2025-12-06: **[ANAL-DIM-001] Dimension Leaderboard Table – Full Implementation** ✅ IMPLEMENTED
+  - **Shared Helper:**
+    - Created `shared/analyticsBands.ts` with centralized band resolution logic
+    - `resolveIndexBand()` - maps scores to bands with burnout inversion support
+    - `resolveTrendDirection()` - determines trend arrow based on ±1 threshold
+    - `calculatePerformanceScore()` - inverts burnout scores for ranking
+    - Exports `INDEX_BANDS` constants for consistent band definitions
+  - **Frontend Component:**
+    - Created `DimensionLeaderboardTable` showing all 5 dimensions ranked by performance
+    - Columns: Rank, Dimension, Score (with band color), Band, Change, Performance bar
+    - Trophy icon for #1, warning icon for #5 (worst performer)
+    - Burnout Risk handled correctly (lower score = better, displayed with "Lower is better")
+    - Version-aware: respects global VersionSelector
+    - Change calculation vs previous version with trend arrows
+  - **Integration:**
+    - Added to Dimensions tab in AnalyticsPage (above existing charts)
+    - Reuses `useIndexTrendsSummary` data - no new backend required
+  - **Files Changed:**
+    - `shared/analyticsBands.ts` (new)
+    - `client/src/components/analytics/DimensionLeaderboardTable.tsx` (new)
+    - `client/src/components/analytics/index.ts`
+    - `client/src/pages/AnalyticsPage.tsx`
+    - `docs/tickets/ANAL-DIM-001-dimension-leaderboard.md` (new)
+
+- 2025-12-06: **[ANAL-IA-001] Analytics Information Architecture – Structural Refactor** ✅ IMPLEMENTED
+  - **New 7-Section Tab Structure:**
+    - Insights Home | Dimensions | Managers | Trends | Questions | Responses | Benchmarks
+  - **Component Relocation:**
+    - `ParticipationMetricsCard`, `IndexDistributionChart`, `BandDistributionChart` → Insights Home
+    - `IndexDistributionChart`, `BandDistributionChart` (duplicated) → Dimensions tab
+    - `ManagerComparisonTable` → Managers tab
+    - `DimensionTrendsChart`, `BeforeAfterComparisonChart` → Trends tab
+    - `QuestionSummaryTable` → Questions tab (moved from Domains)
+    - Placeholder cards added for Responses and Benchmarks tabs
+  - **Removed:** Export tab (functionality deferred)
+  - **Preserved:** VersionSelector remains global (visible on all tabs)
+  - **No Backend Changes:** All metric IDs, APIs, and hooks unchanged
+  - **Files Changed:**
+    - `client/src/pages/AnalyticsPage.tsx`
+    - `docs/tickets/ANAL-IA-001-unified-analytics-ia.md`
+
+- 2025-12-06: **[ANAL-009] Before/After Index Comparison – Full Implementation** ✅ IMPLEMENTED
+  - **Backend:**
+    - Added `computeBeforeAfterIndexComparison()` helper to `server/utils/analytics.ts`
+    - Compares average Insight Dimension scores between two scoring versions
+    - Calculates change values, percentage changes, and trend indicators (up/down/neutral)
+    - Returns summary with improved/declined/stable counts and overall trend
+    - Added `BEFORE_AFTER_INDEX_COMPARISON` metric ID and route handler
+  - **Shared Types:**
+    - Added `ComparisonVersionInfo`, `DimensionComparison`, `ComparisonSummary` interfaces
+    - Updated `BeforeAfterIndexComparisonData` with detailed version info and comparisons
+    - Added `BEFORE_AFTER_INDEX_COMPARISON` to `METRIC_IDS` and `METRIC_TYPE_MAP`
+  - **Frontend:**
+    - Created `useBeforeAfterComparison` hook for data fetching
+    - Created `BeforeAfterComparisonChart` component with:
+      - Version selector dropdowns for "Before" and "After" versions
+      - Grouped horizontal bar chart comparing scores per dimension
+      - Summary card showing overall trend (positive/negative/mixed/stable)
+      - Change indicators with color coding (green=up, red=down, gray=neutral)
+      - Custom tooltip with before/after values and change details
+      - Loading, error, and "not enough versions" states
+  - **AnalyticsPage Integration:**
+    - Integrated into Trends tab (replaced placeholder)
+    - Added version state management for before/after selection
+    - Fetches versions list for comparison selector
+  - **Files Changed:**
+    - `shared/analytics.ts`
+    - `server/utils/analytics.ts`
+    - `server/routes/analytics.ts`
+    - `client/src/components/analytics/useBeforeAfterComparison.ts` (new)
+    - `client/src/components/analytics/BeforeAfterComparisonChart.tsx` (new)
+    - `client/src/components/analytics/index.ts`
+    - `client/src/pages/AnalyticsPage.tsx`
+    - `docs/tickets/ANAL-009-before-after-comparison.md` (new)
+
+- 2025-12-06: **Added new tickets to support next-phase capabilities**
+  - **AIQ-001**: Question Quality Check (Builder UX)
+  - **ADMIN-010**: Research Notes & Evidence Fields
+  - **ADMIN-011**: Editable Band Narratives
+  - **ADMIN-022**: Weight Simulation Panel (v1)
+  - **ADMIN-023**: AI Explanation Layer for Simulations
+  - **MULTI-001**: Consultant → Org → Survey Data Model
+  - **MULTI-003**: AI Portfolio Summary (Consultant Mode)
+  - **Future AIQ tickets** (AIQ-003 → AIQ-008): Research note generation, band narrative optimization, question set coherence, manager plan generation, fatigue advisor, AI deck creation
+  - These tickets support differentiation across survey design quality, transparent indices, consultant enablement, and AI-driven insight workflows.
+
+- 2025-12-06: **[ANAL-008] Dimension Trends Summary – Full Implementation** ✅ TESTED
+  - **Backend:**
+    - Added `computeIndexTrendsSummary()` helper to `server/utils/analytics.ts`
+    - Fetches all scoring versions and computes average index scores per version
+    - Returns trend points with scores for all 5 Insight Dimensions
+    - Added `INDEX_TRENDS_SUMMARY` metric ID and route handler
+  - **Shared Types:**
+    - Added `IndexTrendPoint`, `IndexTrendsSummaryData` interfaces
+    - Added `INDEX_TRENDS_SUMMARY` to `METRIC_IDS` and `METRIC_TYPE_MAP`
+  - **Frontend:**
+    - Created `useIndexTrendsSummary` hook for data fetching
+    - Created `DimensionTrendsChart` component with:
+      - Recharts line chart visualization
+      - Multiple dimension lines with color coding
+      - Custom tooltip with version/date and score details
+      - Single-version and empty state handling
+      - Burnout Risk shown with dashed line (lower is better)
+  - **AnalyticsPage Integration:**
+    - Integrated into Trends tab
+    - Added "Before/After Comparison" placeholder for ANAL-009
+  - **Files Changed:**
+    - `shared/analytics.ts`
+    - `server/utils/analytics.ts`
+    - `server/routes/analytics.ts`
+    - `client/src/components/analytics/useIndexTrendsSummary.ts` (new)
+    - `client/src/components/analytics/DimensionTrendsChart.tsx` (new)
+    - `client/src/components/analytics/index.ts`
+    - `client/src/pages/AnalyticsPage.tsx`
+    - `docs/tickets/ANAL-008-dimension-trends.md` (new)
+
+- 2025-12-06: **[ANAL-007] Manager Comparison – Full Implementation** ✅ TESTED
+  - **Backend:**
+    - Added `computeIndexSummaryByManager()` helper to `server/utils/analytics.ts`
+    - Groups responses by `managerId` from metadata
+    - Computes per-manager: respondentCount, completionRate, avgIndexScore, bandDistribution
+    - Added `manager_index_summary` endpoint to analytics routes
+  - **Frontend:**
+    - Created `useManagerIndexSummary` hook for data fetching
+    - Created `ManagerComparisonTable` component with:
+      - Sortable columns (manager, respondents, completion, avg score)
+      - Band distribution mini-visualization (colored stacked bar)
+      - Score badge with color coding by band
+      - Trend placeholder (stub)
+    - Loading, error, and empty states
+  - **Shared Types:**
+    - Added `ManagerIndexSummaryData`, `ManagerSummaryItem`, `ManagerBandDistribution` interfaces
+    - Added `MANAGER_INDEX_SUMMARY` to `METRIC_IDS` and `METRIC_TYPE_MAP`
+  - **AnalyticsPage Integration:**
+    - Integrated into Managers tab
+    - Added "Self vs Team Comparison" placeholder for ANAL-008
+  - **Files Changed:**
+    - `server/utils/analytics.ts`
+    - `server/routes/analytics.ts`
+    - `shared/analytics.ts`
+    - `client/src/components/analytics/useManagerIndexSummary.ts` (new)
+    - `client/src/components/analytics/ManagerComparisonTable.tsx` (new)
+    - `client/src/components/analytics/index.ts`
+    - `client/src/pages/AnalyticsPage.tsx`
+    - `docs/tickets/ANAL-007-manager-comparison.md` (new)
+
+- 2025-12-06: **[ANAL-006] Question Summary Table – Full Implementation** ✅ TESTED
+  - **Backend:**
+    - Added `computeQuestionSummary()` helper to `server/utils/analytics.ts`
+    - Added `question_summary` endpoint to analytics routes
+    - Computes per-question completion rate, average value, and distribution
+  - **Frontend:**
+    - Created `useQuestionSummary` hook for data fetching
+    - Created `QuestionSummaryTable` component with:
+      - Sortable columns (question #, completion rate, avg value, answers)
+      - Filter by question type
+      - Inline distribution visualization
+      - Tooltip for full question text and distribution details
+  - **Shared Types:**
+    - Added `QuestionSummaryData`, `QuestionSummaryItem`, `OptionDistribution` interfaces
+    - Added `QUESTION_SUMMARY` to `METRIC_IDS` and `METRIC_TYPE_MAP`
+  - **AnalyticsPage Integration:**
+    - Added to Domains tab
+  - **Files Changed:**
+    - `server/utils/analytics.ts`
+    - `server/routes/analytics.ts`
+    - `shared/analytics.ts`
+    - `client/src/components/analytics/useQuestionSummary.ts` (new)
+    - `client/src/components/analytics/QuestionSummaryTable.tsx` (new)
+    - `client/src/components/analytics/index.ts`
+    - `client/src/pages/AnalyticsPage.tsx`
+  - **Browser Testing (2025-12-06):**
+    - ✅ Table renders with correct data (5 responses, 8 questions)
+    - ✅ Completion rates display correctly (100%)
+    - ✅ Average values calculate correctly (3.6, 2.4, etc.)
+    - ✅ Min/Max ranges shown
+    - ✅ Distribution mini-charts display
+    - ✅ Filter by question type works (Rating, Likert, Checkbox, etc.)
+    - ✅ No console errors
+    - ✅ API endpoint returns 200 OK
+
+- 2025-12-06: **[ARCHITECTURE] Two-Layer Scoring Model – Major Architecture Upgrade**
+  - **Introduced proprietary 5-Index Evalia Insight Model** as fixed output layer
+  - **Added Dimensional Scoring Layer** as configurable intermediate layer
+  - **Created Scoring Model Architecture doc:** `docs/scoring/SCORING_MODEL_OVERVIEW.md`
+  - **Architecture overview:**
+    ```
+    Categories (builder) → Dimensions (configurable) → Indices (fixed) → Bands
+    ```
+  - **Key principle:** Indices and Dimensions are now first-class system entities
+  - **Requirement:** All future analytics draw from Scoring Model Registry (MODEL-001)
+
+- 2025-12-06: **[ADMIN-000] Admin Configuration Panel – Epic Added to Roadmap**
+  - **Foundation ticket:** MODEL-001 (Scoring Model Registry)
+  - **Dimension tickets:** DIM-010 (Dimension Manager), DIM-015 (Category Mapping)
+  - **Index tickets:** ADMIN-020 (Index Mapping), ADMIN-030 (Band Editor)
+  - **Config tickets:** ADMIN-040 (White-label), ADMIN-050 (Interpretation Engine)
+  - **Internal tools:** ADMIN-060 (Dev Tools)
+  - Updated `docs/INDEX.md` with Active Epics section
+  - **Status:** Roadmap (not yet started)
+  - **Intent:** Provide admin tools for dynamic configuration of dimensions, scoring, bands, and analytics
+
+- 2025-12-06: **[NAMING-001] Evalia Insight Dimensions (EID) Framework – Full Implementation**
+  - **Naming Source of Truth:** Created `docs/INSIGHT_DIMENSIONS_NAMING.md` with:
+    - Canonical dimension names and internal ID mappings
+    - Deprecated terminology table (what NOT to use)
+    - Code and UI referencing guidelines
+  - **Shared Code Mapping:** Added to `shared/analytics.ts`:
+    - `INSIGHT_DIMENSIONS` constant with id/indexType/label/shortLabel for all 5 dimensions
+    - `getInsightDimensionLabel()` helper for UI layer mapping
+    - `getInsightDimension()` helper for metadata lookup
+    - Types: `InsightDimensionId`, `InsightDimensionIndexType`
+  - **Documentation Updates:**
+    - `ANALYTICS_MEASUREMENT_MODEL_PEOPLE_DEV.md`: Section headers renamed to "Dimension"
+    - `ANALYTICS_METRIC_SPEC_PEOPLE_DEV.md`: Added terminology notes and EID cross-references
+    - `ANALYTICS_PHILOSOPHY_PEOPLE_DEV.md`: Section headers renamed to "Dimension"
+    - `ANALYTICS_UI_DESIGN.md`: Updated integration points to use "Dimension" terminology
+    - `EVALIA_INSIGHT_DIMENSIONS.md`: Updated to cross-reference naming doc
+  - **UI Updates:**
+    - `IndexDistributionChart.tsx`: Default title changed to "Insight Dimension Distribution"
+    - `AnalyticsPage.tsx`: Placeholder descriptions updated to use "Insight Dimensions"
+  - **The Five Dimensions:**
+    - Leadership Effectiveness (`leadership-effectiveness`)
+    - Team Wellbeing (`team-wellbeing`)
+    - Burnout Risk (`burnout-risk`)
+    - Psychological Safety (`psychological-safety`)
+    - Engagement Energy (`engagement`)
+  - **No Breaking Changes:** Metric IDs, API routes, and DB schemas unchanged
+  - **Intent:** Establish consistent brand terminology for marketing, docs, and UI
+
+- 2025-12-06: **Analytics Documentation Refactor**
+  - **Split Measurement Model:** Refactored `ANALYTICS_MEASUREMENT_MODEL_PEOPLE_DEV.md` into three focused documents:
+    - `ANALYTICS_PHILOSOPHY_PEOPLE_DEV.md`: High-level "why" document (1-2 pages) explaining Evalia's positioning, who it serves, and the 5 core indices at a conceptual level
+    - `ANALYTICS_MEASUREMENT_MODEL_PEOPLE_DEV.md`: Formal measurement model definition (no JSON, no UI) covering computation rules, indices, domains, and manager/team segmentation
+    - `ANALYTICS_METRIC_SPEC_PEOPLE_DEV.md`: Technical specification with JSON shapes, metric IDs, and API endpoint definitions
+  - **Removed Duplication:** Consolidated version-awareness rules, banding patterns, and computation rules into shared sections
+  - **Cross-Linking:** Added "Related Documents" sections to all three docs for better navigation
+  - **Intent:** Clarified people-development analytics model and separated measurement, metric spec, and UI spec into distinct documents to improve maintainability and guide future analytics implementation (BUILD-020, ANAL-* tickets)
+  - No application code changes; documentation refactor only
+
 - 2025-12-06: **[SCORE-001] Score Config Versioning**
   - **Database Schema**: Added `score_config_versions` table to store immutable scoring config snapshots
     - Fields: `id`, `survey_id`, `version_number`, `config_snapshot` (JSONB), `created_at`

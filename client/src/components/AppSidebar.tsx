@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Plus, CaretLeft, CaretRight, SignOut, UserCircle } from "phosphor-react";
-import { SquaresFour, ChartBar, Users, Book, TextT, Lightning, Gear } from "phosphor-react";
+import { Plus, CaretLeft, CaretRight, SignOut, UserCircle, Bug } from "phosphor-react";
+import { SquaresFour, ChartBar, Users, Book, TextT, Lightning, Gear, Wrench } from "phosphor-react";
 import { useAuth } from "@/hooks/useAuth";
 import { queryClient } from "@/lib/queryClient";
 import type { User as UserType } from "@shared/schema";
@@ -118,6 +118,57 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
           );
         })}
       </nav>
+
+      {/* Dev Tools - Available in dev mode OR when VITE_ENABLE_DEV_TOOLS is set */}
+      {(import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEV_TOOLS === 'true') && (
+        <div className="px-3 py-2 border-t border-[rgba(255,255,255,0.1)]">
+          {sidebarExpanded && (
+            <div className="text-xs text-[#4A5568] uppercase tracking-wider px-4 py-2">
+              Dev Tools
+            </div>
+          )}
+          <button
+            onClick={() => handleNavigation("/dev/inspector")}
+            className={`w-full flex items-center gap-4 px-4 py-2 rounded-[12px] text-sm font-medium transition-colors ${
+              sidebarExpanded ? "" : "justify-center px-0"
+            }`}
+            style={{ color: '#6A7789' }}
+            title="Survey Inspector"
+          >
+            <Wrench size={20} weight="bold" style={{ color: location === '/dev/inspector' ? '#f59e0b' : '#6A7789' }} />
+            {sidebarExpanded && (
+              <span style={{ color: location === '/dev/inspector' ? '#f59e0b' : '#6A7789' }}>Inspector</span>
+            )}
+          </button>
+          <button
+            onClick={() => handleNavigation("/dev/analytics-inspector")}
+            className={`w-full flex items-center gap-4 px-4 py-2 rounded-[12px] text-sm font-medium transition-colors ${
+              sidebarExpanded ? "" : "justify-center px-0"
+            }`}
+            style={{ color: '#6A7789' }}
+            title="Analytics Inspector"
+          >
+            <Bug size={20} weight="bold" style={{ color: location === '/dev/analytics-inspector' ? '#f59e0b' : '#6A7789' }} />
+            {sidebarExpanded && (
+              <span style={{ color: location === '/dev/analytics-inspector' ? '#f59e0b' : '#6A7789' }}>Analytics Debug</span>
+            )}
+          </button>
+          <button
+            onClick={() => handleNavigation("/dev/scoring-debug")}
+            className={`w-full flex items-center gap-4 px-4 py-2 rounded-[12px] text-sm font-medium transition-colors ${
+              sidebarExpanded ? "" : "justify-center px-0"
+            }`}
+            style={{ color: '#6A7789' }}
+            title="Scoring Debug"
+          >
+            <Wrench size={20} weight="bold" style={{ color: location.startsWith('/dev/scoring-debug') ? '#f59e0b' : '#6A7789' }} />
+            {sidebarExpanded && (
+              <span style={{ color: location.startsWith('/dev/scoring-debug') ? '#f59e0b' : '#6A7789' }}>Scoring Debug</span>
+            )}
+          </button>
+        </div>
+      )}
+
       {/* Footer: Account & Logout - Sticky */}
       {typedUser && (
         <div className="sticky bottom-0 z-10 px-3 py-4 space-y-2 border-t border-[rgba(255,255,255,0.1)] mt-auto" style={{ backgroundColor: 'var(--color-dark-navy)' }}>
