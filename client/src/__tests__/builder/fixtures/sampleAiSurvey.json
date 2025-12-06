@@ -1,0 +1,9 @@
+{
+  "title": "AI Generated Survey",
+  "description": "From AI",
+  "scoreConfig": { "enabled": true },
+  "questions": [
+    { "id": "ai-q1", "type": "multiple_choice", "question": "Pick", "options": ["A", "B"], "required": true },
+    { "id": "ai-q2", "type": "nps", "question": "NPS?", "npsLabels": { "detractor": "Low", "promoter": "High" } }
+  ]
+}

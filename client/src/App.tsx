@@ -29,6 +29,8 @@ import Account from "@/pages/Account";
 import Login from "@/pages/Login";
 import NotFound from "@/pages/not-found";
 import DevInspector from "@/pages/DevInspector";
+import AnalyticsInspectorPage from "@/pages/dev/AnalyticsInspectorPage";
+import ScoringDebugPage from "@/pages/dev/ScoringDebugPage";
 
 function ProtectedRoute({ component: Component }: { component: () => JSX.Element }) {
   const [location, setLocation] = useLocation();
@@ -56,6 +58,7 @@ function ProtectedRoute({ component: Component }: { component: () => JSX.Element
 }
 
 function Router() {
+  const showDevTools = import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEV_TOOLS === 'true';
   const isDev = import.meta.env.DEV;
   return (
     <Switch>
@@ -78,7 +81,7 @@ function Router() {
       <Route path="/builder">
         {() => <ProtectedRoute component={SurveyBuilderV2} />}
       </Route>
-      
+
       {/* Legacy builder routes - redirect to V2 */}
       <Route path="/builder-v2/:id">
         {() => <ProtectedRoute component={SurveyBuilderV2} />}
@@ -92,7 +95,7 @@ function Router() {
       <Route path="/preview-v2/:id">
         {() => <ProtectedRoute component={PreviewV2} />}
       </Route>
-      
+
       <Route path="/analytics/:id">
         {() => <ProtectedRoute component={AnalyticsPage} />}
       </Route>
@@ -121,10 +124,21 @@ function Router() {
         {() => <ProtectedRoute component={SettingsPage} />}
       </Route>
 
-      {isDev && (
-        <Route path="/dev/inspector">
-          {() => <ProtectedRoute component={DevInspector} />}
-        </Route>
+      {showDevTools && (
+        <>
+          <Route path="/dev/inspector">
+            {() => <ProtectedRoute component={DevInspector} />}
+          </Route>
+          <Route path="/dev/analytics-inspector">
+            {() => <ProtectedRoute component={AnalyticsInspectorPage} />}
+          </Route>
+          <Route path="/dev/scoring-debug/:surveyId">
+            {() => <ProtectedRoute component={ScoringDebugPage} />}
+          </Route>
+          <Route path="/dev/scoring-debug">
+            {() => <ProtectedRoute component={ScoringDebugPage} />}
+          </Route>
+        </>
       )}
 
       <Route component={NotFound} />
