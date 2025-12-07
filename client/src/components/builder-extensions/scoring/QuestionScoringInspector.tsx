@@ -150,6 +150,7 @@ export function QuestionScoringInspector({
           isScoreable={isScoreable}
           onChange={onChange}
           onSuggestScoring={onSuggestScoring}
+          categories={categories}
         />
 
         {/* Tooltips / Guidance */}
