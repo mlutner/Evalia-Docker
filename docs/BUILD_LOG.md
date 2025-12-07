@@ -2,6 +2,47 @@
 
 Short, dated notes for significant architecture or builder/runtime changes.
 
+---
+
+## 2025-12-06 (Late PM): Branch Merge & Test Verification
+
+**Merged:** `feature/builder-scoring-logic-modes` → `feature/5d-analytics-restore`
+
+### Summary
+Consolidated two parallel feature branches:
+- **5D Analytics Restore** (local): Analytics infrastructure restoration, scoring debug utilities
+- **Builder Scoring Logic Modes** (remote): Complete analytics ecosystem, scoring panel fixes, component updates
+
+### Key Changes Combined
+| Source | Changes |
+|--------|--------|
+| Local | `scoringDebug.ts` utility, analytics golden seed/verify scripts, `calculateOverallIndexScore` indexType filter fix |
+| Remote | BandEditor, QuestionScoringInspector, BandRecommendationItem updates, DataEmptyState, BeforeAfterComparisonChart fixes |
+
+### Test Results
+- **232 tests passing** (48 files)
+- **7 tests failing** (5 files) - categorized below:
+
+| Category | Tests | Issue |
+|----------|-------|-------|
+| UI Refactor | ScoringView (2) | Tests expect old tab labels ("Question Mapping", "Categories & Bands") - UI changed |
+| Validation Hardening | store.operations (1), builderLifecycle (1) | Validation now blocks save for empty surveys - intentional behavior |
+| Scoring Logic | SurveyView.results (1) | Score returns 0 when expecting >0 - needs investigation |
+| Test Infrastructure | responses.scoring (2) | Timeout issues - mock/async setup |
+
+### Action Items
+- [ ] Update ScoringView tests to match new UI structure
+- [ ] Investigate scoring calculation for results test
+- [ ] Fix timeout issues in responses.scoring tests
+- [ ] Consider if empty survey validation should be configurable in tests
+
+### Docker Status
+- ✅ App running on `localhost:4000`
+- ✅ PostgreSQL healthy
+- ✅ Production build successful
+
+---
+
 - 2025-12-06 (PM): **ANAL-REG-001 – Restore 5D Analytics Dashboard**
   - **Ticket**: ANAL-REG-001
   - **Branch**: `feature/5d-analytics-restore` (from `main`, donor: `feature/builder-scoring-logic-modes`)
