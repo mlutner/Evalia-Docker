@@ -4,6 +4,11 @@
  * Canonical rule:
  * - If scoreConfig.enabled AND scoringPayload !== null → ResultsScreen
  * - Otherwise → ThankYou screen
+ * 
+ * NOTE: As of 2025-12-06, scoring logic was hardened to require BOTH:
+ * - scorable: true on the question
+ * - scoringCategory set
+ * Questions missing either field are skipped by calculateSurveyScores.
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -25,6 +30,9 @@ const createScoredSurvey = (overrides: Partial<Survey> = {}): Survey => ({
             question: 'Rate your experience',
             ratingScale: 5,
             scoringCategory: 'satisfaction',
+            scorable: true, // Required for scoring engine to process this question
+            scoreWeight: 1,
+            optionScores: { '1': 1, '2': 2, '3': 3, '4': 4, '5': 5 },
             required: true,
         },
     ] as Question[],
@@ -38,9 +46,10 @@ const createScoredSurvey = (overrides: Partial<Survey> = {}): Survey => ({
     scoreConfig: {
         enabled: true,
         categories: [{ id: 'satisfaction', name: 'Satisfaction' }],
+        // SCORE-002: scoreRanges use min/max (not minScore/maxScore)
         scoreRanges: [
-            { category: 'satisfaction', label: 'Low', minScore: 0, maxScore: 40, interpretation: 'Needs improvement' },
-            { category: 'satisfaction', label: 'High', minScore: 41, maxScore: 100, interpretation: 'Excellent' },
+            { id: 'low', category: 'satisfaction', label: 'Low', min: 0, max: 40, interpretation: 'Needs improvement' },
+            { id: 'high', category: 'satisfaction', label: 'High', min: 41, max: 100, interpretation: 'Excellent' },
         ],
     } as SurveyScoreConfig,
     ...overrides,
