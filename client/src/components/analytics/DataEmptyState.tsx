@@ -14,14 +14,6 @@ interface DataEmptyStateProps {
   variant?: 'default' | 'compact';
 }
 
-const DEFAULT_ICONS: Record<string, React.ElementType> = {
-  chart: BarChart3,
-  users: Users,
-  trends: TrendingUp,
-  waiting: Clock,
-  data: Database,
-  warning: AlertTriangle,
-};
 
 export function DataEmptyState({ 
   title, 

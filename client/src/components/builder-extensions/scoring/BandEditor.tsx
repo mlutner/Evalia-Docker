@@ -40,18 +40,18 @@ export function BandEditor({
   const handleAddRecommendation = () => {
     const newRec: BandRecommendation = {
       id: `rec-${Date.now()}`,
-      title: '',
-      body: ''
+      label: '',
+      description: ''
     };
     onChange({
       ...band,
-      recommendations: [...(band.recommendations || []), newRec as any]
+      recommendations: [...(band.recommendations || []), newRec]
     });
   };
 
   const handleUpdateRecommendation = (index: number, updated: BandRecommendation) => {
     const recs = [...(band.recommendations || [])];
-    recs[index] = updated as any;
+    recs[index] = updated;
     onChange({
       ...band,
       recommendations: recs

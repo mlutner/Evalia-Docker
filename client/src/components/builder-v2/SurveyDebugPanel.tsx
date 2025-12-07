@@ -21,7 +21,6 @@ import { useMemo, useState } from 'react';
 import { useSurveyBuilder } from '@/contexts/SurveyBuilderContext';
 import { ScoringDebugSection } from './ScoringDebugSection';
 
-
 function formatJson(value: unknown) {
   return JSON.stringify(value, null, 2);
 }

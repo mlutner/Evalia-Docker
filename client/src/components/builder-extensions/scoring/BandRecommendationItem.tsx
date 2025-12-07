@@ -7,8 +7,8 @@ import { Trash2 } from 'lucide-react';
 
 export interface BandRecommendation {
   id: string;
-  title: string;
-  body: string;
+  label: string;
+  description?: string;
 }
 
 interface BandRecommendationItemProps {
