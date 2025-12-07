@@ -194,4 +194,83 @@ describe('RESULTS-001: ResultsScreen vs ThankYou Branching', () => {
             expect(showResults).toBeFalsy();
         });
     });
+
+    describe('End-to-End Flow Tests', () => {
+        it('Engagement survey → ResultsScreen (scored survey flow)', () => {
+            // Engagement survey with scoring enabled
+            const engagementSurvey: Survey = {
+                id: 'engagement-survey',
+                userId: 'user-1',
+                title: 'Employee Engagement Survey',
+                description: 'Measure team engagement',
+                questions: [
+                    {
+                        id: 'q1',
+                        type: 'rating',
+                        question: 'How engaged are you?',
+                        ratingScale: 5,
+                        scoringCategory: 'engagement',
+                        scorable: true,
+                        scoreWeight: 1,
+                        optionScores: { '1': 1, '2': 2, '3': 3, '4': 4, '5': 5 },
+                        required: true,
+                    },
+                ] as Question[],
+                welcomeMessage: 'Welcome!',
+                thankYouMessage: 'Thank you!',
+                tags: [],
+                isAnonymous: false,
+                status: 'Active',
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                scoreConfig: {
+                    enabled: true,
+                    categories: [{ id: 'engagement', name: 'Engagement Energy' }],
+                    scoreRanges: [
+                        { id: 'low', category: 'engagement', label: 'Low', min: 0, max: 50, interpretation: 'Needs improvement' },
+                        { id: 'high', category: 'engagement', label: 'High', min: 51, max: 100, interpretation: 'Excellent' },
+                    ],
+                },
+            };
+
+            const answers = { q1: '4' }; // High engagement (4/5 = 80%)
+
+            const results = calculateSurveyScores(
+                engagementSurvey.questions,
+                answers,
+                engagementSurvey.scoreConfig
+            );
+
+            // Should generate valid scoring payload
+            expect(results).not.toBeNull();
+            expect(results).toHaveLength(1);
+            expect(results![0].score).toBeGreaterThan(0);
+
+            // Runtime branching logic
+            const showResults = engagementSurvey.scoreConfig?.enabled && results !== null;
+            expect(showResults).toBe(true); // → ResultsScreen
+        });
+
+        it('Feedback survey → Thank You (non-scored survey flow)', () => {
+            // Feedback survey with no scoring
+            const feedbackSurvey = createNonScoredSurvey({
+                title: 'Event Feedback Survey',
+            });
+
+            const answers = { q1: 'Great event!' };
+
+            const results = calculateSurveyScores(
+                feedbackSurvey.questions,
+                answers,
+                feedbackSurvey.scoreConfig
+            );
+
+            // Should NOT generate scoring payload
+            expect(results).toBeNull();
+
+            // Runtime branching logic
+            const showResults = feedbackSurvey.scoreConfig?.enabled && results !== null;
+            expect(showResults).toBeFalsy(); // → Thank You screen (undefined or false)
+        });
+    });
 });
