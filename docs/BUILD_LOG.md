@@ -31,15 +31,45 @@ Consolidated two parallel feature branches:
 | Test Infrastructure | responses.scoring (2) | Timeout issues - mock/async setup |
 
 ### Action Items
-- [ ] Update ScoringView tests to match new UI structure
-- [ ] Investigate scoring calculation for results test
-- [ ] Fix timeout issues in responses.scoring tests
-- [ ] Consider if empty survey validation should be configurable in tests
+- [x] Update ScoringView tests to match new UI structure ← **DONE**
+- [x] Investigate scoring calculation for results test ← **DONE** (SCORE-002 property names)
+- [x] Create comprehensive golden test suite ← **DONE**
+- [ ] Fix timeout issues in responses.scoring tests (deferred - infrastructure)
+- [ ] Update validation tests (deferred - intentional behavior change)
 
 ### Docker Status
 - ✅ App running on `localhost:4000`
 - ✅ PostgreSQL healthy
 - ✅ Production build successful
+
+### Test Fixes Completed
+
+**STEP 1: Scoring Test** ✅  
+- **Root Cause**: Intentional hardening (ANAL-FIX + SCORE-002)
+- **Fixes**: Added `scorable: true`, `scoreWeight`, `optionScores`, changed `minScore`/`maxScore` → `min`/`max`
+- **Result**: 15/15 tests passing (8 results + 7 golden)
+
+**STEP 2: UI Tests** ✅  
+- **Root Cause**: UI evolved from tabs to 3-panel layout
+- **Fixes**: Updated assertions to match new structure, used `getAllByText` for duplicate text
+- **Result**: 2/2 tests passing
+
+**Comprehensive Golden Test Suite** ✅  
+- **Created**: `analytics.engagement.golden.test.ts` (6 tests)
+- **Created**: `analytics.nonScored.golden.test.ts` (6 tests)
+- **Enhanced**: `SurveyView.results.test.tsx` with E2E flow tests
+- **Total Coverage**: 29/29 tests passing
+  - Golden 5D: 7 tests
+  - Golden Engagement: 6 tests
+  - Golden Non-Scored: 6 tests
+  - Results Branching: 10 tests
+
+### Remaining Test Failures (Deferred)
+
+| Category | Tests | Status | Reason |
+|----------|-------|--------|--------|
+| Async Timeouts | 2 | Deferred | Infrastructure debt - requires mock/async refactor |
+| Validation | 2 | Deferred | Intentional behavior change - empty surveys now blocked |
 
 ---
 
