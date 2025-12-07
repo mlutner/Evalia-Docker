@@ -73,6 +73,44 @@ Consolidated two parallel feature branches:
 
 ---
 
+## 2025-12-06 (Late PM): RES-RESULTS-MODES-001 Complete
+
+**Ticket:** RES-RESULTS-MODES-001 - Introduce results modes for index vs self-assessment vs non-scored surveys
+
+### Implementation Summary
+
+**Created `shared/resultsMode.ts`:**
+- `resolveResultsMode()` - Classifies surveys into three modes:
+  - `"index"` - Engagement/5D surveys (engagement_v1, 5d engines, or 3+ canonical 5D categories)
+  - `"self_assessment"` - Other scored surveys (leadership, burnout, confidence, etc.)
+  - `"none"` - Non-scored surveys (scoreConfig.enabled !== true)
+- `shouldShowResultsScreen()` - Preserves existing branching invariant
+- `getResultsModeLabels()` - Mode-specific UI labels
+
+**Updated Components:**
+- `ResultsScreen.tsx` - Uses mode-based labels ("Index Score" vs "Your Score")
+- `SurveyView.tsx` - Passes scoringEngineId and tags to ResultsScreen
+- `PreviewV2.tsx` - Passes scoringEngineId and tags to ResultsScreen
+
+**Test Coverage:**
+- `shared/__tests__/resultsMode.test.ts` - 21 tests for mode resolution
+- `client/src/test/components/SurveyView.results.test.tsx` - Enhanced with mode assertions
+  - Engagement survey → index mode
+  - Leadership self-assessment → self_assessment mode
+  - Feedback survey → none mode
+
+**Results:**
+- ✅ 32/32 tests passing (21 mode + 11 results)
+- ✅ Existing branching invariant preserved
+- ✅ No changes to core scoring algorithms
+- ✅ Golden tests unchanged and passing
+
+**Next Steps:**
+- Update Analytics view to filter widgets by mode
+- Add self-assessment UI variant in ResultsScreen (no "index" wording)
+
+---
+
 - 2025-12-06 (PM): **ANAL-REG-001 – Restore 5D Analytics Dashboard**
   - **Ticket**: ANAL-REG-001
   - **Branch**: `feature/5d-analytics-restore` (from `main`, donor: `feature/builder-scoring-logic-modes`)
