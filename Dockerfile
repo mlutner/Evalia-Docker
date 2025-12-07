@@ -26,6 +26,11 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Build argument for enabling dev tools in production builds
+# Pass --build-arg VITE_ENABLE_DEV_TOOLS=true to enable
+ARG VITE_ENABLE_DEV_TOOLS=false
+ENV VITE_ENABLE_DEV_TOOLS=$VITE_ENABLE_DEV_TOOLS
+
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -53,17 +58,15 @@ RUN addgroup --system --gid 1001 nodejs && \
 # Copy package files for production dependencies
 COPY package.json package-lock.json ./
 
-# Install production dependencies only
-RUN npm ci --omit=dev && npm cache clean --force
+# Install all dependencies (include dev deps needed for tooling referenced in bundle)
+RUN npm ci && npm cache clean --force
 
-# Copy built assets from builder
+# Copy built assets from builder (includes server bundle and frontend in dist/public)
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/client/dist ./client/dist
 
 # Copy static assets and other required files
 COPY --from=builder /app/attached_assets ./attached_assets
 COPY --from=builder /app/shared ./shared
-COPY --from=builder /app/server/prompts ./server/prompts
 
 # Set ownership to non-root user
 RUN chown -R evalia:nodejs /app
@@ -87,4 +90,3 @@ ENTRYPOINT ["dumb-init", "--"]
 
 # Start the application with source maps for better error traces
 CMD ["node", "--enable-source-maps", "dist/index.js"]
-

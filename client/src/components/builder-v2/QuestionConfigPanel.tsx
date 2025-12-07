@@ -5,7 +5,7 @@ import {
   Home, Heart, Trophy, X, Info
 } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
-import { useSurveyBuilder, BuilderQuestion, LogicRule, ValidQuestionType } from '@/contexts/SurveyBuilderContext';
+import { useSurveyBuilder, BuilderQuestion, ValidQuestionType } from '@/contexts/SurveyBuilderContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,6 +15,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { QUESTION_TYPES, getQuestionTypeConfig, LIKERT_PRESETS, type QuestionParameterConfig } from '@/data/questionTypeConfig';
+import { QuestionLogicEditor } from './QuestionLogicEditor';
+import { ScoringPanel } from './ScoringPanel';
+import { ResultsConfigPanel } from './ResultsConfigPanel';
+import { FEATURES } from '@/config/features';
+import { RightPanelLayout } from '@/components/builder/shared/RightPanelLayout';
+import { QuestionScoringSection } from '@/components/builder/shared/QuestionScoringSection';
 
 // ============================================
 // COLLAPSIBLE SECTION COMPONENT
@@ -132,12 +138,26 @@ function ParameterEditor({
   const currentValue = (question as any)[param.key];
   
   if (param.type === 'text') {
+    const displayValue =
+      param.key === 'allowedTypes' && Array.isArray(currentValue)
+        ? currentValue.join(', ')
+        : currentValue || '';
     return (
       <div className="space-y-1.5">
         <Label className="text-xs font-semibold text-gray-700">{param.label}</Label>
         <Input
-          value={currentValue || ''}
-          onChange={(e) => onUpdate(param.key, e.target.value)}
+          value={displayValue}
+          onChange={(e) => {
+            if (param.key === 'allowedTypes') {
+              const values = e.target.value
+                .split(/[,;]+/)
+                .map((v) => v.trim())
+                .filter(Boolean);
+              onUpdate(param.key, values);
+            } else {
+              onUpdate(param.key, e.target.value);
+            }
+          }}
           placeholder={param.description}
           className="text-sm h-8"
         />
@@ -610,291 +630,7 @@ function SettingsTab({ question }: { question: BuilderQuestion }) {
 // SCORING TAB CONTENT
 // ============================================
 function ScoringTab({ question }: { question: BuilderQuestion }) {
-  const { updateQuestion } = useSurveyBuilder();
-  const { toast } = useToast();
-  const [correctAnswer, setCorrectAnswer] = useState<string>('');
-  const typeConfig = getQuestionTypeConfig(question.type);
-  
-  const suggestScoringMutation = useMutation({
-    mutationFn: async () => {
-      const res = await apiRequest('POST', '/api/ai/chat', {
-        message: `Suggest optimal scoring for this question: "${question.text}" with options: ${question.options?.join(', ')}. Provide point values for each option.`,
-      });
-      return res.json();
-    },
-    onSuccess: (data) => {
-      toast({ title: 'AI Scoring Suggestion', description: data.response || 'See the suggestion' });
-    },
-    onError: () => {
-      toast({ title: 'Error', description: 'Failed to get suggestion', variant: 'destructive' });
-    },
-  });
-  
-  // Check if this question type is scoreable
-  const isScoreable = typeConfig?.isScoreable ?? false;
-  
-  return (
-    <div className="p-4 space-y-4">
-      {!isScoreable ? (
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-          <Info size={24} className="mx-auto mb-2 text-gray-400" />
-          <p className="text-sm text-gray-500">
-            {typeConfig?.displayName || question.type} questions are not scoreable.
-          </p>
-          <p className="text-xs text-gray-400 mt-1">
-            Only rating, selection, and scale questions can be scored.
-          </p>
-        </div>
-      ) : (
-        <>
-          {/* AI Suggest Scoring Button */}
-          <button
-            onClick={() => suggestScoringMutation.mutate()}
-            disabled={suggestScoringMutation.isPending}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold
-                       text-purple-600 bg-purple-50 border-2 border-purple-200 rounded-lg
-                       hover:bg-purple-100 hover:border-purple-300 transition-all group
-                       disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Wand2 size={16} className="group-hover:rotate-12 transition-transform" />
-            <span>{suggestScoringMutation.isPending ? 'Analyzing...' : 'AI Suggest Scoring'}</span>
-          </button>
-
-          {/* Enable Scoring Toggle */}
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="scorable"
-              checked={question.scorable || false}
-              onCheckedChange={(checked) => updateQuestion(question.id, { scorable: !!checked })}
-            />
-            <Label htmlFor="scorable" className="text-sm text-gray-700 cursor-pointer font-semibold">
-              Enable Scoring for this Question
-            </Label>
-          </div>
-
-          {question.scorable ? (
-            <>
-              {/* Point Value */}
-              <div className="space-y-2">
-                <Label className="text-xs font-semibold text-gray-700">Score Weight</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  step="0.1"
-                  value={question.scoreWeight || 1}
-                  onChange={(e) => updateQuestion(question.id, { scoreWeight: Number(e.target.value) })}
-                  className="text-sm h-9"
-                />
-                <p className="text-xs text-gray-500">Multiplier for this question's score</p>
-              </div>
-
-              {/* Scoring Category */}
-              <div className="space-y-2">
-                <Label className="text-xs font-semibold text-gray-700">Scoring Category</Label>
-                <Input
-                  value={question.scoringCategory || ''}
-                  onChange={(e) => updateQuestion(question.id, { scoringCategory: e.target.value })}
-                  placeholder="e.g., Knowledge, Skills"
-                  className="text-sm h-9"
-                />
-                <p className="text-xs text-gray-500">Group questions into scoring categories</p>
-              </div>
-
-              {/* Point Distribution for options */}
-              {question.options && question.options.length > 0 && (
-                <div className="space-y-2">
-                  <Label className="text-xs font-semibold text-gray-700">Point Distribution</Label>
-                  <div className="space-y-2">
-                    {question.options.map((option, idx) => (
-                      <div key={idx} className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500 flex-1 truncate">{option}</span>
-                        <Input
-                          type="number"
-                          min="0"
-                          value={question.scoreValues?.[idx] || 0}
-                          onChange={(e) => {
-                            const newScoreValues = [...(question.scoreValues || question.options!.map(() => 0))];
-                            newScoreValues[idx] = parseInt(e.target.value) || 0;
-                            updateQuestion(question.id, { scoreValues: newScoreValues });
-                          }}
-                          className="w-20 h-8 text-sm text-center"
-                        />
-                        <span className="text-xs text-gray-400">pts</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-              <Star size={24} className="mx-auto mb-2 text-gray-400" />
-              <p className="text-sm text-gray-500">
-                Enable scoring to add point values and track correct answers
-              </p>
-            </div>
-          )}
-        </>
-      )}
-    </div>
-  );
-}
-
-// ============================================
-// LOGIC TAB CONTENT
-// ============================================
-function LogicTab({ question }: { question: BuilderQuestion }) {
-  const { questions, updateQuestion } = useSurveyBuilder();
-  const { toast } = useToast();
-  
-  const suggestLogicMutation = useMutation({
-    mutationFn: async () => {
-      const res = await apiRequest('POST', '/api/ai/chat', {
-        message: `Suggest skip logic for this question: "${question.text}" with options: ${question.options?.join(', ')}`,
-        surveyContext: { questions: questions.map(q => ({ id: q.id, text: q.text })) },
-      });
-      return res.json();
-    },
-    onSuccess: (data) => {
-      toast({ title: 'AI Logic Suggestion', description: data.response || 'See the suggestion' });
-    },
-    onError: () => {
-      toast({ title: 'Error', description: 'Failed to get suggestion', variant: 'destructive' });
-    },
-  });
-  
-  const typeConfig = getQuestionTypeConfig(question.type);
-  
-  if (!typeConfig?.supportsLogic) {
-    return (
-      <div className="p-4">
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-          <Info size={24} className="mx-auto mb-2 text-gray-400" />
-          <p className="text-sm text-gray-500">
-            {typeConfig?.displayName || question.type} questions don't support skip logic.
-          </p>
-        </div>
-      </div>
-    );
-  }
-  
-  return (
-    <div className="p-4 space-y-4">
-      {/* AI Suggest Logic Button */}
-      <button
-        onClick={() => suggestLogicMutation.mutate()}
-        disabled={suggestLogicMutation.isPending}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold
-                   text-purple-600 bg-purple-50 border-2 border-purple-200 rounded-lg
-                   hover:bg-purple-100 hover:border-purple-300 transition-all group
-                   disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        <Wand2 size={16} className="group-hover:rotate-12 transition-transform" />
-        <span>{suggestLogicMutation.isPending ? 'Analyzing...' : 'AI Suggest Logic'}</span>
-      </button>
-
-      <p className="text-sm text-gray-500">
-        Add conditional logic to show/hide questions or skip to specific questions based on answers.
-      </p>
-
-      {/* Skip Logic Configuration */}
-      <div className="border border-gray-300 rounded-lg p-4 bg-gray-50 space-y-3">
-        <p className="text-xs font-semibold text-gray-900">Skip Logic</p>
-        
-        <div className="space-y-2">
-          <label className="text-xs text-gray-500">If answer is:</label>
-          <Select
-            value={question.logicRules?.[0]?.condition || ''}
-            onValueChange={(value) => {
-              const newRules: LogicRule[] = [{
-                id: 'rule-1',
-                condition: value,
-                action: question.logicRules?.[0]?.action || 'skip',
-                targetQuestionId: question.logicRules?.[0]?.targetQuestionId || '',
-              }];
-              updateQuestion(question.id, { logicRules: newRules, hasLogic: true });
-            }}
-          >
-            <SelectTrigger className="h-9 text-sm bg-white">
-              <SelectValue placeholder="Select condition..." />
-            </SelectTrigger>
-            <SelectContent>
-              {question.options?.map((option, idx) => (
-                <SelectItem key={idx} value={option}>{option}</SelectItem>
-              ))}
-              <SelectItem value="any">Any answer</SelectItem>
-              <SelectItem value="empty">No answer</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-xs text-gray-500">Then:</label>
-          <Select
-            value={question.logicRules?.[0]?.targetQuestionId || ''}
-            onValueChange={(value) => {
-              const existingRules = question.logicRules || [];
-              const newRules: LogicRule[] = [{
-                ...existingRules[0],
-                id: existingRules[0]?.id || 'rule-1',
-                condition: existingRules[0]?.condition || '',
-                action: 'skip',
-                targetQuestionId: value,
-              }];
-              updateQuestion(question.id, { logicRules: newRules, hasLogic: true });
-            }}
-          >
-            <SelectTrigger className="h-9 text-sm bg-white">
-              <SelectValue placeholder="Skip to question..." />
-            </SelectTrigger>
-            <SelectContent>
-              {questions
-                .filter(q => q.id !== question.id)
-                .map((q) => (
-                  <SelectItem key={q.id} value={q.id}>
-                    Q{questions.indexOf(q) + 1}: {q.text.substring(0, 30)}...
-                  </SelectItem>
-                ))}
-              <SelectItem value="end">End survey</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <button className="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center gap-1">
-          <Plus size={14} /> Add Logic Rule
-        </button>
-      </div>
-
-      {/* Active Rules Display */}
-      {question.hasLogic && question.logicRules && question.logicRules.length > 0 && (
-        <div className="space-y-2">
-          <p className="text-xs font-semibold text-gray-900">Active Rules</p>
-          {question.logicRules.map((rule, idx) => (
-            <div key={rule.id || idx} className="border border-purple-200 rounded-lg p-3 bg-purple-50/30">
-              <p className="text-xs text-gray-900 mb-1">
-                If "{rule.condition}"
-              </p>
-              <p className="text-xs text-gray-500">
-                → {rule.action === 'skip' ? `Skip to ${rule.targetQuestionId === 'end' ? 'End' : `Q${questions.findIndex(q => q.id === rule.targetQuestionId) + 1}`}` : rule.action}
-              </p>
-              <div className="flex gap-2 mt-2">
-                <button className="text-xs text-purple-600 hover:text-purple-700">Edit</button>
-                <button 
-                  onClick={() => {
-                    const newRules = question.logicRules?.filter((_, i) => i !== idx) || [];
-                    updateQuestion(question.id, { logicRules: newRules, hasLogic: newRules.length > 0 });
-                  }}
-                  className="text-xs text-red-600 hover:text-red-700"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+  return <QuestionScoringSection question={question} />;
 }
 
 // ============================================
@@ -1120,40 +856,21 @@ export function QuestionConfigPanel() {
   // Section selected (welcome, thankYou, scoring) - NOT 'questions' which shows question config below
   if (selectedSection && selectedSection !== 'questions') {
     return (
-      <aside className="w-[320px] lg:w-[360px] flex-shrink-0 bg-white border-l border-gray-200 flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 flex-shrink-0">
-          <span className="text-sm font-semibold text-gray-900">Configuration</span>
-          <button
-            onClick={toggleRightPanel}
-            className="p-1.5 hover:bg-gray-100 rounded-md transition-colors"
-          >
-            <ChevronRight size={16} className="text-gray-500" />
-          </button>
-        </div>
-        
+      <RightPanelLayout title="Configuration" onClose={toggleRightPanel}>
         <div className="flex-1 overflow-y-auto">
           {selectedSection === 'welcome' && <WelcomeScreenSettings />}
           {selectedSection === 'thankYou' && <ThankYouScreenSettings />}
-          {selectedSection === 'scoring' && <SurveyScoringSettings />}
+          {selectedSection === 'scoring' && FEATURES.scoringV1 && <ScoringPanel />}
+          {selectedSection === 'results' && FEATURES.resultsV1 && <ResultsConfigPanel />}
         </div>
-      </aside>
+      </RightPanelLayout>
     );
   }
 
   // No question selected - show placeholder
   if (!selectedQuestion) {
     return (
-      <aside className="w-[320px] lg:w-[360px] flex-shrink-0 bg-white border-l border-gray-200 flex flex-col min-w-0">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 flex-shrink-0">
-          <span className="text-sm font-semibold text-gray-900 truncate">Configuration</span>
-          <button
-            onClick={toggleRightPanel}
-            className="p-1.5 hover:bg-gray-100 rounded-md transition-colors flex-shrink-0"
-          >
-            <ChevronRight size={16} className="text-gray-500" />
-          </button>
-        </div>
+      <RightPanelLayout title="Configuration" onClose={toggleRightPanel}>
         <div className="flex-1 flex items-center justify-center p-6 overflow-hidden">
           <div className="text-center max-w-full">
             <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-50 to-indigo-50 flex items-center justify-center mx-auto mb-4 border border-purple-100">
@@ -1165,35 +882,19 @@ export function QuestionConfigPanel() {
             </p>
           </div>
         </div>
-      </aside>
+      </RightPanelLayout>
     );
   }
 
   const typeConfig = getQuestionTypeConfig(selectedQuestion.type);
 
   return (
-    <aside className="w-[320px] lg:w-[360px] flex-shrink-0 bg-white border-l border-gray-200 flex flex-col overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 flex-shrink-0 bg-white">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-gray-900">Configuration</span>
-          {typeConfig && (
-            <span className="text-xs px-2 py-0.5 bg-purple-100 text-purple-600 rounded-full">
-              {typeConfig.displayName}
-            </span>
-          )}
-        </div>
-        <button
-          onClick={toggleRightPanel}
-          className="p-1.5 hover:bg-gray-100 rounded-md transition-colors"
-        >
-          <ChevronRight size={16} className="text-gray-500" />
-        </button>
-      </div>
-
-      {/* Scrollable Content */}
+    <RightPanelLayout
+      title="Configuration"
+      badge={typeConfig?.displayName}
+      onClose={toggleRightPanel}
+    >
       <div className="flex-1 overflow-y-auto min-h-0">
-        {/* AI Assistant Section */}
         <CollapsibleSection
           title="AI Assistant"
           icon={<Wand2 size={16} />}
@@ -1221,7 +922,6 @@ export function QuestionConfigPanel() {
           </div>
         </CollapsibleSection>
 
-        {/* Settings & Scoring Section */}
         <CollapsibleSection
           title="Settings & Scoring"
           icon={<Settings size={16} />}
@@ -1244,7 +944,6 @@ export function QuestionConfigPanel() {
           </div>
         </CollapsibleSection>
 
-        {/* Logic & Design Section */}
         <CollapsibleSection
           title="Logic & Design"
           icon={<GitBranch size={16} />}
@@ -1260,14 +959,15 @@ export function QuestionConfigPanel() {
           />
           <div className="max-h-[400px] overflow-y-auto">
             {logicTab === 'logic' ? (
-              <LogicTab question={selectedQuestion} />
+              FEATURES.logicV2 ? (
+                <QuestionLogicEditor question={selectedQuestion} />
+              ) : null
             ) : (
               <DesignTab question={selectedQuestion} />
             )}
           </div>
         </CollapsibleSection>
       </div>
-
-    </aside>
+    </RightPanelLayout>
   );
 }

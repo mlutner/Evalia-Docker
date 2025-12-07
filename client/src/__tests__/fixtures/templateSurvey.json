@@ -1,0 +1,9 @@
+{
+  "title": "Template Survey",
+  "description": "Template desc",
+  "scoreConfig": { "enabled": false },
+  "questions": [
+    { "id": "t1", "type": "text", "question": "Name?", "required": true },
+    { "id": "t2", "type": "rating", "question": "Rate", "ratingScale": 5, "ratingStyle": "number" }
+  ]
+}

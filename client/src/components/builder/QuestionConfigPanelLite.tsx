@@ -637,7 +637,7 @@ export function QuestionConfigPanelLite({
   // No question selected - show placeholder
   if (!question) {
     return (
-      <aside className="w-[320px] lg:w-[360px] flex-shrink-0 bg-white border-l border-gray-200 flex flex-col">
+      <aside className="w-[280px] lg:w-[320px] flex-shrink-0 bg-white border-l border-gray-200 flex flex-col">
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
           <span className="text-sm font-semibold text-gray-900">Configuration</span>
           <button
@@ -661,7 +661,7 @@ export function QuestionConfigPanelLite({
   }
 
   return (
-    <aside className="w-[320px] lg:w-[360px] flex-shrink-0 bg-white border-l border-gray-200 flex flex-col overflow-hidden">
+    <aside className="w-[280px] lg:w-[320px] flex-shrink-0 bg-white border-l border-gray-200 flex flex-col overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 flex-shrink-0">
         <span className="text-sm font-semibold text-gray-900">Configuration</span>

@@ -22,6 +22,7 @@ Concise summary of the recent architecture hardening and feature work across AI,
 ## 5) Builder Enhancements
 - `ScoringPanel`, `LogicEditor`, and `ResultsConfigPanel` wired into Builder V2 to manage scorable flag, category mapping, option scores/weights, and band definitions.
 - Major refactors landed; UI stable in 3-panel flow.
+- Three creation entry points all funnel into Builder V2: (a) AI draft with doc upload/prompt → builder, (b) Use Template → builder, (c) Build from scratch → builder → design/preview → publish/share.
 
 ## 6) Theme & Design Preview
 - DesignV2 preview hardened for header/background image combinations; normalizes image shape and avoids undefined `.url` crashes.

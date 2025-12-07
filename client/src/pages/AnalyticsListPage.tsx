@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { 
   BarChart3, TrendingUp, Users, MessageSquare, 
-  ArrowRight, Calendar, Eye, ChevronRight 
+  Calendar, Eye, ChevronRight 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -227,9 +227,9 @@ function SurveyAnalyticsRow({
         ))}
       </div>
       
-      <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700">
-        View <ArrowRight className="w-4 h-4 ml-1" />
-      </Button>
+      <div className="flex items-center text-purple-600 hover:text-purple-700 text-sm font-medium">
+        View <ChevronRight className="w-5 h-5 ml-1" />
+      </div>
     </div>
   );
 }

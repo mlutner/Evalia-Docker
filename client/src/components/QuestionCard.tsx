@@ -80,6 +80,8 @@ function getQuestionTypeLabel(type: QuestionType) {
     // Media
     file_upload: "File upload",
     signature: "Signature",
+    video: "Video",
+    audio_capture: "Audio recording",
     // Structural
     section: "Section divider",
     statement: "Information",
@@ -88,8 +90,16 @@ function getQuestionTypeLabel(type: QuestionType) {
   return labels[type] || type;
 }
 
+function getInitialAnswerForQuestion(question: Question, initial?: string | string[]) {
+  if (initial !== undefined) return initial;
+  if (question.type === 'checkbox') return [];
+  if (question.type === 'image_choice' && question.selectionType === 'multiple') return [];
+  if (question.type === 'file_upload') return [];
+  return '';
+}
+
 export default function QuestionCard({ question, onAnswer, initialAnswer, onAutoAdvance }: QuestionCardProps) {
-  const [answer, setAnswer] = useState<string | string[]>(initialAnswer || (question.type === 'checkbox' ? [] : ''));
+  const [answer, setAnswer] = useState<string | string[]>(getInitialAnswerForQuestion(question, initialAnswer));
   const [hoverRating, setHoverRating] = useState<number | null>(null);
 
   // Helper to trigger auto-advance with 300ms delay for single-choice questions
@@ -101,9 +111,9 @@ export default function QuestionCard({ question, onAnswer, initialAnswer, onAuto
 
   // Reset answer state when moving to a new question
   useEffect(() => {
-    setAnswer(initialAnswer || (question.type === 'checkbox' ? [] : ''));
+    setAnswer(getInitialAnswerForQuestion(question, initialAnswer));
     setHoverRating(null);
-  }, [question.id, question.type]);
+  }, [question.id, question.type, initialAnswer]);
 
   const handleTextChange = (value: string) => {
     setAnswer(value);
@@ -947,6 +957,174 @@ export default function QuestionCard({ question, onAnswer, initialAnswer, onAuto
             />
             <p className="text-xs" style={{ color: '#6A7789' }}>Website URL</p>
           </>
+        )}
+
+        {/* Image Choice */}
+        {question.type === "image_choice" && (
+          <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${question.columns || 2}, minmax(0, 1fr))` }}>
+            {(() => {
+              const choices = question.imageOptions || [];
+              const isMulti = question.selectionType === 'multiple';
+              const current = Array.isArray(answer) ? answer : answer ? [answer as string] : [];
+
+              if (!choices.length) {
+                return (
+                  <div className="col-span-full text-sm text-muted-foreground">
+                    No images configured for this question.
+                  </div>
+                );
+              }
+
+              const toggle = (val: string) => {
+                if (isMulti) {
+                  const next = current.includes(val)
+                    ? current.filter((v) => v !== val)
+                    : [...current, val];
+                  setAnswer(next);
+                  onAnswer(next);
+                } else {
+                  setAnswer(val);
+                  onAnswer(val);
+                  triggerAutoAdvance();
+                }
+              };
+
+              return choices.map((choice, idx) => {
+                const valueId = choice.value || `choice-${idx}`;
+                const isSelected = current.includes(valueId);
+                return (
+                  <button
+                    type="button"
+                    key={valueId}
+                    onClick={() => toggle(valueId)}
+                    className="relative rounded-lg overflow-hidden border transition-all"
+                    style={{
+                      borderColor: isSelected ? '#2F8FA5' : '#E2E7EF',
+                      boxShadow: isSelected ? '0 0 0 3px rgba(47, 143, 165, 0.2)' : 'none',
+                    }}
+                  >
+                    <div className="aspect-video bg-gray-100">
+                      {choice.imageUrl ? (
+                        <img src={choice.imageUrl} alt={choice.label || `Option ${idx + 1}`} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-xs text-gray-500">
+                          No image
+                        </div>
+                      )}
+                    </div>
+                    {question.showLabels !== false && (
+                      <div className="p-3 text-left">
+                        <p className="text-sm font-semibold" style={{ color: '#1C2635' }}>{choice.label || `Option ${idx + 1}`}</p>
+                      </div>
+                    )}
+                  </button>
+                );
+              });
+            })()}
+          </div>
+        )}
+
+        {/* File Upload */}
+        {question.type === "file_upload" && (
+          <div className="space-y-3">
+            <div className="border-2 border-dashed rounded-lg p-4 text-center" style={{ borderColor: '#E2E7EF' }}>
+              <input
+                type="file"
+                multiple={(question.maxFiles ?? 1) > 1}
+                accept={Array.isArray(question.allowedTypes) ? question.allowedTypes.map((t) => (t.startsWith('.') ? t : `.${t}`)).join(',') : undefined}
+                onChange={(e) => {
+                  const files = Array.from(e.target.files || []);
+                  const limited = question.maxFiles ? files.slice(0, question.maxFiles) : files;
+                  const names = limited.map((f) => f.name);
+                  setAnswer(names);
+                  onAnswer(names);
+                }}
+                className="block w-full text-sm text-gray-600"
+              />
+              <p className="text-xs mt-2 text-muted-foreground">
+                {question.allowedTypes?.length ? `Allowed: ${question.allowedTypes.join(', ')}` : 'Any file type'}
+                {question.maxFileSize ? ` • Max ${question.maxFileSize} MB` : ''}
+                {question.maxFiles ? ` • Up to ${question.maxFiles} file(s)` : ''}
+              </p>
+            </div>
+            {Array.isArray(answer) && answer.length > 0 && (
+              <ul className="text-sm space-y-1 text-left">
+                {answer.map((name) => (
+                  <li key={name}>• {name}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+
+        {/* Signature */}
+        {question.type === "signature" && (
+          <div className="space-y-2">
+            <Input
+              type="text"
+              value={answer as string}
+              onChange={(e) => handleTextChange(e.target.value)}
+              placeholder="Type your name to sign"
+              className="text-base h-11 sm:h-12 border border-border/60 transition-colors bg-white"
+              style={{ borderColor: '#E2E7EF' }}
+              data-testid="input-signature"
+            />
+            <p className="text-xs text-muted-foreground">Signature capture placeholder</p>
+          </div>
+        )}
+
+        {/* Video */}
+        {question.type === "video" && (
+          <div className="space-y-3">
+            <div className="w-full overflow-hidden rounded-lg border" style={{ borderColor: '#E2E7EF' }}>
+              {(question as any).videoUrl ? (
+                <iframe
+                  src={(question as any).videoUrl}
+                  title={question.question}
+                  className="w-full aspect-video"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
+                <div className="aspect-video flex items-center justify-center text-sm text-muted-foreground bg-gray-50">
+                  Video URL not provided
+                </div>
+              )}
+            </div>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setAnswer('viewed');
+                onAnswer('viewed');
+                triggerAutoAdvance();
+              }}
+            >
+              Mark as viewed
+            </Button>
+          </div>
+        )}
+
+        {/* Audio Capture */}
+        {question.type === "audio_capture" && (
+          <div className="space-y-2">
+            <input
+              type="file"
+              accept="audio/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                setAnswer(file.name);
+                onAnswer(file.name);
+              }}
+              className="block w-full text-sm text-gray-600"
+            />
+            <p className="text-xs text-muted-foreground">
+              {question.maxDuration ? `Max duration: ${question.maxDuration} seconds.` : 'Upload an audio clip.'}
+            </p>
+            {answer && typeof answer === 'string' && (
+              <p className="text-xs text-emerald-600">Attached: {answer}</p>
+            )}
+          </div>
         )}
 
         {/* Section Divider */}

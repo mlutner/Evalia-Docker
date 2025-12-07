@@ -96,6 +96,7 @@ router.get("/", isAuthenticated, async (req: any, res) => {
  *       404:
  *         description: Survey not found
  */
+// [SCORING-PIPELINE] GET /api/surveys/:id - Returns survey with scoreConfig
 router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -103,6 +104,35 @@ router.get("/:id", async (req, res) => {
     
     if (!survey) {
       return res.status(404).json({ error: "Survey not found" });
+    }
+
+    // [BUG-ANAL-XXX] Log questions being returned
+    console.log('[BUG-ANAL-XXX] GET /api/surveys/:id - Returning survey:', {
+      surveyId: id,
+      questionsCount: survey.questions?.length ?? 0,
+      questions: survey.questions?.map((q: any) => ({ id: q.id, type: q.type, question: q.question?.substring(0, 50) })) ?? [],
+    });
+    
+    // [SCORING-PIPELINE] Log scoreConfig being returned to client
+    const scoreConfig = survey.scoreConfig;
+    const categoriesCount = scoreConfig?.categories?.length ?? 0;
+    const bandsCount = scoreConfig?.scoreRanges?.length ?? 0;
+    
+    console.log("[SCORING-PIPELINE] GET /api/surveys/:id returning scoreConfig", {
+      surveyId: id,
+      hasScoreConfig: !!scoreConfig,
+      enabled: scoreConfig?.enabled,
+      categoriesCount,
+      bandsCount,
+    });
+    
+    // [SCORING-PIPELINE] GUARD: Warn if enabled scoring has empty data
+    if (scoreConfig?.enabled && (categoriesCount === 0 || bandsCount === 0)) {
+      console.warn("[SCORING-PIPELINE] Returning enabled scoring with empty categories/bands!", {
+        surveyId: id,
+        categoriesCount,
+        bandsCount,
+      });
     }
 
     // Calculate response and question counts
@@ -140,6 +170,13 @@ router.get("/:id", async (req, res) => {
  */
 router.post("/", isAuthenticated, async (req: any, res) => {
   try {
+    // [BUG-ANAL-XXX] Log questions in request body
+    console.log('[BUG-ANAL-XXX] POST /api/surveys - Request body:', {
+      questionsCount: req.body.questions?.length ?? 0,
+      questions: req.body.questions?.map((q: any) => ({ id: q.id, type: q.type, question: q.question?.substring(0, 50) })) ?? [],
+      hasQuestions: !!req.body.questions,
+    });
+    
     const validationResult = insertSurveySchema.safeParse(req.body);
     
     if (!validationResult.success) {
@@ -170,6 +207,14 @@ router.post("/", isAuthenticated, async (req: any, res) => {
     };
     
     const survey = await storage.createSurvey(surveyData, userId);
+    
+    // [BUG-ANAL-XXX] Log questions after storage save
+    console.log('[BUG-ANAL-XXX] POST /api/surveys - After storage.createSurvey():', {
+      surveyId: survey.id,
+      questionsCount: survey.questions?.length ?? 0,
+      questions: survey.questions?.map((q: any) => ({ id: q.id, type: q.type, question: q.question?.substring(0, 50) })) ?? [],
+    });
+    
     const [responseCount, metrics] = await Promise.all([
       storage.getResponseCount(survey.id),
       storage.getRespondentMetrics(survey.id),
@@ -202,6 +247,14 @@ router.put("/:id", isAuthenticated, async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
+    // [BUG-ANAL-XXX] Log questions in request body
+    console.log('[BUG-ANAL-XXX] PUT /api/surveys/:id - Request body:', {
+      surveyId: id,
+      questionsCount: updates.questions?.length ?? 0,
+      questions: updates.questions?.map((q: any) => ({ id: q.id, type: q.type, question: q.question?.substring(0, 50) })) ?? [],
+      hasQuestions: !!updates.questions,
+    });
+
     // Get current survey to preserve illustrationUrl if not provided
     const currentSurvey = await storage.getSurvey(id);
     if (!currentSurvey) {
@@ -215,6 +268,28 @@ router.put("/:id", isAuthenticated, async (req, res) => {
     };
 
     const survey = await storage.updateSurvey(id, surveyUpdates);
+    
+    // [BUG-ANAL-XXX] Log questions after storage update
+    console.log('[BUG-ANAL-XXX] PUT /api/surveys/:id - After storage.updateSurvey():', {
+      surveyId: id,
+      questionsCount: survey?.questions?.length ?? 0,
+      questions: survey?.questions?.map((q: any) => ({ id: q.id, type: q.type, question: q.question?.substring(0, 50) })) ?? [],
+    });
+    
+    // [SCORE-001] Create score config version when publishing with scoring enabled
+    const isPublishing = updates.status === "Active" && currentSurvey.status !== "Active";
+    const hasScoring = survey?.scoreConfig?.enabled;
+    
+    if (isPublishing && hasScoring && survey?.scoreConfig) {
+      try {
+        const version = await storage.createScoreConfigVersion(id, survey.scoreConfig);
+        console.log(`[Survey Routes] Created score config version ${version.versionNumber} on publish`);
+      } catch (versionError) {
+        console.error("[Survey Routes] Failed to create score config version:", versionError);
+        // Don't fail the publish, just log the error
+      }
+    }
+    
     const responseCount = await storage.getResponseCount(survey?.id || id);
     const questionCount = survey?.questions?.length || 0;
     

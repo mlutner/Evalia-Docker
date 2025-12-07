@@ -1,0 +1,190 @@
+---
+alwaysApply: true
+---
+
+Architectural Safety (DO NOT BREAK THESE)
+
+NEVER modify, restructure, or “simplify” the following without explicit user instruction:
+
+Builder architecture (SurveyBuilderV2, QuestionRenderer pipeline)
+
+Scoring engine system (@core/scoring/*, engagement_v1, band resolver)
+
+Logic engines (logicEngineV2 default, logicEngineV3 optional)
+
+Theme normalization (normalizeThemeImages, useNormalizedTheme)
+
+Survey lifecycle flow (Builder → Preview → Runtime → Results/ThankYou)
+
+AI guardrails (server/schemas/ai.ts, forbidden key checks)
+
+Database schemas (shared/schema.ts) and JSONB shapes
+
+If a request might affect any of the above, STOP and ask for confirmation.
+
+🔧 2. Change Behavior: Small, Local, Safe
+
+When modifying code:
+
+Prefer small, surgical fixes (1–5 lines)
+
+Avoid refactors unless explicitly asked
+
+Preserve variable names, component boundaries, and file structure
+
+Do NOT reformat entire files
+
+Do NOT introduce new dependencies unless instructed
+
+Do NOT rewrite existing APIs or expected shapes
+
+When unsure, default to minimal edits
+
+📚 3. Documentation-First Workflow
+
+For any change that touches core behavior, Cursor must:
+
+Identify which process flow is affected
+
+Restate that flow (from docs/flows/*)
+
+Confirm whether behavior is changing
+
+If yes:
+
+Update the relevant Mermaid flow diagram
+
+Add a log entry to docs/BUILD_LOG.md
+
+Keep changes minimal and reversible
+
+Always keep docs and code in sync.
+
+🧪 4. Testing Discipline
+
+Whenever making changes:
+
+Check for an existing test that covers this behavior
+
+If test coverage is missing, recommend adding a small targeted test
+
+NEVER remove or bypass a test unless explicitly instructed
+
+Use existing mocks, schemas, and fixtures
+
+All tests must pass unless user agrees to modify test behavior.
+
+🧠 5. AI Safety Rules (Evalia-Specific)
+
+AI endpoints must NEVER:
+
+Emit numeric per-respondent scores
+
+Emit bands
+
+Emit scoringEngineId
+
+Generate or modify logic rules deterministically
+
+AI is strictly assistive, not authoritative.
+
+Continue using:
+
+Canonical tag taxonomy (shared/taxonomy/tags.ts)
+
+Guardrail fragments in prompts (aiService.ts)
+
+Zod schemas for validation (server/schemas/ai.ts)
+
+🧩 6. Strict Factual Referencing
+
+Cursor must always tie modifications to actual project code:
+
+Reference file paths
+
+Point to exact functions/components
+
+Never hallucinate undocumented APIs
+
+If code is unclear, ask the user which file to inspect
+
+🔍 7. When Uncertain, Ask Before Acting
+
+Cursor must ask for clarification when:
+
+A change risks altering architecture
+
+A request is ambiguous
+
+CSS/UI modifications may affect theming
+
+Builder/preview/runtime flows may diverge
+
+🚫 8. Forbidden Actions
+
+Cursor must NEVER:
+
+Rewrite Builder V2 architecture
+
+Change scoring or logic engine behavior
+
+Modify DB schema without explicit instruction
+
+Auto-generate new architecture or delete files
+
+Remove guardrails or Zod schemas
+
+Create new survey flow steps without approval
+
+Replace PreviewV2 or SurveyView pipelines
+
+🛠 9. Preferred Work Patterns
+
+When implementing changes:
+
+Use existing patterns and conventions
+
+Reuse helpers (useNormalizedTheme, adapters, hooks)
+
+Respect file boundaries (client/src, server/routes, shared/*)
+
+Keep code readable, predictable, stable
+
+If an edit would violate patterns, provide alternatives first.
+
+🧾 10. Cursor Output Format
+
+For every response, Cursor should output:
+
+Summary of intent
+
+Files to modify and why
+
+Minimal diff (never rewrite whole file)
+
+Documentation updates required
+
+Test coverage notes
+
+This ensures everything remains audit-ready and traceable.
+
+🎯 Summary
+
+These rules ensure Cursor:
+
+Doesn’t damage architecture
+
+Works incrementally
+
+Preserves scoring/logic systems
+
+Maintains documentation discipline
+
+Enforces AI guardrails
+
+Produces predictable, reviewable code
+
+Aligns with Evalia’s long-term maintainability
+
+This will prevent 99% of the AI-driven breakage you previously experienced.
+---

@@ -13,6 +13,8 @@ export const logicEngines: LogicEngine[] = [
     notes: "Current skip/branch evaluation path used for runtime flows.",
   },
   {
+    id: "logicEngineV3",
+    name: "Logic Engine V3",
     id: "LogicV3",
     name: "Logic V3",
     status: "available",

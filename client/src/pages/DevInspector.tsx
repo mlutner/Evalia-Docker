@@ -21,6 +21,7 @@ const aiEndpoints: Endpoint[] = [
   { path: "/api/adjust-tone", description: "Tone adjustment for questions", enabled: true },
 ];
 
+// Heuristic-only tag keywords for dev stats (not the canonical tag vocabulary)
 const canonicalTagKeywords: Record<string, string[]> = {
   pulse: ["pulse"],
   engagement: ["engagement"],

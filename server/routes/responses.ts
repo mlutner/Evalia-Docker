@@ -6,8 +6,12 @@
 
 import { Router } from "express";
 import { storage } from "../storage";
+import type { ScoringEngineId } from "@core/scoring/strategies";
 import { isAuthenticated } from "../replitAuth";
 import { analyzeResponses } from "../responseAnalysis";
+import { computeSurveyScore } from "../utils/scoring";
+import { resolveBand as resolveBandCore } from "@core/scoring/resolveBand";
+import { logScoringComplete } from "../auditLog";
 
 const router = Router();
 
@@ -59,9 +63,47 @@ router.post("/:id/responses", async (req, res) => {
       return res.status(400).json({ error: "Answers are required" });
     }
 
-    const response = await storage.createResponse(id, answers);
-    console.log(`[Response Routes] Response created for survey ${id}:`, response.id);
-    res.status(201).json(response);
+    const engineId: ScoringEngineId = (survey as any).scoringEngineId ?? "engagement_v1";
+
+    // [SCORE-001] Get latest score config version for this survey
+    const scoreConfigVersion = survey.scoreConfig?.enabled 
+      ? await storage.getLatestScoreConfigVersion(id)
+      : null;
+    
+    const scoring =
+      survey.scoreConfig?.enabled
+        ? computeSurveyScore({ survey, responses: answers })
+        : null;
+    const scoreRanges = survey.scoreConfig?.resultsScreen?.scoreRanges ?? [];
+    const band = scoring ? resolveBandCore(scoring.percentage, scoreRanges) : null;
+
+    // [SCORE-001] Pass version ID to response creation
+    const response = await storage.createResponse(id, answers, engineId, scoreConfigVersion?.id);
+    console.log(`[Response Routes] Response created for survey ${id}:`, response.id, 
+      scoreConfigVersion ? `(score config version: ${scoreConfigVersion.versionNumber})` : '(no scoring)');
+    
+    // Audit log for scoring
+    if (scoring) {
+      logScoringComplete({
+        surveyId: id,
+        responseId: response.id,
+        scoringEngineId: engineId,
+        scoreConfigVersion: survey.scoreConfig?.version,
+        totalScore: scoring.totalScore,
+        maxScore: scoring.maxScore,
+        percentage: scoring.percentage,
+        bandId: band?.id ?? null,
+        bandLabel: band?.label ?? null,
+        categoryCount: Object.keys(scoring.byCategory).length,
+      });
+    }
+    
+    const responseBody: any = { ...response };
+    if (scoring) {
+      responseBody.scoring = scoring;
+      responseBody.band = band ?? null;
+    }
+    res.status(201).json(responseBody);
   } catch (error: any) {
     console.error("[Response Routes] Create response error:", error);
     res.status(500).json({ error: "Failed to submit response" });
@@ -297,4 +339,3 @@ router.post("/:id/responses/analyze", isAuthenticated, async (req: any, res) => 
 });
 
 export default router;
-

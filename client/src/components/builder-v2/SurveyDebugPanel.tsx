@@ -1,10 +1,39 @@
+/**
+ * Survey Debug Panel
+ * 
+ * Dev-only tool for inspecting survey state and configuration.
+ * Rendered as a floating panel in the bottom-right corner of the builder.
+ * 
+ * Includes:
+ * - Survey state overview (title, status, questions count)
+ * - Score config visualization
+ * - Results/Thank You screen config
+ * - Logic rules summary
+ * - **Scoring Debug / Calculation Trace** (SCORING-DEBUG):
+ *   - Per-question and per-category score contributions
+ *   - Final band and the exact band rule that matched
+ *   - Read-only: does not modify configs or responses
+ * 
+ * @see docs/DEV_TOOLS.md for navigation instructions
+ */
+
 import { useMemo, useState } from 'react';
 import { useSurveyBuilder } from '@/contexts/SurveyBuilderContext';
+import { ScoringDebugSection } from './ScoringDebugSection';
 
 function formatJson(value: unknown) {
   return JSON.stringify(value, null, 2);
 }
 
+// Check if dev tools should be shown
+// Either in dev mode OR when VITE_ENABLE_DEV_TOOLS env var is set
+const shouldShowDevTools = () => {
+  return import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEV_TOOLS === 'true';
+};
+
+export function SurveyDebugPanel() {
+  // Only render in dev or when explicitly enabled via env var
+  if (!shouldShowDevTools()) {
 export function SurveyDebugPanel() {
   // Only render in dev to avoid exposing internals in production builds
   if (!import.meta.env.DEV) {
@@ -13,6 +42,7 @@ export function SurveyDebugPanel() {
 
   const { survey } = useSurveyBuilder();
   const [isOpen, setIsOpen] = useState(false);
+  const surveyId = survey?.id;
 
   const logicSummary = useMemo(() => {
     return survey.questions

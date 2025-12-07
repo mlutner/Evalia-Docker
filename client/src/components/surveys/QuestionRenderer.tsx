@@ -12,7 +12,7 @@
  * @module components/surveys/QuestionRenderer
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -84,8 +84,18 @@ export function QuestionRenderer({
   const isInteractive = !disabled && !readOnly && mode !== 'readonly';
   const primaryColor = themeColors?.primary || V2_COLORS.primary;
 
+  // Defensive defaults to avoid crashing on malformed data
+  const safeQuestion: Question = {
+    ...question,
+    options: question.options || [],
+    rowLabels: question.rowLabels || [],
+    colLabels: question.colLabels || [],
+    ratingScale: question.ratingScale ?? question.likertPoints ?? 5,
+    ratingStyle: question.ratingStyle || 'number',
+  };
+
   // Determine effective value (use empty default based on question type)
-  const effectiveValue = value ?? getDefaultValue(question.type);
+  const effectiveValue = value ?? getDefaultValue(safeQuestion.type);
 
   // Handle value changes
   const handleChange = (newValue: unknown) => {
@@ -96,7 +106,7 @@ export function QuestionRenderer({
 
   // Route to specific renderer based on question type
   const rendererProps = {
-    question,
+    question: safeQuestion,
     mode,
     value: effectiveValue,
     onChange: handleChange,
@@ -107,8 +117,8 @@ export function QuestionRenderer({
   };
 
   return (
-    <div className="question-renderer" data-question-id={question.id} data-question-type={question.type}>
-      {renderQuestionByType(question.type, rendererProps)}
+    <div className="question-renderer" data-question-id={safeQuestion.id} data-question-type={safeQuestion.type}>
+      {renderQuestionByType(safeQuestion.type, rendererProps)}
     </div>
   );
 }
@@ -181,6 +191,18 @@ function renderQuestionByType(type: QuestionType, props: RendererProps): React.R
       return <TimeRenderer {...props} />;
     case 'datetime':
       return <DateTimeRenderer {...props} />;
+
+    // Media
+    case 'image_choice':
+      return <ImageChoiceRenderer {...props} />;
+    case 'file_upload':
+      return <FileUploadRenderer {...props} />;
+    case 'signature':
+      return <SignatureRenderer {...props} />;
+    case 'video':
+      return <VideoRenderer {...props} />;
+    case 'audio_capture':
+      return <AudioCaptureRenderer {...props} />;
 
     // Structural
     case 'section':
@@ -939,6 +961,225 @@ function DateTimeRenderer({ question, value, onChange, disabled, readOnly }: Ren
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// MEDIA TYPES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function ImageChoiceRenderer({ question, value, onChange, readOnly, disabled, primaryColor }: RendererProps) {
+  const choices =
+    question.imageOptions && question.imageOptions.length > 0
+      ? question.imageOptions
+      : [];
+
+  if (!choices.length) {
+    return (
+      <div className="p-4 rounded-xl border-2" style={{ borderColor: V2_COLORS.border }}>
+        <p className="text-sm" style={{ color: V2_COLORS.textSecondary }}>
+          No images configured for this question.
+        </p>
+      </div>
+    );
+  }
+
+  const isMulti = question.selectionType === 'multiple';
+  const currentValues = Array.isArray(value)
+    ? (value as string[])
+    : value
+      ? [String(value)]
+      : [];
+
+  const toggle = (val: string) => {
+    if (readOnly || disabled) return;
+    if (isMulti) {
+      const next = currentValues.includes(val)
+        ? currentValues.filter((v) => v !== val)
+        : [...currentValues, val];
+      onChange(next);
+    } else {
+      onChange(val);
+    }
+  };
+
+  return (
+    <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${question.columns || 2}, minmax(0, 1fr))` }}>
+      {choices.map((choice, idx) => {
+        const valueId = choice.value || `choice-${idx}`;
+        const isSelected = currentValues.includes(valueId);
+        return (
+          <button
+            type="button"
+            key={valueId}
+            onClick={() => toggle(valueId)}
+            disabled={disabled || readOnly}
+            className="relative rounded-xl overflow-hidden border-2 transition-all"
+            style={{
+              borderColor: isSelected ? primaryColor : V2_COLORS.border,
+              boxShadow: isSelected ? `0 0 0 3px ${primaryColor}33` : 'none',
+              opacity: disabled ? 0.7 : 1,
+            }}
+          >
+            <div className="aspect-video bg-gray-100">
+              {choice.imageUrl ? (
+                <img src={choice.imageUrl} alt={choice.label || `Option ${idx + 1}`} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-xs text-gray-500">
+                  No image
+                </div>
+              )}
+            </div>
+            {question.showLabels !== false && (
+              <div className="p-3 text-left">
+                <p className="text-sm font-semibold" style={{ color: V2_COLORS.text }}>{choice.label || `Option ${idx + 1}`}</p>
+              </div>
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function FileUploadRenderer({ question, value, onChange, disabled, readOnly }: RendererProps) {
+  const isMulti = (question.maxFiles ?? 1) > 1;
+  const currentFiles = Array.isArray(value)
+    ? (value as string[])
+    : value
+      ? [String(value)]
+      : [];
+
+  const accept = Array.isArray(question.allowedTypes)
+    ? question.allowedTypes.map((t) => (t.startsWith('.') ? t : `.${t}`)).join(',')
+    : undefined;
+
+  const handleFiles = (files: FileList | null) => {
+    if (!files) return;
+    const list = Array.from(files);
+    const trimmed = question.maxFiles ? list.slice(0, question.maxFiles) : list;
+    const names = trimmed.map((f) => f.name);
+    onChange(isMulti ? names : names[0] || '');
+  };
+
+  return (
+    <div className="space-y-3">
+      <div
+        className="border-2 border-dashed rounded-xl p-4 text-center"
+        style={{ borderColor: V2_COLORS.border, color: V2_COLORS.textSecondary }}
+      >
+        <input
+          type="file"
+          multiple={isMulti}
+          accept={accept}
+          onChange={(e) => handleFiles(e.target.files)}
+          disabled={disabled || readOnly}
+          className="block w-full text-sm text-gray-600"
+        />
+        <p className="text-xs mt-2">
+          {question.allowedTypes?.length ? `Allowed: ${question.allowedTypes.join(", ")}` : "Any file type"}
+          {question.maxFileSize ? ` • Max ${question.maxFileSize} MB` : ""}
+          {question.maxFiles ? ` • Up to ${question.maxFiles} file(s)` : ""}
+        </p>
+      </div>
+      {currentFiles.length > 0 && (
+        <ul className="text-sm space-y-1 text-left">
+          {currentFiles.map((name) => (
+            <li key={name} className="text-gray-700">• {name}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function SignatureRenderer({ value, onChange, disabled, readOnly }: RendererProps) {
+  return (
+    <div className="space-y-2">
+      <Input
+        type="text"
+        placeholder="Type your name to sign"
+        value={(value as string) || ''}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+        readOnly={readOnly}
+        className="h-12 text-base rounded-xl border-2"
+        style={baseInputStyles}
+      />
+      <p className="text-xs" style={{ color: V2_COLORS.textSecondary }}>
+        Digital signature capture placeholder
+      </p>
+    </div>
+  );
+}
+
+function VideoRenderer({ question, onChange, value, readOnly, disabled }: RendererProps) {
+  const videoUrl = (question as any).videoUrl;
+  return (
+    <div className="space-y-3">
+      <div className="w-full overflow-hidden rounded-xl border" style={{ borderColor: V2_COLORS.border }}>
+        {videoUrl ? (
+          <iframe
+            src={videoUrl}
+            title={question.question}
+            className="w-full aspect-video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        ) : (
+          <div className="aspect-video flex items-center justify-center text-sm text-gray-500 bg-gray-50">
+            Video URL not provided
+          </div>
+        )}
+      </div>
+      {!readOnly && (
+        <button
+          type="button"
+          onClick={() => onChange('viewed')}
+          disabled={disabled}
+          className="px-4 py-2 rounded-lg text-sm font-semibold"
+          style={{
+            backgroundColor: V2_COLORS.primary,
+            color: 'white',
+            opacity: disabled ? 0.6 : 1,
+          }}
+        >
+          Mark as viewed
+        </button>
+      )}
+      {value === 'viewed' && (
+        <p className="text-xs" style={{ color: V2_COLORS.success }}>
+          Marked as viewed
+        </p>
+      )}
+    </div>
+  );
+}
+
+function AudioCaptureRenderer({ question, value, onChange, disabled, readOnly }: RendererProps) {
+  const handleAudio = (files: FileList | null) => {
+    if (!files || !files.length) return;
+    onChange(files[0].name);
+  };
+
+  return (
+    <div className="space-y-3">
+      <input
+        type="file"
+        accept="audio/*"
+        onChange={(e) => handleAudio(e.target.files)}
+        disabled={disabled || readOnly}
+        className="block w-full text-sm text-gray-600"
+      />
+      <p className="text-xs" style={{ color: V2_COLORS.textSecondary }}>
+        {question.maxDuration ? `Max duration: ${question.maxDuration} seconds.` : 'Upload or record an audio clip.'}
+      </p>
+      {value && (
+        <p className="text-xs" style={{ color: V2_COLORS.success }}>
+          Attached: {String(value)}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // STRUCTURAL TYPES
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -1055,6 +1296,8 @@ function getDefaultValue(type: QuestionType): unknown {
     case 'checkbox':
     case 'ranking':
     case 'constant_sum':
+    case 'image_choice':
+    case 'file_upload':
       return [];
     case 'legal':
       return 'false';

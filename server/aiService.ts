@@ -10,6 +10,8 @@
 import type { Question } from "@shared/schema";
 import mammoth from "mammoth";
 import { callMistral, safeParseJSON, type ChatMessage } from "./utils/aiClient";
+import { AiScoringConfigSuggestionSchema, type AiScoringConfigSuggestion } from "./schemas/ai";
+import { CANONICAL_TAGS } from "@shared/taxonomy/tags";
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // CONFIGURATION
@@ -41,6 +43,37 @@ export const PROMPT_VERSIONS = {
   promptEnhancement: "v1.0.0",
   toneAdjustment: "v1.0.0",
 } as const;
+
+// Shared prompt fragments and guardrails
+const TAG_PROMPT_FRAGMENT = `VALID TAGS: ${CANONICAL_TAGS.join(", ")}
+- Only use these tags when suggesting or filtering templates
+- Do NOT invent new tags or synonyms`;
+
+const SCORING_GUARDRAIL_FRAGMENT = `SCORING GUARDRAILS:
+- Do NOT compute or change numeric scores, percentages, or bands
+- Do NOT set scoringEngineId
+- You may only suggest configuration objects (scoreConfig, resultsScreen) and narrative text
+- All numeric scoring is performed by deterministic, versioned engines in @core/scoring`;
+
+const FORBIDDEN_SCORING_KEYS = new Set([
+  "score",
+  "scores",
+  "band",
+  "bands",
+  "scoringEngineId",
+  "percentage",
+  "totalScore",
+  "overallScore",
+  "responseScores",
+]);
+
+function hasForbiddenScoringFields(obj: any): boolean {
+  if (!obj || typeof obj !== "object") return false;
+  return Object.entries(obj).some(([key, value]) => {
+    if (FORBIDDEN_SCORING_KEYS.has(key)) return true;
+    return hasForbiddenScoringFields(value);
+  });
+}
 
 // Task types for monitoring
 export const TASK_TYPES = {
@@ -243,7 +276,10 @@ Type: textarea
 Analysis: {"score": 58, "issues": ["Too vague - 'think about' is imprecise", "No focus area specified"], "suggestions": "Add specificity: 'What aspects of the training were most valuable to your work?'"}
 
 **OUTPUT FORMAT:**
-Return ONLY a single JSON object: {"score": number, "issues": ["issue1", "issue2"], "suggestions": "improvement text"}`;
+Return ONLY a single JSON object: {"score": number, "issues": ["issue1", "issue2"], "suggestions": "improvement text"}
+
+${TAG_PROMPT_FRAGMENT}
+${SCORING_GUARDRAIL_FRAGMENT}`;
 
   const userPrompt = `Evaluate this ${questionType} survey question using rigorous criteria. Provide nuanced feedback.
 
@@ -318,136 +354,6 @@ function getCategoryMaxScores(
 }
 
 /**
- * Calculate scores using AI for intelligent answer analysis
- * Returns empty object on error (recoverable)
- */
-export async function calculateScoresWithAI(
-  questions: Question[],
-  answers: Record<string, string | string[]>,
-  scoreConfig: any
-): Promise<Record<string, number>> {
-  if (!scoreConfig?.enabled || !scoreConfig.categories) {
-    return {};
-  }
-
-  // Initialize scores for each category
-  const scores: Record<string, number> = {};
-  scoreConfig.categories.forEach((cat: any) => {
-    scores[cat.id] = 0;
-  });
-
-  // Score rating/nps questions by numeric value
-  questions.forEach(q => {
-    if (q.scoringCategory && answers[q.id]) {
-      const answer = answers[q.id];
-      if (q.type === "rating" || q.type === "nps" || q.type === "number") {
-        const value = parseInt(Array.isArray(answer) ? answer[0] : answer, 10);
-        if (!isNaN(value)) {
-          scores[q.scoringCategory] = (scores[q.scoringCategory] || 0) + value;
-        }
-      }
-    }
-  });
-
-  // For text/textarea answers, use AI to intelligently score
-  const textQuestionsToScore = questions.filter(q => 
-    (q.type === "text" || q.type === "textarea") && 
-    q.scoringCategory && 
-    answers[q.id]
-  );
-
-  if (textQuestionsToScore.length > 0) {
-    try {
-      const categoryListText = scoreConfig.categories
-        .map((c: any) => `- ID: "${c.id}" (Name: "${c.name}")`)
-        .join("\n");
-
-      const systemPrompt = `You are an expert assessment scorer. Score the following responses based on the assessment criteria.
-
-Use ONLY the provided category IDs as JSON keys. Each score must be an integer between 0 and 5:
-- 0: No evidence or completely off-topic
-- 1: Minimal evidence, vague response
-- 2: Some evidence, basic understanding
-- 3: Good evidence, clear understanding
-- 4: Strong evidence, detailed response
-- 5: Excellent evidence, exceptional insight
-
-**FEW-SHOT EXAMPLES:**
-
-Example 1:
-Question: "Describe a time you demonstrated leadership"
-Category: leadership-skills
-Response: "I led our team through a difficult project deadline by delegating tasks and maintaining morale."
-Score: 4 (Strong evidence of leadership with specific actions)
-
-Example 2:
-Question: "What did you learn about communication?"
-Category: communication
-Response: "It was good."
-Score: 1 (Minimal evidence, too vague)
-
-Return ONLY a JSON object with category IDs as keys and numeric scores as values. No other text.`;
-
-      const responseTexts = textQuestionsToScore.map((q: Question) => {
-        const answerValue = answers[q.id];
-        const answerText = Array.isArray(answerValue) ? answerValue.join(', ') : String(answerValue);
-        const categoryName = scoreConfig.categories.find((c: any) => c.id === q.scoringCategory)?.name || q.scoringCategory;
-        return `Question: "${q.question}"\nCategory: ${categoryName} (ID: ${q.scoringCategory})\nResponse: "${answerText}"`;
-      }).join('\n\n');
-
-      const userPrompt = `Categories (use ONLY these IDs as keys):
-${categoryListText}
-
-Score these responses (0-5 integer for each category):
-
-${responseTexts}
-
-Return ONLY valid JSON like: {"cat-1": 4, "cat-2": 3}`;
-
-      const messages: ChatMessage[] = [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt },
-      ];
-
-      const response = await callMistral(messages, {
-        quality: "balanced",
-        taskType: TASK_TYPES.SCORING,
-        promptVersion: PROMPT_VERSIONS.scoring,
-        responseFormat: { type: "json_object" },
-        temperature: 0.2, // Low temperature for consistent scoring
-      });
-      
-      const aiScores = safeParseJSON(response, {});
-      if (!aiScores || Object.keys(aiScores).length === 0) {
-        console.warn("[AI Service] Failed to parse AI scores, skipping");
-      } else {
-        const validCategoryIds = new Set(scoreConfig.categories.map((c: any) => c.id));
-        
-        // Add AI scores to category scores with validation
-        Object.entries(aiScores).forEach(([catId, score]: [string, any]) => {
-          if (!validCategoryIds.has(catId)) {
-            console.warn(`[AI Service] Ignoring AI score for unknown category: ${catId}`);
-            return;
-          }
-          
-          let numericScore = Number(score);
-          if (!Number.isFinite(numericScore)) return;
-          
-          // Clamp to valid range (0-5)
-          numericScore = Math.max(0, Math.min(5, Math.round(numericScore)));
-          scores[catId] = (scores[catId] || 0) + numericScore;
-        });
-      }
-    } catch (error) {
-      console.warn("[AI Service] AI scoring failed, continuing with numeric scores:", error);
-      // Don't throw - return partial scores
-    }
-  }
-
-  return scores;
-}
-
-/**
  * Calculate theoretical max score based on question count
  */
 function calculateTheoreticalMaxScore(questions: Question[]): number {
@@ -517,12 +423,13 @@ export async function suggestScoringConfig(
   const totalTheoreticalMax = calculateTheoreticalMaxScore(questions);
   console.log(`[AI Service] Scoring config: ${questions.length} questions, total theoretical max: ${totalTheoreticalMax}`);
 
-  const systemPrompt = `You are an expert in educational assessment and survey design. Based on survey questions, suggest a scoring configuration that would work well for this assessment.
+const systemPrompt = `You are an expert in educational assessment and survey design. Based on survey questions, suggest a scoring configuration that would work well for this assessment.
 
 SCORING MODEL:
 - Each question can contribute up to 5 points to its assigned category.
 - Theoretical maximum PER CATEGORY = (number of questions mapped to that category) × 5.
 - Do NOT assume all categories share the same max—calculate the max per category based on how you map questions.
+- ${SCORING_GUARDRAIL_FRAGMENT}
 
 INSTRUCTIONS:
 1. Analyze the survey questions to identify 2-3 key competency/skill categories
@@ -587,13 +494,21 @@ Analyze these questions and suggest:
         true
       );
     }
+    const validated = AiScoringConfigSuggestionSchema.parse(parsed) as AiScoringConfigSuggestion;
+    if (hasForbiddenScoringFields(validated)) {
+      throw new AIServiceError(
+        "AI suggestion contained forbidden scoring fields",
+        TASK_TYPES.SCORING_CONFIG,
+        true
+      );
+    }
     
-    const questionCategoryMap = parsed.suggestedQuestionCategoryMap || {};
+    const questionCategoryMap = validated.suggestedQuestionCategoryMap || {};
     const theoreticalMaxPerCategory = getCategoryMaxScores(questions, questionCategoryMap);
     const categoryQuestionCounts = getCategoryQuestionCounts(questions, questionCategoryMap);
     
     // Post-process to ensure score ranges are valid and distinct
-    const processedRanges = (parsed.scoreRanges || []).map((range: any) => {
+    const processedRanges = (validated.scoreRanges || []).map((range: any) => {
       const maxForCategory = theoreticalMaxPerCategory[range.category] || totalTheoreticalMax;
       
       // Validate and clamp score ranges
@@ -606,7 +521,7 @@ Analyze these questions and suggest:
       }
       
       // Count ranges for this category
-      const rangesForCategory = (parsed.scoreRanges || []).filter((r: any) => r.category === range.category);
+      const rangesForCategory = (validated.scoreRanges || []).filter((r: any) => r.category === range.category);
       const positionInCategory = rangesForCategory.findIndex((r: any) => r === range);
       
       // If labels are duplicated, apply default progression
@@ -625,9 +540,9 @@ Analyze these questions and suggest:
     }).filter((r: any) => r.minScore !== r.maxScore || r.minScore === 0);
     
     // If no valid ranges, generate fallback ranges
-    if (processedRanges.length === 0 && parsed.categories && parsed.categories.length > 0) {
+    if (processedRanges.length === 0 && validated.categories && validated.categories.length > 0) {
       console.warn("[AI Service] No valid ranges generated, using fallback ranges");
-      parsed.categories.forEach((cat: any) => {
+      validated.categories.forEach((cat: any) => {
         const categoryMax = theoreticalMaxPerCategory[cat.id] || totalTheoreticalMax;
         const questionCount = categoryQuestionCounts[cat.id] || questions.length;
         const fallbackRanges = generateScoreRanges(cat.id, categoryMax, questionCount);
@@ -637,9 +552,9 @@ Analyze these questions and suggest:
     
     return {
       enabled: true,
-      categories: parsed.categories || [],
+      categories: validated.categories || [],
       scoreRanges: processedRanges,
-      suggestedQuestionCategoryMap: parsed.suggestedQuestionCategoryMap,
+      suggestedQuestionCategoryMap: validated.suggestedQuestionCategoryMap,
     };
   } catch (error) {
     console.warn("[AI Service] Scoring suggestion failed, will skip:", error);
@@ -820,7 +735,10 @@ STRUCTURAL:
 ✓ Every statement extracted as separate question
 ✓ All multiple_choice/checkbox have minimum 2 options
 ✓ Complete answer sets preserved
-✓ Question text matches document exactly`;
+✓ Question text matches document exactly
+
+${TAG_PROMPT_FRAGMENT}
+${SCORING_GUARDRAIL_FRAGMENT}`;
 
   const userPrompt = context
     ? `Context: ${context}\n\nDocument content:\n${content}\n\nExtract ALL questions with COMPLETE answer choices.`
@@ -890,7 +808,7 @@ STRUCTURAL:
     return {
       title: parsed.title || "Generated Survey",
       questions,
-      ...(scoreConfig && { scoreConfig }),
+      ...(scoreConfig && !hasForbiddenScoringFields(scoreConfig) && { scoreConfig }),
     };
   } catch (error: any) {
     if (error instanceof AIServiceError) throw error;
@@ -1096,7 +1014,8 @@ Write a ${thankYouLength} word thank you message. Be warm and specific to the to
       break;
 
     case "resultsSummary":
-      systemPrompt = `Write a brief summary message (40-60 words) that appears above assessment results. Warm, insightful, forward-focused. Plain text only.`;
+      systemPrompt = `Write a brief summary message (40-60 words) that appears above assessment results. Warm, insightful, forward-focused. Plain text only.
+${SCORING_GUARDRAIL_FRAGMENT}`;
       const categories = scoreConfig?.categories?.map((c: any) => c.name).join(", ") || "this assessment";
       userPrompt = `Survey Title: ${surveyTitle}\nAssessment Categories: ${categories}\n\nWrite a 40-60 word results summary message.`;
       break;
@@ -1229,7 +1148,9 @@ IMPORTANT:
 - Keep the user's original intent but make it much more comprehensive
 - Add specific, actionable details
 - Consider best practices in survey design
-- Make the enhanced prompt clear and actionable for AI survey generation`;
+- Make the enhanced prompt clear and actionable for AI survey generation
+
+${TAG_PROMPT_FRAGMENT}`;
 
   const messages: ChatMessage[] = [
     { role: "system", content: systemPrompt },

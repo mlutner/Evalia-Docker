@@ -1,0 +1,269 @@
+{
+  "generatedAt": "2025-12-04T20:34:51.667Z",
+  "schemaMeta": {
+    "types": [
+      "text",
+      "textarea",
+      "email",
+      "phone",
+      "url",
+      "number",
+      "multiple_choice",
+      "checkbox",
+      "dropdown",
+      "image_choice",
+      "yes_no",
+      "rating",
+      "nps",
+      "likert",
+      "opinion_scale",
+      "slider",
+      "emoji_rating",
+      "matrix",
+      "ranking",
+      "constant_sum",
+      "calculation",
+      "date",
+      "time",
+      "datetime",
+      "file_upload",
+      "signature",
+      "video",
+      "audio_capture",
+      "section",
+      "statement",
+      "legal",
+      "hidden"
+    ],
+    "baseFields": [
+      "id",
+      "type",
+      "question",
+      "description",
+      "required",
+      "placeholder",
+      "minLength",
+      "maxLength",
+      "validationPattern",
+      "rows",
+      "options",
+      "displayStyle",
+      "allowOther",
+      "randomizeOptions",
+      "optionImages",
+      "minSelections",
+      "maxSelections",
+      "imageOptions",
+      "selectionType",
+      "imageSize",
+      "showLabels",
+      "columns",
+      "ratingScale",
+      "ratingStyle",
+      "ratingLabels",
+      "showLabelsOnly",
+      "npsLabels",
+      "likertType",
+      "likertPoints",
+      "showNeutral",
+      "customLabels",
+      "min",
+      "max",
+      "step",
+      "defaultValue",
+      "showValue",
+      "unit",
+      "leftLabel",
+      "rightLabel",
+      "showNumbers",
+      "rowLabels",
+      "colLabels",
+      "matrixType",
+      "randomizeRows",
+      "maxRankItems",
+      "totalPoints",
+      "showPercentage",
+      "dateFormat",
+      "minDate",
+      "maxDate",
+      "disablePastDates",
+      "disableFutureDates",
+      "timeFormat",
+      "minuteStep",
+      "allowedTypes",
+      "maxFileSize",
+      "maxFiles",
+      "videoUrl",
+      "posterImageUrl",
+      "autoplay",
+      "maxDuration",
+      "yesLabel",
+      "noLabel",
+      "linkUrl",
+      "linkText",
+      "skipCondition",
+      "logicRules",
+      "scoringCategory",
+      "sectionId",
+      "scoreWeight",
+      "optionScores",
+      "scorable"
+    ],
+    "typeParameters": {
+      "text": [
+        "placeholder",
+        "minLength",
+        "maxLength",
+        "validationPattern"
+      ],
+      "textarea": [
+        "placeholder",
+        "rows",
+        "minLength",
+        "maxLength"
+      ],
+      "email": [
+        "placeholder"
+      ],
+      "phone": [
+        "placeholder"
+      ],
+      "url": [
+        "placeholder"
+      ],
+      "number": [
+        "placeholder",
+        "min",
+        "max",
+        "step",
+        "unit"
+      ],
+      "multiple_choice": [
+        "options",
+        "displayStyle",
+        "allowOther",
+        "randomizeOptions",
+        "optionImages"
+      ],
+      "checkbox": [
+        "options",
+        "displayStyle",
+        "allowOther",
+        "randomizeOptions",
+        "minSelections",
+        "maxSelections"
+      ],
+      "dropdown": [
+        "options",
+        "placeholder",
+        "allowOther",
+        "randomizeOptions"
+      ],
+      "image_choice": [
+        "imageOptions",
+        "selectionType",
+        "imageSize",
+        "columns",
+        "showLabels"
+      ],
+      "yes_no": [
+        "displayStyle",
+        "yesLabel",
+        "noLabel"
+      ],
+      "rating": [
+        "ratingScale",
+        "ratingStyle",
+        "ratingLabels",
+        "showLabelsOnly"
+      ],
+      "nps": [
+        "npsLabels"
+      ],
+      "likert": [
+        "likertType",
+        "likertPoints",
+        "showNeutral",
+        "customLabels"
+      ],
+      "opinion_scale": [
+        "ratingScale",
+        "leftLabel",
+        "rightLabel",
+        "showNumbers"
+      ],
+      "slider": [
+        "min",
+        "max",
+        "step",
+        "defaultValue",
+        "showValue",
+        "unit",
+        "ratingLabels"
+      ],
+      "emoji_rating": [
+        "ratingScale",
+        "ratingStyle",
+        "ratingLabels"
+      ],
+      "matrix": [
+        "rowLabels",
+        "colLabels",
+        "matrixType",
+        "randomizeRows"
+      ],
+      "ranking": [
+        "options",
+        "maxRankItems"
+      ],
+      "constant_sum": [
+        "options",
+        "totalPoints",
+        "showPercentage"
+      ],
+      "calculation": [],
+      "date": [
+        "dateFormat",
+        "minDate",
+        "maxDate",
+        "disablePastDates",
+        "disableFutureDates"
+      ],
+      "time": [
+        "timeFormat",
+        "minuteStep"
+      ],
+      "datetime": [
+        "dateFormat",
+        "timeFormat",
+        "minuteStep"
+      ],
+      "file_upload": [
+        "allowedTypes",
+        "maxFileSize",
+        "maxFiles"
+      ],
+      "signature": [],
+      "video": [
+        "videoUrl",
+        "posterImageUrl",
+        "autoplay"
+      ],
+      "audio_capture": [
+        "maxDuration"
+      ],
+      "section": [
+        "description"
+      ],
+      "statement": [
+        "description"
+      ],
+      "legal": [
+        "description",
+        "linkUrl",
+        "linkText"
+      ],
+      "hidden": []
+    }
+  }
+}
