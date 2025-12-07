@@ -16,8 +16,23 @@ const baseSurvey: Survey = {
   description: "Test survey",
   welcomeMessage: "hi",
   thankYouMessage: "thanks",
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+  userId: "user-1",
+  status: "Active",
+  illustrationUrl: null,
+  trainerName: null,
+  trainingDate: null,
+  tags: [],
+  isAnonymous: false,
+  webhookUrl: null,
+  publishedAt: null,
+  scoringEngineId: null,
+  estimatedMinutes: 5,
+  privacyStatement: null,
+  dataUsageStatement: null,
+  designSettings: null,
+  tone: "casual",
+  createdAt: new Date(),
+  updatedAt: new Date(),
   questions: [
     {
       id: "q1",
@@ -119,13 +134,20 @@ vi.mock("@/components/QuestionCard", () => ({
   },
 }));
 
-vi.mock("@/components/SurveyResults", () => ({
+vi.mock("@/components/surveys/ResultsScreen", () => ({
   __esModule: true,
-  default: ({ survey, answers }: any) => (
+  ResultsScreen: ({ resultsConfig, scoring }: any) => (
     <div data-testid="results-screen">
-      <div>Results Ready</div>
+      <div>{resultsConfig?.title || "Results"}</div>
       <div>Total Score</div>
-      <div>50%</div>
+      <div>{scoring?.percentage != null ? `${scoring.percentage}%` : "50%"}</div>
+    </div>
+  ),
+  default: ({ resultsConfig, scoring }: any) => (
+    <div data-testid="results-screen">
+      <div>{resultsConfig?.title || "Results"}</div>
+      <div>Total Score</div>
+      <div>{scoring?.percentage != null ? `${scoring.percentage}%` : "50%"}</div>
     </div>
   ),
 }));
@@ -137,7 +159,7 @@ describe("SurveyView runtime theme + results branching", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Reset mutable survey fields between tests
-    (baseSurvey as any).theme = undefined;
+    (baseSurvey as any).designSettings = undefined;
     (baseSurvey as any).scoreConfig = {
       enabled: true,
       categories: [{ id: "engagement", name: "Engagement" }],
@@ -167,7 +189,7 @@ describe("SurveyView runtime theme + results branching", () => {
 
   it("normalizes theme images and renders results when enabled + scoring present", async () => {
     // Provide nested theme images to exercise normalization
-    (baseSurvey as any).theme = {
+    (baseSurvey as any).designSettings = {
       headerImage: { url: "https://example.com/header.png" },
       backgroundImage: { url: "https://example.com/bg.png" },
     };

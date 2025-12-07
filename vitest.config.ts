@@ -4,12 +4,24 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [
-    react(),
+    react() as any,
   ],
   test: {
     environment: 'jsdom',
     setupFiles: [path.resolve(__dirname, 'client/src/test/setup.ts')],
     globals: true,
+    include: [
+      'server/**/*.{test,spec}.{ts,tsx}',
+      'client/src/**/*.{test,spec}.{ts,tsx}',
+      'shared/**/*.{test,spec}.{ts,tsx}',
+      'src/**/*.{test,spec}.{ts,tsx}',
+    ],
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      'client/src/test/e2e/**',
+      '**/playwright/**',
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
@@ -25,6 +37,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'client/src'),
       '@shared': path.resolve(__dirname, 'shared'),
       '@assets': path.resolve(__dirname, 'attached_assets'),
+      '@core': path.resolve(__dirname, 'src/core'),
     },
   },
 });

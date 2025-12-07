@@ -436,7 +436,7 @@ app.use("/api/ai/test", aiTestRouter);
 ### Runtime Status
 ✅ **Application Running**
 - Workflow "Start application" status: RUNNING
-- Express server listening on port 5000
+- Express server listening on port 4000
 - All endpoints accessible
 
 ### Endpoint Verification

@@ -21,6 +21,8 @@ import {
   enhancePrompt,
   adjustQuestionsTone,
 } from "../aiService";
+import { CANONICAL_TAGS } from "@shared/taxonomy/tags";
+import { AiScoringConfigSuggestionSchema } from "../schemas/ai";
 
 const router = Router();
 
@@ -473,16 +475,39 @@ router.post("/questions/analyze", isAuthenticated, async (req, res) => {
  */
 router.post("/generate-scoring-config", isAuthenticated, async (req: any, res) => {
   try {
-    const { questions, surveyTitle } = req.body;
+    const { surveyTitle, questions } = req.body;
     if (!questions || !Array.isArray(questions)) {
       return res.status(400).json({ error: "Questions array required" });
     }
 
     const config = await suggestScoringConfig(surveyTitle || "Assessment Survey", questions);
-    res.json({ config });
+    if (!config) {
+      return res.status(400).json({ error: "No scoring configuration suggested" });
+    }
+
+    const validated = AiScoringConfigSuggestionSchema.parse(config);
+    const forbiddenKeys = [
+      "score",
+      "scores",
+      "band",
+      "bands",
+      "scoringEngineId",
+      "percentage",
+      "totalScore",
+      "overallScore",
+    ];
+    const rawJson = JSON.stringify(validated);
+    if (forbiddenKeys.some((key) => rawJson.includes(`"${key}"`))) {
+      return res.status(400).json({ error: "AI suggestion contained forbidden scoring fields" });
+    }
+
+    return res.json({ config: validated });
   } catch (error: any) {
     console.error("[AI Routes] Generate scoring config error:", error);
-    res.status(500).json({ error: "Failed to generate scoring configuration" });
+    if (error?.name === "ZodError") {
+      return res.status(400).json({ error: "Invalid scoring configuration shape" });
+    }
+    return res.status(500).json({ error: "Failed to generate scoring configuration" });
   }
 });
 
@@ -530,7 +555,7 @@ router.post("/ai-chat", isAuthenticated, async (req: any, res) => {
 
     let templatesContext = "";
     if (allTemplates.length > 0) {
-      templatesContext = `\n\nAVAILABLE TEMPLATES:\n`;
+      templatesContext = `\n\nAVAILABLE TEMPLATES (use only canonical tags: ${CANONICAL_TAGS.join(", ")}):\n`;
       for (const template of allTemplates.slice(0, 5)) {
         templatesContext += `- "${template.title}" (${template.category}): ${template.questions.length} questions\n`;
       }
@@ -568,6 +593,11 @@ KEY CAPABILITIES:
 - Respondent management and segmentation
 - Custom scoring for training evaluations${surveyStatsContext}${templatesContext}
 
+TAGGING RULES:
+- Valid tags are: ${CANONICAL_TAGS.join(", ")}
+- Only use these tags when suggesting or filtering templates
+- Do not invent new tags or synonyms
+
 HELP USERS WITH:
 - Creating and managing their surveys
 - Sharing and collecting responses
@@ -594,4 +624,3 @@ Be concise, helpful, and guide users toward their goals. When possible, referenc
 });
 
 export default router;
-

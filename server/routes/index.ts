@@ -42,9 +42,9 @@ const SURVEY_ILLUSTRATIONS = [
 export async function registerRoutes(app: Express): Promise<Server> {
   // CORS configuration
   const corsOrigins = [
+    "http://localhost:4000",
     "http://localhost:5000",
     "http://localhost:3000",
-    "http://localhost:4000",
     "https://evaliasurvey.ca",
     "https://www.evaliasurvey.ca",
     "https://evalia-survey-mike913.replit.app",
@@ -52,7 +52,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.use(
     cors({
-      origin: (origin, callback) => {
+      origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
         if (!origin) return callback(null, true);
         if (corsOrigins.includes(origin)) return callback(null, true);
         if (process.env.NODE_ENV !== "production") return callback(null, true);
@@ -281,7 +281,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       for (const respondent of respondents) {
         const r = await storage.createRespondent(id, respondent);
-        const surveyUrl = `${process.env.APP_URL || "http://localhost:5000"}/survey/${id}?respondent=${r.respondentToken}`;
+        const surveyUrl = `${process.env.APP_URL || "http://localhost:4000"}/survey/${id}?respondent=${r.respondentToken}`;
 
         const emailSent = await emailService.sendSurveyInvitation(
           respondent.email!,
@@ -382,7 +382,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI Test/Monitoring routes
   app.use("/api/ai/test", aiTestRouter);
 
-  // Analytics routes (5D dashboard)
+  // Analytics routes (5D dashboard + ANAL-001)
   app.use("/api/analytics", analyticsRoutes);
 
   // Dev-only routes (scoring debug, etc.)
@@ -401,4 +401,3 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
   return httpServer;
 }
-

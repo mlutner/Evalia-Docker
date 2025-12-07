@@ -2,72 +2,108 @@ import { useState, useEffect } from "react";
 import { useParams } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import leadershipIllustration from "@assets/Heading_1763750607423.png";
+import leadershipIllustration from "../assets/survey-welcome.png";
 import SurveyLayout from "@/components/SurveyLayout";
 import SurveyWelcome from "@/pages/SurveyWelcome";
-import SurveyResults from "@/components/SurveyResults";
 import "@/components/styles/survey-welcome.css";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import QuestionCard from "@/components/QuestionCard";
 import { Check, Loader2, AlertCircle, FileQuestion } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Question } from "@/components/QuestionCard";
-import type { Survey } from "@shared/schema";
-import { calculateSurveyScores } from "@shared/schema";
+import type { Survey, ScoreBandConfig } from "@shared/schema";
+import { normalizeQuestions } from "@shared/questionNormalization";
+import { ResultsScreen } from "@/components/surveys/ResultsScreen";
+import type { ScoringResult } from "@core/scoring/strategies";
+import { useNormalizedTheme } from "@/hooks/useNormalizedTheme";
 
 export default function SurveyView() {
   const { id } = useParams();
   const [currentStep, setCurrentStep] = useState(-1); // -1 = welcome screen, 0+ = questions
   const [answers, setAnswers] = useState<Record<string, string | string[]>>({});
   const [isCompleted, setIsCompleted] = useState(false);
+  // Store results for surveys that have results screen enabled
+  const [resultsState, setResultsState] = useState<{
+    responses: Record<string, unknown>;
+    scoring: ScoringResult;
+    band: ScoreBandConfig | null;
+  } | null>(null);
   const [showBackWarning, setShowBackWarning] = useState(false);
   const [showExitWarning, setShowExitWarning] = useState(false);
   const [startTime] = useState(new Date());
-  // RESULTS-001: Store scoring results for canonical branching
-  const [scoringPayload, setScoringPayload] = useState<ReturnType<
-    typeof calculateSurveyScores
-  > | null>(null);
+  const [normalizeError, setNormalizeError] = useState<string | null>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
 
   const { data: survey, isLoading, error } = useQuery<Survey>({
     queryKey: ["/api/surveys", id],
     enabled: !!id,
   });
+  const normalizedTheme = useNormalizedTheme(survey?.designSettings);
+  const headerImageUrl = normalizedTheme.headerImageUrl || undefined;
 
   const submitMutation = useMutation({
-    mutationFn: async (answers: Record<string, string | string[]>) => {
-      return apiRequest("POST", `/api/surveys/${id}/responses`, {
-        answers,
+    mutationFn: async (payload: Record<string, string | string[]>) => {
+      const res = await apiRequest("POST", `/api/surveys/${id}/responses`, {
+        answers: payload,
         startedAt: startTime.toISOString(),
         completedAt: new Date().toISOString(),
       });
+      return res.json();
     },
-    onSuccess: () => {
-      setIsCompleted(true);
-      // RESULTS-001: Calculate scoring results if scoring is enabled
-      // Canonical rule: show results only if scoring enabled AND produces valid results
-      if (survey?.scoreConfig?.enabled) {
-        try {
-          const results = calculateSurveyScores(
-            survey.questions,
-            answers,
-            survey.scoreConfig
-          );
-          setScoringPayload(results);
-        } catch (error) {
-          console.error('[SurveyView] Scoring calculation failed:', error);
-          // On error, scoringPayload stays null → falls back to ThankYou
-        }
+    onSuccess: (data, variables) => {
+      const hasResults = !!survey?.scoreConfig?.resultsScreen?.enabled;
+      if (hasResults && data?.scoring) {
+        setResultsState({
+          responses: variables,
+          scoring: data.scoring as ScoringResult,
+          band: (data.band ?? null) as ScoreBandConfig | null,
+        });
       }
+      setIsCompleted(true);
+
       // Invalidate surveys cache so dashboard shows updated response count
       queryClient.invalidateQueries({ queryKey: ["/api/surveys"] });
     },
   });
 
-  const allQuestions = survey?.questions || [];
+  useEffect(() => {
+    if (!survey) {
+      setQuestions([]);
+      return;
+    }
 
-  // Apply randomization if enabled (for future feature)
-  const questions = allQuestions;
+    // [QUESTION-PIPELINE] Runtime survey questions length
+    console.log("[QUESTION-PIPELINE] Runtime survey questions length", {
+      surveyId: survey.id,
+      questionsLength: survey?.questions?.length ?? 0,
+      hasQuestions: !!survey?.questions,
+      questionsIsArray: Array.isArray(survey?.questions),
+      questions: survey?.questions?.map((q: any) => ({ id: q.id, type: q.type, question: q.question?.substring(0, 50) })) ?? [],
+    });
 
+    let runtimeQuestions: any[] = [];
+    try {
+      runtimeQuestions = normalizeQuestions(survey?.questions ?? []);
+
+      // [QUESTION-PIPELINE] Normalized questions length
+      console.log("[QUESTION-PIPELINE] Normalized questions length", {
+        surveyId: survey.id,
+        normalizedLength: runtimeQuestions.length,
+        normalizedQuestions: runtimeQuestions.map(q => ({ id: q.id, type: q.type, question: q.question?.substring(0, 50) })),
+      });
+
+      setQuestions(runtimeQuestions);
+      setNormalizeError(null);
+    } catch (err) {
+      console.error("[QUESTION-PIPELINE] normalizeQuestions failed", err, {
+        surveyId: survey.id,
+        rawQuestions: survey?.questions,
+        questionsLength: survey?.questions?.length ?? 0,
+      });
+      setNormalizeError("This survey is misconfigured. Please contact the owner.");
+      setQuestions([]);
+    }
+  }, [survey]);
   const currentQuestion = currentStep >= 0 ? questions[currentStep] : null;
 
   // Filter visible questions based on skip logic
@@ -202,20 +238,44 @@ export default function SurveyView() {
     );
   }
 
+  if (normalizeError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-background via-background to-muted/20">
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <AlertCircle className="w-8 h-8 text-destructive" />
+          </div>
+          <h1 className="text-3xl font-semibold mb-3" data-testid="text-runtime-error-title">Survey Error</h1>
+          <p className="text-muted-foreground text-lg" data-testid="text-runtime-error">
+            {normalizeError}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (isCompleted) {
     // RESULTS-001: Canonical branching rule
     // Show ResultsScreen only if:
     // 1. resultsScreen is enabled (survey.scoreConfig?.resultsScreen?.enabled)
-    // 2. Scoring produced valid results (scoringPayload !== null)
-    const showResults = survey.scoreConfig?.resultsScreen?.enabled && scoringPayload !== null;
+    // 2. Scoring produced valid results (resultsState?.scoring)
+    const resultsConfig = survey.scoreConfig?.resultsScreen;
+    const showResults = resultsConfig?.enabled && resultsState?.scoring;
 
     if (showResults) {
       return (
-        <SurveyResults
-          survey={survey}
-          answers={answers}
-          thankYouMessage={survey.thankYouMessage || "Thank you for completing this assessment!"}
-        />
+        <SurveyLayout>
+          <div className="max-w-4xl mx-auto w-full">
+            <ResultsScreen
+              questions={questions}
+              responses={resultsState.responses}
+              scoreConfig={survey.scoreConfig}
+              resultsConfig={resultsConfig}
+              scoring={resultsState.scoring}
+              band={resultsState.band}
+            />
+          </div>
+        </SurveyLayout>
       );
     }
 
@@ -251,7 +311,7 @@ export default function SurveyView() {
     );
   }
 
-  if (allQuestions.length === 0) {
+  if (questions.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-background via-background to-muted/20">
         <div className="text-center max-w-md">

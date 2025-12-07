@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Save, Eye, Settings, Loader2 } from 'lucide-react';
 import { useSurveyBuilder } from '@/contexts/SurveyBuilderContext';
 import { Button } from '@/components/ui/button';
+import { ValidationIssuesModal } from './ValidationIssuesModal';
+import type { SurveyValidationResult } from '@/utils/surveyValidator';
 
 interface BuilderActionBarProps {
   onPreview?: () => void;
@@ -10,6 +12,24 @@ interface BuilderActionBarProps {
 
 export function BuilderActionBar({ onPreview, onSettings }: BuilderActionBarProps) {
   const { survey, questions, isDirty, isSaving, saveSurvey } = useSurveyBuilder();
+  const [validationResult, setValidationResult] = useState<SurveyValidationResult | null>(null);
+  const [showValidationModal, setShowValidationModal] = useState(false);
+
+  const handleSave = async () => {
+    const result = await saveSurvey();
+    if (result.validation && (result.validation.errors.length > 0 || result.validation.warnings.length > 0)) {
+      setValidationResult(result.validation);
+      // Only show modal if save was blocked (errors) or there are warnings to acknowledge
+      if (result.id === null || result.validation.warnings.length > 0) {
+        setShowValidationModal(true);
+      }
+    }
+  };
+
+  const handleSaveAnyway = async () => {
+    setShowValidationModal(false);
+    await saveSurvey({ skipValidation: true });
+  };
 
   return (
     <div className="w-full bg-white border-t border-gray-200 px-4 lg:px-8 py-3">
@@ -61,7 +81,7 @@ export function BuilderActionBar({ onPreview, onSettings }: BuilderActionBarProp
 
           <Button
             size="sm"
-            onClick={saveSurvey}
+            onClick={handleSave}
             disabled={isSaving || !isDirty}
             className="bg-[#2F8FA5] hover:bg-[#267a8d]"
           >
@@ -80,6 +100,16 @@ export function BuilderActionBar({ onPreview, onSettings }: BuilderActionBarProp
           </Button>
         </div>
       </div>
+
+      {/* [LOGIC-001] Validation Issues Modal */}
+      {validationResult && (
+        <ValidationIssuesModal
+          open={showValidationModal}
+          onClose={() => setShowValidationModal(false)}
+          validation={validationResult}
+          onSaveAnyway={validationResult.errors.length === 0 ? handleSaveAnyway : undefined}
+        />
+      )}
     </div>
   );
 }

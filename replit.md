@@ -140,7 +140,7 @@ For detailed testing guidance, see `TESTING_GUIDE.md`
 ### Swagger UI
 Access full API documentation and test endpoints:
 ```
-http://localhost:5000/api-docs
+http://localhost:4000/api-docs
 ```
 
 The API documentation includes:

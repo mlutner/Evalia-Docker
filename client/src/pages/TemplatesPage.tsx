@@ -17,6 +17,15 @@ type ExtendedTemplate = Template;
 
 type ViewMode = "grid" | "list";
 
+// Tag-based helpers for category filters
+const CATEGORY_TAGS: Record<string, string[]> = {
+  "Employee Engagement": ["employee-engagement", "wellbeing", "psychological-safety"],
+  "Pulse": ["pulse", "quick-5min"],
+  "Feedback": ["feedback", "self-assessment", "training-evaluation", "manager-effectiveness", "leadership", "coaching"],
+  "Onboarding": ["onboarding"],
+  "Exit": ["exit", "attrition", "retention"],
+};
+
 // ============================================
 // CATEGORY CONFIGURATION
 // ============================================
@@ -91,6 +100,11 @@ function FeaturedTemplateCard({ template, onPreview, onUse, getCategoryColor, ge
         {getCategoryIcon(template.category || 'Other')}
         <span>{template.category}</span>
       </div>
+      {template.scoreConfig?.enabled && (
+        <div className="mb-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold text-purple-700 bg-purple-50 border border-purple-100">
+          <span>Scored</span>
+        </div>
+      )}
       
       {/* Title */}
       <h3 className="font-semibold text-gray-900 text-sm line-clamp-2 mb-2 group-hover:text-amber-700 transition-colors">
@@ -154,6 +168,11 @@ function PulseTemplateCard({ template, onPreview, onUse }: PulseTemplateCardProp
         </div>
         {template.is_featured && (
           <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+        )}
+        {template.scoreConfig?.enabled && (
+          <span className="text-[10px] font-semibold text-purple-700 bg-purple-50 border border-purple-100 px-2 py-0.5 rounded-full">
+            Scored
+          </span>
         )}
       </div>
       
@@ -255,10 +274,14 @@ export default function TemplatesPage() {
 
   // Count templates per category
   const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: templates.length };
-    templates.forEach((t) => {
-      const cat = t.category || "Other";
-      counts[cat] = (counts[cat] || 0) + 1;
+    const counts: Record<string, number> = {};
+    CATEGORY_FILTERS.forEach((filter) => {
+      const id = filter.id;
+      counts[id] = templates.filter((t) => {
+        if (id === "all") return true;
+        const tags = CATEGORY_TAGS[id] || [];
+        return t.category === id || tags.some((tag) => t.tags?.includes(tag));
+      }).length;
     });
     return counts;
   }, [templates]);
@@ -269,7 +292,12 @@ export default function TemplatesPage() {
 
     // Apply category filter
     if (selectedCategory !== "all") {
-      filtered = filtered.filter((t) => t.category === selectedCategory);
+      const tags = CATEGORY_TAGS[selectedCategory] || [];
+      filtered = filtered.filter(
+        (t) =>
+          t.category === selectedCategory ||
+          tags.some((tag) => t.tags?.includes(tag))
+      );
     }
 
     // Apply search filter
@@ -530,6 +558,11 @@ export default function TemplatesPage() {
                   <span className="text-xs text-gray-500">
                     ~{Math.ceil(template.questions.length * 0.5)} min to complete
                   </span>
+                  {(template.scoreConfig?.scoreRanges?.length || template.scoreConfig?.resultsScreen?.scoreRanges?.length) && (
+                    <span className="ml-auto text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">
+                      Bands {template.scoreConfig?.resultsScreen?.scoreRanges?.length ?? template.scoreConfig?.scoreRanges?.length}
+                    </span>
+                  )}
                   {template.scoreConfig?.enabled && (
                     <span className="ml-auto text-xs font-medium text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full">
                       Scored
@@ -614,6 +647,11 @@ export default function TemplatesPage() {
                           <Clock className="w-4 h-4" />
                           <span>~{Math.ceil(template.questions.length * 0.5)} min</span>
                         </div>
+                        {(template.scoreConfig?.scoreRanges?.length || template.scoreConfig?.resultsScreen?.scoreRanges?.length) && (
+                          <div className="flex items-center gap-1 text-xs text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">
+                            Bands {template.scoreConfig?.resultsScreen?.scoreRanges?.length ?? template.scoreConfig?.scoreRanges?.length}
+                          </div>
+                        )}
                       </div>
 
                       {/* Actions */}

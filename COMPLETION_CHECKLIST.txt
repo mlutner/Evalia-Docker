@@ -80,7 +80,7 @@ EVALIA AI INTEGRATION - FINAL VERIFICATION CHECKLIST
 ✅ RUNTIME VERIFICATION
    Status: ✅ RUNNING
    - Workflow: Start application (RUNNING)
-   - Port: 5000
+   - Port: 4000
    - All test endpoints accessible
 
 ================================================================================
@@ -103,4 +103,3 @@ Additional outputs:
 - AI_INTEGRATION_COMPLETION_ASSESSMENT.md (comprehensive documentation)
 - COMPLETION_CHECKLIST.txt (this file)
 - Test endpoints verified and functional
-

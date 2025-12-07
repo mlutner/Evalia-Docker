@@ -19,9 +19,9 @@
 import { db } from "../db";
 import { surveyResponses, surveyRespondents, surveys, calculateSurveyScores } from "@shared/schema";
 import { eq, and, count, sql, gte } from "drizzle-orm";
-import type { 
-  ParticipationMetricsData, 
-  IndexDistributionData, 
+import type {
+  ParticipationMetricsData,
+  IndexDistributionData,
   IndexBandDistributionData,
   QuestionSummaryData,
   QuestionSummaryItem,
@@ -46,9 +46,9 @@ export async function computeParticipationMetrics(
   // Build base condition
   const baseCondition = versionId
     ? and(
-        eq(surveyResponses.surveyId, surveyId),
-        eq(surveyResponses.scoreConfigVersionId, versionId)
-      )
+      eq(surveyResponses.surveyId, surveyId),
+      eq(surveyResponses.scoreConfigVersionId, versionId)
+    )
     : eq(surveyResponses.surveyId, surveyId);
 
   // Query 1: Total responses count
@@ -79,14 +79,14 @@ export async function computeParticipationMetrics(
     .where(
       versionId
         ? and(
-            eq(surveyResponses.surveyId, surveyId),
-            eq(surveyResponses.scoreConfigVersionId, versionId),
-            gte(surveyResponses.completionPercentage, COMPLETION_THRESHOLD)
-          )
+          eq(surveyResponses.surveyId, surveyId),
+          eq(surveyResponses.scoreConfigVersionId, versionId),
+          gte(surveyResponses.completionPercentage, COMPLETION_THRESHOLD)
+        )
         : and(
-            eq(surveyResponses.surveyId, surveyId),
-            gte(surveyResponses.completionPercentage, COMPLETION_THRESHOLD)
-          )
+          eq(surveyResponses.surveyId, surveyId),
+          gte(surveyResponses.completionPercentage, COMPLETION_THRESHOLD)
+        )
     );
 
   const completedResponses = completedResult?.count || 0;
@@ -190,9 +190,9 @@ export async function computeIndexDistribution(
   // Step 2: Fetch all responses for this survey
   const baseCondition = versionId
     ? and(
-        eq(surveyResponses.surveyId, surveyId),
-        eq(surveyResponses.scoreConfigVersionId, versionId)
-      )
+      eq(surveyResponses.surveyId, surveyId),
+      eq(surveyResponses.scoreConfigVersionId, versionId)
+    )
     : eq(surveyResponses.surveyId, surveyId);
 
   const responses = await db
@@ -284,8 +284,14 @@ function calculateOverallIndexScore(
 ): number | null {
   if (results.length === 0) return null;
 
-  // For now, compute simple average of all category scores
-  // Future: filter by indexType using category metadata
+  // [ANAL-FIX] Filter by indexType if it matches a specific category
+  // This allows computing distribution for a specific dimension
+  const specificCategory = results.find(r => r.categoryId === indexType);
+  if (specificCategory) {
+    return specificCategory.score;
+  }
+
+  // Fallback: compute simple average of all category scores (for overall index)
   const totalScore = results.reduce((sum, r) => sum + r.score, 0);
   const avgScore = totalScore / results.length;
 
@@ -362,11 +368,11 @@ export const DEFAULT_INDEX_BANDS = INDEX_BAND_DEFINITIONS.map(band => ({
   maxScore: band.max,
 }));
 
-export type IndexType = 
-  | 'leadership-effectiveness' 
-  | 'team-wellbeing' 
-  | 'burnout-risk' 
-  | 'psychological-safety' 
+export type IndexType =
+  | 'leadership-effectiveness'
+  | 'team-wellbeing'
+  | 'burnout-risk'
+  | 'psychological-safety'
   | 'engagement';
 
 /**
@@ -399,9 +405,9 @@ export async function computeIndexBandDistribution(
   // Step 2: Fetch all responses for this survey
   const baseCondition = versionId
     ? and(
-        eq(surveyResponses.surveyId, surveyId),
-        eq(surveyResponses.scoreConfigVersionId, versionId)
-      )
+      eq(surveyResponses.surveyId, surveyId),
+      eq(surveyResponses.scoreConfigVersionId, versionId)
+    )
     : eq(surveyResponses.surveyId, surveyId);
 
   const responses = await db
@@ -519,9 +525,9 @@ export async function computeQuestionSummary(
   // Step 2: Fetch all responses for this survey
   const baseCondition = versionId
     ? and(
-        eq(surveyResponses.surveyId, surveyId),
-        eq(surveyResponses.scoreConfigVersionId, versionId)
-      )
+      eq(surveyResponses.surveyId, surveyId),
+      eq(surveyResponses.scoreConfigVersionId, versionId)
+    )
     : eq(surveyResponses.surveyId, surveyId);
 
   const responses = await db
@@ -756,7 +762,7 @@ function getQuestionOptions(question: Question): Array<{ value: string; label: s
     const points = question.likertPoints || 5;
     const labels = question.customLabels || getDefaultLikertLabels(points);
     return labels.map((label, i) => ({
-      value: String(i + 1),
+      value: label, // [ANAL-FIX] Use label as value for consistent text matching
       label,
     }));
   }
@@ -811,10 +817,10 @@ function createEmptyQuestionSummary(question: Question, questionNumber: number):
     maxValue: null,
     distribution: DISTRIBUTION_QUESTION_TYPES.includes(question.type)
       ? getQuestionOptions(question).map(opt => ({
-          ...opt,
-          count: 0,
-          percentage: 0,
-        }))
+        ...opt,
+        count: 0,
+        percentage: 0,
+      }))
       : null,
   };
 }
@@ -823,10 +829,10 @@ function createEmptyQuestionSummary(question: Question, questionNumber: number):
 // MANAGER INDEX SUMMARY (ANAL-007)
 // ============================================================================
 
-import type { 
-  ManagerIndexSummaryData, 
-  ManagerSummaryItem, 
-  ManagerBandDistribution 
+import type {
+  ManagerIndexSummaryData,
+  ManagerSummaryItem,
+  ManagerBandDistribution
 } from "@shared/analytics";
 
 /**
@@ -860,9 +866,9 @@ export async function computeIndexSummaryByManager(
   // Step 2: Fetch all responses for this survey
   const baseCondition = versionId
     ? and(
-        eq(surveyResponses.surveyId, surveyId),
-        eq(surveyResponses.scoreConfigVersionId, versionId)
-      )
+      eq(surveyResponses.surveyId, surveyId),
+      eq(surveyResponses.scoreConfigVersionId, versionId)
+    )
     : eq(surveyResponses.surveyId, surveyId);
 
   const responses = await db
@@ -883,7 +889,7 @@ export async function computeIndexSummaryByManager(
     // Get managerId from metadata
     const metadata = response.metadata as Record<string, unknown> | null;
     const managerId = metadata?.managerId as string | undefined;
-    
+
     // Skip responses without manager assignment
     if (!managerId) {
       continue;
@@ -1036,9 +1042,9 @@ export async function computeIndexTrend(
   // Step 2: Fetch all responses for this survey with completedAt timestamp
   const baseCondition = versionId
     ? and(
-        eq(surveyResponses.surveyId, surveyId),
-        eq(surveyResponses.scoreConfigVersionId, versionId)
-      )
+      eq(surveyResponses.surveyId, surveyId),
+      eq(surveyResponses.scoreConfigVersionId, versionId)
+    )
     : eq(surveyResponses.surveyId, surveyId);
 
   const responses = await db
@@ -1079,6 +1085,15 @@ export async function computeIndexTrend(
     // Calculate scores for each response in this bucket
     const bucketScores: number[] = [];
 
+    // [ANAL-FIX] Track scores per dimension
+    const dimensionTotals: Record<string, { sum: number, count: number }> = {
+      'engagement': { sum: 0, count: 0 },
+      'leadership-effectiveness': { sum: 0, count: 0 },
+      'team-wellbeing': { sum: 0, count: 0 },
+      'burnout-risk': { sum: 0, count: 0 },
+      'psychological-safety': { sum: 0, count: 0 }
+    };
+
     for (const response of bucketResponses) {
       const scoreResults = calculateSurveyScores(
         survey.questions,
@@ -1093,23 +1108,34 @@ export async function computeIndexTrend(
       const avgScore = totalScore / scoreResults.length;
       const clampedScore = Math.min(100, Math.max(0, Math.round(avgScore)));
       bucketScores.push(clampedScore);
+
+      // Accumulate per-dimension scores
+      scoreResults.forEach(r => {
+        if (dimensionTotals[r.categoryId]) {
+          dimensionTotals[r.categoryId].sum += r.score;
+          dimensionTotals[r.categoryId].count++;
+        }
+      });
     }
 
-    // Calculate average score for this bucket
+    // Calculate average score for this bucket (overall)
     const avgBucketScore = bucketScores.length > 0
       ? Math.round((bucketScores.reduce((a, b) => a + b, 0) / bucketScores.length) * 10) / 10
       : 0;
 
-    // For now, we compute a single "engagement" index as the overall score
-    // Future versions can compute per-dimension scores using category metadata
+    // Helper to get dimension average
+    const getDimAvg = (id: string) =>
+      dimensionTotals[id].count > 0
+        ? Math.round((dimensionTotals[id].sum / dimensionTotals[id].count) * 10) / 10
+        : avgBucketScore; // Fallback to overall if no data for dimension
+
     const dataPoint: IndexTrendDataPoint = {
       date: bucketKey,
-      engagementIndex: avgBucketScore,
-      // For compatibility, set all indices to the same value for now
-      leadershipIndex: avgBucketScore,
-      wellbeingIndex: avgBucketScore,
-      burnoutRiskIndex: avgBucketScore,
-      psychologicalSafetyIndex: avgBucketScore,
+      engagementIndex: getDimAvg('engagement'),
+      leadershipIndex: getDimAvg('leadership-effectiveness'),
+      wellbeingIndex: getDimAvg('team-wellbeing'),
+      burnoutRiskIndex: getDimAvg('burnout-risk'),
+      psychologicalSafetyIndex: getDimAvg('psychological-safety'),
     };
 
     series.push(dataPoint);
@@ -1251,9 +1277,9 @@ async function computeTrendPointForVersion(
   // Fetch responses for this version
   const baseCondition = versionId
     ? and(
-        eq(surveyResponses.surveyId, surveyId),
-        eq(surveyResponses.scoreConfigVersionId, versionId)
-      )
+      eq(surveyResponses.surveyId, surveyId),
+      eq(surveyResponses.scoreConfigVersionId, versionId)
+    )
     : eq(surveyResponses.surveyId, surveyId);
 
   const responses = await db
@@ -1267,6 +1293,15 @@ async function computeTrendPointForVersion(
 
   // Calculate scores for each response
   const allScores: number[] = [];
+
+  // [ANAL-FIX] Track scores per dimension
+  const dimensionTotals: Record<string, { sum: number, count: number }> = {
+    'engagement': { sum: 0, count: 0 },
+    'leadership-effectiveness': { sum: 0, count: 0 },
+    'team-wellbeing': { sum: 0, count: 0 },
+    'burnout-risk': { sum: 0, count: 0 },
+    'psychological-safety': { sum: 0, count: 0 }
+  };
 
   for (const response of responses) {
     const scoreResults = calculateSurveyScores(
@@ -1282,13 +1317,26 @@ async function computeTrendPointForVersion(
     const avgScore = totalScore / scoreResults.length;
     const clampedScore = Math.min(100, Math.max(0, Math.round(avgScore)));
     allScores.push(clampedScore);
+
+    // Accumulate per-dimension scores
+    scoreResults.forEach(r => {
+      if (dimensionTotals[r.categoryId]) {
+        dimensionTotals[r.categoryId].sum += r.score;
+        dimensionTotals[r.categoryId].count++;
+      }
+    });
   }
 
-  // For now, all indices use the same overall score
-  // Future: differentiate by index type based on category mapping
+  // Calculate overall average
   const avgOverallScore = allScores.length > 0
     ? Math.round((allScores.reduce((a, b) => a + b, 0) / allScores.length) * 10) / 10
     : null;
+
+  // Helper to get dimension average
+  const getDimAvg = (id: string) =>
+    dimensionTotals[id].count > 0
+      ? Math.round((dimensionTotals[id].sum / dimensionTotals[id].count) * 10) / 10
+      : avgOverallScore;
 
   return {
     versionId: versionInfo.id,
@@ -1296,11 +1344,11 @@ async function computeTrendPointForVersion(
     versionNumber: versionInfo.versionNumber,
     versionDate: versionInfo.createdAt,
     scores: {
-      leadershipEffectiveness: avgOverallScore,
-      teamWellbeing: avgOverallScore,
-      burnoutRisk: avgOverallScore,
-      psychologicalSafety: avgOverallScore,
-      engagement: avgOverallScore,
+      leadershipEffectiveness: getDimAvg('leadership-effectiveness'),
+      teamWellbeing: getDimAvg('team-wellbeing'),
+      burnoutRisk: getDimAvg('burnout-risk'),
+      psychologicalSafety: getDimAvg('psychological-safety'),
+      engagement: getDimAvg('engagement'),
     },
     responseCount: responses.length,
   };
@@ -1310,7 +1358,7 @@ async function computeTrendPointForVersion(
 // BEFORE/AFTER INDEX COMPARISON (ANAL-009)
 // ============================================================================
 
-import type { 
+import type {
   BeforeAfterIndexComparisonData,
   ComparisonVersionInfo,
   DimensionComparison,
@@ -1459,7 +1507,7 @@ export async function computeBeforeAfterIndexComparison(
 
   // Step 6: Determine overall trend
   let overallTrend: ComparisonSummary['overallTrend'] = 'stable';
-  
+
   if (improved > declined && improved > stable) {
     overallTrend = 'positive';
   } else if (declined > improved && declined > stable) {
@@ -1505,6 +1553,15 @@ function calculateVersionScores(
   // Calculate scores for each response
   const allScores: number[] = [];
 
+  // [ANAL-FIX] Track scores per dimension
+  const dimensionTotals: Record<string, { sum: number, count: number }> = {
+    'engagement': { sum: 0, count: 0 },
+    'leadership-effectiveness': { sum: 0, count: 0 },
+    'team-wellbeing': { sum: 0, count: 0 },
+    'burnout-risk': { sum: 0, count: 0 },
+    'psychological-safety': { sum: 0, count: 0 }
+  };
+
   for (const response of responses) {
     const scoreResults = calculateSurveyScores(
       survey.questions,
@@ -1519,20 +1576,33 @@ function calculateVersionScores(
     const avgScore = totalScore / scoreResults.length;
     const clampedScore = Math.min(100, Math.max(0, Math.round(avgScore)));
     allScores.push(clampedScore);
+
+    // Accumulate per-dimension scores
+    scoreResults.forEach(r => {
+      if (dimensionTotals[r.categoryId]) {
+        dimensionTotals[r.categoryId].sum += r.score;
+        dimensionTotals[r.categoryId].count++;
+      }
+    });
   }
 
-  // For now, all dimensions use the same overall score
-  // Future: differentiate by dimension based on category mapping
-  if (allScores.length > 0) {
-    const avgOverallScore = Math.round(
-      (allScores.reduce((a, b) => a + b, 0) / allScores.length) * 10
-    ) / 10;
+  // Calculate overall average
+  const avgOverallScore = allScores.length > 0
+    ? Math.round((allScores.reduce((a, b) => a + b, 0) / allScores.length) * 10) / 10
+    : null;
 
-    scores.leadershipEffectiveness = avgOverallScore;
-    scores.teamWellbeing = avgOverallScore;
-    scores.burnoutRisk = avgOverallScore;
-    scores.psychologicalSafety = avgOverallScore;
-    scores.engagementEnergy = avgOverallScore;
+  // Helper to get dimension average
+  const getDimAvg = (id: string) =>
+    dimensionTotals[id].count > 0
+      ? Math.round((dimensionTotals[id].sum / dimensionTotals[id].count) * 10) / 10
+      : avgOverallScore;
+
+  if (allScores.length > 0) {
+    scores.leadershipEffectiveness = getDimAvg('leadership-effectiveness');
+    scores.teamWellbeing = getDimAvg('team-wellbeing');
+    scores.burnoutRisk = getDimAvg('burnout-risk');
+    scores.psychologicalSafety = getDimAvg('psychological-safety');
+    scores.engagementEnergy = getDimAvg('engagement');
   }
 
   return scores;

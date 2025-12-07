@@ -1,4 +1,4 @@
-import { type User, type UpsertUser, type Survey, type InsertSurvey, users, surveys, surveyResponses, surveyRespondents, type SurveyResponse, type SurveyRespondent, type InsertSurveyRespondent, templates, type Template, type InsertTemplate, shortUrls } from "@shared/schema";
+import { type User, type UpsertUser, type Survey, type InsertSurvey, users, surveys, surveyResponses, surveyRespondents, type SurveyResponse, type SurveyRespondent, type InsertSurveyRespondent, templates, type Template, type InsertTemplate, shortUrls, scoreConfigVersions, type ScoreConfigVersion, type InsertScoreConfigVersion, type SurveyScoreConfig } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
 import { eq, sql } from "drizzle-orm";
@@ -27,7 +27,12 @@ export interface IStorage {
   deleteRespondent(id: string): Promise<boolean>;
 
   // Response operations
-  createResponse(surveyId: string, answers: Record<string, string | string[]>): Promise<SurveyResponse>;
+  createResponse(
+    surveyId: string,
+    answers: Record<string, string | string[]>,
+    scoringEngineId?: string,
+    scoreConfigVersionId?: string  // [SCORE-001] Links response to scoring config version
+  ): Promise<SurveyResponse>;
   getResponses(surveyId: string): Promise<SurveyResponse[]>;
   getResponseCount(surveyId: string): Promise<number>;
   getResponseCountsByIds(surveyIds: string[]): Promise<Record<string, number>>;
@@ -45,6 +50,12 @@ export interface IStorage {
   // Short URL operations
   createShortUrl(surveyId: string): Promise<string>;
   getShortUrlSurveyId(code: string): Promise<string | undefined>;
+  
+  // [SCORE-001] Score Config Version operations
+  createScoreConfigVersion(surveyId: string, config: SurveyScoreConfig): Promise<ScoreConfigVersion>;
+  getScoreConfigVersion(id: string): Promise<ScoreConfigVersion | undefined>;
+  getLatestScoreConfigVersion(surveyId: string): Promise<ScoreConfigVersion | undefined>;
+  getScoreConfigVersions(surveyId: string): Promise<ScoreConfigVersion[]>;
   
   // Health check
   healthCheck(): Promise<boolean>;
@@ -379,7 +390,12 @@ export class MemStorage implements IStorage {
     return newSurvey;
   }
 
-  async createResponse(surveyId: string, answers: Record<string, string | string[]>): Promise<SurveyResponse> {
+  async createResponse(
+    surveyId: string,
+    answers: Record<string, string | string[]>,
+    scoringEngineId: string = "engagement_v1",
+    scoreConfigVersionId?: string  // [SCORE-001]
+  ): Promise<SurveyResponse> {
     const now = new Date();
     const response: SurveyResponse = {
       id: randomUUID(),
@@ -387,6 +403,15 @@ export class MemStorage implements IStorage {
       answers,
       startedAt: now,
       completedAt: now,
+      scoringEngineId,
+      scoreConfigVersionId: scoreConfigVersionId ?? null,  // [SCORE-001]
+      // Fill in required fields for SurveyResponse type
+      metadata: null,
+      questionTimings: null,
+      completionPercentage: 100,
+      totalDurationMs: null,
+      ipHash: null,
+      sessionId: null,
     };
     this.responses.set(response.id, response);
     return response;
@@ -486,6 +511,39 @@ export class MemStorage implements IStorage {
     return this.respondents.delete(id);
   }
 
+  // [SCORE-001] Score Config Version operations (stub for MemStorage)
+  private scoreConfigVersions: Map<string, ScoreConfigVersion> = new Map();
+
+  async createScoreConfigVersion(surveyId: string, config: SurveyScoreConfig): Promise<ScoreConfigVersion> {
+    const versions = await this.getScoreConfigVersions(surveyId);
+    const versionNumber = versions.length + 1;
+    const id = randomUUID();
+    const version: ScoreConfigVersion = {
+      id,
+      surveyId,
+      versionNumber,
+      configSnapshot: config,
+      createdAt: new Date(),
+    };
+    this.scoreConfigVersions.set(id, version);
+    return version;
+  }
+
+  async getScoreConfigVersion(id: string): Promise<ScoreConfigVersion | undefined> {
+    return this.scoreConfigVersions.get(id);
+  }
+
+  async getLatestScoreConfigVersion(surveyId: string): Promise<ScoreConfigVersion | undefined> {
+    const versions = await this.getScoreConfigVersions(surveyId);
+    return versions[0];
+  }
+
+  async getScoreConfigVersions(surveyId: string): Promise<ScoreConfigVersion[]> {
+    return Array.from(this.scoreConfigVersions.values())
+      .filter(v => v.surveyId === surveyId)
+      .sort((a, b) => b.versionNumber - a.versionNumber);
+  }
+
   async healthCheck(): Promise<boolean> {
     // Memory storage is always healthy if we got here
     return true;
@@ -530,9 +588,24 @@ export class DbStorage implements IStorage {
     return result[0];
   }
 
+  // [SCORING-PIPELINE] Retrieve survey by ID with scoreConfig
   async getSurvey(id: string): Promise<Survey | undefined> {
     const result = await db.select().from(surveys).where(eq(surveys.id, id)).limit(1);
-    return result[0];
+    const survey = result[0];
+    
+    // [SCORING-PIPELINE] Log scoreConfig from DB
+    if (survey) {
+      const scoreConfig = survey.scoreConfig;
+      console.log("[SCORING-PIPELINE] Storage.getSurvey returning", {
+        surveyId: id,
+        hasScoreConfig: !!scoreConfig,
+        enabled: scoreConfig?.enabled,
+        categoriesCount: scoreConfig?.categories?.length ?? 0,
+        bandsCount: scoreConfig?.scoreRanges?.length ?? 0,
+      });
+    }
+    
+    return survey;
   }
 
   async getAllSurveys(userId: string): Promise<Survey[]> {
@@ -542,7 +615,19 @@ export class DbStorage implements IStorage {
       .orderBy(sql`${surveys.createdAt} DESC`);
   }
 
+  // [SCORING-PIPELINE] Create survey with scoreConfig
   async createSurvey(insertSurvey: InsertSurvey, userId: string): Promise<Survey> {
+    // [SCORING-PIPELINE] Log scoreConfig being created
+    if (insertSurvey.scoreConfig !== undefined) {
+      const scoreConfig = insertSurvey.scoreConfig;
+      console.log("[SCORING-PIPELINE] Storage.createSurvey with scoreConfig", {
+        hasScoreConfig: !!scoreConfig,
+        enabled: scoreConfig?.enabled,
+        categoriesCount: scoreConfig?.categories?.length ?? 0,
+        bandsCount: scoreConfig?.scoreRanges?.length ?? 0,
+      });
+    }
+    
     const result = await db.insert(surveys).values({
       ...insertSurvey,
       userId,
@@ -558,7 +643,31 @@ export class DbStorage implements IStorage {
     return result[0]?.userId === userId;
   }
 
+  // [SCORING-PIPELINE] Update survey with scoreConfig
   async updateSurvey(id: string, updates: Partial<InsertSurvey>): Promise<Survey | undefined> {
+    // [SCORING-PIPELINE] Log scoreConfig being saved
+    if (updates.scoreConfig !== undefined) {
+      const scoreConfig = updates.scoreConfig;
+      console.log("[SCORING-PIPELINE] Storage.updateSurvey saving scoreConfig", {
+        surveyId: id,
+        hasScoreConfig: !!scoreConfig,
+        enabled: scoreConfig?.enabled,
+        categoriesCount: scoreConfig?.categories?.length ?? 0,
+        bandsCount: scoreConfig?.scoreRanges?.length ?? 0,
+      });
+      
+      // [SCORING-PIPELINE] GUARD: Warn if saving enabled scoring with empty data
+      if (scoreConfig?.enabled && 
+          ((!scoreConfig.categories || scoreConfig.categories.length === 0) || 
+           (!scoreConfig.scoreRanges || scoreConfig.scoreRanges.length === 0))) {
+        console.warn("[SCORING-PIPELINE] Saving enabled scoring with empty categories/bands!", {
+          surveyId: id,
+          categoriesCount: scoreConfig.categories?.length ?? 0,
+          bandsCount: scoreConfig.scoreRanges?.length ?? 0,
+        });
+      }
+    }
+    
     const result = await db.update(surveys)
       .set({ ...updates, updatedAt: new Date() })
       .where(eq(surveys.id, id))
@@ -602,10 +711,17 @@ export class DbStorage implements IStorage {
     return newSurvey;
   }
 
-  async createResponse(surveyId: string, answers: Record<string, string | string[]>): Promise<SurveyResponse> {
+  async createResponse(
+    surveyId: string,
+    answers: Record<string, string | string[]>,
+    scoringEngineId: string = "engagement_v1",
+    scoreConfigVersionId?: string  // [SCORE-001]
+  ): Promise<SurveyResponse> {
     const result = await db.insert(surveyResponses).values({
       surveyId,
       answers,
+      scoringEngineId,
+      scoreConfigVersionId: scoreConfigVersionId ?? null,  // [SCORE-001]
     }).returning();
     return result[0];
   }
@@ -805,6 +921,46 @@ export class DbStorage implements IStorage {
       .where(eq(shortUrls.code, code))
       .limit(1);
     return result[0]?.surveyId;
+  }
+
+  // [SCORE-001] Score Config Version operations
+  async createScoreConfigVersion(surveyId: string, config: SurveyScoreConfig): Promise<ScoreConfigVersion> {
+    // Get the latest version number for this survey
+    const latest = await this.getLatestScoreConfigVersion(surveyId);
+    const versionNumber = (latest?.versionNumber ?? 0) + 1;
+    
+    const result = await db.insert(scoreConfigVersions).values({
+      surveyId,
+      versionNumber,
+      configSnapshot: config,
+    }).returning();
+    
+    console.log(`[SCORE-001] Created score config version ${versionNumber} for survey ${surveyId}`);
+    return result[0];
+  }
+
+  async getScoreConfigVersion(id: string): Promise<ScoreConfigVersion | undefined> {
+    const result = await db.select()
+      .from(scoreConfigVersions)
+      .where(eq(scoreConfigVersions.id, id))
+      .limit(1);
+    return result[0];
+  }
+
+  async getLatestScoreConfigVersion(surveyId: string): Promise<ScoreConfigVersion | undefined> {
+    const result = await db.select()
+      .from(scoreConfigVersions)
+      .where(eq(scoreConfigVersions.surveyId, surveyId))
+      .orderBy(sql`${scoreConfigVersions.versionNumber} DESC`)
+      .limit(1);
+    return result[0];
+  }
+
+  async getScoreConfigVersions(surveyId: string): Promise<ScoreConfigVersion[]> {
+    return db.select()
+      .from(scoreConfigVersions)
+      .where(eq(scoreConfigVersions.surveyId, surveyId))
+      .orderBy(sql`${scoreConfigVersions.versionNumber} DESC`);
   }
 
   async healthCheck(): Promise<boolean> {

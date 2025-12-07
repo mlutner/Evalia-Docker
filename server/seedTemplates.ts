@@ -684,6 +684,359 @@ const canadianTemplates = [
   },
 ];
 
+// ========================================
+// LOGIC-BASED ADAPTIVE TEMPLATES
+// ========================================
+// These templates demonstrate skip logic and adaptive survey flow.
+// Each template is tagged with "has_logic" to indicate logic rules are present.
+
+const logicBasedTemplates = [
+  {
+    id: "logic_engagement_manager_adaptive_v1",
+    title: "Adaptive Engagement & Manager Experience Survey",
+    description: "A research-backed engagement survey that adapts based on whether the respondent manages others. Non-managers skip leadership capability questions (Q5-Q7) and go directly to wellbeing questions. This template demonstrates conditional skip logic for role-based survey branching.",
+    category: "Engagement",
+    is_featured: true,
+    tags: ["engagement", "logic", "leadership", "wellbeing", "has_logic", "best_practice", "pulse", "adaptive"],
+    questions: [
+      {
+        id: "q1_role_type",
+        type: "multiple_choice" as const,
+        question: "Which of the following best describes your role?",
+        options: [
+          "I do not manage others",
+          "I manage 1–5 people",
+          "I manage 6–10 people",
+          "I manage more than 10 people"
+        ],
+        required: true,
+        scoringCategory: "Demographics",
+        // Logic: Non-managers skip directly to Q8 (wellbeing), bypassing Q5-Q7 (manager questions)
+        logicRules: [
+          {
+            id: "skip_to_wellbeing_if_not_manager",
+            condition: 'answer("q1_role_type") == "I do not manage others"',
+            action: 'skip' as const,
+            targetQuestionId: "q8_workload_reasonable"
+          }
+        ]
+      },
+      {
+        id: "q2_work_meaning",
+        type: "likert" as const,
+        question: "My work feels meaningful and contributes to the mission of the organization.",
+        required: true,
+        scoringCategory: "Engagement Drivers",
+        likertPoints: 5,
+        likertType: "agreement" as const,
+        scorable: true,
+        scoreWeight: 1
+      },
+      {
+        id: "q3_strengths_utilization",
+        type: "likert" as const,
+        question: "I regularly have opportunities to use my strengths in my work.",
+        required: true,
+        scoringCategory: "Engagement Drivers",
+        likertPoints: 5,
+        likertType: "agreement" as const,
+        scorable: true,
+        scoreWeight: 1
+      },
+      {
+        id: "q4_team_psych_safety",
+        type: "likert" as const,
+        question: "I feel safe sharing concerns or speaking up about issues within my team.",
+        required: true,
+        scoringCategory: "Psychological Safety",
+        likertPoints: 5,
+        likertType: "agreement" as const,
+        scorable: true,
+        scoreWeight: 1
+      },
+      {
+        id: "q5_manager_clarity",
+        type: "likert" as const,
+        question: "I provide clear expectations and direction to my team.",
+        description: "Only managers see this question.",
+        required: true,
+        scoringCategory: "Leadership Capability",
+        likertPoints: 5,
+        likertType: "agreement" as const,
+        scorable: true,
+        scoreWeight: 1
+      },
+      {
+        id: "q6_manager_feedback",
+        type: "likert" as const,
+        question: "I give regular, constructive feedback that helps my team improve.",
+        required: true,
+        scoringCategory: "Leadership Capability",
+        likertPoints: 5,
+        likertType: "agreement" as const,
+        scorable: true,
+        scoreWeight: 1
+      },
+      {
+        id: "q7_manager_support",
+        type: "likert" as const,
+        question: "I create an environment where team members feel supported and able to perform at their best.",
+        required: true,
+        scoringCategory: "Leadership Capability",
+        likertPoints: 5,
+        likertType: "agreement" as const,
+        scorable: true,
+        scoreWeight: 1
+      },
+      {
+        id: "q8_workload_reasonable",
+        type: "likert" as const,
+        question: "My workload allows me to do my job effectively without excessive stress.",
+        required: true,
+        scoringCategory: "Wellbeing",
+        likertPoints: 5,
+        likertType: "agreement" as const,
+        scorable: true,
+        scoreWeight: 1
+      },
+      {
+        id: "q9_progress_career",
+        type: "likert" as const,
+        question: "I believe I can grow and advance my career within this organization.",
+        required: true,
+        scoringCategory: "Growth & Development",
+        likertPoints: 5,
+        likertType: "agreement" as const,
+        scorable: true,
+        scoreWeight: 1
+      },
+      {
+        id: "q10_open_comment",
+        type: "textarea" as const,
+        question: "What is one change that would most improve your work experience?",
+        required: false,
+        scoringCategory: "Open Feedback",
+        scorable: false
+      }
+    ],
+    scoreConfig: {
+      enabled: true,
+      categories: [
+        { id: "demographics", name: "Demographics" },
+        { id: "engagement-drivers", name: "Engagement Drivers" },
+        { id: "psychological-safety", name: "Psychological Safety" },
+        { id: "leadership-capability", name: "Leadership Capability" },
+        { id: "wellbeing", name: "Wellbeing" },
+        { id: "growth-development", name: "Growth & Development" }
+      ],
+      scoreRanges: [
+        { id: "highly-engaged", label: "Highly Engaged", min: 35, max: 45, color: "#22c55e", shortDescription: "Strong engagement across all measured dimensions.", longDescription: "Respondent demonstrates high engagement, psychological safety, and positive work experience. Continue current practices and recognize contributions." },
+        { id: "engaged", label: "Engaged", min: 25, max: 34, color: "#84cc16", shortDescription: "Generally positive engagement with some areas for growth.", longDescription: "Good overall engagement with opportunities to strengthen specific dimensions. Focus on targeted improvements in lower-scoring categories." },
+        { id: "neutral", label: "Neutral", min: 15, max: 24, color: "#f59e0b", shortDescription: "Mixed engagement signals requiring attention.", longDescription: "Engagement is inconsistent. Identify specific pain points and address barriers to higher engagement through targeted interventions." },
+        { id: "disengaged", label: "Disengaged", min: 0, max: 14, color: "#ef4444", shortDescription: "Low engagement indicating significant concerns.", longDescription: "Respondent shows signs of disengagement. Urgent attention needed to understand root causes and implement support mechanisms." }
+      ],
+      resultsSummary: "This adaptive survey measures engagement across key dimensions. For managers, it includes additional questions on leadership capability. Results are categorized into engagement bands to guide interventions."
+    },
+    createdAt: new Date(),
+  },
+  {
+    id: "logic_turnover_risk_diagnostic_v1",
+    title: "Turnover Risk & Experience Diagnostic",
+    description: "A predictive turnover survey with two paths based on satisfaction. SATISFIED/NEUTRAL respondents take a short path (Q1→Q3→Q7→Q10) focusing on retention and growth. DISSATISFIED respondents take an extended path (Q1→Q6→END) with additional culture diagnostics to understand root causes.",
+    category: "Retention",
+    is_featured: true,
+    tags: ["retention", "turnover", "logic", "wellbeing", "has_logic", "risk_analysis", "best_practice", "predictive", "adaptive"],
+    questions: [
+      {
+        id: "q1_workplace_support",
+        type: "likert" as const,
+        question: "I feel supported by my organization in balancing work and personal needs.",
+        required: true,
+        scoringCategory: "Wellbeing",
+        likertPoints: 5,
+        likertType: "agreement" as const,
+        scorable: true,
+        scoreWeight: 1
+      },
+      {
+        id: "q2_recognition",
+        type: "likert" as const,
+        question: "I receive meaningful recognition for the work I do.",
+        required: true,
+        scoringCategory: "Engagement Drivers",
+        likertPoints: 5,
+        likertType: "agreement" as const,
+        scorable: true,
+        scoreWeight: 1
+      },
+      {
+        id: "q3_overall_satisfaction",
+        type: "multiple_choice" as const,
+        question: "Overall, how satisfied are you with your experience at this organization?",
+        options: [
+          "Very dissatisfied",
+          "Dissatisfied",
+          "Neutral",
+          "Satisfied",
+          "Very satisfied"
+        ],
+        required: true,
+        scoringCategory: "Engagement",
+        scorable: true,
+        scoreWeight: 2,
+        optionScores: {
+          "Very dissatisfied": 1,
+          "Dissatisfied": 2,
+          "Neutral": 3,
+          "Satisfied": 4,
+          "Very satisfied": 5
+        },
+        // Logic: Neutral/Satisfied/Very Satisfied → Skip culture diagnostic (Q4-Q6), go to retention (Q7)
+        // Dissatisfied employees continue to Q4-Q6 for deeper diagnostics
+        logicRules: [
+          {
+            id: "skip_to_retention_if_neutral",
+            condition: 'answer("q3_overall_satisfaction") == "Neutral"',
+            action: 'skip' as const,
+            targetQuestionId: "q7_intent_to_stay"
+          },
+          {
+            id: "skip_to_retention_if_satisfied",
+            condition: 'answer("q3_overall_satisfaction") == "Satisfied"',
+            action: 'skip' as const,
+            targetQuestionId: "q7_intent_to_stay"
+          },
+          {
+            id: "skip_to_retention_if_very_satisfied",
+            condition: 'answer("q3_overall_satisfaction") == "Very satisfied"',
+            action: 'skip' as const,
+            targetQuestionId: "q7_intent_to_stay"
+          }
+        ]
+      },
+      {
+        id: "q4_culture",
+        type: "likert" as const,
+        question: "I experience a healthy, respectful workplace culture.",
+        description: "DISSATISFIED PATH: This question only appears for dissatisfied respondents.",
+        required: true,
+        scoringCategory: "Culture",
+        likertPoints: 5,
+        likertType: "agreement" as const,
+        scorable: true,
+        scoreWeight: 1
+      },
+      {
+        id: "q5_fairness",
+        type: "likert" as const,
+        question: "People here are treated fairly, regardless of background or identity.",
+        description: "DISSATISFIED PATH: Culture diagnostic question.",
+        required: true,
+        scoringCategory: "Equity & Inclusion",
+        likertPoints: 5,
+        likertType: "agreement" as const,
+        scorable: true,
+        scoreWeight: 1
+      },
+      {
+        id: "q6_open_dissatisfied",
+        type: "textarea" as const,
+        question: "What specific changes would most improve your experience here? (Your feedback helps us understand what matters most.)",
+        description: "DISSATISFIED PATH: Final question for dissatisfied respondents. Survey ends after this.",
+        required: true, // Required to ensure END rule triggers
+        scoringCategory: "Open Feedback",
+        scorable: false,
+        // Logic: End survey after this question (dissatisfied path complete)
+        logicRules: [
+          {
+            id: "end_dissatisfied_path",
+            condition: 'answer("q6_open_dissatisfied") != ""',
+            action: 'end' as const,
+            targetQuestionId: null
+          }
+        ]
+      },
+      {
+        id: "q7_intent_to_stay",
+        type: "multiple_choice" as const,
+        question: "How likely are you to still be working here six months from now?",
+        description: "SATISFIED PATH: Retention indicator question.",
+        options: [
+          "Very unlikely",
+          "Unlikely",
+          "Unsure",
+          "Likely",
+          "Very likely"
+        ],
+        required: true,
+        scoringCategory: "Retention",
+        scorable: true,
+        scoreWeight: 2,
+        optionScores: {
+          "Very unlikely": 1,
+          "Unlikely": 2,
+          "Unsure": 3,
+          "Likely": 4,
+          "Very likely": 5
+        }
+      },
+      {
+        id: "q8_career_growth",
+        type: "likert" as const,
+        question: "I can see opportunities for career growth here.",
+        description: "SATISFIED PATH: Growth question.",
+        required: true,
+        scoringCategory: "Growth & Development",
+        likertPoints: 5,
+        likertType: "agreement" as const,
+        scorable: true,
+        scoreWeight: 1
+      },
+      {
+        id: "q9_workload",
+        type: "likert" as const,
+        question: "My workload is manageable and sustainable.",
+        description: "SATISFIED PATH: Wellbeing question.",
+        required: true,
+        scoringCategory: "Wellbeing",
+        likertPoints: 5,
+        likertType: "agreement" as const,
+        scorable: true,
+        scoreWeight: 1
+      },
+      {
+        id: "q10_open_comment",
+        type: "textarea" as const,
+        question: "Is there anything else that would improve your experience or likelihood of staying?",
+        description: "SATISFIED PATH: Final open-ended question.",
+        required: false,
+        scoringCategory: "Open Feedback",
+        scorable: false
+      }
+    ],
+    scoreConfig: {
+      enabled: true,
+      categories: [
+        { id: "wellbeing", name: "Wellbeing" },
+        { id: "engagement-drivers", name: "Engagement Drivers" },
+        { id: "engagement", name: "Engagement" },
+        { id: "culture", name: "Culture" },
+        { id: "equity-inclusion", name: "Equity & Inclusion" },
+        { id: "retention", name: "Retention" },
+        { id: "growth-development", name: "Growth & Development" }
+      ],
+      scoreRanges: [
+        { id: "low-risk", label: "Low Turnover Risk", min: 32, max: 40, color: "#22c55e", shortDescription: "Employee is highly engaged and likely to stay.", longDescription: "This respondent shows strong satisfaction, engagement, and intent to stay. Focus on recognition, growth opportunities, and maintaining current support levels." },
+        { id: "moderate-risk", label: "Moderate Turnover Risk", min: 24, max: 31, color: "#f59e0b", shortDescription: "Some warning signs present - monitor closely.", longDescription: "Mixed signals on engagement and retention. Proactively address any lower-scoring areas such as recognition, career growth, or workload balance." },
+        { id: "high-risk", label: "High Turnover Risk", min: 16, max: 23, color: "#f97316", shortDescription: "Elevated risk - intervention recommended.", longDescription: "Respondent shows concerning patterns across multiple dimensions. Prioritize 1:1 conversations, career path discussions, and investigate root causes of dissatisfaction." },
+        { id: "critical-risk", label: "Critical Turnover Risk", min: 0, max: 15, color: "#ef4444", shortDescription: "Immediate attention required.", longDescription: "High dissatisfaction detected. Respondent completed the shortened dissatisfied path. Urgent intervention needed - consider retention conversations, stay interviews, or addressing systemic issues raised." }
+      ],
+      resultsSummary: "This diagnostic survey predicts turnover risk based on satisfaction, engagement, and intent-to-stay indicators. Dissatisfied employees answer additional culture and fairness questions to help diagnose root causes. Scores are weighted with key retention questions counting double."
+    },
+    createdAt: new Date(),
+  },
+];
+
 async function seedCanadianTemplates() {
   try {
     console.log("Seeding Canadian templates...");
@@ -699,6 +1052,8 @@ async function seedCanadianTemplates() {
             questions: template.questions,
             category: template.category,
             scoreConfig: template.scoreConfig,
+            is_featured: (template as any).is_featured ?? false,
+            tags: (template as any).tags ?? null,
           }
         });
     }
@@ -710,5 +1065,38 @@ async function seedCanadianTemplates() {
   }
 }
 
-seedCanadianTemplates().then(() => process.exit(0)).catch(() => process.exit(1));
+async function seedLogicBasedTemplates() {
+  try {
+    console.log("Seeding logic-based adaptive templates...");
+    
+    for (const template of logicBasedTemplates) {
+      await db.insert(templates).values(template)
+        .onConflictDoUpdate({
+          target: templates.id,
+          set: {
+            title: template.title,
+            description: template.description,
+            questions: template.questions,
+            category: template.category,
+            scoreConfig: template.scoreConfig,
+            is_featured: template.is_featured ?? false,
+            tags: template.tags ?? null,
+          }
+        });
+    }
+    
+    console.log(`Successfully seeded/updated ${logicBasedTemplates.length} logic-based templates!`);
+  } catch (error) {
+    console.error("Error seeding logic-based templates:", error);
+    throw error;
+  }
+}
+
+async function seedAllTemplates() {
+  await seedCanadianTemplates();
+  await seedLogicBasedTemplates();
+  console.log("All templates seeded successfully!");
+}
+
+seedAllTemplates().then(() => process.exit(0)).catch(() => process.exit(1));
 

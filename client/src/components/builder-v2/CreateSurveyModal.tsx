@@ -68,7 +68,7 @@ export function CreateSurveyModal({ isOpen, onClose }: CreateSurveyModalProps) {
               </h3>
 
               <p className="text-sm text-gray-500 mb-4 leading-relaxed">
-                Describe your survey goals and let AI generate questions for you
+                Upload a PDF/Doc/PowerPoint or describe your goals and let AI generate a draft
               </p>
 
               <div className="flex items-center gap-2 text-sm font-semibold text-purple-600">
@@ -161,4 +161,3 @@ export function CreateSurveyModal({ isOpen, onClose }: CreateSurveyModalProps) {
     </div>
   );
 }
-

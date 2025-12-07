@@ -5,7 +5,7 @@ import {
   Upload, X, Bot, User
 } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
-import { useSurveyBuilder, QUESTION_TYPE_MAP, EVALIA_TO_DISPLAY_TYPE } from '@/contexts/SurveyBuilderContext';
+import { useSurveyBuilder, QUESTION_TYPE_MAP, EVALIA_TO_DISPLAY_TYPE, VALID_QUESTION_TYPES, type ValidQuestionType } from '@/contexts/SurveyBuilderContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { apiRequest } from '@/lib/queryClient';
@@ -17,6 +17,18 @@ interface ChatMessage {
   content: string;
   timestamp: Date;
   questionsAdded?: number;
+}
+
+// Map display label (e.g. "Multiple Choice") back to schema type (e.g. "multiple_choice")
+function displayToSchema(display: string): ValidQuestionType {
+  const mapped = QUESTION_TYPE_MAP[display];
+  if (mapped && VALID_QUESTION_TYPES.includes(mapped as ValidQuestionType)) {
+    return mapped as ValidQuestionType;
+  }
+  if (import.meta.env.DEV) {
+    console.warn('[AISuggestions] Unknown display type, defaulting to text:', display);
+  }
+  return 'text';
 }
 
 export function AISuggestions() {
@@ -66,7 +78,7 @@ export function AISuggestions() {
       if (data.questions && data.questions.length > 0) {
         data.questions.forEach((q: any) => {
           const displayType = EVALIA_TO_DISPLAY_TYPE[q.type] || 'Short Text';
-          addQuestion(displayType);
+          addQuestion(displayToSchema(displayType));
           questionsAdded++;
         });
         responseContent += `\n\n✅ Added ${data.questions.length} new question(s) to your survey.`;
@@ -245,7 +257,7 @@ export function AISuggestions() {
   }
 
   return (
-    <aside className="w-[320px] lg:w-[360px] flex-shrink-0 bg-white border-l border-gray-200 h-[calc(100vh-140px)] flex flex-col">
+    <aside className="w-[280px] lg:w-[320px] flex-shrink-0 bg-white border-l border-gray-200 h-[calc(100vh-140px)] flex flex-col">
       {/* Header */}
       <div className="flex-shrink-0 border-b border-gray-200 px-4 py-3">
         <div className="flex items-center justify-between">

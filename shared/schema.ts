@@ -2,6 +2,16 @@ import { sql } from "drizzle-orm";
 import { pgTable, text, varchar, jsonb, boolean, timestamp, integer, index, date } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import {
+  scoreBandSchema,
+  categoryResultConfigSchema,
+  resultsScreenSchema,
+  type ScoreBandConfig,
+  type CategoryResultConfig,
+  type ResultsScreenConfig,
+} from '@core/results/resultsSchemas';
+
+
 
 // Session storage table (required for Replit Auth)
 export const sessions = pgTable(
@@ -63,10 +73,85 @@ const QUESTION_TYPES = [
   "hidden"
 ] as const;
 
+// Metadata for downstream tooling/tests
+export const QUESTION_SCHEMA_META = {
+  types: QUESTION_TYPES,
+  baseFields: [
+    "id", "type", "question", "description", "required",
+    "placeholder", "minLength", "maxLength", "validationPattern", "rows",
+    "options", "displayStyle", "allowOther", "randomizeOptions", "optionImages",
+    "minSelections", "maxSelections",
+    "imageOptions", "selectionType", "imageSize", "showLabels", "columns",
+    "ratingScale", "ratingStyle", "ratingLabels", "showLabelsOnly",
+    "npsLabels",
+    "likertType", "likertPoints", "showNeutral", "customLabels",
+    "min", "max", "step", "defaultValue", "showValue", "unit",
+    "leftLabel", "rightLabel", "showNumbers",
+    "rowLabels", "colLabels", "matrixType", "randomizeRows",
+    "maxRankItems",
+    "totalPoints", "showPercentage",
+    "dateFormat", "minDate", "maxDate", "disablePastDates", "disableFutureDates", "timeFormat", "minuteStep",
+    "allowedTypes", "maxFileSize", "maxFiles",
+    "videoUrl", "posterImageUrl", "autoplay", "maxDuration",
+    "yesLabel", "noLabel",
+    "linkUrl", "linkText",
+    "skipCondition", "logicRules", "scoringCategory", "sectionId",
+    "scoreWeight", "optionScores", "scorable"
+  ],
+  typeParameters: {
+    text: ["placeholder", "minLength", "maxLength", "validationPattern"],
+    textarea: ["placeholder", "rows", "minLength", "maxLength"],
+    email: ["placeholder"],
+    phone: ["placeholder"],
+    url: ["placeholder"],
+    number: ["placeholder", "min", "max", "step", "unit"],
+    multiple_choice: ["options", "displayStyle", "allowOther", "randomizeOptions", "optionImages"],
+    checkbox: ["options", "displayStyle", "allowOther", "randomizeOptions", "minSelections", "maxSelections"],
+    dropdown: ["options", "placeholder", "allowOther", "randomizeOptions"],
+    image_choice: ["imageOptions", "selectionType", "imageSize", "columns", "showLabels"],
+    yes_no: ["displayStyle", "yesLabel", "noLabel"],
+    rating: ["ratingScale", "ratingStyle", "ratingLabels", "showLabelsOnly"],
+    nps: ["npsLabels"],
+    likert: ["likertType", "likertPoints", "showNeutral", "customLabels"],
+    opinion_scale: ["ratingScale", "leftLabel", "rightLabel", "showNumbers"],
+    slider: ["min", "max", "step", "defaultValue", "showValue", "unit", "ratingLabels"],
+    emoji_rating: ["ratingScale", "ratingStyle", "ratingLabels"],
+    matrix: ["rowLabels", "colLabels", "matrixType", "randomizeRows"],
+    ranking: ["options", "maxRankItems"],
+    constant_sum: ["options", "totalPoints", "showPercentage"],
+    calculation: [],
+    date: ["dateFormat", "minDate", "maxDate", "disablePastDates", "disableFutureDates"],
+    time: ["timeFormat", "minuteStep"],
+    datetime: ["dateFormat", "timeFormat", "minuteStep"],
+    file_upload: ["allowedTypes", "maxFileSize", "maxFiles"],
+    signature: [],
+    video: ["videoUrl", "posterImageUrl", "autoplay"],
+    audio_capture: ["maxDuration"],
+    section: ["description"],
+    statement: ["description"],
+    legal: ["description", "linkUrl", "linkText"],
+    hidden: [],
+  },
+} as const;
+
 export const skipConditionSchema = z.object({
   questionId: z.string(),
   answer: z.string(),
 }).optional();
+
+export interface LogicRule {
+  id: string;
+  condition: string;
+  action: 'skip' | 'show' | 'end';
+  targetQuestionId?: string | null;
+}
+
+const logicRuleSchema = z.object({
+  id: z.string(),
+  condition: z.string(),
+  action: z.enum(['skip', 'show', 'end']),
+  targetQuestionId: z.string().nullable().optional(),
+});
 
 // Image option for image_choice questions
 export const imageOptionSchema = z.object({
@@ -173,6 +258,12 @@ export const questionSchema = z.object({
   maxFileSize: z.number().optional(), // in MB
   maxFiles: z.number().optional(),
 
+  // === MEDIA (VIDEO / AUDIO) OPTIONS ===
+  videoUrl: z.string().optional(), // embed or direct video URL
+  posterImageUrl: z.string().optional(), // poster image for video
+  autoplay: z.boolean().optional(),
+  maxDuration: z.number().optional(), // seconds (primarily for audio_capture)
+
   // === YES/NO OPTIONS ===
   yesLabel: z.string().optional(), // custom "Yes" label
   noLabel: z.string().optional(), // custom "No" label
@@ -183,55 +274,41 @@ export const questionSchema = z.object({
 
   // === SKIP LOGIC & SCORING ===
   skipCondition: skipConditionSchema,
+  logicRules: z.array(logicRuleSchema).optional(), // logic rules stored as structured objects
   scoringCategory: z.string().optional(),
   sectionId: z.string().optional(),
 
   // === SCORING WEIGHTS (for advanced scoring) ===
+  scorable: z.boolean().optional(),
   scoreWeight: z.number().optional(), // multiplier for this question's score
   optionScores: z.record(z.number()).optional(), // custom score per option value
 });
 
 export type Question = z.infer<typeof questionSchema>;
 
-// Scoring configuration schema
-export const scoringRuleSchema = z.object({
-  category: z.string(),
-  label: z.string(),
-  minScore: z.number(),
-  maxScore: z.number(),
-  interpretation: z.string(),
-});
+export { scoreBandSchema, categoryResultConfigSchema, resultsScreenSchema };
 
 export const feedbackTemplateSchema = z.object({
   level: z.enum(["low", "mid", "high"]),
   template: z.string(),
 });
 
-export const resultsScreenSchema = z.object({
-  enabled: z.boolean(),
-  layout: z.enum(["simple", "bands", "radar"]).optional(),
-  showTotalScore: z.boolean().optional(),
-  showPercentage: z.boolean().optional(),
-  showOverallBand: z.boolean().optional(),
-  showCategoryBreakdown: z.boolean().optional(),
-  showCategoryBands: z.boolean().optional(),
-  showStrengthsAndRisks: z.boolean().optional(),
-  showCallToAction: z.boolean().optional(),
-});
+
 
 export const surveyScoreConfigSchema = z.object({
-  enabled: z.boolean(),
+  enabled: z.boolean().optional(),
+  version: z.string().optional(),
   categories: z.array(z.object({
     id: z.string(),
     name: z.string(),
-  })),
-  scoreRanges: z.array(scoringRuleSchema),
+  })).optional(),
+  scoreRanges: z.array(scoreBandSchema).optional(),
   resultsSummary: z.string().optional(),
-  feedbackTemplates: z.array(feedbackTemplateSchema).optional(), // Customizable feedback for low/mid/high performance
+  feedbackTemplates: z.array(feedbackTemplateSchema).optional(),
   resultsScreen: resultsScreenSchema.optional(),
 }).optional();
 
-export type ScoringRule = z.infer<typeof scoringRuleSchema>;
+export type { ScoreBandConfig, CategoryResultConfig, ResultsScreenConfig };
 export type SurveyScoreConfig = z.infer<typeof surveyScoreConfigSchema>;
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -324,6 +401,7 @@ export const surveys = pgTable("surveys", {
   webhookUrl: text("webhook_url"),
   status: varchar("status").default("Active"),
   publishedAt: timestamp("published_at"),
+  scoringEngineId: varchar("scoring_engine_id"), // optional override for scoring engine
   scoreConfig: jsonb("score_config").$type<SurveyScoreConfig>(), // Scoring configuration for assessment surveys
   designSettings: jsonb("design_settings").$type<DesignSettings>(), // Visual customization settings
   estimatedMinutes: integer("estimated_minutes"), // Estimated time to complete survey in minutes
@@ -333,6 +411,25 @@ export const surveys = pgTable("surveys", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SCORE CONFIG VERSIONS TABLE (SCORE-001)
+// ═══════════════════════════════════════════════════════════════════════════════
+// Stores immutable snapshots of scoring config at publish time.
+// Responses reference these versions so historical scores remain stable when config changes.
+
+export const scoreConfigVersions = pgTable("score_config_versions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  surveyId: varchar("survey_id").notNull().references(() => surveys.id),
+  versionNumber: integer("version_number").notNull(),
+  configSnapshot: jsonb("config_snapshot").notNull().$type<SurveyScoreConfig>(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => [
+  index("idx_score_config_versions_survey").on(table.surveyId),
+]);
+
+export type ScoreConfigVersion = typeof scoreConfigVersions.$inferSelect;
+export type InsertScoreConfigVersion = typeof scoreConfigVersions.$inferInsert;
 
 // Survey respondents table (Phase 4)
 export const surveyRespondents = pgTable("survey_respondents", {
@@ -409,9 +506,12 @@ export const surveyResponses = pgTable("survey_responses", {
   totalDurationMs: integer("total_duration_ms"), // total time to complete
   ipHash: varchar("ip_hash"), // hashed IP for unique visitor tracking (privacy-friendly)
   sessionId: varchar("session_id"), // for tracking return visitors
+  scoringEngineId: varchar("scoring_engine_id").notNull().default("engagement_v1"), // engine used to score this response
+  scoreConfigVersionId: varchar("score_config_version_id").references(() => scoreConfigVersions.id), // [SCORE-001] Links to immutable scoring config snapshot
 }, (table) => [
   index("idx_survey_responses_survey_id").on(table.surveyId),
   index("idx_survey_responses_completed_at").on(table.completedAt),
+  index("idx_survey_responses_score_config_version").on(table.scoreConfigVersionId),
 ]);
 
 export type SurveyResponse = typeof surveyResponses.$inferSelect;
@@ -444,7 +544,7 @@ export function calculateSurveyScores(
   let scores: Record<string, number> = {};
 
   // Initialize scores for each category
-  scoreConfig.categories.forEach(cat => {
+  scoreConfig.categories?.forEach(cat => {
     scores[cat.id] = 0;
   });
 
@@ -500,14 +600,22 @@ export function calculateSurveyScores(
     const rawScores: Record<string, number> = {};
     const theoreticalMax: Record<string, number> = {};
 
-    scoreConfig.categories.forEach(cat => {
+    scoreConfig.categories?.forEach(cat => {
       rawScores[cat.id] = 0;
       theoreticalMax[cat.id] = 0;
     });
 
     // Calculate raw point values - only for scorable question types
     questions.forEach(q => {
-      if (q.scoringCategory && answers[q.id]) {
+      // [ANAL-FIX] Enforce strict scoring semantics
+      if (q.scoringCategory && !q.scorable) {
+        console.warn(`[Scoring] Question ${q.id} has scoringCategory but scorable=false. Skipping.`);
+      }
+      if (q.scorable && !q.scoringCategory) {
+        console.warn(`[Scoring] Question ${q.id} is scorable but missing scoringCategory. Skipping.`);
+      }
+
+      if (q.scorable && q.scoringCategory && answers[q.id]) {
         const answer = answers[q.id];
         let pointValue = 0;
         const maxPoints = getMaxPointsForQuestion(q);
@@ -523,6 +631,9 @@ export function calculateSurveyScores(
             // Use the selected value directly
             if (!isNaN(answerNum)) {
               pointValue = answerNum;
+            } else if (q.optionScores && q.optionScores[answerText] !== undefined) {
+              // Use custom option scores if defined (for text-based Likert)
+              pointValue = q.optionScores[answerText];
             }
             break;
 
@@ -643,15 +754,20 @@ export function calculateSurveyScores(
     });
 
     // Second pass: normalize scores to fit within configured max scores
-    scoreConfig.categories.forEach(cat => {
+    scoreConfig.categories?.forEach(cat => {
       const catId = cat.id;
       const rawScore = rawScores[catId] || 0;
       const theoreticalMaxRaw = theoreticalMax[catId] || 1;
 
       // Get the configured max score for this category
-      const maxConfiguredScore = scoreConfig.scoreRanges
-        .filter(rule => rule.category === catId)
-        .reduce((max, rule) => Math.max(max, rule.maxScore), 20);
+      // [SCORE-002] Use rule.max to match scoreBandSchema definition
+      // Fallback to global bands if no category-specific bands exist
+      const categoryRules = scoreConfig.scoreRanges?.filter(rule => rule.category === catId);
+      const globalRules = scoreConfig.scoreRanges?.filter(rule => !rule.category);
+      const effectiveRules = (categoryRules && categoryRules.length > 0) ? categoryRules : globalRules;
+
+      const maxConfiguredScore = effectiveRules
+        ?.reduce((max, rule) => Math.max(max, rule.max), 20) || 20;
 
       // Normalize: (rawScore / theoreticalMaxRaw) * maxConfiguredScore
       // This scales the raw score proportionally to the configured max
@@ -663,6 +779,9 @@ export function calculateSurveyScores(
 
       // Ensure score never exceeds max (safety clamp)
       scores[catId] = Math.min(scores[catId], maxConfiguredScore);
+
+      // [DEBUG] Log scoring details
+      // console.log(`[Scoring] Cat: ${catId}, Raw: ${rawScore}, MaxRaw: ${theoreticalMaxRaw}, ConfigMax: ${maxConfiguredScore}, Final: ${scores[catId]}`);
     });
   }
 
@@ -675,21 +794,26 @@ export function calculateSurveyScores(
     interpretation: string;
   }> = [];
 
-  scoreConfig.categories.forEach(cat => {
+  scoreConfig.categories?.forEach(cat => {
     const categoryScore = scores[cat.id] || 0;
-    const maxScore = scoreConfig.scoreRanges
-      .filter(rule => rule.category === cat.id)
-      .reduce((max, rule) => Math.max(max, rule.maxScore), 0);
+    // [SCORE-002] Use rule.max to match scoreBandSchema definition
+    // Fallback to global bands if no category-specific bands exist
+    const categoryRules = scoreConfig.scoreRanges?.filter(rule => rule.category === cat.id);
+    const globalRules = scoreConfig.scoreRanges?.filter(rule => !rule.category);
+    const effectiveRules = (categoryRules && categoryRules.length > 0) ? categoryRules : globalRules;
+
+    const maxScore = effectiveRules
+      ?.reduce((max, rule) => Math.max(max, rule.max), 0) || 0;
 
     // Normalize score and maxScore to 0-100 scale for consistent display
     const normalizedMaxScore = 100;
     const normalizedScore = maxScore > 0 ? Math.round((categoryScore / maxScore) * normalizedMaxScore) : 0;
 
     // Find matching rule using the original (non-normalized) score for interpretation
-    const matchingRule = scoreConfig.scoreRanges.find(
-      rule => rule.category === cat.id &&
-        categoryScore >= rule.minScore &&
-        categoryScore <= rule.maxScore
+    // [SCORE-002] Use rule.min/rule.max to match scoreBandSchema definition
+    const matchingRule = effectiveRules?.find(
+      rule => categoryScore >= rule.min &&
+        categoryScore <= rule.max
     );
 
     results.push({

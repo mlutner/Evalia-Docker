@@ -58,6 +58,7 @@ function ProtectedRoute({ component: Component }: { component: () => JSX.Element
 }
 
 function Router() {
+  // Dev tools available in dev mode OR when explicitly enabled via env var
   const showDevTools = import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEV_TOOLS === 'true';
   const isDev = import.meta.env.DEV;
   return (
@@ -139,6 +140,7 @@ function Router() {
             {() => <ProtectedRoute component={ScoringDebugPage} />}
           </Route>
         </>
+
       )}
 
       <Route component={NotFound} />
