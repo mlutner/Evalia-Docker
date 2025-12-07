@@ -1,6 +1,7 @@
 import React from 'react';
 import { scoreSurvey } from '@shared/scoringEngine';
 import { resolveScoreBand, resolveCategoryBands } from '@shared/resultsEngine';
+import { resolveResultsMode, getResultsModeLabels } from '@shared/resultsMode';
 import type {
   Question as EvaliaQuestion,
   SurveyScoreConfig,
@@ -56,6 +57,8 @@ export function ResultsScreen({
   resultsConfig,
   scoring,
   band,
+  scoringEngineId,
+  tags,
 }: {
   questions: EvaliaQuestion[];
   responses: Record<string, unknown>;
@@ -63,6 +66,8 @@ export function ResultsScreen({
   resultsConfig?: ResultsScreenConfig | null;
   scoring?: ScoringResult | null;
   band?: ScoreBandConfig | null;
+  scoringEngineId?: string | null;
+  tags?: string[];
 }) {
   if (!resultsConfig?.enabled) return null;
 
@@ -75,6 +80,10 @@ export function ResultsScreen({
     band,
   });
   const pct = percent(scored.totalScore, scored.maxScore);
+
+  // RES-RESULTS-MODES-001: Determine results mode
+  const mode = resolveResultsMode(scoreConfig || undefined, scoringEngineId, tags);
+  const labels = getResultsModeLabels(mode);
 
   const categoryLabels = (id: string) =>
     scoreConfig?.categories?.find((c) => c.id === id)?.name || id;
@@ -119,7 +128,7 @@ export function ResultsScreen({
 
         <div className="grid grid-cols-2 gap-4">
           <div className="p-4 rounded-lg bg-gray-50">
-            <p className="text-xs text-gray-500">Total Score</p>
+            <p className="text-xs text-gray-500">{labels.scoreLabel || 'Total Score'}</p>
             <p className="text-3xl font-bold text-gray-900">
               {resultsConfig.showTotalScore ? scored.totalScore.toFixed(1) : '—'}
             </p>

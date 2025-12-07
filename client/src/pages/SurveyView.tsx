@@ -273,6 +273,8 @@ export default function SurveyView() {
               resultsConfig={resultsConfig}
               scoring={resultsState.scoring}
               band={resultsState.band}
+              scoringEngineId={survey.scoringEngineId}
+              tags={survey.tags}
             />
           </div>
         </SurveyLayout>

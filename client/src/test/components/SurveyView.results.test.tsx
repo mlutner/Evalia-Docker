@@ -15,6 +15,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { calculateSurveyScores } from '@shared/schema';
+import { resolveResultsMode } from '@shared/resultsMode';
 import type { Survey, Question, SurveyScoreConfig } from '@shared/schema';
 
 // Mock survey with scoring enabled
@@ -249,6 +250,69 @@ describe('RESULTS-001: ResultsScreen vs ThankYou Branching', () => {
             // Runtime branching logic
             const showResults = engagementSurvey.scoreConfig?.enabled && results !== null;
             expect(showResults).toBe(true); // → ResultsScreen
+
+            // RES-RESULTS-MODES-001: Verify mode resolution
+            const mode = resolveResultsMode(engagementSurvey.scoreConfig, 'engagement_v1', engagementSurvey.tags);
+            expect(mode).toBe('index'); // Engagement survey should use index mode
+        });
+
+        it('Self-assessment survey → ResultsScreen (self-assessment mode)', () => {
+            // Leadership self-assessment with scoring enabled
+            const selfAssessmentSurvey: Survey = {
+                id: 'leadership-survey',
+                userId: 'user-1',
+                title: 'Leadership Skills Assessment',
+                description: 'Assess your leadership capabilities',
+                questions: [
+                    {
+                        id: 'q1',
+                        type: 'rating',
+                        question: 'How effective are you at delegating tasks?',
+                        ratingScale: 5,
+                        scoringCategory: 'leadership',
+                        scorable: true,
+                        scoreWeight: 1,
+                        optionScores: { '1': 1, '2': 2, '3': 3, '4': 4, '5': 5 },
+                        required: true,
+                    },
+                ] as Question[],
+                welcomeMessage: 'Welcome!',
+                thankYouMessage: 'Thank you!',
+                tags: ['self-assessment', 'leadership'],
+                isAnonymous: false,
+                status: 'Active',
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                scoreConfig: {
+                    enabled: true,
+                    categories: [{ id: 'leadership', name: 'Leadership Skills' }],
+                    scoreRanges: [
+                        { id: 'developing', category: 'leadership', label: 'Developing', min: 0, max: 50, interpretation: 'Continue developing' },
+                        { id: 'proficient', category: 'leadership', label: 'Proficient', min: 51, max: 100, interpretation: 'Strong leadership' },
+                    ],
+                },
+            };
+
+            const answers = { q1: '4' }; // Proficient (4/5 = 80%)
+
+            const results = calculateSurveyScores(
+                selfAssessmentSurvey.questions,
+                answers,
+                selfAssessmentSurvey.scoreConfig
+            );
+
+            // Should generate valid scoring payload
+            expect(results).not.toBeNull();
+            expect(results).toHaveLength(1);
+            expect(results![0].score).toBeGreaterThan(0);
+
+            // Runtime branching logic
+            const showResults = selfAssessmentSurvey.scoreConfig?.enabled && results !== null;
+            expect(showResults).toBe(true); // → ResultsScreen
+
+            // RES-RESULTS-MODES-001: Verify mode resolution
+            const mode = resolveResultsMode(selfAssessmentSurvey.scoreConfig, null, selfAssessmentSurvey.tags);
+            expect(mode).toBe('self_assessment'); // Leadership survey should use self_assessment mode
         });
 
         it('Feedback survey → Thank You (non-scored survey flow)', () => {
@@ -271,6 +335,10 @@ describe('RESULTS-001: ResultsScreen vs ThankYou Branching', () => {
             // Runtime branching logic
             const showResults = feedbackSurvey.scoreConfig?.enabled && results !== null;
             expect(showResults).toBeFalsy(); // → Thank You screen (undefined or false)
+
+            // RES-RESULTS-MODES-001: Verify mode resolution
+            const mode = resolveResultsMode(feedbackSurvey.scoreConfig, null, feedbackSurvey.tags);
+            expect(mode).toBe('none'); // Non-scored survey should use none mode
         });
     });
 });

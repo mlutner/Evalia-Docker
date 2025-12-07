@@ -610,6 +610,8 @@ function InteractiveSurveyPreview({
           responses={previewAnswers}
           scoreConfig={survey.scoreConfig}
           resultsConfig={resultsConfig}
+          scoringEngineId={survey.scoringEngineId}
+          tags={survey.tags}
         />
         {survey.thankYouScreen.enabled && (
           <div className="border-t border-gray-100 pt-4">
