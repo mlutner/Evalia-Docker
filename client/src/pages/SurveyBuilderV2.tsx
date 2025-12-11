@@ -20,14 +20,6 @@ import type {
   BuilderScoreBand,
   BuilderLogicRule,
 } from "@/components/builder-extensions/INTEGRATION_GUIDE";
-import { useRoute, useLocation } from 'wouter';
-import { SurveyBuilderProvider } from '@/contexts/SurveyBuilderContext';
-import { ProgressFlowStepper } from '@/components/builder-v2/ProgressFlowStepper';
-import { QuestionLibrary } from '@/components/builder-v2/QuestionLibrary';
-import { BuilderCanvas } from '@/components/builder-v2/BuilderCanvas';
-import { QuestionConfigPanel } from '@/components/builder-v2/QuestionConfigPanel';
-import { BuilderActionBar } from '@/components/builder-v2/BuilderActionBar';
-import { SurveyDebugPanel } from '@/components/builder-v2/SurveyDebugPanel';
 
 export default function SurveyBuilderV2() {
   // Support both /builder/:id and /builder-v2/:id routes
