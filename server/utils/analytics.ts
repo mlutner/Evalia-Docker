@@ -135,16 +135,22 @@ export async function computeParticipationMetrics(
 /**
  * Get the latest score config version ID for a survey.
  * Used when no version is specified in the request.
+ * Returns null if the score_config_versions table doesn't exist yet.
  */
 export async function getLatestVersionId(surveyId: string): Promise<string | null> {
-  const [result] = await db
-    .select({ id: sql<string>`id` })
-    .from(sql`score_config_versions`)
-    .where(sql`survey_id = ${surveyId}`)
-    .orderBy(sql`version_number DESC`)
-    .limit(1);
+  try {
+    const [result] = await db
+      .select({ id: sql<string>`id` })
+      .from(sql`score_config_versions`)
+      .where(sql`survey_id = ${surveyId}`)
+      .orderBy(sql`version_number DESC`)
+      .limit(1);
 
-  return result?.id || null;
+    return result?.id || null;
+  } catch {
+    // Table may not exist yet - return null to use all responses
+    return null;
+  }
 }
 
 // ============================================================================

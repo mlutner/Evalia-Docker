@@ -1,13 +1,14 @@
 /**
  * ParticipationMetricsCard - Displays key participation metrics
- * 
+ *
  * Shows: Total Responses, Response Rate %, Completion Rate %, Avg Completion Time
  * [ANAL-001]
+ *
+ * Updated: December 2024 - Coral/Teal warm design system
  */
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, TrendingUp, TrendingDown, Clock, Loader2, AlertCircle, RotateCcw } from "lucide-react";
+import { Users, TrendingUp, TrendingDown, Clock, AlertCircle, RotateCcw, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { SurveyResponse } from "@shared/schema";
 
@@ -39,66 +40,57 @@ export function ParticipationMetricsCard({
   // Loading skeleton
   if (isLoading) {
     return (
-      <Card className="bg-white border border-gray-200">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">Participation Metrics</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="space-y-2">
-                <div className="h-4 bg-gray-200 rounded animate-pulse" />
-                <div className="h-8 bg-gray-200 rounded animate-pulse" />
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="evalia-card">
+        <h3 className="evalia-card-title mb-4">Participation Metrics</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-[var(--paper-50)] rounded-[var(--radius-md)] p-4 border border-[var(--paper-200)]">
+              <div className="h-10 w-10 bg-[var(--paper-200)] rounded-[var(--radius-md)] animate-pulse mb-3" />
+              <div className="h-3 w-20 bg-[var(--paper-200)] rounded animate-pulse mb-2" />
+              <div className="h-8 w-16 bg-[var(--paper-200)] rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
+      </div>
     );
   }
 
   // Error state
   if (error) {
     return (
-      <Card className="bg-white border border-gray-200">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">Participation Metrics</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center justify-center py-8 text-center">
-            <AlertCircle className="w-12 h-12 text-red-500 mb-3" />
-            <p className="text-sm text-gray-600 mb-2">Failed to load participation metrics</p>
-            {onRetry && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onRetry}
-                className="mt-2"
-              >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Retry
-              </Button>
-            )}
+      <div className="evalia-card">
+        <h3 className="evalia-card-title mb-4">Participation Metrics</h3>
+        <div className="flex flex-col items-center justify-center py-8 text-center">
+          <div className="w-12 h-12 rounded-full bg-[var(--coral-50)] flex items-center justify-center mb-3">
+            <AlertCircle className="w-6 h-6 text-[var(--coral-600)]" />
           </div>
-        </CardContent>
-      </Card>
+          <p className="text-sm text-[var(--ink-300)] mb-2">Failed to load participation metrics</p>
+          {onRetry && (
+            <Button
+              className="evalia-btn evalia-btn-outline evalia-btn-sm mt-2"
+              onClick={onRetry}
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Retry
+            </Button>
+          )}
+        </div>
+      </div>
     );
   }
 
   // No data state
   if (!metrics) {
     return (
-      <Card className="bg-white border border-gray-200">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">Participation Metrics</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8 text-gray-500">
-            <Users className="w-12 h-12 mx-auto mb-3 text-gray-400" />
-            <p className="text-sm">No participation data available</p>
+      <div className="evalia-card">
+        <h3 className="evalia-card-title mb-4">Participation Metrics</h3>
+        <div className="text-center py-8">
+          <div className="w-12 h-12 rounded-full bg-[var(--paper-100)] flex items-center justify-center mx-auto mb-3">
+            <Users className="w-6 h-6 text-[var(--ink-200)]" />
           </div>
-        </CardContent>
-      </Card>
+          <p className="text-sm text-[var(--ink-200)]">No participation data available</p>
+        </div>
+      </div>
     );
   }
 
@@ -106,75 +98,98 @@ export function ParticipationMetricsCard({
     label,
     value,
     icon: Icon,
-    iconBg,
+    accentColor,
     trend,
   }: {
     label: string;
     value: string | number;
     icon: React.ElementType;
-    iconBg: string;
+    accentColor: 'coral' | 'teal' | 'sage' | 'yuzu';
     trend?: "up" | "down" | "neutral";
-  }) => (
-    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-      <div className="flex items-start justify-between mb-3">
-        <div className={`p-2 rounded-lg ${iconBg}`}>
-          <Icon className="w-5 h-5 text-gray-700" />
-        </div>
-        {trend && trend !== "neutral" && (
-          <div className={`flex items-center text-xs ${
-            trend === "up" ? "text-emerald-600" : "text-red-500"
-          }`}>
-            {trend === "up" ? (
-              <TrendingUp className="w-3 h-3 mr-1" />
-            ) : (
-              <TrendingDown className="w-3 h-3 mr-1" />
-            )}
+  }) => {
+    const colorMap = {
+      coral: {
+        bg: 'bg-[var(--coral-50)]',
+        icon: 'text-[var(--coral-600)]',
+        border: 'border-l-[var(--coral-400)]',
+      },
+      teal: {
+        bg: 'bg-[var(--teal-50)]',
+        icon: 'text-[var(--teal-600)]',
+        border: 'border-l-[var(--teal-400)]',
+      },
+      sage: {
+        bg: 'bg-[#F4F6F0]',
+        icon: 'text-[var(--sage)]',
+        border: 'border-l-[var(--sage)]',
+      },
+      yuzu: {
+        bg: 'bg-[#FFFBEB]',
+        icon: 'text-[var(--warning-fg)]',
+        border: 'border-l-[var(--yuzu)]',
+      },
+    };
+
+    const colors = colorMap[accentColor];
+
+    return (
+      <div className={`bg-[var(--paper-white)] rounded-[var(--radius-md)] p-4 border border-[var(--paper-200)] border-l-4 ${colors.border} transition-all duration-200 hover:shadow-[var(--shadow-md)]`}>
+        <div className="flex items-start justify-between mb-3">
+          <div className={`p-2 rounded-[var(--radius-md)] ${colors.bg}`}>
+            <Icon className={`w-5 h-5 ${colors.icon}`} />
           </div>
-        )}
+          {trend && trend !== "neutral" && (
+            <div className={`flex items-center text-xs font-medium ${
+              trend === "up" ? "text-[var(--success-fg)]" : "text-[var(--coral-600)]"
+            }`}>
+              {trend === "up" ? (
+                <TrendingUp className="w-3 h-3 mr-1" />
+              ) : (
+                <TrendingDown className="w-3 h-3 mr-1" />
+              )}
+            </div>
+          )}
+        </div>
+        <p className="text-xs font-medium text-[var(--ink-200)] uppercase tracking-wider mb-1">{label}</p>
+        <p className="text-2xl font-bold text-[var(--ink-500)] font-[var(--font-mono)]">{value}</p>
       </div>
-      <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">{label}</p>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
-    </div>
-  );
+    );
+  };
 
   return (
-    <Card className="bg-white border border-gray-200">
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold text-gray-900">Participation Metrics</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <MetricItem
-            label="Total Responses"
-            value={metrics.totalResponses}
-            icon={Users}
-            iconBg="bg-blue-100"
-            trend={metrics.trendTotalResponses}
-          />
-          <MetricItem
-            label="Response Rate"
-            value={metrics.responseRate !== null ? `${metrics.responseRate}%` : "N/A"}
-            icon={Users}
-            iconBg="bg-purple-100"
-            trend={metrics.trendResponseRate}
-          />
-          <MetricItem
-            label="Completion Rate"
-            value={`${metrics.completionRate}%`}
-            icon={Users}
-            iconBg="bg-emerald-100"
-            trend={metrics.trendCompletionRate}
-          />
-          <MetricItem
-            label="Avg Completion Time"
-            value={`${metrics.avgCompletionTimeMinutes}m`}
-            icon={Clock}
-            iconBg="bg-amber-100"
-            trend={metrics.trendAvgTime}
-          />
-        </div>
-      </CardContent>
-    </Card>
+    <div className="evalia-card">
+      <h3 className="evalia-card-title mb-4">Participation Metrics</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricItem
+          label="Total Responses"
+          value={metrics.totalResponses}
+          icon={Users}
+          accentColor="coral"
+          trend={metrics.trendTotalResponses}
+        />
+        <MetricItem
+          label="Response Rate"
+          value={metrics.responseRate !== null ? `${metrics.responseRate}%` : "N/A"}
+          icon={Users}
+          accentColor="teal"
+          trend={metrics.trendResponseRate}
+        />
+        <MetricItem
+          label="Completion Rate"
+          value={`${metrics.completionRate}%`}
+          icon={CheckCircle}
+          accentColor="sage"
+          trend={metrics.trendCompletionRate}
+        />
+        <MetricItem
+          label="Avg Completion Time"
+          value={`${metrics.avgCompletionTimeMinutes}m`}
+          icon={Clock}
+          accentColor="yuzu"
+          trend={metrics.trendAvgTime}
+        />
+      </div>
+    </div>
   );
 }
 
@@ -225,4 +240,3 @@ export function calculateParticipationMetrics(
     avgCompletionTimeMinutes,
   };
 }
-

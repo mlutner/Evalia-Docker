@@ -80,22 +80,22 @@ interface AnalyticsData {
 
 const SEVERITY_STYLES = {
   info: {
-    bg: 'bg-blue-50 border-blue-200',
+    bg: 'bg-[var(--teal-50)] border-[var(--teal-200)]',
     icon: Info,
-    iconColor: 'text-blue-500',
-    textColor: 'text-blue-800',
+    iconColor: 'text-[var(--teal-600)]',
+    textColor: 'text-[var(--teal-700)]',
   },
   warning: {
-    bg: 'bg-amber-50 border-amber-200',
+    bg: 'bg-[var(--warning-bg)] border-[var(--yuzu)]',
     icon: AlertTriangle,
-    iconColor: 'text-amber-500',
-    textColor: 'text-amber-800',
+    iconColor: 'text-[var(--warning-fg)]',
+    textColor: 'text-[var(--warning-fg)]',
   },
   error: {
-    bg: 'bg-red-50 border-red-200',
+    bg: 'bg-[var(--coral-50)] border-[var(--coral-200)]',
     icon: XCircle,
-    iconColor: 'text-red-500',
-    textColor: 'text-red-800',
+    iconColor: 'text-[var(--coral-600)]',
+    textColor: 'text-[var(--coral-700)]',
   },
 };
 
@@ -126,7 +126,7 @@ function AnalyticsStateBanner({ state }: { state: AnalyticsStateResult }) {
  */
 function SingleVersionIndicator() {
   return (
-    <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 px-4 py-3 rounded-lg border border-blue-200 mb-6">
+    <div className="flex items-center gap-2 text-sm text-[var(--teal-700)] bg-[var(--teal-50)] px-4 py-3 rounded-lg border border-[var(--teal-200)] mb-6">
       <Info className="w-4 h-4 flex-shrink-0" />
       <span>
         <strong>Single Snapshot Mode</strong> – Trend analysis and before/after comparisons require multiple scoring versions over time.
@@ -140,13 +140,13 @@ function SingleVersionIndicator() {
  */
 function ScoringDisabledCard({ title, description }: { title: string; description: string }) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <div className="evalia-card">
       <div className="flex flex-col items-center justify-center py-8 text-center">
-        <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-          <BarChart3 className="w-6 h-6 text-gray-400" />
+        <div className="w-12 h-12 rounded-full bg-[var(--paper-100)] flex items-center justify-center mb-4">
+          <BarChart3 className="w-6 h-6 text-[var(--ink-200)]" />
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-1">{title}</h3>
-        <p className="text-sm text-gray-500 max-w-md">{description}</p>
+        <h3 className="text-lg font-medium text-[var(--ink-500)] mb-1">{title}</h3>
+        <p className="text-sm text-[var(--ink-200)] max-w-md">{description}</p>
       </div>
     </div>
   );
@@ -365,10 +365,10 @@ export default function AnalyticsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F7F9FC' }}>
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-500">Loading analytics...</p>
+      <div className="min-h-screen flex items-center justify-center bg-[var(--paper-50)]">
+        <div className="text-center animate-page-enter">
+          <Loader2 className="w-12 h-12 animate-spin text-[var(--coral-500)] mx-auto mb-4" />
+          <p className="text-[var(--ink-200)]">Loading analytics...</p>
         </div>
       </div>
     );
@@ -380,12 +380,14 @@ export default function AnalyticsPage() {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F7F9FC' }}>
-        <div className="text-center">
-          <AlertTriangle className="w-16 h-16 text-amber-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Analytics Unavailable</h1>
-          <p className="text-gray-500 mb-6">Unable to load analytics for this survey.</p>
-          <Button onClick={() => setLocation("/dashboard")}>
+      <div className="min-h-screen flex items-center justify-center bg-[var(--paper-50)]">
+        <div className="text-center animate-page-enter">
+          <div className="w-16 h-16 rounded-full bg-[var(--warning-bg)] flex items-center justify-center mx-auto mb-4">
+            <AlertTriangle className="w-8 h-8 text-[var(--warning-fg)]" />
+          </div>
+          <h1 className="text-2xl font-bold text-[var(--ink-500)] mb-2">Analytics Unavailable</h1>
+          <p className="text-[var(--ink-200)] mb-6">Unable to load analytics for this survey.</p>
+          <Button className="evalia-btn evalia-btn-primary" onClick={() => setLocation("/dashboard")}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Button>
@@ -402,21 +404,21 @@ export default function AnalyticsPage() {
   
   if (count === 0) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: '#F7F9FC' }}>
+      <div className="min-h-screen bg-[var(--paper-50)]">
         <div className="max-w-7xl mx-auto px-4 py-8">
-          <Button variant="ghost" onClick={() => setLocation("/dashboard")} className="mb-8">
+          <Button variant="ghost" onClick={() => setLocation("/dashboard")} className="mb-8 text-[var(--coral-600)] hover:bg-[var(--coral-50)]">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Button>
-          <div className="text-center py-20">
-            <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <BarChart3 className="w-10 h-10 text-blue-600" />
+          <div className="text-center py-20 animate-page-enter">
+            <div className="w-20 h-20 bg-[var(--teal-100)] rounded-full flex items-center justify-center mx-auto mb-6">
+              <BarChart3 className="w-10 h-10 text-[var(--teal-600)]" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">No Responses Yet</h1>
-            <p className="text-gray-500 mb-8 max-w-md mx-auto">
+            <h1 className="text-2xl font-bold text-[var(--ink-500)] mb-2">No Responses Yet</h1>
+            <p className="text-[var(--ink-200)] mb-8 max-w-md mx-auto">
               Share your survey "{survey.title}" to start collecting responses.
             </p>
-            <Button onClick={() => setLocation("/dashboard")}>
+            <Button className="evalia-btn evalia-btn-secondary" onClick={() => setLocation("/dashboard")}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Dashboard
             </Button>
@@ -431,18 +433,18 @@ export default function AnalyticsPage() {
   // ============================================================================
 
   return (
-      <main className="min-h-screen" style={{ backgroundColor: '#F7F9FC' }}>
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          
+      <main className="min-h-screen bg-[var(--paper-50)]">
+        <div className="max-w-7xl mx-auto px-4 py-6 animate-page-enter">
+
           {/* Header */}
           <div className="flex items-start justify-between mb-8">
             <div>
-              <Button variant="ghost" onClick={() => setLocation("/dashboard")} className="mb-4 -ml-2">
+              <Button variant="ghost" onClick={() => setLocation("/dashboard")} className="mb-4 -ml-2 text-[var(--coral-600)] hover:bg-[var(--coral-50)]">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Dashboard
               </Button>
-              <h1 className="text-2xl font-bold text-gray-900 mb-1">{survey.title}</h1>
-              <p className="text-gray-500">{survey.description || "Survey Analytics"}</p>
+              <h1 className="text-2xl font-bold text-[var(--ink-500)] mb-1">{survey.title}</h1>
+              <p className="text-[var(--ink-200)]">{survey.description || "Survey Analytics"}</p>
           </div>
 
           {/* Version Selector */}
@@ -495,13 +497,13 @@ export default function AnalyticsPage() {
             <>
               {/* [ANAL-DASH-010] Dashboard Mode Indicator */}
               <div className="mb-4 flex items-center gap-2">
-                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <span className="text-xs font-medium text-[var(--ink-200)] uppercase tracking-wider">
                   Dashboard Mode:
                 </span>
-                <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                  dashboardMode.is5DDashboard 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'bg-purple-100 text-purple-700'
+                <span className={`evalia-badge ${
+                  dashboardMode.is5DDashboard
+                    ? 'evalia-badge-teal'
+                    : 'evalia-badge-coral'
                 }`}>
                   {dashboardMode.is5DDashboard ? 'Insight Dimensions' : 'Category Analytics'}
                 </span>
@@ -509,7 +511,7 @@ export default function AnalyticsPage() {
 
               {/* Tabs - [ANAL-IA-001] Information Architecture (adapted by dashboard mode) */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="bg-white border border-gray-200 flex-wrap h-auto p-1">
+            <TabsList className="bg-[var(--paper-white)] border border-[var(--paper-200)] flex-wrap h-auto p-1 rounded-[var(--radius-lg)]">
               <TabsTrigger value="insights-home" className="gap-2">
                 <Home className="w-4 h-4" />
                 {dashboardMode.is5DDashboard ? 'Insights Home' : 'Overview'}

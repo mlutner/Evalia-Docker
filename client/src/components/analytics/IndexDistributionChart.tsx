@@ -1,25 +1,32 @@
 /**
  * IndexDistributionChart - Bar chart for Insight Dimension score distribution
- * 
+ *
  * [ANAL-004] Index Distribution Visualization
  * [NAMING-001] Uses "Insight Dimensions" terminology (EID framework)
- * 
+ *
  * Displays a bar chart showing the distribution of dimension scores
  * across 5 buckets (0-20, 21-40, 41-60, 61-80, 81-100).
+ *
+ * Updated: December 2024 - Coral/Teal warm design system
  */
 
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import { Loader2, AlertCircle, RotateCcw, BarChart3 } from "lucide-react";
+import { Loader2, AlertCircle, RotateCcw } from "lucide-react";
 import type { IndexDistributionData } from "@shared/analytics";
-import { DISTRIBUTION_BUCKET_COLORS } from "@shared/analyticsBands";
 import { isDistributionEmpty } from "@shared/analyticsConfidence";
 import { NoScoreDataState } from "./DataEmptyState";
 
-// [ANAL-QA-030] Use shared color constants instead of hardcoding
-const BUCKET_COLORS = DISTRIBUTION_BUCKET_COLORS;
+// Design system chart colors - coral to teal gradient for score bands
+// Hex values required for Recharts SVG fill (CSS variables don't work)
+const BUCKET_COLORS_HEX = [
+  '#F04C5D',   // coral-500: Critical (0-20)
+  '#F3786D',   // peach: Concerning (21-40)
+  '#FFCE1E',   // yuzu: Emerging (41-60)
+  '#8B9A71',   // sage: Developing (61-80)
+  '#1B9B82',   // teal-500: Thriving (81-100)
+];
 
 interface IndexDistributionChartProps {
   data: IndexDistributionData | null;
@@ -35,62 +42,64 @@ export function IndexDistributionChart({
   isLoading = false,
   error = null,
   onRetry,
-  title = "Insight Dimension Distribution",
-  description = "Score distribution across all responses",
+  title = "Score Distribution",
+  description = "How scores are distributed across all respondents",
 }: IndexDistributionChartProps) {
   // Loading state
   if (isLoading) {
     return (
-      <Card className="bg-white border border-gray-200">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="h-64 flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      <div className="evalia-card">
+        <div className="evalia-card-header">
+          <div>
+            <h3 className="evalia-card-title">{title}</h3>
+            <p className="evalia-card-subtitle">{description}</p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+        <div className="h-64 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-[var(--coral-500)]" />
+        </div>
+      </div>
     );
   }
 
   // Error state
   if (error) {
     return (
-      <Card className="bg-white border border-gray-200">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="h-64 flex flex-col items-center justify-center text-center">
-            <AlertCircle className="w-12 h-12 text-red-500 mb-3" />
-            <p className="text-sm text-gray-600 mb-2">Failed to load distribution data</p>
-            {onRetry && (
-              <Button variant="outline" size="sm" onClick={onRetry}>
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Retry
-              </Button>
-            )}
+      <div className="evalia-card">
+        <div className="evalia-card-header">
+          <div>
+            <h3 className="evalia-card-title">{title}</h3>
+            <p className="evalia-card-subtitle">{description}</p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+        <div className="h-64 flex flex-col items-center justify-center text-center">
+          <div className="w-12 h-12 rounded-full bg-[var(--coral-50)] flex items-center justify-center mb-3">
+            <AlertCircle className="w-6 h-6 text-[var(--coral-600)]" />
+          </div>
+          <p className="text-sm text-[var(--ink-300)] mb-2">Failed to load distribution data</p>
+          {onRetry && (
+            <Button className="evalia-btn evalia-btn-outline evalia-btn-sm" onClick={onRetry}>
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Retry
+            </Button>
+          )}
+        </div>
+      </div>
     );
   }
 
-  // [ANAL-QA-050] No data state - use shared empty state component
+  // No data state
   if (!data || isDistributionEmpty(data.overall.buckets)) {
     return (
-      <Card className="bg-white border border-gray-200">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <NoScoreDataState />
-        </CardContent>
-      </Card>
+      <div className="evalia-card">
+        <div className="evalia-card-header">
+          <div>
+            <h3 className="evalia-card-title">{title}</h3>
+            <p className="evalia-card-subtitle">{description}</p>
+          </div>
+        </div>
+        <NoScoreDataState />
+      </div>
     );
   }
 
@@ -99,87 +108,84 @@ export function IndexDistributionChart({
     range: bucket.range,
     count: bucket.count,
     percentage: bucket.percentage,
-    fill: BUCKET_COLORS[index],
+    fill: BUCKET_COLORS_HEX[index],
   }));
 
   const { statistics } = data.overall;
   const totalResponses = chartData.reduce((sum, b) => sum + b.count, 0);
 
   return (
-    <Card className="bg-white border border-gray-200">
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div>
-            <CardTitle className="text-lg font-semibold text-gray-900">{title}</CardTitle>
-            <CardDescription>{description}</CardDescription>
-          </div>
-          <div className="text-right text-sm text-gray-500">
-            <span className="font-medium text-gray-900">{totalResponses}</span> responses
-          </div>
+    <div className="evalia-card">
+      <div className="evalia-card-header">
+        <div>
+          <h3 className="evalia-card-title">{title}</h3>
+          <p className="evalia-card-subtitle">{description}</p>
         </div>
-      </CardHeader>
-      <CardContent>
-        {/* Chart */}
-        <div className="h-56 mb-4">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-              <XAxis 
-                dataKey="range" 
-                tick={{ fontSize: 12, fill: '#6b7280' }}
-                tickLine={false}
-                axisLine={{ stroke: '#e5e7eb' }}
-              />
-              <YAxis 
-                tick={{ fontSize: 12, fill: '#6b7280' }}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) => `${value}`}
-              />
-              <Tooltip
-                content={({ active, payload }) => {
-                  if (!active || !payload?.length) return null;
-                  const data = payload[0].payload;
-                  return (
-                    <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 text-sm">
-                      <p className="font-medium text-gray-900">Score Range: {data.range}</p>
-                      <p className="text-gray-600">
-                        <span className="font-medium">{data.count}</span> responses ({data.percentage}%)
-                      </p>
-                    </div>
-                  );
-                }}
-              />
-              <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.fill} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+        <div className="text-right">
+          <span className="text-2xl font-bold text-[var(--ink-500)] font-[var(--font-mono)]">{totalResponses}</span>
+          <span className="text-sm text-[var(--ink-200)] ml-1">responses</span>
         </div>
+      </div>
 
-        {/* Statistics row */}
-        <div className="grid grid-cols-5 gap-2 pt-4 border-t border-gray-100">
-          <StatItem label="Min" value={statistics.min} />
-          <StatItem label="Max" value={statistics.max} />
-          <StatItem label="Mean" value={statistics.mean} />
-          <StatItem label="Median" value={statistics.median} />
-          <StatItem label="Std Dev" value={statistics.stdDev} />
-        </div>
-      </CardContent>
-    </Card>
+      {/* Chart */}
+      <div className="h-56 mb-4">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E8E2D3" />
+            <XAxis
+              dataKey="range"
+              tick={{ fontSize: 12, fill: '#706B62' }}
+              tickLine={false}
+              axisLine={{ stroke: '#E8E2D3' }}
+            />
+            <YAxis
+              tick={{ fontSize: 12, fill: '#706B62' }}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => `${value}`}
+            />
+            <Tooltip
+              content={({ active, payload }) => {
+                if (!active || !payload?.length) return null;
+                const d = payload[0].payload;
+                return (
+                  <div className="bg-[var(--paper-white)] border border-[var(--paper-200)] rounded-[var(--radius-md)] shadow-[var(--shadow-lg)] p-3 text-sm">
+                    <p className="font-medium text-[var(--ink-500)]">Score Range: {d.range}</p>
+                    <p className="text-[var(--ink-300)]">
+                      <span className="font-bold text-[var(--ink-500)]">{d.count}</span> responses ({d.percentage}%)
+                    </p>
+                  </div>
+                );
+              }}
+            />
+            <Bar dataKey="count" radius={[6, 6, 0, 0]}>
+              {chartData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.fill} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Statistics row */}
+      <div className="grid grid-cols-5 gap-2 pt-4 border-t border-[var(--paper-100)]">
+        <StatItem label="Min" value={statistics.min} />
+        <StatItem label="Max" value={statistics.max} />
+        <StatItem label="Mean" value={statistics.mean} />
+        <StatItem label="Median" value={statistics.median} />
+        <StatItem label="Std Dev" value={statistics.stdDev} />
+      </div>
+    </div>
   );
 }
 
 function StatItem({ label, value }: { label: string; value: number }) {
   return (
     <div className="text-center">
-      <p className="text-xs text-gray-500 uppercase tracking-wider">{label}</p>
-      <p className="text-lg font-semibold text-gray-900">{value}</p>
+      <p className="text-xs text-[var(--ink-200)] uppercase tracking-wider">{label}</p>
+      <p className="text-lg font-semibold text-[var(--ink-500)] font-[var(--font-mono)]">{value}</p>
     </div>
   );
 }
 
 export default IndexDistributionChart;
-
