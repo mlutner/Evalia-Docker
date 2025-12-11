@@ -201,3 +201,25 @@ Or with CSS variables directly:
 1. Which color palette do you want to use?
 2. Should Tailwind custom colors mirror CSS variables?
 3. Are there any colors that should remain hardcoded (e.g., chart gradients)?
+
+---
+
+## Files to EXCLUDE from Color Migration
+
+**DO NOT update hardcoded colors in these files - they are intentional:**
+
+### Design Builder / Theme Customization
+- `DesignV2.tsx` - COLOR_PRESETS, theme palettes, color pickers
+- `surveyBackgrounds.ts` - Background image/color options for surveys
+- `WelcomePageEditor.tsx` - Survey welcome screen theming
+- `theme.ts` - Theme definition file (reference, not hardcoded usage)
+
+**Reason:** These files define the *configurable* theme options that users can select for their surveys. The hardcoded hex values represent the preset palettes and customization options, NOT the Evalia app's own design system.
+
+### Chart Colors (Recharts)
+Chart libraries require hex values (CSS variables don't work in SVG). Keep hex values but add comments documenting the CSS variable equivalent:
+```tsx
+// Chart colors - hex required for Recharts SVG
+// Maps to CSS variables: --band-critical, --dimension-engagement, etc.
+const CHART_COLORS = ['#B91C1C', '#2D6A4F'];
+```
