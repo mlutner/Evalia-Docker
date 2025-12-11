@@ -314,12 +314,32 @@ function getStubBeforeAfterIndexComparison(surveyId: string, versionBefore: stri
   return {
     meta: generateMeta(surveyId, { versionBefore, versionAfter }),
     data: {
-      comparison: {
-        leadershipEffectiveness: { before: 68.5, after: 71.2, change: 2.7, changePercent: 3.9 },
-        teamWellbeing: { before: 72.3, after: 74.1, change: 1.8, changePercent: 2.5 },
-        burnoutRisk: { before: 42.1, after: 38.5, change: -3.6, changePercent: -8.6 },
-        psychologicalSafety: { before: 65.8, after: 68.3, change: 2.5, changePercent: 3.8 },
-        engagement: { before: 70.2, after: 72.8, change: 2.6, changePercent: 3.7 },
+      versionBefore: {
+        id: versionBefore,
+        label: 'Before',
+        versionNumber: 1,
+        date: new Date().toISOString(),
+        responseCount: 50,
+      },
+      versionAfter: {
+        id: versionAfter,
+        label: 'After',
+        versionNumber: 2,
+        date: new Date().toISOString(),
+        responseCount: 60,
+      },
+      comparison: [
+        { dimensionId: 'leadershipEffectiveness', dimensionLabel: 'Leadership Effectiveness', scoreBefore: 68.5, scoreAfter: 71.2, change: 2.7, changePercent: 3.9, trend: 'up' },
+        { dimensionId: 'teamWellbeing', dimensionLabel: 'Team Wellbeing', scoreBefore: 72.3, scoreAfter: 74.1, change: 1.8, changePercent: 2.5, trend: 'up' },
+        { dimensionId: 'burnoutRisk', dimensionLabel: 'Burnout Risk', scoreBefore: 42.1, scoreAfter: 38.5, change: -3.6, changePercent: -8.6, trend: 'down' },
+        { dimensionId: 'psychologicalSafety', dimensionLabel: 'Psychological Safety', scoreBefore: 65.8, scoreAfter: 68.3, change: 2.5, changePercent: 3.8, trend: 'up' },
+        { dimensionId: 'engagementEnergy', dimensionLabel: 'Engagement Energy', scoreBefore: 70.2, scoreAfter: 72.8, change: 2.6, changePercent: 3.7, trend: 'up' },
+      ],
+      summary: {
+        totalDimensionsImproved: 4,
+        totalDimensionsDeclined: 0,
+        totalDimensionsStable: 1,
+        overallTrend: 'positive',
       },
     },
   };

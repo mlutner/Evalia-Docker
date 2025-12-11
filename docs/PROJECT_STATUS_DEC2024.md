@@ -4,8 +4,8 @@
 
 Evalia is an AI-powered survey builder for HR/L&D with a focus on **outcome measurement** (not just data collection). The goal is ROI tracking, disability claim reduction, psychological safety mapping to Canadian standards (Mental Health Commission 13 factors).
 
-**Current State:** ~60% complete for MVP
-**Competitive Position:** Behind Culture Amp/Qualtrics on analytics, but solid foundation
+**Current State:** ~70% complete for MVP
+**Competitive Position:** Catching up to Culture Amp/Qualtrics on analytics, solid foundation
 
 ---
 
@@ -45,35 +45,49 @@ Evalia is an AI-powered survey builder for HR/L&D with a focus on **outcome meas
 
 ## What's Broken / Incomplete
 
-### Analytics Dashboard (40% complete) - HIGH PRIORITY
-**Issue:** Stub responses only, no real data computation
+### Analytics Dashboard (65% complete) - MEDIUM PRIORITY
+**Status:** More complete than initially assessed
 
-**Current State:**
-- 20+ analytics metric types defined in `/shared/analytics.ts`
-- Frontend hooks exist (`useIndexDistribution`, `useParticipationMetrics`, etc.)
-- Server returns hardcoded stub data (see `/server/routes/analytics.ts` line 5-14)
-- Components render but show fake data
+**What's Working (Real Data):**
+- ✅ Participation Metrics (`computeParticipationMetrics`)
+- ✅ Index Distribution for all 5 dimensions (`computeIndexDistribution`)
+- ✅ Band Distribution for all 5 dimensions (`computeIndexBandDistribution`)
+- ✅ Index Trends over time (`computeIndexTrend`)
+- ✅ Index Trends Summary (`computeIndexTrendsSummary`)
+- ✅ Before/After Comparison (`computeBeforeAfterIndexComparison`)
+- ✅ Question Summary (`computeQuestionSummary`)
+- ✅ Manager Index Summary (`computeIndexSummaryByManager`)
+
+**What's Still Stub Data:**
+- Domain Overview (3 endpoints)
+- Domain Overview by Segment (3 endpoints)
+- Hotspot Summary
+- Self vs Team Comparison
+- Domain Heatmap
 
 **What's Missing:**
-- Real database queries for metrics
-- Aggregation logic for multi-response analysis
-- Segment filtering (by manager, team, department)
-- Historical trend computation
-- Export functionality
+- Export functionality (PDF, Excel)
+- Benchmark comparison data
+- Some advanced segmentation
 
-### Results Screen (20% complete) - MEDIUM PRIORITY
-**Issue:** Schema defined but no UI component
+### Results Screen (60% complete) - MEDIUM PRIORITY
+**Status:** Core component now implemented
 
 **What Exists:**
 - `ResultsScreenConfig` type in `/src/core/results/resultsSchemas.ts`
 - Score snapshots stored in responses
 - Band definitions with headlines/summaries
+- ✅ `ResultsScreen.tsx` component at `/client/src/components/results/ResultsScreen.tsx`
+- ✅ Overall score display with percentage and band
+- ✅ Category breakdown with progress bars
+- ✅ Band-specific coloring and messaging
+- ✅ Thank you message section
+- ✅ Recommendations and next steps sections
 
 **What's Missing:**
-- `ResultsScreen.tsx` component
-- Individual respondent results display
-- Band-specific messaging
 - PDF/email report generation
+- Integration into survey completion flow
+- Testing with real survey data
 
 ### Conditional Logic (0% complete) - FUTURE
 - No skip patterns
@@ -113,18 +127,19 @@ Evalia is an AI-powered survey builder for HR/L&D with a focus on **outcome meas
 ## Technical Debt
 
 ### Critical
-1. **Analytics backend is stubs** - All `/api/analytics` endpoints return hardcoded data
-2. **No ResultsScreen component** - Scores calculated but never shown to users
+1. ~~**Analytics backend is stubs**~~ - Most endpoints now use real DB queries (see above)
+2. ~~**No ResultsScreen component**~~ - Now implemented at `/client/src/components/results/`
 
 ### Important
 1. Duplicate code in analytics components (band logic duplicated)
-2. TypeScript errors fixed but need comprehensive type review
+2. TypeScript errors in test files need fixing
 3. Some hardcoded colors/styles need theming consolidation
 
 ### Minor
-1. Console.log statements throughout (search for `[BUG-ANAL-XXX]`)
-2. Some TODO comments in templates for reverse scoring
-3. Test coverage incomplete
+1. Console.log statements throughout (search for `[BUG-ANAL-XXX]` - 11 instances to remove)
+2. `[SCORING-PIPELINE]` and `[QUESTION-PIPELINE]` debug logs (30+ instances)
+3. Some TODO comments in templates for reverse scoring
+4. Test coverage incomplete
 
 ---
 
@@ -162,9 +177,11 @@ Evalia is an AI-powered survey builder for HR/L&D with a focus on **outcome meas
 | Band definitions | `/shared/analyticsBands.ts` |
 | 5D templates | `/server/templates5D.ts` |
 | Analytics types | `/shared/analytics.ts` |
-| Analytics stubs | `/server/routes/analytics.ts` |
+| Analytics routes | `/server/routes/analytics.ts` |
+| Analytics compute | `/server/utils/analytics.ts` |
 | Analytics hooks | `/client/src/components/analytics/use*.ts` |
 | Results schema | `/src/core/results/resultsSchemas.ts` |
+| Results screen | `/client/src/components/results/ResultsScreen.tsx` |
 | Builder context | `/client/src/contexts/SurveyBuilderContext.tsx` |
 
 ---

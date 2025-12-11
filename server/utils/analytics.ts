@@ -19,10 +19,11 @@
 import { db } from "../db";
 import { surveyResponses, surveyRespondents, surveys, calculateSurveyScores } from "@shared/schema";
 import { eq, and, count, sql, gte } from "drizzle-orm";
-import type { 
-  ParticipationMetricsData, 
-  IndexDistributionData, 
+import type {
+  ParticipationMetricsData,
+  IndexDistributionData,
   IndexBandDistributionData,
+  IndexBand,
   QuestionSummaryData,
   QuestionSummaryItem,
   OptionDistribution,
@@ -436,25 +437,36 @@ export async function computeIndexBandDistribution(
 
   // Step 4: Calculate band distribution using shared helpers
   // [ANAL-QA-030] Use resolveBandIndex from shared/analyticsBands.ts
-  const bandCounts = createEmptyBandStats();
+  const bandStats = createEmptyBandStats();
 
   for (const score of indexScores) {
     const bandIndex = resolveBandIndex(score);
     if (bandIndex >= 0) {
-      bandCounts[bandIndex].count++;
+      bandStats[bandIndex].count++;
     }
   }
 
   // Calculate percentages (based on scored responses, not total)
   const scoredTotal = indexScores.length;
   if (scoredTotal > 0) {
-    bandCounts.forEach(band => {
+    bandStats.forEach(band => {
       band.percentage = Math.round((band.count / scoredTotal) * 1000) / 10;
     });
   }
 
+  // Transform to IndexBand shape (label -> bandLabel)
+  const bands: IndexBand[] = bandStats.map(band => ({
+    bandId: band.bandId,
+    bandLabel: band.label,
+    color: band.color,
+    count: band.count,
+    percentage: band.percentage,
+    minScore: band.minScore,
+    maxScore: band.maxScore,
+  }));
+
   return {
-    bands: bandCounts,
+    bands,
     totalResponses,
   };
 }
@@ -464,8 +476,17 @@ export async function computeIndexBandDistribution(
  * [ANAL-QA-030] Uses createEmptyBandStats from shared/analyticsBands.ts
  */
 function createEmptyBandDistribution(): IndexBandDistributionData {
+  const bandStats = createEmptyBandStats();
   return {
-    bands: createEmptyBandStats(),
+    bands: bandStats.map(band => ({
+      bandId: band.bandId,
+      bandLabel: band.label,
+      color: band.color,
+      count: band.count,
+      percentage: band.percentage,
+      minScore: band.minScore,
+      maxScore: band.maxScore,
+    })),
     totalResponses: 0,
   };
 }
@@ -898,12 +919,12 @@ export async function computeIndexSummaryByManager(
   // Step 4: Calculate per-manager statistics
   const managerSummaries: ManagerSummaryItem[] = [];
 
-  for (const [managerId, managerResponses] of managerGroups) {
+  for (const [managerId, managerResponses] of Array.from(managerGroups.entries())) {
     const respondentCount = managerResponses.length;
 
     // Calculate completion rate
     const completedResponses = managerResponses.filter(
-      r => (r.completionPercentage || 0) >= COMPLETION_THRESHOLD
+      (r: typeof managerResponses[0]) => (r.completionPercentage || 0) >= COMPLETION_THRESHOLD
     );
     const completionRate = respondentCount > 0
       ? Math.round((completedResponses.length / respondentCount) * 1000) / 10
@@ -1054,8 +1075,8 @@ export async function computeIndexTrend(
   const timeBuckets = new Map<string, typeof responses>();
 
   for (const response of responses) {
-    // Use completedAt, fall back to createdAt if not available
-    const timestamp = response.completedAt || response.createdAt;
+    // Use completedAt, fall back to startedAt if not available
+    const timestamp = response.completedAt || response.startedAt;
     if (!timestamp) continue;
 
     const date = new Date(timestamp);
@@ -1179,11 +1200,20 @@ export async function computeIndexTrendsSummary(
   }
 
   // Step 2: Fetch all score_config_versions for this survey
-  const versions = await db
-    .select()
-    .from(sql`score_config_versions`)
-    .where(sql`survey_id = ${surveyId}`)
-    .orderBy(sql`version_number ASC`);
+  // Note: score_config_versions table may not exist in all deployments
+  type VersionRow = { id: string; version_number: number; created_at: string };
+  let versions: VersionRow[] = [];
+  try {
+    const rawVersions = await db
+      .select()
+      .from(sql`score_config_versions`)
+      .where(sql`survey_id = ${surveyId}`)
+      .orderBy(sql`version_number ASC`);
+    versions = rawVersions as VersionRow[];
+  } catch {
+    // Table doesn't exist - continue with empty versions
+    versions = [];
+  }
 
   if (versions.length === 0) {
     // No versions - compute a single trend point for "all responses"
@@ -1213,9 +1243,9 @@ export async function computeIndexTrendsSummary(
     const trendPoint = await computeTrendPointForVersion(
       surveyId,
       survey,
-      version.id as string,
+      version.id,
       {
-        id: version.id as string,
+        id: version.id,
         versionLabel: `v${version.version_number}`,
         versionNumber: version.version_number as number,
         createdAt: version.created_at as string,
@@ -1346,32 +1376,42 @@ export async function computeBeforeAfterIndexComparison(
   }
 
   // Step 2: Fetch version metadata for both versions
-  const [versionBefore] = await db
-    .select()
-    .from(sql`score_config_versions`)
-    .where(sql`id = ${versionBeforeId}`)
-    .limit(1);
+  type VersionRow = { id: string; version_number: number; created_at: string };
+  let versionBefore: VersionRow | undefined;
+  let versionAfter: VersionRow | undefined;
 
-  const [versionAfter] = await db
-    .select()
-    .from(sql`score_config_versions`)
-    .where(sql`id = ${versionAfterId}`)
-    .limit(1);
+  try {
+    const versionBeforeResult = await db
+      .select()
+      .from(sql`score_config_versions`)
+      .where(sql`id = ${versionBeforeId}`)
+      .limit(1);
+    versionBefore = versionBeforeResult[0] as VersionRow | undefined;
+
+    const versionAfterResult = await db
+      .select()
+      .from(sql`score_config_versions`)
+      .where(sql`id = ${versionAfterId}`)
+      .limit(1);
+    versionAfter = versionAfterResult[0] as VersionRow | undefined;
+  } catch {
+    // Table may not exist yet
+  }
 
   // Build version info objects
   const versionBeforeInfo: ComparisonVersionInfo = {
     id: versionBeforeId,
     label: versionBefore ? `v${versionBefore.version_number}` : 'Version Before',
-    versionNumber: versionBefore?.version_number as number || 0,
-    date: versionBefore?.created_at as string || new Date().toISOString(),
+    versionNumber: versionBefore?.version_number || 0,
+    date: versionBefore?.created_at || new Date().toISOString(),
     responseCount: 0, // Will be updated below
   };
 
   const versionAfterInfo: ComparisonVersionInfo = {
     id: versionAfterId,
     label: versionAfter ? `v${versionAfter.version_number}` : 'Version After',
-    versionNumber: versionAfter?.version_number as number || 0,
-    date: versionAfter?.created_at as string || new Date().toISOString(),
+    versionNumber: versionAfter?.version_number || 0,
+    date: versionAfter?.created_at || new Date().toISOString(),
     responseCount: 0, // Will be updated below
   };
 
@@ -1506,9 +1546,12 @@ function calculateVersionScores(
   const allScores: number[] = [];
 
   for (const response of responses) {
+    // Cast answers to expected type - survey responses store answers as unknown but
+    // they are actually string | string[] values
+    const answersTyped = response.answers as Record<string, string | string[]>;
     const scoreResults = calculateSurveyScores(
       survey.questions,
-      response.answers,
+      answersTyped,
       survey.scoreConfig
     );
 
@@ -1584,5 +1627,170 @@ function createEmptyComparison(
       overallTrend: 'stable',
     },
   };
+}
+
+// ============================================================================
+// DOMAIN OVERVIEW (ANAL-011)
+// ============================================================================
+
+import type { DomainOverviewData, DomainCategory } from "@shared/analytics";
+
+/**
+ * Compute domain overview - category-level aggregate statistics.
+ *
+ * For each scoring category, calculates:
+ * - averageScore: mean score across all responses (0-100)
+ * - minScore, maxScore: range of scores
+ * - responseCount: number of responses with valid scores
+ * - weight: category weight from scoreConfig
+ * - contributionToTotal: percentage contribution to overall score
+ *
+ * @param surveyId - The survey ID to compute overview for
+ * @param indexType - The index type (filters which categories to include)
+ * @param versionId - Optional score config version ID to filter by
+ * @returns DomainOverviewData with category-level statistics
+ */
+export async function computeDomainOverview(
+  surveyId: string,
+  indexType: string,
+  versionId?: string
+): Promise<DomainOverviewData> {
+  // Step 1: Fetch survey with questions and scoreConfig
+  const [survey] = await db
+    .select()
+    .from(surveys)
+    .where(eq(surveys.id, surveyId))
+    .limit(1);
+
+  if (!survey || !survey.scoreConfig?.enabled) {
+    return { categories: [] };
+  }
+
+  // Step 2: Get category definitions from scoreConfig
+  const categoryDefs = survey.scoreConfig.categories || [];
+  if (categoryDefs.length === 0) {
+    return { categories: [] };
+  }
+
+  // Step 3: Fetch all responses for this survey
+  const baseCondition = versionId
+    ? and(
+        eq(surveyResponses.surveyId, surveyId),
+        eq(surveyResponses.scoreConfigVersionId, versionId)
+      )
+    : eq(surveyResponses.surveyId, surveyId);
+
+  const responses = await db
+    .select()
+    .from(surveyResponses)
+    .where(baseCondition);
+
+  if (responses.length === 0) {
+    // Return empty categories with metadata
+    return {
+      categories: categoryDefs.map((cat: any) => ({
+        categoryId: cat.id,
+        categoryName: cat.name,
+        averageScore: 0,
+        minScore: 0,
+        maxScore: 0,
+        responseCount: 0,
+        weight: cat.weight || 1,
+        contributionToTotal: 0,
+      })),
+    };
+  }
+
+  // Step 4: Calculate per-category statistics
+  const categoryStats = new Map<string, { scores: number[]; weight: number; name: string }>();
+
+  // Initialize category stats
+  for (const cat of categoryDefs) {
+    const catAny = cat as { id: string; name: string; weight?: number };
+    categoryStats.set(catAny.id, {
+      scores: [],
+      weight: catAny.weight || 1,
+      name: catAny.name,
+    });
+  }
+
+  // Calculate scores for each response
+  for (const response of responses) {
+    const scoreResults = calculateSurveyScores(
+      survey.questions,
+      response.answers,
+      survey.scoreConfig
+    );
+
+    if (!scoreResults || scoreResults.length === 0) continue;
+
+    // Group scores by category
+    for (const result of scoreResults) {
+      const categoryId = result.categoryId;
+      const stats = categoryStats.get(categoryId);
+      if (stats) {
+        stats.scores.push(result.score);
+      }
+    }
+  }
+
+  // Step 5: Build category results
+  const categories: DomainCategory[] = [];
+  let totalWeightedScore = 0;
+  let totalWeight = 0;
+
+  for (const [categoryId, stats] of Array.from(categoryStats.entries())) {
+    const { scores, weight, name } = stats;
+
+    if (scores.length === 0) {
+      categories.push({
+        categoryId,
+        categoryName: name,
+        averageScore: 0,
+        minScore: 0,
+        maxScore: 0,
+        responseCount: 0,
+        weight,
+        contributionToTotal: 0,
+      });
+      continue;
+    }
+
+    const avgScore = Math.round((scores.reduce((a: number, b: number) => a + b, 0) / scores.length) * 10) / 10;
+    const sortedScores = [...scores].sort((a: number, b: number) => a - b);
+
+    totalWeightedScore += avgScore * weight;
+    totalWeight += weight;
+
+    categories.push({
+      categoryId,
+      categoryName: name,
+      averageScore: avgScore,
+      minScore: sortedScores[0],
+      maxScore: sortedScores[sortedScores.length - 1],
+      responseCount: scores.length,
+      weight,
+      contributionToTotal: 0, // Will calculate after loop
+    });
+  }
+
+  // Step 6: Calculate contribution percentages
+  if (totalWeight > 0) {
+    for (const cat of categories) {
+      if (cat.responseCount > 0) {
+        cat.contributionToTotal = Math.round(
+          ((cat.averageScore * cat.weight) / totalWeightedScore) * 1000
+        ) / 10;
+      }
+    }
+  }
+
+  // Sort by weight (descending) then by average score
+  categories.sort((a, b) => {
+    if (b.weight !== a.weight) return b.weight - a.weight;
+    return b.averageScore - a.averageScore;
+  });
+
+  return { categories };
 }
 
