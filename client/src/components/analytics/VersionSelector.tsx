@@ -59,7 +59,7 @@ export function VersionSelector({
   // Loading state
   if (isLoading) {
     return (
-      <div className="flex items-center gap-2 text-gray-500 text-sm">
+      <div className="flex items-center gap-2 text-[var(--text-muted)] text-sm">
         <Loader2 className="w-4 h-4 animate-spin" />
         <span>Loading versions...</span>
       </div>
@@ -69,7 +69,7 @@ export function VersionSelector({
   // Error state
   if (error || !data) {
     return (
-      <div className="flex items-center gap-2 text-amber-600 text-sm">
+      <div className="flex items-center gap-2 text-[var(--status-warning)] text-sm">
         <AlertCircle className="w-4 h-4" />
         <span>Unable to load versions</span>
       </div>
@@ -81,7 +81,7 @@ export function VersionSelector({
   // No versions available
   if (versions.length === 0) {
     return (
-      <div className="flex items-center gap-2 text-gray-500 text-sm">
+      <div className="flex items-center gap-2 text-[var(--text-muted)] text-sm">
         <History className="w-4 h-4" />
         <span>No versions available</span>
       </div>
@@ -93,9 +93,9 @@ export function VersionSelector({
 
   return (
     <div className="flex items-center gap-2">
-      <History className="w-4 h-4 text-gray-500" />
+      <History className="w-4 h-4 text-[var(--text-muted)]" />
       <Select value={currentValue} onValueChange={onVersionChange}>
-        <SelectTrigger className="w-[140px] h-9 bg-white">
+        <SelectTrigger className="w-[140px] h-9 bg-[var(--bg-card)]">
           <SelectValue placeholder="Select version" />
         </SelectTrigger>
         <SelectContent>
@@ -104,7 +104,7 @@ export function VersionSelector({
               <div className="flex items-center gap-2">
                 <span>{version.label}</span>
                 {version.isLatest && (
-                  <span className="text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">
+                  <span className="text-xs bg-[var(--sage-100)] text-[var(--status-success)] px-1.5 py-0.5 rounded">
                     Latest
                   </span>
                 )}

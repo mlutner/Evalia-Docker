@@ -45,7 +45,7 @@ textarea:focus-visible,
 [tabindex]:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(47, 143, 165, 0.15);
+  box-shadow: var(--focus-ring);
 }
 
 /* Skip to content link for screen readers */
@@ -179,10 +179,10 @@ textarea:focus-visible,
 /* Pulse for attention */
 @keyframes pulse-attention {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(47, 143, 165, 0.4);
+    box-shadow: 0 0 0 0 rgba(26, 67, 50, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(47, 143, 165, 0);
+    box-shadow: 0 0 0 8px rgba(26, 67, 50, 0);
   }
 }
 
@@ -218,10 +218,11 @@ textarea:focus-visible,
    ═══════════════════════════════════════════════════════════════════════════ */
 @media (prefers-contrast: high) {
   :root {
-    --color-border: #1C2635;
-    --color-text-secondary: #1C2635;
+    --color-border: var(--neutral-900);
+    --color-text-secondary: var(--neutral-900);
+    --border-default: var(--neutral-900);
   }
-  
+
   button,
   input,
   select,
@@ -234,13 +235,13 @@ textarea:focus-visible,
    FORM VALIDATION STATES
    ═══════════════════════════════════════════════════════════════════════════ */
 .input-error {
-  border-color: #ef4444 !important;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  border-color: var(--status-error) !important;
+  box-shadow: var(--focus-ring-error);
 }
 
 .input-success {
-  border-color: #22c55e !important;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+  border-color: var(--status-success) !important;
+  box-shadow: var(--focus-ring);
 }
 
 .validation-message {
@@ -252,11 +253,11 @@ textarea:focus-visible,
 }
 
 .validation-message.error {
-  color: #ef4444;
+  color: var(--status-error);
 }
 
 .validation-message.success {
-  color: #22c55e;
+  color: var(--status-success);
 }
 
 /* Autosave indicator */
@@ -276,7 +277,7 @@ textarea:focus-visible,
 }
 
 .autosave-indicator.saved {
-  color: #22c55e;
+  color: var(--status-success);
 }
 
 @keyframes fade-in {
@@ -295,181 +296,258 @@ textarea:focus-visible,
 }
 
 :root {
-  /* EVALIA FINAL PALETTE - Core Colors */
-  
-  /* Primary Accent - Evalia Blue-Teal */
-  --color-primary: #2F8FA5;
-  
-  /* Prototype Purple Accent System */
-  --accent-lavender: #A855F7;
-  --accent-lavender-light: #C084FC;
-  --accent-lavender-dark: #9333EA;
-  --brand-blue: #1570EF;
-  --brand-blue-hover: #1A64CC;
-  
-  /* Page Backgrounds */
-  --bg-page: #F7F9FC;
-  --bg-card: #FFFFFF;
-  
-  /* Text Colors (Prototype) */
-  --text-primary: #111827;
-  --text-secondary: #374151;
-  --text-muted: #6B7280;
-  --text-subtle: #9CA3AF;
-  
-  /* Border Colors (Prototype) */
-  --border-default: #E5E7EB;
-  --border-strong: #D1D5DB;
-  
+  /* ═══════════════════════════════════════════════════════════════════════════
+     EVALIA DESIGN SYSTEM - Forest Green + Neutral Palette
+     Cultivated, premium, human-first design for HR & L&D
+     ═══════════════════════════════════════════════════════════════════════════ */
+
+  /* ========== FOREST GREEN PALETTE (Primary Brand) ========== */
+  --forest-900: #0F2920;    /* Sidebar background - darkest */
+  --forest-800: #142E26;    /* Sidebar gradient end */
+  --forest-700: #1A4332;    /* Primary buttons, links */
+  --forest-600: #22543D;    /* Primary hover */
+  --forest-500: #2D6A4F;    /* Secondary actions */
+  --forest-400: #40916C;    /* Accents, icons */
+  --forest-300: #52B788;    /* Highlights */
+  --forest-200: #74C69D;    /* Light accents */
+  --forest-100: #95D5B2;    /* Badges, tags */
+  --forest-50: #D8F3DC;     /* Subtle backgrounds */
+
+  /* ========== SAGE ACCENTS (Secondary) ========== */
+  --sage-500: #74A892;      /* Secondary buttons */
+  --sage-400: #8FBCAA;      /* Hover states */
+  --sage-300: #A8D5C2;      /* Borders on highlight */
+  --sage-200: #C1E8D5;      /* Light tints */
+  --sage-100: #D8F3E8;      /* Success backgrounds */
+  --sage-50: #F0FAF6;       /* Page background tint */
+
+  /* ========== NEUTRAL PALETTE (Warm undertones) ========== */
+  --neutral-900: #1A1D1C;   /* Primary text */
+  --neutral-800: #2D3230;   /* Headings */
+  --neutral-700: #374140;   /* Secondary text */
+  --neutral-600: #4D5654;   /* Tertiary text */
+  --neutral-500: #6B7573;   /* Muted text */
+  --neutral-400: #8A9290;   /* Placeholders */
+  --neutral-300: #A8AFAD;   /* Disabled text */
+  --neutral-200: #D1D6D4;   /* Borders */
+  --neutral-100: #E8EDEB;   /* Dividers, subtle borders */
+  --neutral-50: #F5F7F6;    /* Card backgrounds, panels */
+  --white: #FAFBFA;         /* Surface white (not pure) */
+
+  /* ========== SEMANTIC MAPPINGS ========== */
+  /* Primary - Forest Green */
+  --color-primary: var(--forest-700);
+  --color-primary-hover: var(--forest-600);
+  --color-primary-active: var(--forest-800);
+  --color-primary-light: var(--forest-50);
+
+  /* Secondary - Sage */
+  --color-secondary: var(--sage-500);
+  --color-secondary-hover: var(--sage-400);
+
+  /* Backgrounds */
+  --bg-page: var(--sage-50);
+  --bg-card: var(--white);
+  --bg-panel: var(--neutral-50);
+  --bg-sidebar: var(--forest-900);
+
+  /* Text */
+  --text-primary: var(--neutral-900);
+  --text-secondary: var(--neutral-600);
+  --text-muted: var(--neutral-500);
+  --text-subtle: var(--neutral-400);
+  --text-inverse: var(--white);
+
+  /* Borders */
+  --border-default: var(--neutral-200);
+  --border-strong: var(--neutral-300);
+  --border-subtle: var(--neutral-100);
+
   /* Status Colors */
-  --status-success: #22C55E;
-  --status-error: #EF4444;
-  
-  /* Radius System */
+  --status-success: var(--forest-500);
+  --status-success-bg: var(--sage-100);
+  --status-error: #DC2626;
+  --status-error-bg: #FEE2E2;
+  --status-warning: #D97706;
+  --status-warning-bg: #FEF3C7;
+  --status-info: var(--forest-400);
+  --status-info-bg: var(--forest-50);
+
+  /* ========== LEGACY MAPPINGS (Backward Compatibility) ========== */
+  --color-accent-lime: var(--sage-300);
+  --color-dark-navy: var(--forest-900);
+  --color-bg-light: var(--bg-page);
+  --color-surface: var(--bg-card);
+  --color-surface-highlight-lime: var(--sage-100);
+  --color-surface-highlight-teal: var(--forest-50);
+  --color-surface-dark: var(--forest-900);
+  --color-border: var(--border-default);
+  --color-border-highlight-lime: var(--sage-300);
+  --color-border-highlight-teal: var(--forest-200);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-icon-lime: var(--sage-400);
+  --color-icon-teal: var(--forest-400);
+
+  /* ========== BUTTON SYSTEM ========== */
+  --button-primary-bg: var(--forest-700);
+  --button-primary-hover: var(--forest-600);
+  --button-primary-active: var(--forest-800);
+  --button-primary-text: var(--white);
+
+  --button-secondary-bg: var(--white);
+  --button-secondary-border: var(--neutral-200);
+  --button-secondary-text: var(--neutral-800);
+  --button-secondary-hover: var(--sage-50);
+
+  --button-ghost-text: var(--forest-700);
+  --button-ghost-hover: var(--forest-50);
+
+  /* Legacy button mappings */
+  --button-primary-teal: var(--button-primary-bg);
+  --button-primary-teal-hover: var(--button-primary-hover);
+  --button-primary-teal-active: var(--button-primary-active);
+  --button-primary-lime: var(--sage-400);
+  --button-primary-lime-hover: var(--sage-500);
+  --button-primary-lime-active: var(--forest-500);
+
+  /* ========== INTERACTION STATES ========== */
+  --hover-tint: var(--forest-50);
+  --hover-tint-teal: var(--forest-50);
+  --hover-tint-lime: var(--sage-100);
+  --active-tint: var(--sage-200);
+  --disabled-bg: var(--neutral-100);
+  --disabled-text: var(--neutral-400);
+
+  /* ========== SIDEBAR SYSTEM ========== */
+  --sidebar-bg: var(--forest-900);
+  --sidebar-bg-gradient: linear-gradient(180deg, var(--forest-900) 0%, var(--forest-800) 100%);
+  --sidebar-hover: rgba(255, 255, 255, 0.08);
+  --sidebar-active: rgba(255, 255, 255, 0.12);
+  --sidebar-active-indicator: var(--sage-300);
+  --sidebar-text-active: var(--white);
+  --sidebar-text-inactive: rgba(255, 255, 255, 0.7);
+  --sidebar-navy: var(--forest-900);
+
+  /* ========== BUILDER PANELS (Hierarchy) ========== */
+  --panel-left: var(--neutral-50);       /* Question list - lightest */
+  --panel-center: var(--white);          /* Canvas - white */
+  --panel-right: var(--neutral-50);      /* Settings panel - lightest */
+  --panel-border: var(--neutral-100);    /* Panel dividers */
+
+  /* ========== CHART COLORS ========== */
+  --chart-1: var(--forest-700);
+  --chart-2: var(--forest-500);
+  --chart-3: var(--sage-500);
+  --chart-4: var(--forest-300);
+  --chart-5: var(--sage-300);
+  --chart-primary-line: var(--forest-700);
+  --chart-secondary-bar: var(--sage-400);
+  --chart-gridlines: var(--neutral-100);
+  --chart-label-text: var(--neutral-600);
+  --chart-axis-line: var(--neutral-200);
+  --chart-axis-tick: var(--neutral-400);
+
+  /* Score Band Colors (for distribution charts) */
+  --band-critical: #B91C1C;       /* Critical/Low (0-20) - Deep red */
+  --band-concerning: #D97706;     /* Concerning (21-40) - Amber */
+  --band-emerging: #EAB308;       /* Emerging (41-60) - Yellow */
+  --band-developing: var(--sage-500); /* Developing (61-80) - Sage */
+  --band-thriving: var(--forest-500); /* Thriving (81-100) - Forest */
+
+  /* Dimension/Insight Colors (for trend lines) */
+  --dimension-engagement: var(--forest-600);      /* Primary metric */
+  --dimension-leadership: #2563EB;                /* Blue */
+  --dimension-wellbeing: var(--forest-400);       /* Lighter forest */
+  --dimension-burnout: #DC2626;                   /* Red (inverted) */
+  --dimension-safety: #7C3AED;                    /* Purple */
+
+  /* ========== SHADOWS (Forest-tinted) ========== */
+  --shadow-xs: 0 1px 2px rgba(15, 41, 32, 0.04);
+  --shadow-sm: 0 2px 4px rgba(15, 41, 32, 0.06);
+  --shadow-md: 0 4px 12px rgba(15, 41, 32, 0.08), 0 2px 4px rgba(15, 41, 32, 0.04);
+  --shadow-lg: 0 8px 24px rgba(15, 41, 32, 0.10), 0 4px 8px rgba(15, 41, 32, 0.06);
+  --shadow-xl: 0 16px 48px rgba(15, 41, 32, 0.12), 0 8px 16px rgba(15, 41, 32, 0.08);
+  --shadow-hover: 0 12px 32px rgba(15, 41, 32, 0.12), 0 4px 12px rgba(15, 41, 32, 0.06);
+  --shadow-card: var(--shadow-sm);
+  --shadow-card-hover: var(--shadow-md);
+
+  /* Focus Ring */
+  --focus-ring: 0 0 0 3px rgba(26, 67, 50, 0.2);
+  --focus-ring-error: 0 0 0 3px rgba(220, 38, 38, 0.2);
+
+  /* ========== RADIUS SYSTEM ========== */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
-  
-  /* Shadows (Prototype) */
-  --shadow-card: 0 1px 3px rgba(16, 24, 40, 0.08), 0 1px 2px rgba(16, 24, 40, 0.03);
-  --shadow-card-hover: 0 4px 6px rgba(16, 24, 40, 0.12), 0 2px 4px rgba(16, 24, 40, 0.06);
-  
-  /* Easing (Prototype) */
-  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  
-  /* Durations (Prototype) */
-  --duration-fast: 150ms;
-  --duration-normal: 300ms;
-  
-  /* Primary Lime */
-  --color-accent-lime: #A3D65C;
-  
-  /* Navy - Sidebar background only */
-  --color-dark-navy: #0D1B2A;
-  
-  /* Background */
-  --color-bg-light: #F7F9FC;
-  
-  /* Card Surfaces */
-  --color-surface: #FFFFFF;
-  --color-surface-highlight-lime: #F3FDE3;
-  --color-surface-highlight-teal: #E1F6F3;
-  --color-surface-dark: #0A1A2F;
-  
-  /* Border/Dividers */
-  --color-border: #E2E7EF;
-  --color-border-highlight-lime: #D9F55E;
-  --color-border-highlight-teal: #A8E8E1;
-  
-  /* Text Colors */
-  --color-text-primary: #1C2635;
-  --color-text-secondary: #6A7789;
-  
-  /* Highlight Icon Colors */
-  --color-icon-lime: #C3F33C;
-  --color-icon-teal: #37C0A3;
-  
-  /* Button Colors */
-  --button-primary-teal: #1F6F78;
-  --button-primary-teal-hover: #155A62;
-  --button-primary-teal-active: #0F4A51;
-  --button-primary-lime: #C3F33C;
-  --button-primary-lime-hover: #A8D92F;
-  --button-primary-lime-active: #8FBF2A;
-  --button-secondary-bg: #FFFFFF;
-  --button-secondary-border: #E2E7EF;
-  --button-secondary-text: #1C3B5A;
-  --button-secondary-hover: #F7F9FC;
-  --button-ghost-text: #2F8FA5;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  --radius: var(--radius-lg);
 
-  /* Interaction States - Hover */
-  --hover-tint-teal: #E1F6F3;
-  --hover-tint-lime: #F3FDE3;
-
-  /* Interaction States - Disabled */
-  --disabled-bg: #F0F2F5;
-  --disabled-text: #B0B8C2;
-
-  /* Sidebar Colors */
-  --sidebar-navy: #0A1A2F;
-  --sidebar-hover: #112238;
-  --sidebar-active-indicator: #A3D65C;
-  --sidebar-text-active: #FFFFFF;
-  --sidebar-text-inactive: rgba(255, 255, 255, 0.7);
-
-  /* Chart Colors */
-  --chart-primary-line: #1F6F78;
-  --chart-secondary-bar: #C3F33C;
-  --chart-gridlines: #E2E7EF;
-  --chart-label-text: #6A7789;
-
-  /* Card Layout System - Professional Spacing */
-  --card-padding: 24px;
-  --card-radius: 16px;
-  --card-title-size: 16px;
-  --card-title-weight: 600;
-  --card-subtitle-size: 14px;
-  --card-subtitle-weight: 500;
-  --card-spacing-title: 24px;
-  --card-spacing-metadata: 12px;
-  
-  /* Spacing System - Professional Rhythm */
+  /* ========== SPACING SYSTEM (8pt Grid) ========== */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
   --spacing-lg: 24px;
   --spacing-xl: 32px;
   --spacing-2xl: 48px;
-  
-  /* Shadow System - Subtle Depth */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
-  --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
-  
-  /* Focus Ring - Professional */
-  --focus-ring: 0 0 0 3px rgba(47, 143, 165, 0.1);
+  --spacing-3xl: 64px;
 
-  /* Tailwind CSS Variables - Evalia Brand Palette */
-  --background: 210 16% 98.6%;
-  --foreground: 216 27% 16%;
-  --card: 0 0% 100%;
-  --card-foreground: 216 27% 16%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 216 27% 16%;
-  --primary: 197 57% 46%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 210 16% 97.5%;
-  --secondary-foreground: 216 27% 16%;
-  --muted: 213 17% 92%;
-  --muted-foreground: 214 13% 49%;
-  --accent: 75 64% 60%;
-  --accent-foreground: 216 27% 16%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 213 17% 92%;
-  --input: 213 17% 92%;
-  --ring: 197 57% 46%;
-  --chart-1: 197 57% 46%;
-  --chart-2: 164 53% 50%;
-  --chart-3: 193 59% 30%;
-  --chart-4: 75 64% 60%;
-  --chart-5: 0 84% 60%;
+  /* ========== TIMING & EASING ========== */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
 
-  --sidebar: 193 59% 30%;
-  --sidebar-foreground: 0 0% 100%;
-  --sidebar-primary: 197 57% 46%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 75 64% 60%;
-  --sidebar-accent-foreground: 216 27% 16%;
-  --sidebar-border: 213 17% 92%;
-  --sidebar-ring: 197 57% 46%;
+  /* ========== CARD SYSTEM ========== */
+  --card-padding: 24px;
+  --card-radius: var(--radius-lg);
+  --card-border: var(--neutral-100);
+  --card-bg: var(--white);
+  --card-title-size: 16px;
+  --card-title-weight: 600;
+  --card-subtitle-size: 14px;
+  --card-subtitle-weight: 500;
+  --card-spacing-title: 24px;
+  --card-spacing-metadata: 12px;
 
+  /* ========== TYPOGRAPHY ========== */
   --font-sans: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-serif: 'EB Garamond', serif;
-  --font-mono: 'Fira Code', monospace;
-  --radius: 0.75rem;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* ========== TAILWIND HSL MAPPINGS ========== */
+  --background: 150 14% 97%;
+  --foreground: 160 8% 11%;
+  --card: 150 10% 99%;
+  --card-foreground: 160 8% 11%;
+  --popover: 150 10% 99%;
+  --popover-foreground: 160 8% 11%;
+  --primary: 153 43% 18%;
+  --primary-foreground: 150 10% 99%;
+  --secondary: 156 22% 62%;
+  --secondary-foreground: 160 8% 11%;
+  --muted: 150 8% 91%;
+  --muted-foreground: 155 6% 45%;
+  --accent: 152 31% 55%;
+  --accent-foreground: 160 8% 11%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 150 6% 83%;
+  --input: 150 6% 83%;
+  --ring: 153 43% 18%;
+
+  /* Tailwind Sidebar */
+  --sidebar: 156 36% 11%;
+  --sidebar-foreground: 0 0% 100%;
+  --sidebar-primary: 153 43% 18%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 156 22% 62%;
+  --sidebar-accent-foreground: 160 8% 11%;
+  --sidebar-border: 150 6% 83%;
+  --sidebar-ring: 153 43% 18%;
 }
 
 .dark {
@@ -478,9 +556,12 @@ textarea:focus-visible,
 
 html, body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-  background: #F7F9FC !important;
+  font-family: var(--font-sans);
+  background: var(--bg-page);
+  color: var(--text-primary);
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* INTERACTION STATE UTILITIES */

@@ -109,24 +109,24 @@ export function ParticipationMetricsCard({
   }) => {
     const colorMap = {
       coral: {
-        bg: 'bg-[var(--coral-50)]',
-        icon: 'text-[var(--coral-600)]',
-        border: 'border-l-[var(--coral-400)]',
+        bg: 'bg-[var(--forest-50)]',
+        icon: 'text-[var(--forest-600)]',
+        border: 'border-l-[var(--forest-400)]',
       },
       teal: {
-        bg: 'bg-[var(--teal-50)]',
-        icon: 'text-[var(--teal-600)]',
-        border: 'border-l-[var(--teal-400)]',
+        bg: 'bg-[var(--sage-100)]',
+        icon: 'text-[var(--forest-700)]',
+        border: 'border-l-[var(--forest-500)]',
       },
       sage: {
-        bg: 'bg-[#F4F6F0]',
-        icon: 'text-[var(--sage)]',
-        border: 'border-l-[var(--sage)]',
+        bg: 'bg-[var(--sage-50)]',
+        icon: 'text-[var(--sage-500)]',
+        border: 'border-l-[var(--sage-400)]',
       },
       yuzu: {
-        bg: 'bg-[#FFFBEB]',
-        icon: 'text-[var(--warning-fg)]',
-        border: 'border-l-[var(--yuzu)]',
+        bg: 'bg-[var(--status-warning-bg)]',
+        icon: 'text-[var(--status-warning)]',
+        border: 'border-l-[var(--status-warning)]',
       },
     };
 

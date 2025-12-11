@@ -19,22 +19,22 @@ interface AnalyticsWarningBannerProps {
 
 const SEVERITY_STYLES = {
   info: {
-    bg: 'bg-blue-50 border-blue-200',
+    bg: 'bg-[var(--status-info-bg)] border-[var(--forest-200)]',
     icon: Info,
-    iconColor: 'text-blue-500',
-    textColor: 'text-blue-800',
+    iconColor: 'text-[var(--status-info)]',
+    textColor: 'text-[var(--forest-800)]',
   },
   warning: {
-    bg: 'bg-amber-50 border-amber-200',
+    bg: 'bg-[var(--status-warning-bg)] border-[var(--status-warning)]',
     icon: AlertTriangle,
-    iconColor: 'text-amber-500',
-    textColor: 'text-amber-800',
+    iconColor: 'text-[var(--status-warning)]',
+    textColor: 'text-[var(--status-warning)]',
   },
   error: {
-    bg: 'bg-red-50 border-red-200',
+    bg: 'bg-[var(--status-error-bg)] border-[var(--status-error)]',
     icon: XCircle,
-    iconColor: 'text-red-500',
-    textColor: 'text-red-800',
+    iconColor: 'text-[var(--status-error)]',
+    textColor: 'text-[var(--status-error)]',
   },
 };
 

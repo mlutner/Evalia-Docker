@@ -35,14 +35,14 @@ export function BandDistributionChart({
   // Loading state
   if (isLoading) {
     return (
-      <Card className="bg-white border border-gray-200">
+      <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">{title}</CardTitle>
+          <CardTitle className="text-lg font-semibold text-[var(--text-primary)]">{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-64 flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-[var(--color-primary)]" />
           </div>
         </CardContent>
       </Card>
@@ -52,15 +52,15 @@ export function BandDistributionChart({
   // Error state
   if (error) {
     return (
-      <Card className="bg-white border border-gray-200">
+      <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">{title}</CardTitle>
+          <CardTitle className="text-lg font-semibold text-[var(--text-primary)]">{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-64 flex flex-col items-center justify-center text-center">
-            <AlertCircle className="w-12 h-12 text-red-500 mb-3" />
-            <p className="text-sm text-gray-600 mb-2">Failed to load band distribution data</p>
+            <AlertCircle className="w-12 h-12 text-[var(--status-error)] mb-3" />
+            <p className="text-sm text-[var(--text-secondary)] mb-2">Failed to load band distribution data</p>
             {onRetry && (
               <Button variant="outline" size="sm" onClick={onRetry}>
                 <RotateCcw className="w-4 h-4 mr-2" />
@@ -75,21 +75,21 @@ export function BandDistributionChart({
 
   // No data or empty state
   const hasData = data && data.totalResponses > 0 && data.bands.some(b => b.count > 0);
-  
+
   if (!hasData) {
     return (
-      <Card className="bg-white border border-gray-200">
+      <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">{title}</CardTitle>
+          <CardTitle className="text-lg font-semibold text-[var(--text-primary)]">{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-64 flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <PieChartIcon className="w-8 h-8 text-gray-400" />
+            <div className="w-16 h-16 bg-[var(--neutral-100)] rounded-full flex items-center justify-center mb-4">
+              <PieChartIcon className="w-8 h-8 text-[var(--text-subtle)]" />
             </div>
-            <p className="text-sm text-gray-500">Not enough data yet</p>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-sm text-[var(--text-muted)]">Not enough data yet</p>
+            <p className="text-xs text-[var(--text-subtle)] mt-1">
               Band distribution will appear once responses are collected
             </p>
           </div>
@@ -117,13 +117,13 @@ export function BandDistributionChart({
       {data.bands.map((band) => (
         <div key={band.bandId} className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div 
-              className="w-3 h-3 rounded-full" 
+            <div
+              className="w-3 h-3 rounded-full"
               style={{ backgroundColor: band.color }}
             />
-            <span className="text-gray-700">{band.bandLabel}</span>
+            <span className="text-[var(--text-secondary)]">{band.bandLabel}</span>
           </div>
-          <span className="text-gray-500 tabular-nums">
+          <span className="text-[var(--text-muted)] tabular-nums">
             {band.count} ({band.percentage}%)
           </span>
         </div>
@@ -132,15 +132,15 @@ export function BandDistributionChart({
   );
 
   return (
-    <Card className="bg-white border border-gray-200">
+    <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div>
-            <CardTitle className="text-lg font-semibold text-gray-900">{title}</CardTitle>
+            <CardTitle className="text-lg font-semibold text-[var(--text-primary)]">{title}</CardTitle>
             <CardDescription>{description}</CardDescription>
           </div>
-          <div className="text-right text-sm text-gray-500">
-            <span className="font-medium text-gray-900">{data.totalResponses}</span> responses
+          <div className="text-right text-sm text-[var(--text-muted)]">
+            <span className="font-medium text-[var(--text-primary)]">{data.totalResponses}</span> responses
           </div>
         </div>
       </CardHeader>
@@ -160,7 +160,7 @@ export function BandDistributionChart({
                   dataKey="value"
                 >
                   {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} stroke="white" strokeWidth={2} />
+                    <Cell key={`cell-${index}`} fill={entry.color} stroke="var(--bg-card)" strokeWidth={2} />
                   ))}
                 </Pie>
                 <Tooltip
@@ -168,9 +168,9 @@ export function BandDistributionChart({
                     if (!active || !payload?.length) return null;
                     const data = payload[0].payload;
                     return (
-                      <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 text-sm">
-                        <p className="font-medium text-gray-900">{data.name}</p>
-                        <p className="text-gray-600">
+                      <div className="bg-[var(--bg-card)] border border-[var(--border-default)] rounded-lg shadow-lg p-3 text-sm">
+                        <p className="font-medium text-[var(--text-primary)]">{data.name}</p>
+                        <p className="text-[var(--text-secondary)]">
                           <span className="font-medium">{data.value}</span> respondents ({data.percentage}%)
                         </p>
                       </div>
@@ -182,8 +182,8 @@ export function BandDistributionChart({
             {/* Center label */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="text-center">
-                <p className="text-xs text-gray-500 uppercase tracking-wider">Most Common</p>
-                <p className="text-sm font-semibold text-gray-900">{dominantBand.bandLabel}</p>
+                <p className="text-xs text-[var(--text-muted)] uppercase tracking-wider">Most Common</p>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">{dominantBand.bandLabel}</p>
               </div>
             </div>
           </div>

@@ -18,14 +18,15 @@ import type { IndexDistributionData } from "@shared/analytics";
 import { isDistributionEmpty } from "@shared/analyticsConfidence";
 import { NoScoreDataState } from "./DataEmptyState";
 
-// Design system chart colors - coral to teal gradient for score bands
-// Hex values required for Recharts SVG fill (CSS variables don't work)
+// Design system chart colors - score band gradient
+// NOTE: Hex values required for Recharts SVG fill (CSS variables don't work in SVG)
+// These map to CSS variables: --band-critical, --band-concerning, --band-emerging, --band-developing, --band-thriving
 const BUCKET_COLORS_HEX = [
-  '#F04C5D',   // coral-500: Critical (0-20)
-  '#F3786D',   // peach: Concerning (21-40)
-  '#FFCE1E',   // yuzu: Emerging (41-60)
-  '#8B9A71',   // sage: Developing (61-80)
-  '#1B9B82',   // teal-500: Thriving (81-100)
+  '#B91C1C',   // Critical (0-20) - var(--band-critical)
+  '#D97706',   // Concerning (21-40) - var(--band-concerning)
+  '#EAB308',   // Emerging (41-60) - var(--band-emerging)
+  '#74A892',   // Developing (61-80) - var(--band-developing) = var(--sage-500)
+  '#2D6A4F',   // Thriving (81-100) - var(--band-thriving) = var(--forest-500)
 ];
 
 interface IndexDistributionChartProps {
@@ -131,15 +132,15 @@ export function IndexDistributionChart({
       <div className="h-56 mb-4">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E8E2D3" />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E8EDEB" />
             <XAxis
               dataKey="range"
-              tick={{ fontSize: 12, fill: '#706B62' }}
+              tick={{ fontSize: 12, fill: '#6B7573' }}
               tickLine={false}
-              axisLine={{ stroke: '#E8E2D3' }}
+              axisLine={{ stroke: '#D1D6D4' }}
             />
             <YAxis
-              tick={{ fontSize: 12, fill: '#706B62' }}
+              tick={{ fontSize: 12, fill: '#6B7573' }}
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `${value}`}

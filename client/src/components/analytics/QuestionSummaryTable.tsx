@@ -189,14 +189,14 @@ export function QuestionSummaryTable({
   // Loading state
   if (isLoading) {
     return (
-      <Card className="bg-white border border-gray-200">
+      <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">{title}</CardTitle>
+          <CardTitle className="text-lg font-semibold text-[var(--text-primary)]">{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-64 flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-[var(--color-primary)]" />
           </div>
         </CardContent>
       </Card>
@@ -206,15 +206,15 @@ export function QuestionSummaryTable({
   // Error state
   if (error) {
     return (
-      <Card className="bg-white border border-gray-200">
+      <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">{title}</CardTitle>
+          <CardTitle className="text-lg font-semibold text-[var(--text-primary)]">{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-64 flex flex-col items-center justify-center text-center">
-            <AlertCircle className="w-12 h-12 text-red-500 mb-3" />
-            <p className="text-sm text-gray-600 mb-2">Failed to load question summary</p>
+            <AlertCircle className="w-12 h-12 text-[var(--status-error)] mb-3" />
+            <p className="text-sm text-[var(--text-secondary)] mb-2">Failed to load question summary</p>
             {onRetry && (
               <Button variant="outline" size="sm" onClick={onRetry}>
                 <RotateCcw className="w-4 h-4 mr-2" />
@@ -230,18 +230,18 @@ export function QuestionSummaryTable({
   // No data state
   if (!data || data.questions.length === 0) {
     return (
-      <Card className="bg-white border border-gray-200">
+      <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">{title}</CardTitle>
+          <CardTitle className="text-lg font-semibold text-[var(--text-primary)]">{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-64 flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <FileText className="w-8 h-8 text-gray-400" />
+            <div className="w-16 h-16 bg-[var(--neutral-100)] rounded-full flex items-center justify-center mb-4">
+              <FileText className="w-8 h-8 text-[var(--text-subtle)]" />
             </div>
-            <p className="text-sm text-gray-500">No question data available</p>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-sm text-[var(--text-muted)]">No question data available</p>
+            <p className="text-xs text-[var(--text-subtle)] mt-1">
               Data will appear once responses are collected
             </p>
           </div>
@@ -251,16 +251,16 @@ export function QuestionSummaryTable({
   }
 
   return (
-    <Card className="bg-white border border-gray-200">
+    <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div>
-            <CardTitle className="text-lg font-semibold text-gray-900">{title}</CardTitle>
+            <CardTitle className="text-lg font-semibold text-[var(--text-primary)]">{title}</CardTitle>
             <CardDescription>{description}</CardDescription>
           </div>
           <div className="flex items-center gap-4">
-            <div className="text-right text-sm text-gray-500">
-              <span className="font-medium text-gray-900">{data.totalResponses}</span> total responses
+            <div className="text-right text-sm text-[var(--text-muted)]">
+              <span className="font-medium text-[var(--text-primary)]">{data.totalResponses}</span> total responses
             </div>
             {questionTypes.length > 1 && (
               <Select value={typeFilter} onValueChange={setTypeFilter}>
@@ -284,9 +284,9 @@ export function QuestionSummaryTable({
         <div className="rounded-md border overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-gray-50">
-                <TableHead 
-                  className="w-[60px] cursor-pointer hover:bg-gray-100"
+              <TableRow className="bg-[var(--neutral-50)]">
+                <TableHead
+                  className="w-[60px] cursor-pointer hover:bg-[var(--hover-tint)]"
                   onClick={() => handleSort("questionNumber")}
                 >
                   <div className="flex items-center">
@@ -296,8 +296,8 @@ export function QuestionSummaryTable({
                 </TableHead>
                 <TableHead className="min-w-[200px]">Question</TableHead>
                 <TableHead className="w-[100px]">Type</TableHead>
-                <TableHead 
-                  className="w-[120px] cursor-pointer hover:bg-gray-100 text-right"
+                <TableHead
+                  className="w-[120px] cursor-pointer hover:bg-[var(--hover-tint)] text-right"
                   onClick={() => handleSort("completionRate")}
                 >
                   <div className="flex items-center justify-end">
@@ -305,8 +305,8 @@ export function QuestionSummaryTable({
                     <SortIndicator columnKey="completionRate" />
                   </div>
                 </TableHead>
-                <TableHead 
-                  className="w-[100px] cursor-pointer hover:bg-gray-100 text-right"
+                <TableHead
+                  className="w-[100px] cursor-pointer hover:bg-[var(--hover-tint)] text-right"
                   onClick={() => handleSort("avgValue")}
                 >
                   <div className="flex items-center justify-end">
@@ -324,9 +324,9 @@ export function QuestionSummaryTable({
             </TableBody>
           </Table>
         </div>
-        
+
         {filteredQuestions.length === 0 && typeFilter !== ALL_TYPES && (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-[var(--text-muted)]">
             No questions match the selected filter.
           </div>
         )}
@@ -341,17 +341,17 @@ export function QuestionSummaryTable({
 
 function QuestionRow({ question }: { question: QuestionSummaryItem }) {
   const completionColor = getCompletionColor(question.completionRate);
-  
+
   return (
-    <TableRow className="hover:bg-gray-50">
-      <TableCell className="font-medium text-gray-500">
+    <TableRow className="hover:bg-[var(--hover-tint)]">
+      <TableCell className="font-medium text-[var(--text-muted)]">
         {question.questionNumber}
       </TableCell>
       <TableCell>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="line-clamp-2 text-sm text-gray-900">
+              <span className="line-clamp-2 text-sm text-[var(--text-primary)]">
                 {question.questionText}
               </span>
             </TooltipTrigger>
@@ -371,19 +371,19 @@ function QuestionRow({ question }: { question: QuestionSummaryItem }) {
           <span className={`font-medium ${completionColor}`}>
             {question.completionRate}%
           </span>
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-[var(--text-subtle)]">
             ({question.totalAnswers})
           </span>
         </div>
       </TableCell>
       <TableCell className="text-right font-medium">
         {question.avgValue !== null ? (
-          <span className="text-gray-900">{question.avgValue}</span>
+          <span className="text-[var(--text-primary)]">{question.avgValue}</span>
         ) : (
-          <span className="text-gray-400">—</span>
+          <span className="text-[var(--text-subtle)]">—</span>
         )}
         {question.minValue !== null && question.maxValue !== null && (
-          <span className="text-xs text-gray-400 ml-1">
+          <span className="text-xs text-[var(--text-subtle)] ml-1">
             ({question.minValue}-{question.maxValue})
           </span>
         )}
@@ -392,7 +392,7 @@ function QuestionRow({ question }: { question: QuestionSummaryItem }) {
         {question.distribution && question.distribution.length > 0 ? (
           <MiniDistribution distribution={question.distribution} />
         ) : (
-          <span className="text-gray-400 text-sm">—</span>
+          <span className="text-[var(--text-subtle)] text-sm">—</span>
         )}
       </TableCell>
     </TableRow>
@@ -411,7 +411,7 @@ function MiniDistribution({ distribution }: { distribution: OptionDistribution[]
     .slice(0, 3);
 
   if (topOptions.length === 0) {
-    return <span className="text-gray-400 text-sm">No responses</span>;
+    return <span className="text-[var(--text-subtle)] text-sm">No responses</span>;
   }
 
   return (
@@ -420,19 +420,19 @@ function MiniDistribution({ distribution }: { distribution: OptionDistribution[]
         <TooltipTrigger asChild>
           <div className="flex items-center gap-1">
             {topOptions.map((opt, i) => (
-              <div 
+              <div
                 key={opt.value}
                 className="flex items-center gap-1 text-xs"
               >
-                <div 
+                <div
                   className="w-2 h-2 rounded-full"
                   style={{ backgroundColor: getBarColor(i) }}
                 />
-                <span className="text-gray-600">{opt.percentage}%</span>
+                <span className="text-[var(--text-secondary)]">{opt.percentage}%</span>
               </div>
             ))}
             {distribution.filter(d => d.count > 0).length > 3 && (
-              <span className="text-gray-400 text-xs">+{distribution.filter(d => d.count > 0).length - 3}</span>
+              <span className="text-[var(--text-subtle)] text-xs">+{distribution.filter(d => d.count > 0).length - 3}</span>
             )}
           </div>
         </TooltipTrigger>
@@ -456,10 +456,10 @@ function MiniDistribution({ distribution }: { distribution: OptionDistribution[]
 // ============================================================================
 
 function getCompletionColor(rate: number): string {
-  if (rate >= 90) return "text-green-600";
-  if (rate >= 70) return "text-lime-600";
-  if (rate >= 50) return "text-amber-600";
-  return "text-red-600";
+  if (rate >= 90) return "text-[var(--status-success)]";
+  if (rate >= 70) return "text-[var(--forest-400)]";
+  if (rate >= 50) return "text-[var(--status-warning)]";
+  return "text-[var(--status-error)]";
 }
 
 function getBarColor(index: number): string {

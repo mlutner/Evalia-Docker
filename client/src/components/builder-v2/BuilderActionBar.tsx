@@ -32,15 +32,15 @@ export function BuilderActionBar({ onPreview, onSettings }: BuilderActionBarProp
   };
 
   return (
-    <div className="w-full bg-white border-t border-gray-200 px-4 lg:px-8 py-3">
+    <div className="w-full bg-[var(--panel-center)] border-t border-[var(--border-default)] px-4 lg:px-8 py-3">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Left: Survey Info */}
         <div className="flex items-center gap-4">
           <div className="hidden sm:block">
-            <h3 className="text-sm font-bold text-gray-900 truncate max-w-[200px] lg:max-w-[300px]">
+            <h3 className="text-sm font-bold text-[var(--text-primary)] truncate max-w-[200px] lg:max-w-[300px]">
               {survey.title || 'Untitled Survey'}
             </h3>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[var(--text-muted)]">
               {questions.length} question{questions.length !== 1 ? 's' : ''}
               {isDirty && <span className="text-orange-500 ml-2">• Unsaved changes</span>}
             </p>
@@ -117,8 +117,8 @@ export function BuilderActionBar({ onPreview, onSettings }: BuilderActionBarProp
 function QuickStat({ label, value }: { label: string; value: number | string }) {
   return (
     <div className="text-center">
-      <p className="text-lg font-bold text-gray-900">{value}</p>
-      <p className="text-xs text-gray-500">{label}</p>
+      <p className="text-lg font-bold text-[var(--text-primary)]">{value}</p>
+      <p className="text-xs text-[var(--text-muted)]">{label}</p>
     </div>
   );
 }

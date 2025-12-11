@@ -57,26 +57,26 @@ type SortDirection = "asc" | "desc";
  * Mini band distribution visualization
  * Shows colored bars representing each band's percentage
  */
-const BandDistributionBar: React.FC<{ 
-  distribution: ManagerBandDistribution[]; 
-  respondentCount: number 
+const BandDistributionBar: React.FC<{
+  distribution: ManagerBandDistribution[];
+  respondentCount: number
 }> = ({ distribution, respondentCount }) => {
   if (!distribution || distribution.length === 0 || respondentCount === 0) {
-    return <span className="text-gray-400 text-sm">No data</span>;
+    return <span className="text-[var(--text-subtle)] text-sm">No data</span>;
   }
 
   // Filter to only bands with counts > 0 for display
   const nonEmptyBands = distribution.filter(b => b.count > 0);
 
   if (nonEmptyBands.length === 0) {
-    return <span className="text-gray-400 text-sm">No scores</span>;
+    return <span className="text-[var(--text-subtle)] text-sm">No scores</span>;
   }
 
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="flex items-center h-5 w-full min-w-[100px] max-w-[200px] cursor-help rounded overflow-hidden border border-gray-200">
+          <div className="flex items-center h-5 w-full min-w-[100px] max-w-[200px] cursor-help rounded overflow-hidden border border-[var(--border-default)]">
             {distribution.map((band) => (
               band.percentage > 0 && (
                 <div
@@ -92,22 +92,22 @@ const BandDistributionBar: React.FC<{
             ))}
           </div>
         </TooltipTrigger>
-        <TooltipContent 
-          className="bg-white text-gray-900 border border-gray-200 shadow-lg p-3 rounded-md min-w-[180px]"
+        <TooltipContent
+          className="bg-[var(--bg-card)] text-[var(--text-primary)] border border-[var(--border-default)] shadow-lg p-3 rounded-md min-w-[180px]"
         >
           <p className="font-semibold mb-2 text-sm">Band Distribution</p>
           <div className="space-y-1">
             {distribution.map((band) => (
-              <div 
-                key={band.bandId} 
+              <div
+                key={band.bandId}
                 className="flex items-center justify-between text-xs gap-3"
               >
                 <div className="flex items-center gap-2">
-                  <div 
-                    className="w-3 h-3 rounded-sm" 
+                  <div
+                    className="w-3 h-3 rounded-sm"
                     style={{ backgroundColor: band.color }}
                   />
-                  <span className="text-gray-700">{band.bandLabel}</span>
+                  <span className="text-[var(--text-secondary)]">{band.bandLabel}</span>
                 </div>
                 <span className="font-medium">
                   {band.count} ({band.percentage}%)
@@ -126,24 +126,24 @@ const BandDistributionBar: React.FC<{
  */
 const ScoreBadge: React.FC<{ score: number }> = ({ score }) => {
   // Color based on score bands
-  let bgColor = "bg-gray-100";
-  let textColor = "text-gray-700";
+  let bgColor = "bg-[var(--neutral-100)]";
+  let textColor = "text-[var(--text-secondary)]";
 
   if (score >= 85) {
-    bgColor = "bg-green-100";
-    textColor = "text-green-800";
+    bgColor = "bg-[var(--status-success-bg)]";
+    textColor = "text-[var(--status-success)]";
   } else if (score >= 70) {
-    bgColor = "bg-lime-100";
-    textColor = "text-lime-800";
+    bgColor = "bg-[var(--sage-100)]";
+    textColor = "text-[var(--forest-500)]";
   } else if (score >= 55) {
-    bgColor = "bg-amber-100";
-    textColor = "text-amber-800";
+    bgColor = "bg-[var(--status-warning-bg)]";
+    textColor = "text-[var(--status-warning)]";
   } else if (score >= 40) {
-    bgColor = "bg-orange-100";
-    textColor = "text-orange-800";
+    bgColor = "bg-[var(--status-warning-bg)]";
+    textColor = "text-[var(--status-warning)]";
   } else {
-    bgColor = "bg-red-100";
-    textColor = "text-red-800";
+    bgColor = "bg-[var(--status-error-bg)]";
+    textColor = "text-[var(--status-error)]";
   }
 
   return (
@@ -220,7 +220,7 @@ export const ManagerComparisonTable: React.FC<ManagerComparisonTableProps> = ({
         description="Loading manager-level analytics..."
       >
         <div className="flex items-center justify-center h-48">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-[var(--color-primary)]" />
         </div>
       </AnalyticsSectionShell>
     );
@@ -234,9 +234,9 @@ export const ManagerComparisonTable: React.FC<ManagerComparisonTableProps> = ({
         description="Failed to load manager analytics."
       >
         <div className="flex flex-col items-center justify-center h-48 text-center">
-          <AlertTriangle className="w-10 h-10 mb-3 text-red-500" />
-          <p className="text-lg font-semibold text-red-600">Error loading data</p>
-          <p className="text-sm text-gray-600 mt-1">{error.message}</p>
+          <AlertTriangle className="w-10 h-10 mb-3 text-[var(--status-error)]" />
+          <p className="text-lg font-semibold text-[var(--status-error)]">Error loading data</p>
+          <p className="text-sm text-[var(--text-secondary)] mt-1">{error.message}</p>
           <Button onClick={onRetry} className="mt-4" variant="outline">
             Retry
           </Button>
@@ -253,12 +253,12 @@ export const ManagerComparisonTable: React.FC<ManagerComparisonTableProps> = ({
         description="No manager data available for this survey."
       >
         <div className="flex flex-col items-center justify-center h-48 text-center">
-          <Users className="w-10 h-10 mb-3 text-gray-400" />
-          <p className="text-lg font-semibold text-gray-700">No Manager Data</p>
-          <p className="text-sm text-gray-500 mt-1">
+          <Users className="w-10 h-10 mb-3 text-[var(--text-subtle)]" />
+          <p className="text-lg font-semibold text-[var(--text-secondary)]">No Manager Data</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Survey responses need manager assignments to display comparisons.
           </p>
-          <p className="text-xs text-gray-400 mt-2">
+          <p className="text-xs text-[var(--text-subtle)] mt-2">
             Managers are identified via response metadata (managerId field).
           </p>
         </div>
@@ -276,8 +276,8 @@ export const ManagerComparisonTable: React.FC<ManagerComparisonTableProps> = ({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead 
-                className="cursor-pointer select-none hover:bg-gray-50"
+              <TableHead
+                className="cursor-pointer select-none hover:bg-[var(--hover-tint)]"
                 onClick={() => handleSort("managerId")}
               >
                 <div className="flex items-center gap-1">
@@ -288,8 +288,8 @@ export const ManagerComparisonTable: React.FC<ManagerComparisonTableProps> = ({
                   )}
                 </div>
               </TableHead>
-              <TableHead 
-                className="cursor-pointer select-none hover:bg-gray-50 text-center"
+              <TableHead
+                className="cursor-pointer select-none hover:bg-[var(--hover-tint)] text-center"
                 onClick={() => handleSort("respondentCount")}
               >
                 <div className="flex items-center justify-center gap-1">
@@ -299,8 +299,8 @@ export const ManagerComparisonTable: React.FC<ManagerComparisonTableProps> = ({
                   )}
                 </div>
               </TableHead>
-              <TableHead 
-                className="cursor-pointer select-none hover:bg-gray-50 text-center"
+              <TableHead
+                className="cursor-pointer select-none hover:bg-[var(--hover-tint)] text-center"
                 onClick={() => handleSort("completionRate")}
               >
                 <div className="flex items-center justify-center gap-1">
@@ -310,8 +310,8 @@ export const ManagerComparisonTable: React.FC<ManagerComparisonTableProps> = ({
                   )}
                 </div>
               </TableHead>
-              <TableHead 
-                className="cursor-pointer select-none hover:bg-gray-50 text-center"
+              <TableHead
+                className="cursor-pointer select-none hover:bg-[var(--hover-tint)] text-center"
                 onClick={() => handleSort("avgIndexScore")}
               >
                 <div className="flex items-center justify-center gap-1">
@@ -336,7 +336,7 @@ export const ManagerComparisonTable: React.FC<ManagerComparisonTableProps> = ({
                   <div className="flex flex-col">
                     <span>{manager.managerName || manager.managerId}</span>
                     {manager.managerName && (
-                      <span className="text-xs text-gray-400">{manager.managerId}</span>
+                      <span className="text-xs text-[var(--text-subtle)]">{manager.managerId}</span>
                     )}
                   </div>
                 </TableCell>
@@ -344,7 +344,7 @@ export const ManagerComparisonTable: React.FC<ManagerComparisonTableProps> = ({
                   <span className="font-medium">{manager.respondentCount}</span>
                 </TableCell>
                 <TableCell className="text-center">
-                  <span className={`${manager.completionRate >= 80 ? 'text-green-600' : manager.completionRate >= 50 ? 'text-amber-600' : 'text-red-600'}`}>
+                  <span className={`${manager.completionRate >= 80 ? 'text-[var(--status-success)]' : manager.completionRate >= 50 ? 'text-[var(--status-warning)]' : 'text-[var(--status-error)]'}`}>
                     {manager.completionRate}%
                   </span>
                 </TableCell>
@@ -361,7 +361,7 @@ export const ManagerComparisonTable: React.FC<ManagerComparisonTableProps> = ({
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <span className="text-gray-400 cursor-help">
+                        <span className="text-[var(--text-subtle)] cursor-help">
                           <Minus className="w-4 h-4 inline" />
                         </span>
                       </TooltipTrigger>

@@ -34,38 +34,38 @@ const ISSUE_DETAILS = {
   },
 };
 
-export function ScoringMisconfiguredState({ 
-  surveyId, 
-  issue, 
-  onGoToBuilder 
+export function ScoringMisconfiguredState({
+  surveyId,
+  issue,
+  onGoToBuilder
 }: ScoringMisconfiguredStateProps) {
   const details = ISSUE_DETAILS[issue];
-  
+
   return (
-    <Card className="bg-red-50 border-red-200">
+    <Card className="bg-[var(--status-error-bg)] border-[var(--status-error)]">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-semibold text-red-800 flex items-center gap-2">
+        <CardTitle className="text-lg font-semibold text-[var(--status-error)] flex items-center gap-2">
           <AlertTriangle className="w-5 h-5" />
           {details.title}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-red-700 mb-4">
+        <p className="text-sm text-[var(--status-error)] mb-4">
           {details.description}
         </p>
-        <div className="bg-white/50 rounded-lg p-3 border border-red-200">
-          <p className="text-sm text-red-800 font-medium flex items-center gap-2">
+        <div className="bg-[var(--bg-card)]/50 rounded-lg p-3 border border-[var(--status-error)]">
+          <p className="text-sm text-[var(--status-error)] font-medium flex items-center gap-2">
             <Settings className="w-4 h-4" />
             How to fix:
           </p>
-          <p className="text-sm text-red-700 mt-1">
+          <p className="text-sm text-[var(--status-error)] mt-1">
             {details.action}
           </p>
         </div>
         {onGoToBuilder && (
-          <Button 
-            variant="outline" 
-            className="mt-4 border-red-300 text-red-700 hover:bg-red-100"
+          <Button
+            variant="outline"
+            className="mt-4 border-[var(--status-error)] text-[var(--status-error)] hover:bg-[var(--status-error-bg)]"
             onClick={onGoToBuilder}
           >
             Open Survey Builder
@@ -83,13 +83,13 @@ export function ScoringMisconfiguredState({
 export function InlineScoringMisconfigured({ message }: { message: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-8 text-center">
-      <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
-        <AlertTriangle className="w-6 h-6 text-red-500" />
+      <div className="w-12 h-12 rounded-full bg-[var(--status-error-bg)] flex items-center justify-center mb-4">
+        <AlertTriangle className="w-6 h-6 text-[var(--status-error)]" />
       </div>
-      <h3 className="text-lg font-medium text-gray-900 mb-1">
+      <h3 className="text-lg font-medium text-[var(--text-primary)] mb-1">
         Scoring Misconfigured
       </h3>
-      <p className="text-sm text-gray-500 max-w-md">
+      <p className="text-sm text-[var(--text-muted)] max-w-md">
         {message}
       </p>
     </div>

@@ -26,14 +26,14 @@ export function AnalyticsSectionShell({
   className = "",
 }: AnalyticsSectionShellProps) {
   return (
-    <Card className={`bg-white border border-gray-200 ${className}`}>
+    <Card className={`bg-[var(--bg-card)] border border-[var(--border-default)] ${className}`}>
       <CardHeader className="flex flex-row items-start justify-between space-y-0">
         <div className="space-y-1">
-          <CardTitle className="text-lg font-semibold text-gray-900">
+          <CardTitle className="text-lg font-semibold text-[var(--text-primary)]">
             {title}
           </CardTitle>
           {description && (
-            <CardDescription className="text-sm text-gray-500">
+            <CardDescription className="text-sm text-[var(--text-muted)]">
               {description}
             </CardDescription>
           )}

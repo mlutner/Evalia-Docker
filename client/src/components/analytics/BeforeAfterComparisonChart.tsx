@@ -41,8 +41,9 @@ interface BeforeAfterComparisonChartProps {
 }
 
 // [ANAL-QA-030] Colors for comparison bars (not band-related)
-const BEFORE_COLOR = "#94a3b8"; // Slate-400
-const AFTER_COLOR = "#3b82f6"; // Blue-500
+// Recharts requires hex values (not CSS vars)
+const BEFORE_COLOR = "#94a3b8"; // Slate-400 - equivalent to neutral gray
+const AFTER_COLOR = "#3b82f6"; // Blue-500 - equivalent to primary blue
 
 /**
  * Custom tooltip for the bar chart
@@ -54,19 +55,19 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     const dimension = payload[0]?.payload as DimensionComparison;
 
     return (
-      <div className="bg-white p-3 border border-gray-200 rounded-md shadow-lg text-sm">
-        <p className="font-semibold text-gray-800 mb-2">{label}</p>
+      <div className="bg-[var(--bg-card)] p-3 border border-[var(--border-default)] rounded-md shadow-lg text-sm">
+        <p className="font-semibold text-[var(--text-primary)] mb-2">{label}</p>
         <div className="space-y-1">
-          <p className="text-gray-600">
+          <p className="text-[var(--text-secondary)]">
             <span className="inline-block w-3 h-3 rounded mr-2" style={{ backgroundColor: BEFORE_COLOR }} />
             Before: <span className="font-medium">{beforeValue ?? "N/A"}</span>
           </p>
-          <p className="text-gray-600">
+          <p className="text-[var(--text-secondary)]">
             <span className="inline-block w-3 h-3 rounded mr-2" style={{ backgroundColor: AFTER_COLOR }} />
             After: <span className="font-medium">{afterValue ?? "N/A"}</span>
           </p>
           {dimension?.change !== null && (
-            <p className="mt-2 pt-2 border-t border-gray-100">
+            <p className="mt-2 pt-2 border-t border-[var(--border-subtle)]">
               Change:{" "}
               <span
                 className="font-semibold"
@@ -97,10 +98,10 @@ function ComparisonSummary({ data }: { data: BeforeAfterIndexComparisonData }) {
   const { summary, versionBefore, versionAfter } = data;
 
   const trendIcon = {
-    positive: <TrendingUp className="w-5 h-5 text-green-500" />,
-    negative: <TrendingDown className="w-5 h-5 text-red-500" />,
-    mixed: <Minus className="w-5 h-5 text-amber-500" />,
-    stable: <Minus className="w-5 h-5 text-gray-400" />,
+    positive: <TrendingUp className="w-5 h-5 text-[var(--status-success)]" />,
+    negative: <TrendingDown className="w-5 h-5 text-[var(--status-error)]" />,
+    mixed: <Minus className="w-5 h-5 text-[var(--status-warning)]" />,
+    stable: <Minus className="w-5 h-5 text-[var(--text-subtle)]" />,
   };
 
   const trendLabel = {
@@ -111,14 +112,14 @@ function ComparisonSummary({ data }: { data: BeforeAfterIndexComparisonData }) {
   };
 
   const trendColor = {
-    positive: "text-green-600 bg-green-50",
-    negative: "text-red-600 bg-red-50",
-    mixed: "text-amber-600 bg-amber-50",
-    stable: "text-gray-600 bg-gray-50",
+    positive: "text-[var(--status-success)] bg-[var(--status-success-bg)]",
+    negative: "text-[var(--status-error)] bg-[var(--status-error-bg)]",
+    mixed: "text-[var(--status-warning)] bg-[var(--status-warning-bg)]",
+    stable: "text-[var(--text-secondary)] bg-[var(--neutral-50)]",
   };
 
   return (
-    <div className="bg-gray-50 rounded-lg p-4 mb-4">
+    <div className="bg-[var(--neutral-50)] rounded-lg p-4 mb-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           {trendIcon[summary.overallTrend]}
@@ -126,34 +127,34 @@ function ComparisonSummary({ data }: { data: BeforeAfterIndexComparisonData }) {
             {trendLabel[summary.overallTrend]}
           </span>
         </div>
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-[var(--text-muted)]">
           {versionBefore.label} → {versionAfter.label}
         </div>
       </div>
       <div className="grid grid-cols-3 gap-4 text-center">
         <div>
           <div className="flex items-center justify-center gap-1">
-            <ArrowUpRight className="w-4 h-4 text-green-500" />
-            <span className="text-xl font-bold text-green-600">{summary.totalDimensionsImproved}</span>
+            <ArrowUpRight className="w-4 h-4 text-[var(--status-success)]" />
+            <span className="text-xl font-bold text-[var(--status-success)]">{summary.totalDimensionsImproved}</span>
           </div>
-          <p className="text-xs text-gray-500">Improved</p>
+          <p className="text-xs text-[var(--text-muted)]">Improved</p>
         </div>
         <div>
           <div className="flex items-center justify-center gap-1">
-            <ArrowDownRight className="w-4 h-4 text-red-500" />
-            <span className="text-xl font-bold text-red-600">{summary.totalDimensionsDeclined}</span>
+            <ArrowDownRight className="w-4 h-4 text-[var(--status-error)]" />
+            <span className="text-xl font-bold text-[var(--status-error)]">{summary.totalDimensionsDeclined}</span>
           </div>
-          <p className="text-xs text-gray-500">Declined</p>
+          <p className="text-xs text-[var(--text-muted)]">Declined</p>
         </div>
         <div>
           <div className="flex items-center justify-center gap-1">
-            <Minus className="w-4 h-4 text-gray-400" />
-            <span className="text-xl font-bold text-gray-600">{summary.totalDimensionsStable}</span>
+            <Minus className="w-4 h-4 text-[var(--text-subtle)]" />
+            <span className="text-xl font-bold text-[var(--text-secondary)]">{summary.totalDimensionsStable}</span>
           </div>
-          <p className="text-xs text-gray-500">Stable</p>
+          <p className="text-xs text-[var(--text-muted)]">Stable</p>
         </div>
       </div>
-      <div className="mt-3 pt-3 border-t border-gray-200 flex justify-between text-xs text-gray-500">
+      <div className="mt-3 pt-3 border-t border-[var(--border-default)] flex justify-between text-xs text-[var(--text-muted)]">
         <span>Before: {versionBefore.responseCount} responses ({versionBefore.date.split('T')[0]})</span>
         <span>After: {versionAfter.responseCount} responses ({versionAfter.date.split('T')[0]})</span>
       </div>
@@ -190,14 +191,14 @@ export function BeforeAfterComparisonChart({
   // Loading state
   if (isLoading) {
     return (
-      <Card className="bg-white border border-gray-200">
+      <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
         <CardHeader>
           <CardTitle className="text-lg">{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center h-64">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-[var(--color-primary)]" />
           </div>
         </CardContent>
       </Card>
@@ -207,16 +208,16 @@ export function BeforeAfterComparisonChart({
   // Error state
   if (error) {
     return (
-      <Card className="bg-white border border-gray-200">
+      <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
         <CardHeader>
           <CardTitle className="text-lg">{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center h-64 text-center">
-            <AlertTriangle className="w-10 h-10 text-amber-500 mb-3" />
-            <p className="text-gray-700 font-medium mb-2">Failed to load comparison</p>
-            <p className="text-sm text-gray-500 mb-4">{error.message}</p>
+            <AlertTriangle className="w-10 h-10 text-[var(--status-warning)] mb-3" />
+            <p className="text-[var(--text-secondary)] font-medium mb-2">Failed to load comparison</p>
+            <p className="text-sm text-[var(--text-muted)] mb-4">{error.message}</p>
             <Button onClick={onRetry} variant="outline" size="sm">
               <RefreshCw className="w-4 h-4 mr-2" />
               Retry
@@ -230,16 +231,16 @@ export function BeforeAfterComparisonChart({
   // Not enough versions state
   if (!hasEnoughVersions && availableVersions.length > 0) {
     return (
-      <Card className="bg-white border border-gray-200">
+      <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
         <CardHeader>
           <CardTitle className="text-lg">{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center h-64 text-center">
-            <TrendingUp className="w-10 h-10 text-gray-300 mb-3" />
-            <p className="text-gray-700 font-medium mb-2">Not Enough Versions</p>
-            <p className="text-sm text-gray-500">
+            <TrendingUp className="w-10 h-10 text-[var(--neutral-300)] mb-3" />
+            <p className="text-[var(--text-secondary)] font-medium mb-2">Not Enough Versions</p>
+            <p className="text-sm text-[var(--text-muted)]">
               Create at least two scoring versions to compare changes over time.
             </p>
           </div>
@@ -249,19 +250,19 @@ export function BeforeAfterComparisonChart({
   }
 
   return (
-    <Card className="bg-white border border-gray-200">
+    <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div>
             <CardTitle className="text-lg">{title}</CardTitle>
             <CardDescription>{description}</CardDescription>
           </div>
-          
+
           {/* Version Selectors */}
           {availableVersions.length >= 2 && (
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">Before:</span>
+                <span className="text-sm text-[var(--text-muted)]">Before:</span>
                 <Select
                   value={selectedVersionBefore}
                   onValueChange={onVersionBeforeChange}
@@ -281,7 +282,7 @@ export function BeforeAfterComparisonChart({
                 </Select>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">After:</span>
+                <span className="text-sm text-[var(--text-muted)]">After:</span>
                 <Select
                   value={selectedVersionAfter}
                   onValueChange={onVersionAfterChange}
@@ -308,9 +309,9 @@ export function BeforeAfterComparisonChart({
         {/* Show message if no versions selected yet */}
         {!canCompare ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
-            <TrendingUp className="w-10 h-10 text-gray-300 mb-3" />
-            <p className="text-gray-700 font-medium mb-2">Select Versions to Compare</p>
-            <p className="text-sm text-gray-500">
+            <TrendingUp className="w-10 h-10 text-[var(--neutral-300)] mb-3" />
+            <p className="text-[var(--text-secondary)] font-medium mb-2">Select Versions to Compare</p>
+            <p className="text-sm text-[var(--text-muted)]">
               Choose a "Before" and "After" version above to see the comparison.
             </p>
           </div>
@@ -353,9 +354,9 @@ export function BeforeAfterComparisonChart({
               {data.comparison.map((dim) => (
                 <div
                   key={dim.dimensionId}
-                  className="text-center p-2 rounded bg-gray-50"
+                  className="text-center p-2 rounded bg-[var(--neutral-50)]"
                 >
-                  <p className="text-xs text-gray-500 truncate">{dim.dimensionLabel}</p>
+                  <p className="text-xs text-[var(--text-muted)] truncate">{dim.dimensionLabel}</p>
                   <p
                     className="font-bold"
                     style={{ color: TREND_COLORS[dim.trend] }}

@@ -80,10 +80,10 @@ function resolveBandFromRanges(
  * Get rank icon based on position.
  */
 function RankIcon({ rank }: { rank: number }) {
-  if (rank === 1) return <Trophy className="w-5 h-5 text-yellow-500" />;
-  if (rank === 2) return <Medal className="w-5 h-5 text-gray-400" />;
-  if (rank === 3) return <Award className="w-5 h-5 text-amber-600" />;
-  return <span className="w-5 h-5 flex items-center justify-center text-sm font-bold text-gray-400">#{rank}</span>;
+  if (rank === 1) return <Trophy className="w-5 h-5 text-[var(--status-warning)]" />;
+  if (rank === 2) return <Medal className="w-5 h-5 text-[var(--text-subtle)]" />;
+  if (rank === 3) return <Award className="w-5 h-5 text-[var(--status-warning)]" />;
+  return <span className="w-5 h-5 flex items-center justify-center text-sm font-bold text-[var(--text-subtle)]">#{rank}</span>;
 }
 
 /**
@@ -91,10 +91,10 @@ function RankIcon({ rank }: { rank: number }) {
  */
 function PerformanceBar({ score, color }: { score: number; color: string }) {
   const width = Math.max(5, Math.min(100, score));
-  
+
   return (
-    <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-      <div 
+    <div className="w-24 h-2 bg-[var(--neutral-200)] rounded-full overflow-hidden">
+      <div
         className="h-full rounded-full transition-all duration-300"
         style={{ width: `${width}%`, backgroundColor: color }}
       />
@@ -130,14 +130,14 @@ export function CategoryLeaderboardTable({
   // Loading state
   if (isLoading) {
     return (
-      <Card className="bg-white border border-gray-200">
+      <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">{title}</CardTitle>
+          <CardTitle className="text-lg font-semibold text-[var(--text-primary)]">{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-48 flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-[var(--color-primary)]" />
           </div>
         </CardContent>
       </Card>
@@ -147,15 +147,15 @@ export function CategoryLeaderboardTable({
   // Error state
   if (error) {
     return (
-      <Card className="bg-white border border-gray-200">
+      <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">{title}</CardTitle>
+          <CardTitle className="text-lg font-semibold text-[var(--text-primary)]">{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-48 flex flex-col items-center justify-center text-center">
-            <AlertTriangle className="w-12 h-12 text-amber-500 mb-3" />
-            <p className="text-sm text-gray-600 mb-2">Failed to load category data</p>
+            <AlertTriangle className="w-12 h-12 text-[var(--status-warning)] mb-3" />
+            <p className="text-sm text-[var(--text-secondary)] mb-2">Failed to load category data</p>
             {onRetry && (
               <Button variant="outline" size="sm" onClick={onRetry}>
                 Retry
@@ -170,18 +170,18 @@ export function CategoryLeaderboardTable({
   // Empty state
   if (rankedCategories.length === 0) {
     return (
-      <Card className="bg-white border border-gray-200">
+      <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">{title}</CardTitle>
+          <CardTitle className="text-lg font-semibold text-[var(--text-primary)]">{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-48 flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <Trophy className="w-8 h-8 text-gray-400" />
+            <div className="w-16 h-16 bg-[var(--neutral-100)] rounded-full flex items-center justify-center mb-4">
+              <Trophy className="w-8 h-8 text-[var(--text-subtle)]" />
             </div>
-            <p className="text-sm text-gray-500">No category data available</p>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-sm text-[var(--text-muted)]">No category data available</p>
+            <p className="text-xs text-[var(--text-subtle)] mt-1">
               Configure scoring categories to see rankings
             </p>
           </div>
@@ -191,29 +191,29 @@ export function CategoryLeaderboardTable({
   }
 
   return (
-    <Card className="bg-white border border-gray-200">
+    <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold text-gray-900">{title}</CardTitle>
+        <CardTitle className="text-lg font-semibold text-[var(--text-primary)]">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-2 text-xs font-semibold text-gray-500 uppercase tracking-wide w-12">
+              <tr className="border-b border-[var(--border-default)]">
+                <th className="text-left py-3 px-2 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide w-12">
                   Rank
                 </th>
-                <th className="text-left py-3 px-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                <th className="text-left py-3 px-2 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">
                   Category
                 </th>
-                <th className="text-right py-3 px-2 text-xs font-semibold text-gray-500 uppercase tracking-wide w-20">
+                <th className="text-right py-3 px-2 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide w-20">
                   Score
                 </th>
-                <th className="text-left py-3 px-2 text-xs font-semibold text-gray-500 uppercase tracking-wide w-32">
+                <th className="text-left py-3 px-2 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide w-32">
                   Performance
                 </th>
-                <th className="text-left py-3 px-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                <th className="text-left py-3 px-2 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">
                   Band
                 </th>
               </tr>
@@ -227,17 +227,17 @@ export function CategoryLeaderboardTable({
                 const color = band?.color || getColorForScore(category.normalizedScore);
                 
                 return (
-                  <tr 
-                    key={category.categoryId} 
-                    className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                  <tr
+                    key={category.categoryId}
+                    className="border-b border-[var(--border-subtle)] hover:bg-[var(--hover-tint)] transition-colors"
                   >
                     <td className="py-3 px-2">
                       <RankIcon rank={category.rank} />
                     </td>
                     <td className="py-3 px-2">
-                      <div className="font-medium text-gray-900">{category.categoryName}</div>
+                      <div className="font-medium text-[var(--text-primary)]">{category.categoryName}</div>
                       {category.interpretation && (
-                        <div className="text-xs text-gray-500 mt-0.5 line-clamp-1">
+                        <div className="text-xs text-[var(--text-muted)] mt-0.5 line-clamp-1">
                           {category.interpretation}
                         </div>
                       )}

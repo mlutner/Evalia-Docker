@@ -291,12 +291,12 @@ function SurveyBuilderContent({ surveyId }: { surveyId?: string }) {
   }, [builderMode, modesEnabled]);
 
   return (
-    <div className="absolute inset-0 bg-gray-50 font-sans flex flex-col" data-builder-mode={builderMode}>
+    <div className="absolute inset-0 bg-[var(--bg-page)] font-sans flex flex-col" data-builder-mode={builderMode}>
       {/* Top Bar: Progress Flow Stepper */}
       <ProgressFlowStepper surveyId={surveyId} />
 
       {modesEnabled && (
-        <div className="border-b border-gray-200 bg-white shrink-0">
+        <div className="border-b border-[var(--border-default)] bg-[var(--bg-card)] shrink-0">
           <div className="px-4 py-2">
             <BuilderModeToggle mode={builderMode} onChange={setBuilderMode} />
           </div>

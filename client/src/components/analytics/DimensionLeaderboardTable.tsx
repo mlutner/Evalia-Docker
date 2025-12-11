@@ -175,7 +175,7 @@ function buildLeaderboardRows(
 function RankBadge({ rank }: { rank: number }) {
   if (rank === 1) {
     return (
-      <span className="flex items-center gap-1 text-amber-600 font-bold">
+      <span className="flex items-center gap-1 text-[var(--status-warning)] font-bold">
         <Trophy className="w-4 h-4" />
         {rank}
       </span>
@@ -183,29 +183,29 @@ function RankBadge({ rank }: { rank: number }) {
   }
   if (rank === 5) {
     return (
-      <span className="flex items-center gap-1 text-red-500 font-medium">
+      <span className="flex items-center gap-1 text-[var(--status-error)] font-medium">
         <AlertCircle className="w-4 h-4" />
         {rank}
       </span>
     );
   }
-  return <span className="text-gray-600 font-medium">{rank}</span>;
+  return <span className="text-[var(--text-secondary)] font-medium">{rank}</span>;
 }
 
 function ScoreBadge({ score, band, isBurnout }: { score: number; band: IndexBand; isBurnout: boolean }) {
   return (
     <div className="flex items-center gap-2">
-      <span 
+      <span
         className="inline-flex items-center px-2 py-0.5 rounded-full text-sm font-semibold"
-        style={{ 
-          backgroundColor: `${band.color}20`, 
-          color: band.color 
+        style={{
+          backgroundColor: `${band.color}20`,
+          color: band.color
         }}
       >
         {score.toFixed(1)}
       </span>
       {isBurnout && (
-        <span className="text-xs text-gray-500 flex items-center gap-0.5">
+        <span className="text-xs text-[var(--text-muted)] flex items-center gap-0.5">
           <ArrowDown className="w-3 h-3" />
           Lower is better
         </span>
@@ -216,11 +216,11 @@ function ScoreBadge({ score, band, isBurnout }: { score: number; band: IndexBand
 
 function TrendIndicator({ change, trend }: { change: number | null; trend: 'up' | 'down' | 'neutral' }) {
   if (change === null) {
-    return <span className="text-gray-400">—</span>;
+    return <span className="text-[var(--text-subtle)]">—</span>;
   }
 
   const Icon = trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus;
-  const colorClass = trend === 'up' ? 'text-emerald-600' : trend === 'down' ? 'text-red-500' : 'text-gray-400';
+  const colorClass = trend === 'up' ? 'text-[var(--status-success)]' : trend === 'down' ? 'text-[var(--status-error)]' : 'text-[var(--text-subtle)]';
   const sign = change > 0 ? '+' : '';
 
   return (
@@ -234,13 +234,13 @@ function TrendIndicator({ change, trend }: { change: number | null; trend: 'up' 
 function PerformanceBar({ score }: { score: number }) {
   // Performance score is 0-100, show as a mini bar
   const width = Math.max(5, Math.min(100, score));
-  
+
   // [ANAL-QA-030] Use shared helper for color resolution
   const barColor = getColorForScore(score);
 
   return (
-    <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
-      <div 
+    <div className="w-20 h-2 bg-[var(--neutral-200)] rounded-full overflow-hidden">
+      <div
         className="h-full rounded-full transition-all duration-300"
         style={{ width: `${width}%`, backgroundColor: barColor }}
       />
@@ -279,14 +279,14 @@ export const DimensionLeaderboardTable: React.FC<DimensionLeaderboardTableProps>
   // Loading state
   if (isLoading) {
     return (
-      <Card className="bg-white border border-gray-200">
+      <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
         <CardHeader>
           <CardTitle className="text-lg">Dimension Leaderboard</CardTitle>
           <CardDescription>Your Insight Dimensions ranked by performance</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center h-40">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-[var(--color-primary)]" />
           </div>
         </CardContent>
       </Card>
@@ -296,15 +296,15 @@ export const DimensionLeaderboardTable: React.FC<DimensionLeaderboardTableProps>
   // Error state
   if (error) {
     return (
-      <Card className="bg-white border border-gray-200">
+      <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
         <CardHeader>
           <CardTitle className="text-lg">Dimension Leaderboard</CardTitle>
           <CardDescription>Your Insight Dimensions ranked by performance</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center h-40 text-center">
-            <AlertTriangle className="w-10 h-10 text-amber-500 mb-3" />
-            <p className="text-gray-600 mb-3">{error.message}</p>
+            <AlertTriangle className="w-10 h-10 text-[var(--status-warning)] mb-3" />
+            <p className="text-[var(--text-secondary)] mb-3">{error.message}</p>
             <Button onClick={onRetry} variant="outline" size="sm">
               Retry
             </Button>
@@ -317,14 +317,14 @@ export const DimensionLeaderboardTable: React.FC<DimensionLeaderboardTableProps>
   // Empty state
   if (rows.length === 0) {
     return (
-      <Card className="bg-white border border-gray-200">
+      <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
         <CardHeader>
           <CardTitle className="text-lg">Dimension Leaderboard</CardTitle>
           <CardDescription>Your Insight Dimensions ranked by performance</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-center justify-center h-40 text-center text-gray-500">
-            <AlertTriangle className="w-10 h-10 mb-3 text-gray-400" />
+          <div className="flex flex-col items-center justify-center h-40 text-center text-[var(--text-muted)]">
+            <AlertTriangle className="w-10 h-10 mb-3 text-[var(--text-subtle)]" />
             <p>No dimension data available</p>
             <p className="text-sm">Submit survey responses to see rankings</p>
           </div>
@@ -334,7 +334,7 @@ export const DimensionLeaderboardTable: React.FC<DimensionLeaderboardTableProps>
   }
 
   return (
-    <Card className="bg-white border border-gray-200">
+    <Card className="bg-[var(--bg-card)] border border-[var(--border-default)]">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -350,38 +350,38 @@ export const DimensionLeaderboardTable: React.FC<DimensionLeaderboardTableProps>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider w-12">
+              <tr className="border-b border-[var(--border-default)]">
+                <th className="text-left py-3 px-2 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider w-12">
                   #
                 </th>
-                <th className="text-left py-3 px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="text-left py-3 px-2 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
                   Dimension
                 </th>
-                <th className="text-left py-3 px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="text-left py-3 px-2 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
                   Score
                 </th>
-                <th className="text-left py-3 px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="text-left py-3 px-2 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
                   Band
                 </th>
-                <th className="text-left py-3 px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="text-left py-3 px-2 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
                   Change
                 </th>
-                <th className="text-left py-3 px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider w-24">
+                <th className="text-left py-3 px-2 text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider w-24">
                   Performance
                 </th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr 
-                  key={row.dimensionId} 
-                  className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                <tr
+                  key={row.dimensionId}
+                  className="border-b border-[var(--border-subtle)] hover:bg-[var(--hover-tint)] transition-colors"
                 >
                   <td className="py-3 px-2">
                     <RankBadge rank={row.rank} />
                   </td>
                   <td className="py-3 px-2">
-                    <span className="font-medium text-gray-900">
+                    <span className="font-medium text-[var(--text-primary)]">
                       {row.shortLabel}
                     </span>
                   </td>
@@ -411,9 +411,9 @@ export const DimensionLeaderboardTable: React.FC<DimensionLeaderboardTableProps>
             </tbody>
           </table>
         </div>
-        
+
         {/* Footnote */}
-        <p className="text-xs text-gray-400 mt-4">
+        <p className="text-xs text-[var(--text-subtle)] mt-4">
           Ranked by performance score. For Burnout Risk, lower scores indicate better performance.
         </p>
       </CardContent>

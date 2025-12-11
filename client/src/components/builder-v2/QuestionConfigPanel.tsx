@@ -34,25 +34,25 @@ interface CollapsibleSectionProps {
 
 function CollapsibleSection({ title, icon, defaultOpen = false, children }: CollapsibleSectionProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
-  
+
   return (
-    <div className="border-b border-gray-200">
+    <div className="border-b border-[var(--border-default)]">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3 hover:bg-[var(--hover-tint)] transition-colors"
       >
         <div className="flex items-center gap-2">
-          <span className="text-purple-500">{icon}</span>
-          <span className="text-sm font-semibold text-gray-900">{title}</span>
+          <span className="text-[var(--color-primary)]">{icon}</span>
+          <span className="text-sm font-semibold text-[var(--text-primary)]">{title}</span>
         </div>
         {isOpen ? (
-          <ChevronUp size={16} className="text-gray-400" />
+          <ChevronUp size={16} className="text-[var(--text-subtle)]" />
         ) : (
-          <ChevronDown size={16} className="text-gray-400" />
+          <ChevronDown size={16} className="text-[var(--text-subtle)]" />
         )}
       </button>
       {isOpen && (
-        <div className="border-t border-gray-200">
+        <div className="border-t border-[var(--border-default)]">
           {children}
         </div>
       )}
@@ -71,21 +71,21 @@ interface TabsProps {
 
 function Tabs({ tabs, activeTab, onTabChange }: TabsProps) {
   return (
-    <div className="flex border-b border-gray-200">
+    <div className="flex border-b border-[var(--border-default)]">
       {tabs.map((tab) => (
         <button
           key={tab.id}
           onClick={() => onTabChange(tab.id)}
           className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-semibold transition-colors relative ${
             activeTab === tab.id
-              ? 'text-purple-600 bg-purple-50/30'
-              : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+              ? 'text-[var(--color-primary)] bg-[var(--forest-50)]/30'
+              : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:bg-[var(--hover-tint)]'
           }`}
         >
           {tab.icon}
           {tab.label}
           {activeTab === tab.id && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500" />
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--color-primary)]" />
           )}
         </button>
       ))}
@@ -96,27 +96,27 @@ function Tabs({ tabs, activeTab, onTabChange }: TabsProps) {
 // ============================================
 // AI ACTION BUTTON
 // ============================================
-function ActionButton({ 
-  icon, 
-  label, 
-  onClick, 
-  loading 
-}: { 
-  icon: React.ReactNode; 
+function ActionButton({
+  icon,
+  label,
+  onClick,
+  loading
+}: {
+  icon: React.ReactNode;
   label: string;
   onClick?: () => void;
   loading?: boolean;
 }) {
   return (
-    <button 
+    <button
       onClick={onClick}
       disabled={loading}
-      className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-gray-700 border border-gray-200 
-                 rounded-lg hover:bg-purple-50/30 hover:border-purple-200 transition-all bg-white text-left 
+      className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-[var(--text-secondary)] border border-[var(--border-default)]
+                 rounded-lg hover:bg-[var(--forest-50)]/30 hover:border-[var(--forest-200)] transition-all bg-[var(--panel-center)] text-left
                  group disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      <span className="text-purple-500 group-hover:text-purple-600 transition-colors">{icon}</span>
-      <span className="group-hover:text-purple-600 transition-colors">
+      <span className="text-[var(--color-primary)] group-hover:text-[var(--color-primary)] transition-colors">{icon}</span>
+      <span className="group-hover:text-[var(--color-primary)] transition-colors">
         {loading ? 'Processing...' : label}
       </span>
     </button>
@@ -640,7 +640,7 @@ function DesignTab({ question }: { question: BuilderQuestion }) {
   const { updateQuestion } = useSurveyBuilder();
   const { toast } = useToast();
   const typeConfig = getQuestionTypeConfig(question.type);
-  
+
   const optimizeDesignMutation = useMutation({
     mutationFn: async () => {
       const res = await apiRequest('POST', '/api/ai/chat', {
@@ -655,7 +655,7 @@ function DesignTab({ question }: { question: BuilderQuestion }) {
       toast({ title: 'Error', description: 'Failed to get suggestion', variant: 'destructive' });
     },
   });
-  
+
   return (
     <div className="p-4 space-y-4">
       {/* AI Optimize Design Button */}
@@ -663,8 +663,8 @@ function DesignTab({ question }: { question: BuilderQuestion }) {
         onClick={() => optimizeDesignMutation.mutate()}
         disabled={optimizeDesignMutation.isPending}
         className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold
-                   text-purple-600 bg-purple-50 border-2 border-purple-200 rounded-lg
-                   hover:bg-purple-100 hover:border-purple-300 transition-all group
+                   text-[var(--color-primary)] bg-[var(--forest-50)] border-2 border-[var(--forest-200)] rounded-lg
+                   hover:bg-[var(--forest-100)] hover:border-[var(--forest-300)] transition-all group
                    disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Wand2 size={16} className="group-hover:rotate-12 transition-transform" />
@@ -844,11 +844,11 @@ export function QuestionConfigPanel() {
     return (
       <button
         onClick={toggleRightPanel}
-        className="w-12 flex-shrink-0 bg-white border-l border-gray-200 
-                   flex items-center justify-center hover:bg-gray-50 transition-colors group"
+        className="w-12 flex-shrink-0 bg-[var(--panel-right)] border-l border-[var(--border-default)]
+                   flex items-center justify-center hover:bg-[var(--hover-tint)] transition-colors group"
         title="Open Configuration Panel"
       >
-        <ChevronLeft size={20} className="text-gray-500 group-hover:text-purple-500 transition-colors" />
+        <ChevronLeft size={20} className="text-[var(--text-muted)] group-hover:text-[var(--color-primary)] transition-colors" />
       </button>
     );
   }
@@ -873,11 +873,11 @@ export function QuestionConfigPanel() {
       <RightPanelLayout title="Configuration" onClose={toggleRightPanel}>
         <div className="flex-1 flex items-center justify-center p-6 overflow-hidden">
           <div className="text-center max-w-full">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-50 to-indigo-50 flex items-center justify-center mx-auto mb-4 border border-purple-100">
-              <Settings size={24} className="text-purple-400" />
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[var(--forest-50)] to-indigo-50 flex items-center justify-center mx-auto mb-4 border border-[var(--forest-100)]">
+              <Settings size={24} className="text-[var(--color-primary)]" />
             </div>
-            <p className="text-sm text-gray-600 font-medium mb-1">Select a question</p>
-            <p className="text-xs text-gray-400 leading-relaxed px-2">
+            <p className="text-sm text-[var(--text-secondary)] font-medium mb-1">Select a question</p>
+            <p className="text-xs text-[var(--text-subtle)] leading-relaxed px-2">
               Click any question card on the canvas to configure its settings
             </p>
           </div>

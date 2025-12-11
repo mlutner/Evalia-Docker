@@ -25,24 +25,24 @@ export interface MetricStatCardProps {
 // Tone-based styling for icon background and text
 const toneStyles = {
   primary: {
-    iconBg: "bg-blue-100",
-    iconColor: "text-blue-600",
+    iconBg: "bg-[var(--forest-50)]",
+    iconColor: "text-[var(--color-primary)]",
   },
   success: {
-    iconBg: "bg-emerald-100",
-    iconColor: "text-emerald-600",
+    iconBg: "bg-[var(--sage-100)]",
+    iconColor: "text-[var(--status-success)]",
   },
   warning: {
-    iconBg: "bg-amber-100",
-    iconColor: "text-amber-600",
+    iconBg: "bg-[var(--status-warning-bg)]",
+    iconColor: "text-[var(--status-warning)]",
   },
   critical: {
-    iconBg: "bg-red-100",
-    iconColor: "text-red-600",
+    iconBg: "bg-[var(--status-error-bg)]",
+    iconColor: "text-[var(--status-error)]",
   },
   neutral: {
-    iconBg: "bg-gray-100",
-    iconColor: "text-gray-600",
+    iconBg: "bg-[var(--neutral-100)]",
+    iconColor: "text-[var(--text-secondary)]",
   },
 };
 
@@ -50,15 +50,15 @@ const toneStyles = {
 const trendStyles = {
   up: {
     icon: TrendingUp,
-    color: "text-emerald-600",
+    color: "text-[var(--status-success)]",
   },
   down: {
     icon: TrendingDown,
-    color: "text-red-500",
+    color: "text-[var(--status-error)]",
   },
   neutral: {
     icon: Minus,
-    color: "text-gray-400",
+    color: "text-[var(--text-subtle)]",
   },
 };
 
@@ -76,13 +76,13 @@ export function MetricStatCard({
   const TrendIcon = trend?.icon;
 
   return (
-    <Card className="bg-white border border-gray-200 hover:shadow-sm transition-shadow">
+    <Card className="bg-[var(--bg-card)] border border-[var(--border-default)] hover:shadow-sm transition-shadow">
       <CardContent className="p-4">
         <div className="flex items-start justify-between mb-3">
           <div className={cn("p-2 rounded-lg", iconBg)}>
             <Icon className={cn("w-5 h-5", iconColor)} />
           </div>
-          
+
           {/* Trend indicator */}
           {trend && TrendIcon && (
             <div className={cn("flex items-center text-xs gap-1", trend.color)}>
@@ -95,16 +95,16 @@ export function MetricStatCard({
         </div>
 
         {/* Label */}
-        <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">
+        <p className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider mb-1">
           {label}
         </p>
 
         {/* Value */}
-        <p className="text-2xl font-bold text-gray-900">{value}</p>
+        <p className="text-2xl font-bold text-[var(--text-primary)]">{value}</p>
 
         {/* Subtext */}
         {subtext && (
-          <p className="text-xs text-gray-400 mt-1">{subtext}</p>
+          <p className="text-xs text-[var(--text-subtle)] mt-1">{subtext}</p>
         )}
       </CardContent>
     </Card>

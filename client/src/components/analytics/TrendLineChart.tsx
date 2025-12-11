@@ -32,13 +32,13 @@ interface TrendLineChartProps {
   description?: string;
 }
 
-// Index colors - using the brand colors
+// Index colors - Recharts requires hex values (not CSS vars)
 const INDEX_COLORS = {
-  engagementIndex: "#3b82f6", // Blue
+  engagementIndex: "#3b82f6", // Blue - equivalent to primary blue
   leadershipIndex: "#8b5cf6", // Purple
-  wellbeingIndex: "#22c55e", // Green
-  burnoutRiskIndex: "#ef4444", // Red
-  psychologicalSafetyIndex: "#f59e0b", // Amber
+  wellbeingIndex: "#22c55e", // Green - equivalent to --status-success
+  burnoutRiskIndex: "#ef4444", // Red - equivalent to --status-error
+  psychologicalSafetyIndex: "#f59e0b", // Amber - equivalent to --status-warning
 } as const;
 
 // Friendly index labels
@@ -64,8 +64,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload || payload.length === 0) return null;
 
   return (
-    <div className="bg-white border border-gray-200 shadow-lg rounded-md p-3 min-w-[160px]">
-      <p className="font-semibold text-gray-900 mb-2 text-sm">
+    <div className="bg-[var(--bg-card)] border border-[var(--border-default)] shadow-lg rounded-md p-3 min-w-[160px]">
+      <p className="font-semibold text-[var(--text-primary)] mb-2 text-sm">
         {formatDate(label)}
       </p>
       <div className="space-y-1">
@@ -76,11 +76,11 @@ const CustomTooltip = ({ active, payload, label }: any) => {
                 className="w-2.5 h-2.5 rounded-full"
                 style={{ backgroundColor: entry.color }}
               />
-              <span className="text-gray-600">
+              <span className="text-[var(--text-secondary)]">
                 {INDEX_LABELS[entry.dataKey] || entry.dataKey}
               </span>
             </div>
-            <span className="font-medium text-gray-900">
+            <span className="font-medium text-[var(--text-primary)]">
               {entry.value?.toFixed(1)}
             </span>
           </div>
@@ -103,7 +103,7 @@ export const TrendLineChart: React.FC<TrendLineChartProps> = ({
     return (
       <AnalyticsSectionShell title={title} description="Loading trend data...">
         <div className="flex items-center justify-center h-64">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-[var(--color-primary)]" />
         </div>
       </AnalyticsSectionShell>
     );
@@ -114,9 +114,9 @@ export const TrendLineChart: React.FC<TrendLineChartProps> = ({
     return (
       <AnalyticsSectionShell title={title} description="Failed to load trends.">
         <div className="flex flex-col items-center justify-center h-64 text-center">
-          <AlertTriangle className="w-10 h-10 mb-3 text-red-500" />
-          <p className="text-lg font-semibold text-red-600">Error loading data</p>
-          <p className="text-sm text-gray-600 mt-1">{error.message}</p>
+          <AlertTriangle className="w-10 h-10 mb-3 text-[var(--status-error)]" />
+          <p className="text-lg font-semibold text-[var(--status-error)]">Error loading data</p>
+          <p className="text-sm text-[var(--text-secondary)] mt-1">{error.message}</p>
           <Button onClick={onRetry} className="mt-4" variant="outline">
             Retry
           </Button>
@@ -130,12 +130,12 @@ export const TrendLineChart: React.FC<TrendLineChartProps> = ({
     return (
       <AnalyticsSectionShell title={title} description={description}>
         <div className="flex flex-col items-center justify-center h-64 text-center">
-          <Calendar className="w-10 h-10 mb-3 text-gray-400" />
-          <p className="text-lg font-semibold text-gray-700">Not Enough Data</p>
-          <p className="text-sm text-gray-500 mt-1">
+          <Calendar className="w-10 h-10 mb-3 text-[var(--text-subtle)]" />
+          <p className="text-lg font-semibold text-[var(--text-secondary)]">Not Enough Data</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Trend visualization requires responses over multiple time periods.
           </p>
-          <p className="text-xs text-gray-400 mt-2">
+          <p className="text-xs text-[var(--text-subtle)] mt-2">
             {data?.series?.length === 1
               ? "All responses occurred on the same day."
               : "Collect more responses over time to see trends."}
@@ -158,24 +158,24 @@ export const TrendLineChart: React.FC<TrendLineChartProps> = ({
             data={data.series}
             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#E8EDEB" /* --neutral-100 */ />
             <XAxis
               dataKey="date"
               tickFormatter={formatDate}
-              tick={{ fontSize: 12, fill: "#6b7280" }}
-              axisLine={{ stroke: "#d1d5db" }}
+              tick={{ fontSize: 12, fill: "#6B7573" /* --neutral-500 / --text-muted */ }}
+              axisLine={{ stroke: "#D1D6D4" /* --neutral-200 / --border-default */ }}
             />
             <YAxis
               domain={[0, 100]}
-              tick={{ fontSize: 12, fill: "#6b7280" }}
-              axisLine={{ stroke: "#d1d5db" }}
+              tick={{ fontSize: 12, fill: "#6B7573" /* --neutral-500 / --text-muted */ }}
+              axisLine={{ stroke: "#D1D6D4" /* --neutral-200 / --border-default */ }}
               tickFormatter={(value) => `${value}`}
             />
             <Tooltip content={<CustomTooltip />} />
             <Legend
               wrapperStyle={{ paddingTop: 20 }}
               formatter={(value: string) => (
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-[var(--text-secondary)]">
                   {INDEX_LABELS[value] || value}
                 </span>
               )}
@@ -196,8 +196,8 @@ export const TrendLineChart: React.FC<TrendLineChartProps> = ({
       </div>
 
       {/* Data summary */}
-      <div className="mt-4 pt-4 border-t border-gray-100">
-        <div className="flex items-center justify-between text-sm text-gray-500">
+      <div className="mt-4 pt-4 border-t border-[var(--border-subtle)]">
+        <div className="flex items-center justify-between text-sm text-[var(--text-muted)]">
           <div className="flex items-center gap-2">
             <TrendingUp className="w-4 h-4" />
             <span>{data.series.length} data points</span>

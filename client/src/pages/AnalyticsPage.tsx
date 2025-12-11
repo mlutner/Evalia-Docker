@@ -80,22 +80,22 @@ interface AnalyticsData {
 
 const SEVERITY_STYLES = {
   info: {
-    bg: 'bg-[var(--teal-50)] border-[var(--teal-200)]',
+    bg: 'bg-[var(--status-info-bg)] border-[var(--forest-200)]',
     icon: Info,
-    iconColor: 'text-[var(--teal-600)]',
-    textColor: 'text-[var(--teal-700)]',
+    iconColor: 'text-[var(--forest-500)]',
+    textColor: 'text-[var(--forest-700)]',
   },
   warning: {
-    bg: 'bg-[var(--warning-bg)] border-[var(--yuzu)]',
+    bg: 'bg-[var(--status-warning-bg)] border-[var(--status-warning)]',
     icon: AlertTriangle,
-    iconColor: 'text-[var(--warning-fg)]',
-    textColor: 'text-[var(--warning-fg)]',
+    iconColor: 'text-[var(--status-warning)]',
+    textColor: 'text-[var(--status-warning)]',
   },
   error: {
-    bg: 'bg-[var(--coral-50)] border-[var(--coral-200)]',
+    bg: 'bg-[var(--status-error-bg)] border-[var(--status-error)]',
     icon: XCircle,
-    iconColor: 'text-[var(--coral-600)]',
-    textColor: 'text-[var(--coral-700)]',
+    iconColor: 'text-[var(--status-error)]',
+    textColor: 'text-[var(--status-error)]',
   },
 };
 
@@ -126,7 +126,7 @@ function AnalyticsStateBanner({ state }: { state: AnalyticsStateResult }) {
  */
 function SingleVersionIndicator() {
   return (
-    <div className="flex items-center gap-2 text-sm text-[var(--teal-700)] bg-[var(--teal-50)] px-4 py-3 rounded-lg border border-[var(--teal-200)] mb-6">
+    <div className="flex items-center gap-2 text-sm text-[var(--forest-700)] bg-[var(--forest-50)] px-4 py-3 rounded-lg border border-[var(--forest-200)] mb-6">
       <Info className="w-4 h-4 flex-shrink-0" />
       <span>
         <strong>Single Snapshot Mode</strong> – Trend analysis and before/after comparisons require multiple scoring versions over time.
@@ -142,11 +142,11 @@ function ScoringDisabledCard({ title, description }: { title: string; descriptio
   return (
     <div className="evalia-card">
       <div className="flex flex-col items-center justify-center py-8 text-center">
-        <div className="w-12 h-12 rounded-full bg-[var(--paper-100)] flex items-center justify-center mb-4">
-          <BarChart3 className="w-6 h-6 text-[var(--ink-200)]" />
+        <div className="w-12 h-12 rounded-full bg-[var(--neutral-100)] flex items-center justify-center mb-4">
+          <BarChart3 className="w-6 h-6 text-[var(--neutral-400)]" />
         </div>
-        <h3 className="text-lg font-medium text-[var(--ink-500)] mb-1">{title}</h3>
-        <p className="text-sm text-[var(--ink-200)] max-w-md">{description}</p>
+        <h3 className="text-lg font-medium text-[var(--text-primary)] mb-1">{title}</h3>
+        <p className="text-sm text-[var(--text-muted)] max-w-md">{description}</p>
       </div>
     </div>
   );
@@ -365,10 +365,10 @@ export default function AnalyticsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--paper-50)]">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg-page)]">
         <div className="text-center animate-page-enter">
-          <Loader2 className="w-12 h-12 animate-spin text-[var(--coral-500)] mx-auto mb-4" />
-          <p className="text-[var(--ink-200)]">Loading analytics...</p>
+          <Loader2 className="w-12 h-12 animate-spin text-[var(--color-primary)] mx-auto mb-4" />
+          <p className="text-[var(--text-muted)]">Loading analytics...</p>
         </div>
       </div>
     );
@@ -380,13 +380,13 @@ export default function AnalyticsPage() {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--paper-50)]">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg-page)]">
         <div className="text-center animate-page-enter">
-          <div className="w-16 h-16 rounded-full bg-[var(--warning-bg)] flex items-center justify-center mx-auto mb-4">
-            <AlertTriangle className="w-8 h-8 text-[var(--warning-fg)]" />
+          <div className="w-16 h-16 rounded-full bg-[var(--status-warning-bg)] flex items-center justify-center mx-auto mb-4">
+            <AlertTriangle className="w-8 h-8 text-[var(--status-warning)]" />
           </div>
-          <h1 className="text-2xl font-bold text-[var(--ink-500)] mb-2">Analytics Unavailable</h1>
-          <p className="text-[var(--ink-200)] mb-6">Unable to load analytics for this survey.</p>
+          <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-2">Analytics Unavailable</h1>
+          <p className="text-[var(--text-muted)] mb-6">Unable to load analytics for this survey.</p>
           <Button className="evalia-btn evalia-btn-primary" onClick={() => setLocation("/dashboard")}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
@@ -404,18 +404,18 @@ export default function AnalyticsPage() {
   
   if (count === 0) {
     return (
-      <div className="min-h-screen bg-[var(--paper-50)]">
+      <div className="min-h-screen bg-[var(--bg-page)]">
         <div className="max-w-7xl mx-auto px-4 py-8">
-          <Button variant="ghost" onClick={() => setLocation("/dashboard")} className="mb-8 text-[var(--coral-600)] hover:bg-[var(--coral-50)]">
+          <Button variant="ghost" onClick={() => setLocation("/dashboard")} className="mb-8 text-[var(--color-primary)] hover:bg-[var(--hover-tint)]">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Button>
           <div className="text-center py-20 animate-page-enter">
-            <div className="w-20 h-20 bg-[var(--teal-100)] rounded-full flex items-center justify-center mx-auto mb-6">
-              <BarChart3 className="w-10 h-10 text-[var(--teal-600)]" />
+            <div className="w-20 h-20 bg-[var(--forest-100)] rounded-full flex items-center justify-center mx-auto mb-6">
+              <BarChart3 className="w-10 h-10 text-[var(--forest-600)]" />
             </div>
-            <h1 className="text-2xl font-bold text-[var(--ink-500)] mb-2">No Responses Yet</h1>
-            <p className="text-[var(--ink-200)] mb-8 max-w-md mx-auto">
+            <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-2">No Responses Yet</h1>
+            <p className="text-[var(--text-muted)] mb-8 max-w-md mx-auto">
               Share your survey "{survey.title}" to start collecting responses.
             </p>
             <Button className="evalia-btn evalia-btn-secondary" onClick={() => setLocation("/dashboard")}>
@@ -433,18 +433,18 @@ export default function AnalyticsPage() {
   // ============================================================================
 
   return (
-      <main className="min-h-screen bg-[var(--paper-50)]">
+      <main className="min-h-screen bg-[var(--bg-page)]">
         <div className="max-w-7xl mx-auto px-4 py-6 animate-page-enter">
 
           {/* Header */}
           <div className="flex items-start justify-between mb-8">
             <div>
-              <Button variant="ghost" onClick={() => setLocation("/dashboard")} className="mb-4 -ml-2 text-[var(--coral-600)] hover:bg-[var(--coral-50)]">
+              <Button variant="ghost" onClick={() => setLocation("/dashboard")} className="mb-4 -ml-2 text-[var(--color-primary)] hover:bg-[var(--hover-tint)]">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Dashboard
               </Button>
-              <h1 className="text-2xl font-bold text-[var(--ink-500)] mb-1">{survey.title}</h1>
-              <p className="text-[var(--ink-200)]">{survey.description || "Survey Analytics"}</p>
+              <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-1">{survey.title}</h1>
+              <p className="text-[var(--text-secondary)]">{survey.description || "Survey Analytics"}</p>
           </div>
 
           {/* Version Selector */}
@@ -497,13 +497,13 @@ export default function AnalyticsPage() {
             <>
               {/* [ANAL-DASH-010] Dashboard Mode Indicator */}
               <div className="mb-4 flex items-center gap-2">
-                <span className="text-xs font-medium text-[var(--ink-200)] uppercase tracking-wider">
+                <span className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">
                   Dashboard Mode:
                 </span>
                 <span className={`evalia-badge ${
                   dashboardMode.is5DDashboard
                     ? 'evalia-badge-teal'
-                    : 'evalia-badge-coral'
+                    : 'evalia-badge-default'
                 }`}>
                   {dashboardMode.is5DDashboard ? 'Insight Dimensions' : 'Category Analytics'}
                 </span>
@@ -511,7 +511,7 @@ export default function AnalyticsPage() {
 
               {/* Tabs - [ANAL-IA-001] Information Architecture (adapted by dashboard mode) */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="bg-[var(--paper-white)] border border-[var(--paper-200)] flex-wrap h-auto p-1 rounded-[var(--radius-lg)]">
+            <TabsList className="bg-[var(--bg-card)] border border-[var(--border-subtle)] flex-wrap h-auto p-1 rounded-[var(--radius-lg)]">
               <TabsTrigger value="insights-home" className="gap-2">
                 <Home className="w-4 h-4" />
                 {dashboardMode.is5DDashboard ? 'Insights Home' : 'Overview'}

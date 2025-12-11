@@ -23,11 +23,11 @@ export function DataEmptyState({
 }: DataEmptyStateProps) {
   if (variant === 'compact') {
     return (
-      <div className="flex items-center gap-3 py-4 px-3 text-gray-500">
-        <Icon className="w-5 h-5 text-gray-400" />
+      <div className="flex items-center gap-3 py-4 px-3 text-[var(--text-muted)]">
+        <Icon className="w-5 h-5 text-[var(--text-subtle)]" />
         <div>
-          <span className="font-medium text-gray-700">{title}</span>
-          <span className="text-gray-500"> – {description}</span>
+          <span className="font-medium text-[var(--text-secondary)]">{title}</span>
+          <span className="text-[var(--text-muted)]"> – {description}</span>
         </div>
       </div>
     );
@@ -35,11 +35,11 @@ export function DataEmptyState({
 
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center">
-      <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-        <Icon className="w-8 h-8 text-gray-400" />
+      <div className="w-16 h-16 rounded-full bg-[var(--neutral-100)] flex items-center justify-center mb-4">
+        <Icon className="w-8 h-8 text-[var(--text-subtle)]" />
       </div>
-      <h3 className="text-lg font-medium text-gray-900 mb-2">{title}</h3>
-      <p className="text-sm text-gray-500 max-w-md">{description}</p>
+      <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2">{title}</h3>
+      <p className="text-sm text-[var(--text-muted)] max-w-md">{description}</p>
     </div>
   );
 }
@@ -112,7 +112,7 @@ export function NoDimensionDataState() {
  */
 export function SingleSnapshotModeIndicator({ className = '' }: { className?: string }) {
   return (
-    <div className={`flex items-center gap-2 text-sm text-blue-600 bg-blue-50 px-3 py-2 rounded-lg ${className}`}>
+    <div className={`flex items-center gap-2 text-sm text-[var(--forest-700)] bg-[var(--forest-50)] px-3 py-2 rounded-[var(--radius-md)] ${className}`}>
       <Clock className="w-4 h-4" />
       <span>
         <strong>Single Snapshot Mode</strong> – Trend analysis requires multiple scoring versions.
