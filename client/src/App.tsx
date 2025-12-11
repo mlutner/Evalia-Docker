@@ -137,11 +137,12 @@ function Router() {
           <Route path="/dev/scoring-debug">
             {() => <ProtectedRoute component={ScoringDebugPage} />}
           </Route>
+          {isDev && (
+            <Route path="/dev/inspector">
+              {() => <ProtectedRoute component={DevInspector} />}
+            </Route>
+          )}
         </>
-      {isDev && (
-        <Route path="/dev/inspector">
-          {() => <ProtectedRoute component={DevInspector} />}
-        </Route>
       )}
 
       <Route component={NotFound} />

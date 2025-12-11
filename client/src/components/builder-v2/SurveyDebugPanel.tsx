@@ -34,9 +34,6 @@ const shouldShowDevTools = () => {
 export function SurveyDebugPanel() {
   // Only render in dev or when explicitly enabled via env var
   if (!shouldShowDevTools()) {
-export function SurveyDebugPanel() {
-  // Only render in dev to avoid exposing internals in production builds
-  if (!import.meta.env.DEV) {
     return null;
   }
 

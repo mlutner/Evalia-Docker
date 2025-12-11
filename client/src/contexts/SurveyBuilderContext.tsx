@@ -672,11 +672,6 @@ export function exportSurveyToEvalia(survey: BuilderSurvey) {
 
 const SurveyBuilderContext = createContext<SurveyBuilderContextType | undefined>(undefined);
 
-type HistoryState = {
-  undo: BuilderSurvey[];
-  redo: BuilderSurvey[];
-};
-
 // [SCORING-PIPELINE] Default empty scoring configuration
 // Used as fallback when no scoreConfig is present. NEVER modify this structure.
 const EMPTY_SCORE_CONFIG: SurveyScoreConfig = {
@@ -756,7 +751,6 @@ export const createInitialSurvey = (): BuilderSurvey => ({
     },
     themeColors: {
       primary: '#2F8FA5',
-      secondary: '#2F8FA5', // Header bar color - defaults to primary
       background: '#FFFFFF',
       text: '#1e293b',
       buttonText: '#FFFFFF',
@@ -999,19 +993,19 @@ export function SurveyBuilderProvider({
       });
       
       // Convert Evalia survey to Builder survey
-      const builderQuestions = (existingSurveyData.questions || []).map(evaliaToBuilder).map((q, idx) =>
+      const builderQuestions = (existingSurveyData.questions || []).map(evaliaToBuilder).map((q: BuilderQuestion, idx: number) =>
         validateBuilderQuestion({
           ...q,
           logicRules: validateLogicRules((q as any).logicRules, q.id, new Set((existingSurveyData.questions || []).map((qq: any) => qq.id))),
           order: idx,
         } as BuilderQuestion)
       );
-      
+
       // [BUG-ANAL-XXX] Log questions after conversion to Builder format
       console.log('[BUG-ANAL-XXX] Loading survey - After evaliaToBuilder conversion:', {
         surveyId: existingSurveyData.id,
         builderQuestionsCount: builderQuestions.length,
-        builderQuestions: builderQuestions.map(q => ({ id: q.id, type: q.type, text: q.text?.substring(0, 50) })),
+        builderQuestions: builderQuestions.map((q: BuilderQuestion) => ({ id: q.id, type: q.type, text: q.text?.substring(0, 50) })),
       });
     
       // Extract design settings if available
