@@ -15,8 +15,6 @@ export const logicEngines: LogicEngine[] = [
   {
     id: "logicEngineV3",
     name: "Logic Engine V3",
-    id: "LogicV3",
-    name: "Logic V3",
     status: "available",
     notes: "Next-gen evaluator available for experimentation but not defaulted yet.",
   },
